@@ -1,0 +1,116 @@
+{
+  "name": "@mars/vscode",
+  "displayName": "Mars Notebooks",
+  "description": "Language support and preview commands for .mars notebooks.",
+  "version": "0.1.0",
+  "publisher": "mars-project",
+  "icon": "assets/mars-logo.png",
+  "license": "MIT",
+  "packageManager": "pnpm@12.16.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hieudoanm/mars"
+  },
+  "engines": {
+    "vscode": "1.144.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Notebooks"
+  ],
+  "activationEvents": [
+    "onLanguage:mars",
+    "onCommand:mars.exportHtml",
+    "onCommand:mars.preview",
+    "onCommand:mars.runNotebook",
+    "onCommand:mars.openCell"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mars",
+        "aliases": [
+          "Mars Notebook"
+        ],
+        "extensions": [
+          ".mars"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mars",
+        "scopeName": "source.mars",
+        "path": "./syntaxes/mars.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.rust": "rust",
+          "text.html.markdown": "markdown"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "mars.exportHtml",
+        "title": "Mars: Export Notebook to HTML"
+      },
+      {
+        "command": "mars.preview",
+        "title": "Mars: Preview Notebook"
+      },
+      {
+        "command": "mars.runNotebook",
+        "title": "Mars: Run Notebook"
+      },
+      {
+        "command": "mars.openCell",
+        "title": "Mars: Go to Cell"
+      }
+    ],
+    "configuration": {
+      "title": "Mars Notebooks",
+      "properties": {
+        "mars.cliPath": {
+          "type": "string",
+          "default": "mars",
+          "description": "Path to the Mars CLI executable."
+        },
+        "mars.previewAfterExport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the generated HTML after exporting a notebook."
+        },
+        "mars.runArguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional arguments passed to `mars run`."
+        }
+      }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mars.exportHtml",
+          "when": "resourceLangId == mars",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "npm run compile",
+    "check": "npm run compile",
+    "compile": "tsc -p .",
+    "package": "npm run compile && vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@types/vscode": "1.144.0",
+    "@vscode/vsce": "4.1.0",
+    "typescript": "5.9.3"
+  }
+}
