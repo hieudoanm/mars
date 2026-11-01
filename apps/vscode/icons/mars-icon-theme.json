@@ -1,0 +1,10 @@
+{
+  "iconDefinitions": {
+    "mars": {
+      "iconPath": "../assets/mars-file-logo.png"
+    }
+  },
+  "fileExtensions": {
+    "mars": "mars"
+  }
+}

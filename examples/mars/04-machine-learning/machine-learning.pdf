@@ -1,0 +1,512 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+
+4 0 obj
+<< /ProcSet [/PDF /Text] /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >>
+endobj
+
+5 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R] /Count 7 >>
+endobj
+
+6 0 obj
+<< /Length 3479 >>
+stream
+BT
+/F3 18 Tf
+1 0 0 1 54 787.89 Tm (Machine Learning with Rust Libraries) Tj
+/F1 12 Tf
+1 0 0 1 54 771.89 Tm (Machine Learning with Rust Libraries) Tj
+1 0 0 1 54 759.89 Tm (This notebook demonstrates a machine learning workflow using Rust libraries:) Tj
+1 0 0 1 54 747.89 Tm (polars for data manipulation) Tj
+1 0 0 1 54 735.89 Tm (ndarray for numerical operations) Tj
+1 0 0 1 54 723.89 Tm (linfa for machine learning) Tj
+1 0 0 1 54 711.89 Tm (Similar to the Python workflow using pandas, numpy, and scikit-learn.) Tj
+/F3 10 Tf
+1 0 0 1 54 687.89 Tm (In [1]) Tj
+/F2 9 Tf
+1 0 0 1 54 676.89 Tm (// Note: These dependencies would be added to Cargo.toml in a real project) Tj
+1 0 0 1 54 665.89 Tm (// :dep polars = { version = "0.44", features = ["lazy", "ndarray"] }) Tj
+1 0 0 1 54 654.89 Tm (// :dep ndarray = { version = "0.16", features = ["rand"] }) Tj
+1 0 0 1 54 643.89 Tm (// :dep ndarray-rand = "0.15") Tj
+1 0 0 1 54 632.89 Tm (// :dep linfa = "0.7") Tj
+1 0 0 1 54 621.89 Tm (// :dep linfa-logistic = "0.7") Tj
+1 0 0 1 54 610.89 Tm (// :dep rand = "0.8") Tj
+1 0 0 1 54 599.89 Tm () Tj
+1 0 0 1 54 588.89 Tm (// For now, we'll use standard library to demonstrate the concept) Tj
+1 0 0 1 54 577.89 Tm (// since Mars runtime doesn't yet support external dependencies) Tj
+/F1 12 Tf
+1 0 0 1 54 553.89 Tm (1. Generate Synthetic Dataset) Tj
+1 0 0 1 54 541.89 Tm (We'll create a binary classification dataset similar to sklearn's) Tj
+1 0 0 1 54 529.89 Tm (make_classification) Tj
+1 0 0 1 54 517.89 Tm (.) Tj
+/F3 10 Tf
+1 0 0 1 54 493.89 Tm (In [2]) Tj
+/F2 9 Tf
+1 0 0 1 54 482.89 Tm (use rand::Rng;) Tj
+1 0 0 1 54 471.89 Tm () Tj
+1 0 0 1 54 460.89 Tm (let n_samples: usize = 1000;) Tj
+1 0 0 1 54 449.89 Tm (let n_features: usize = 20;) Tj
+1 0 0 1 54 438.89 Tm () Tj
+1 0 0 1 54 427.89 Tm (// Generate random features using standard library) Tj
+1 0 0 1 54 416.89 Tm (let mut rng = rand::thread_rng\(\);) Tj
+1 0 0 1 54 405.89 Tm (let mut x: Vec<Vec<f64>> = Vec::new\(\);) Tj
+1 0 0 1 54 394.89 Tm (let mut y: Vec<i32> = Vec::new\(\);) Tj
+1 0 0 1 54 383.89 Tm () Tj
+1 0 0 1 54 372.89 Tm (for _ in 0..n_samples {) Tj
+1 0 0 1 54 361.89 Tm (    let mut row: Vec<f64> = Vec::new\(\);) Tj
+1 0 0 1 54 350.89 Tm (    for _ in 0..n_features {) Tj
+1 0 0 1 54 339.89 Tm (        row.push\(rng.gen_range\(-10.0..10.0\)\);) Tj
+1 0 0 1 54 328.89 Tm (    }) Tj
+1 0 0 1 54 317.89 Tm (    let sum: f64 = row.iter\(\).sum\(\);) Tj
+1 0 0 1 54 306.89 Tm (    x.push\(row\);) Tj
+1 0 0 1 54 295.89 Tm (    y.push\(if sum > 0.0 { 1 } else { 0 }\);) Tj
+1 0 0 1 54 284.89 Tm (}) Tj
+1 0 0 1 54 273.89 Tm () Tj
+1 0 0 1 54 262.89 Tm (println!\("Dataset shape: \({}, {}\)", n_samples, n_features\);) Tj
+1 0 0 1 54 251.89 Tm (println!\("Class 0: {}", y.iter\(\).filter\(|&&v| v == 0\).count\(\)\);) Tj
+1 0 0 1 54 240.89 Tm (println!\("Class 1: {}", y.iter\(\).filter\(|&&v| v == 1\).count\(\)\);) Tj
+1 0 0 1 54 229.89 Tm () Tj
+1 0 0 1 54 218.89 Tm (// In a full implementation with polars, this would be:) Tj
+1 0 0 1 54 207.89 Tm (// let df = DataFrame::new\(x, feature_names.clone\(\)\)?;) Tj
+1 0 0 1 54 196.89 Tm (// df.with_column\(Series::new\("target", y\)?\);) Tj
+/F1 9 Tf
+1 0 0 1 54 185.89 Tm (Dataset shape: \(1000, 20\)) Tj
+1 0 0 1 54 174.89 Tm (Class 0: 530) Tj
+1 0 0 1 54 163.89 Tm (Class 1: 470) Tj
+/F1 12 Tf
+1 0 0 1 54 139.89 Tm (2. Train/Test Split) Tj
+1 0 0 1 54 127.88999999999999 Tm (Similar to sklearn's) Tj
+1 0 0 1 54 115.88999999999999 Tm (train_test_split) Tj
+1 0 0 1 54 103.88999999999999 Tm (.) Tj
+ET
+
+endstream
+endobj
+
+7 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 6 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+8 0 obj
+<< /Length 1736 >>
+stream
+BT
+/F3 10 Tf
+1 0 0 1 54 787.89 Tm (In [3]) Tj
+/F2 9 Tf
+1 0 0 1 54 776.89 Tm (let split_point: usize = \(n_samples * 8\) / 10;) Tj
+1 0 0 1 54 765.89 Tm () Tj
+1 0 0 1 54 754.89 Tm (let x_train: Vec<Vec<f64>> = x[..split_point].to_vec\(\);) Tj
+1 0 0 1 54 743.89 Tm (let x_test: Vec<Vec<f64>> = x[split_point..].to_vec\(\);) Tj
+1 0 0 1 54 732.89 Tm (let y_train: Vec<i32> = y[..split_point].to_vec\(\);) Tj
+1 0 0 1 54 721.89 Tm (let y_test: Vec<i32> = y[split_point..].to_vec\(\);) Tj
+1 0 0 1 54 710.89 Tm () Tj
+1 0 0 1 54 699.89 Tm (println!\("Training set size: {}", x_train.len\(\)\);) Tj
+1 0 0 1 54 688.89 Tm (println!\("Test set size: {}", x_test.len\(\)\);) Tj
+1 0 0 1 54 677.89 Tm (println!\("Train - Class 0: {}, Class 1: {}", ) Tj
+1 0 0 1 54 666.89 Tm (    y_train.iter\(\).filter\(|&&v| v == 0\).count\(\), ) Tj
+1 0 0 1 54 655.89 Tm (    y_train.iter\(\).filter\(|&&v| v == 1\).count\(\)\);) Tj
+1 0 0 1 54 644.89 Tm (println!\("Test - Class 0: {}, Class 1: {}", ) Tj
+1 0 0 1 54 633.89 Tm (    y_test.iter\(\).filter\(|&&v| v == 0\).count\(\), ) Tj
+1 0 0 1 54 622.89 Tm (    y_test.iter\(\).filter\(|&&v| v == 1\).count\(\)\);) Tj
+/F1 9 Tf
+1 0 0 1 54 611.89 Tm (Dataset shape: \(1000, 20\)) Tj
+1 0 0 1 54 600.89 Tm (Class 0: 519) Tj
+1 0 0 1 54 589.89 Tm (Class 1: 481) Tj
+1 0 0 1 54 578.89 Tm (Training set size: 800) Tj
+1 0 0 1 54 567.89 Tm (Test set size: 200) Tj
+1 0 0 1 54 556.89 Tm (Train - Class 0: 416, Class 1: 384) Tj
+1 0 0 1 54 545.89 Tm (Test - Class 0: 103, Class 1: 97) Tj
+/F1 12 Tf
+1 0 0 1 54 521.89 Tm (3. Train Logistic Regression) Tj
+1 0 0 1 54 509.89 Tm (Similar to sklearn's) Tj
+1 0 0 1 54 497.89 Tm (LogisticRegression) Tj
+1 0 0 1 54 485.89 Tm (. In a full implementation, this would use linfa-logistic.) Tj
+ET
+
+endstream
+endobj
+
+9 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 8 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+10 0 obj
+<< /Length 3062 >>
+stream
+BT
+/F3 10 Tf
+1 0 0 1 54 787.89 Tm (In [4]) Tj
+/F2 9 Tf
+1 0 0 1 54 776.89 Tm (// Simple logistic regression implementation) Tj
+1 0 0 1 54 765.89 Tm (// In a full implementation, this would be:) Tj
+1 0 0 1 54 754.89 Tm (// let model = LogisticRegression::default\(\);) Tj
+1 0 0 1 54 743.89 Tm (// let fitted_model = model.fit\(&dataset\)?;) Tj
+1 0 0 1 54 732.89 Tm () Tj
+1 0 0 1 54 721.89 Tm (// For now, a simplified version:) Tj
+1 0 0 1 54 710.89 Tm (let mut w: Vec<f64> = \(0..n_features\).map\(|_| rng.gen_range\(-0.5..0.5\)\).collect\(\);) Tj
+1 0 0 1 54 699.89 Tm (let mut bias: f64 = 0.0;) Tj
+1 0 0 1 54 688.89 Tm () Tj
+1 0 0 1 54 677.89 Tm (let epochs: usize = 1000;) Tj
+1 0 0 1 54 666.89 Tm (let learning_rate: f64 = 0.01;) Tj
+1 0 0 1 54 655.89 Tm (let n: usize = x_train.len\(\);) Tj
+1 0 0 1 54 644.89 Tm () Tj
+1 0 0 1 54 633.89 Tm (for _ in 0..epochs {) Tj
+1 0 0 1 54 622.89 Tm (    let mut grad_w: Vec<f64> = vec![0.0; n_features];) Tj
+1 0 0 1 54 611.89 Tm (    let mut grad_b: f64 = 0.0;) Tj
+1 0 0 1 54 600.89 Tm (    ) Tj
+1 0 0 1 54 589.89 Tm (    for i in 0..n {) Tj
+1 0 0 1 54 578.89 Tm (        let z: f64 = w.iter\(\).zip\(&x_train[i]\).map\(|\(&w_j, &x_j\)| w_j * x_j\).sum::<f64>\(\) + bias;) Tj
+1 0 0 1 54 567.89 Tm (        let pred: f64 = 1.0 / \(1.0 + \(-z\).exp\(\)\);) Tj
+1 0 0 1 54 556.89 Tm (        let error: f64 = pred - y_train[i] as f64;) Tj
+1 0 0 1 54 545.89 Tm (        grad_b += error;) Tj
+1 0 0 1 54 534.89 Tm (        for j in 0..n_features {) Tj
+1 0 0 1 54 523.89 Tm (            grad_w[j] += error * x_train[i][j];) Tj
+1 0 0 1 54 512.89 Tm (        }) Tj
+1 0 0 1 54 501.89 Tm (    }) Tj
+1 0 0 1 54 490.89 Tm (    ) Tj
+1 0 0 1 54 479.89 Tm (    for j in 0..n_features {) Tj
+1 0 0 1 54 468.89 Tm (        w[j] -= learning_rate * grad_w[j] / n as f64;) Tj
+1 0 0 1 54 457.89 Tm (    }) Tj
+1 0 0 1 54 446.89 Tm (    bias -= learning_rate * grad_b / n as f64;) Tj
+1 0 0 1 54 435.89 Tm (}) Tj
+1 0 0 1 54 424.89 Tm () Tj
+1 0 0 1 54 413.89 Tm (println!\("Model trained successfully!"\);) Tj
+1 0 0 1 54 402.89 Tm (println!\("Feature weights \(first 5\): {:?}", &w[..5]\);) Tj
+1 0 0 1 54 391.89 Tm (println!\("Bias: {:.4}", bias\);) Tj
+/F1 9 Tf
+1 0 0 1 54 380.89 Tm (Dataset shape: \(1000, 20\)) Tj
+1 0 0 1 54 369.89 Tm (Class 0: 523) Tj
+1 0 0 1 54 358.89 Tm (Class 1: 477) Tj
+1 0 0 1 54 347.89 Tm (Training set size: 800) Tj
+1 0 0 1 54 336.89 Tm (Test set size: 200) Tj
+1 0 0 1 54 325.89 Tm (Train - Class 0: 416, Class 1: 384) Tj
+1 0 0 1 54 314.89 Tm (Test - Class 0: 107, Class 1: 93) Tj
+1 0 0 1 54 303.89 Tm (Model trained successfully!) Tj
+1 0 0 1 54 292.89 Tm (Feature weights \(first 5\): [0.3232698185836966, 0.2830265380883058, 0.37185534782174756, 0.3543411501701509) Tj
+1 0 0 1 54 281.89 Tm (, 0.32106757494716354]) Tj
+1 0 0 1 54 270.89 Tm (Bias: -0.0379) Tj
+/F1 12 Tf
+1 0 0 1 54 246.89 Tm (4. Make Predictions and Evaluate) Tj
+1 0 0 1 54 234.89 Tm (Similar to sklearn's) Tj
+1 0 0 1 54 222.89 Tm (accuracy_score) Tj
+1 0 0 1 54 210.89 Tm (and) Tj
+1 0 0 1 54 198.89 Tm (classification_report) Tj
+1 0 0 1 54 186.89 Tm (.) Tj
+ET
+
+endstream
+endobj
+
+11 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 10 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+12 0 obj
+<< /Length 2659 >>
+stream
+BT
+/F3 10 Tf
+1 0 0 1 54 787.89 Tm (In [5]) Tj
+/F2 9 Tf
+1 0 0 1 54 776.89 Tm (let mut y_pred: Vec<i32> = Vec::new\(\);) Tj
+1 0 0 1 54 765.89 Tm () Tj
+1 0 0 1 54 754.89 Tm (for i in 0..x_test.len\(\) {) Tj
+1 0 0 1 54 743.89 Tm (    let z: f64 = w.iter\(\).zip\(&x_test[i]\).map\(|\(&w_j, &x_j\)| w_j * x_j\).sum::<f64>\(\) + bias;) Tj
+1 0 0 1 54 732.89 Tm (    let pred: f64 = 1.0 / \(1.0 + \(-z\).exp\(\)\);) Tj
+1 0 0 1 54 721.89 Tm (    y_pred.push\(if pred > 0.5 { 1 } else { 0 }\);) Tj
+1 0 0 1 54 710.89 Tm (}) Tj
+1 0 0 1 54 699.89 Tm () Tj
+1 0 0 1 54 688.89 Tm (let correct: usize = y_test.iter\(\).zip\(y_pred.iter\(\)\).filter\(|\(t, p\)| *t == *p\).count\(\);) Tj
+1 0 0 1 54 677.89 Tm (let accuracy: f64 = correct as f64 / y_test.len\(\) as f64;) Tj
+1 0 0 1 54 666.89 Tm () Tj
+1 0 0 1 54 655.89 Tm (println!\("Accuracy: {:.4}", accuracy\);) Tj
+1 0 0 1 54 644.89 Tm () Tj
+1 0 0 1 54 633.89 Tm (// Confusion matrix) Tj
+1 0 0 1 54 622.89 Tm (let mut cm: [[usize; 2]; 2] = [[0; 2]; 2];) Tj
+1 0 0 1 54 611.89 Tm (for i in 0..y_test.len\(\) {) Tj
+1 0 0 1 54 600.89 Tm (    cm[y_test[i] as usize][y_pred[i] as usize] += 1;) Tj
+1 0 0 1 54 589.89 Tm (}) Tj
+1 0 0 1 54 578.89 Tm () Tj
+1 0 0 1 54 567.89 Tm (println!\("\\nConfusion Matrix:"\);) Tj
+1 0 0 1 54 556.89 Tm (println!\("            Predicted"\);) Tj
+1 0 0 1 54 545.89 Tm (println!\("       |    0    |    1    |"\);) Tj
+1 0 0 1 54 534.89 Tm (println!\("Actual 0 |   {}    |   {}    |", cm[0][0], cm[0][1]\);) Tj
+1 0 0 1 54 523.89 Tm (println!\("       1 |   {}    |   {}    |", cm[1][0], cm[1][1]\);) Tj
+/F1 9 Tf
+1 0 0 1 54 512.89 Tm (Dataset shape: \(1000, 20\)) Tj
+1 0 0 1 54 501.89 Tm (Class 0: 493) Tj
+1 0 0 1 54 490.89 Tm (Class 1: 507) Tj
+1 0 0 1 54 479.89 Tm (Training set size: 800) Tj
+1 0 0 1 54 468.89 Tm (Test set size: 200) Tj
+1 0 0 1 54 457.89 Tm (Train - Class 0: 403, Class 1: 397) Tj
+1 0 0 1 54 446.89 Tm (Test - Class 0: 90, Class 1: 110) Tj
+1 0 0 1 54 435.89 Tm (Model trained successfully!) Tj
+1 0 0 1 54 424.89 Tm (Feature weights \(first 5\): [0.3128816727516656, 0.3373779887864865, 0.353864206705123, 0.3438863007283884, ) Tj
+1 0 0 1 54 413.89 Tm (0.3764166889048131]) Tj
+1 0 0 1 54 402.89 Tm (Bias: 0.0216) Tj
+1 0 0 1 54 391.89 Tm (Accuracy: 0.9900) Tj
+1 0 0 1 54 380.89 Tm () Tj
+1 0 0 1 54 369.89 Tm (Confusion Matrix:) Tj
+1 0 0 1 54 358.89 Tm (            Predicted) Tj
+1 0 0 1 54 347.89 Tm (       |    0    |    1    |) Tj
+1 0 0 1 54 336.89 Tm (Actual 0 |   90    |   0    |) Tj
+1 0 0 1 54 325.89 Tm (       1 |   2    |   108    |) Tj
+/F1 12 Tf
+1 0 0 1 54 301.89 Tm (5. Feature Importance) Tj
+1 0 0 1 54 289.89 Tm (Similar to analyzing model coefficients in sklearn.) Tj
+ET
+
+endstream
+endobj
+
+13 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 12 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+14 0 obj
+<< /Length 2467 >>
+stream
+BT
+/F3 10 Tf
+1 0 0 1 54 787.89 Tm (In [6]) Tj
+/F2 9 Tf
+1 0 0 1 54 776.89 Tm (let feature_names: Vec<String> = \(0..n_features\)) Tj
+1 0 0 1 54 765.89 Tm (    .map\(|i| format!\("feature_{}", i\)\)) Tj
+1 0 0 1 54 754.89 Tm (    .collect\(\);) Tj
+1 0 0 1 54 743.89 Tm () Tj
+1 0 0 1 54 732.89 Tm (let mut importance: Vec<\(usize, f64\)> = w.iter\(\)) Tj
+1 0 0 1 54 721.89 Tm (    .enumerate\(\)) Tj
+1 0 0 1 54 710.89 Tm (    .map\(|\(i, &w\)| \(i, w.abs\(\)\)\)) Tj
+1 0 0 1 54 699.89 Tm (    .collect\(\);) Tj
+1 0 0 1 54 688.89 Tm (importance.sort_by\(|a, b| b.1.partial_cmp\(&a.1\).unwrap\(\)\);) Tj
+1 0 0 1 54 677.89 Tm () Tj
+1 0 0 1 54 666.89 Tm (println!\("Top 10 most important features:"\);) Tj
+1 0 0 1 54 655.89 Tm (for \(i, \(idx, imp\)\) in importance.iter\(\).take\(10\).enumerate\(\) {) Tj
+1 0 0 1 54 644.89 Tm (    println!\("  {}. {}: {:.4}", i + 1, feature_names[*idx], imp\);) Tj
+1 0 0 1 54 633.89 Tm (}) Tj
+/F1 9 Tf
+1 0 0 1 54 622.89 Tm (Dataset shape: \(1000, 20\)) Tj
+1 0 0 1 54 611.89 Tm (Class 0: 506) Tj
+1 0 0 1 54 600.89 Tm (Class 1: 494) Tj
+1 0 0 1 54 589.89 Tm (Training set size: 800) Tj
+1 0 0 1 54 578.89 Tm (Test set size: 200) Tj
+1 0 0 1 54 567.89 Tm (Train - Class 0: 395, Class 1: 405) Tj
+1 0 0 1 54 556.89 Tm (Test - Class 0: 111, Class 1: 89) Tj
+1 0 0 1 54 545.89 Tm (Model trained successfully!) Tj
+1 0 0 1 54 534.89 Tm (Feature weights \(first 5\): [0.35736989069631947, 0.33457614301138733, 0.3428920595601023, 0.370853367516973) Tj
+1 0 0 1 54 523.89 Tm (5, 0.294536654441374]) Tj
+1 0 0 1 54 512.89 Tm (Bias: 0.0260) Tj
+1 0 0 1 54 501.89 Tm (Accuracy: 0.9900) Tj
+1 0 0 1 54 490.89 Tm () Tj
+1 0 0 1 54 479.89 Tm (Confusion Matrix:) Tj
+1 0 0 1 54 468.89 Tm (            Predicted) Tj
+1 0 0 1 54 457.89 Tm (       |    0    |    1    |) Tj
+1 0 0 1 54 446.89 Tm (Actual 0 |   111    |   0    |) Tj
+1 0 0 1 54 435.89 Tm (       1 |   2    |   87    |) Tj
+1 0 0 1 54 424.89 Tm (Top 10 most important features:) Tj
+1 0 0 1 54 413.89 Tm (  1. feature_3: 0.3709) Tj
+1 0 0 1 54 402.89 Tm (  2. feature_0: 0.3574) Tj
+1 0 0 1 54 391.89 Tm (  3. feature_7: 0.3488) Tj
+1 0 0 1 54 380.89 Tm (  4. feature_15: 0.3477) Tj
+1 0 0 1 54 369.89 Tm (  5. feature_13: 0.3474) Tj
+1 0 0 1 54 358.89 Tm (  6. feature_2: 0.3429) Tj
+1 0 0 1 54 347.89 Tm (  7. feature_6: 0.3388) Tj
+1 0 0 1 54 336.89 Tm (  8. feature_1: 0.3346) Tj
+1 0 0 1 54 325.89 Tm (  9. feature_8: 0.3338) Tj
+1 0 0 1 54 314.89 Tm (  10. feature_5: 0.3335) Tj
+1 0 0 1 54 303.89 Tm (\(\)) Tj
+ET
+
+endstream
+endobj
+
+15 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 14 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+16 0 obj
+<< /Length 5031 >>
+stream
+BT
+/F3 10 Tf
+1 0 0 1 54 787.89 Tm (In [7]) Tj
+/F2 9 Tf
+1 0 0 1 54 776.89 Tm (use plotters::prelude::*;) Tj
+1 0 0 1 54 765.89 Tm () Tj
+1 0 0 1 54 754.89 Tm (let mut top_features: Vec<\(String, f64\)> = importance) Tj
+1 0 0 1 54 743.89 Tm (    .iter\(\)) Tj
+1 0 0 1 54 732.89 Tm (    .take\(10\)) Tj
+1 0 0 1 54 721.89 Tm (    .map\(|\(index, weight\)| \(feature_names[*index].clone\(\), *weight\)\)) Tj
+1 0 0 1 54 710.89 Tm (    .collect\(\);) Tj
+1 0 0 1 54 699.89 Tm (// Plotters draws the first category at the bottom, so reverse the sorted) Tj
+1 0 0 1 54 688.89 Tm (// list to place the most important feature at the top of the chart.) Tj
+1 0 0 1 54 677.89 Tm (top_features.reverse\(\);) Tj
+1 0 0 1 54 666.89 Tm (let max_importance = top_features) Tj
+1 0 0 1 54 655.89 Tm (    .iter\(\)) Tj
+1 0 0 1 54 644.89 Tm (    .map\(|\(_, weight\)| *weight\)) Tj
+1 0 0 1 54 633.89 Tm (    .fold\(0.0_f64, f64::max\)) Tj
+1 0 0 1 54 622.89 Tm (    .max\(1e-9\);) Tj
+1 0 0 1 54 611.89 Tm () Tj
+1 0 0 1 54 600.89 Tm (println!\("\\n=== Feature Importance Plot ==="\);) Tj
+1 0 0 1 54 589.89 Tm () Tj
+1 0 0 1 54 578.89 Tm (let figure = plotters::evcxr::evcxr_figure\(\(720, 420\), |root| {) Tj
+1 0 0 1 54 567.89 Tm (    root.fill\(&WHITE\)?;) Tj
+1 0 0 1 54 556.89 Tm (    let mut chart = ChartBuilder::on\(&root\)) Tj
+1 0 0 1 54 545.89 Tm (        .caption\("Top 10 Feature Importance", \("sans-serif", 24\)\)) Tj
+1 0 0 1 54 534.89 Tm (        .margin\(12\)) Tj
+1 0 0 1 54 523.89 Tm (        .x_label_area_size\(45\)) Tj
+1 0 0 1 54 512.89 Tm (        .y_label_area_size\(110\)) Tj
+1 0 0 1 54 501.89 Tm (        .build_cartesian_2d\(0.0_f64..\(max_importance * 1.1\), 0..top_features.len\(\)\)?;) Tj
+1 0 0 1 54 490.89 Tm () Tj
+1 0 0 1 54 479.89 Tm (    chart) Tj
+1 0 0 1 54 468.89 Tm (        .configure_mesh\(\)) Tj
+1 0 0 1 54 457.89 Tm (        .x_desc\("Absolute weight"\)) Tj
+1 0 0 1 54 446.89 Tm (        .y_desc\("Feature"\)) Tj
+1 0 0 1 54 435.89 Tm (        .y_label_formatter\(&|index| {) Tj
+1 0 0 1 54 424.89 Tm (            top_features) Tj
+1 0 0 1 54 413.89 Tm (                .get\(*index\)) Tj
+1 0 0 1 54 402.89 Tm (                .map\(|\(name, _\)| name.clone\(\)\)) Tj
+1 0 0 1 54 391.89 Tm (                .unwrap_or_default\(\)) Tj
+1 0 0 1 54 380.89 Tm (        }\)) Tj
+1 0 0 1 54 369.89 Tm (        .x_labels\(6\)) Tj
+1 0 0 1 54 358.89 Tm (        .y_labels\(top_features.len\(\)\)) Tj
+1 0 0 1 54 347.89 Tm (        .draw\(\)?;) Tj
+1 0 0 1 54 336.89 Tm () Tj
+1 0 0 1 54 325.89 Tm (    chart.draw_series\(top_features.iter\(\).enumerate\(\).map\(|\(index, \(_, weight\)\)| {) Tj
+1 0 0 1 54 314.89 Tm (        Rectangle::new\() Tj
+1 0 0 1 54 303.89 Tm (            [\(0.0, index\), \(*weight, index + 1\)],) Tj
+1 0 0 1 54 292.89 Tm (            BLUE.mix\(0.65\).filled\(\),) Tj
+1 0 0 1 54 281.89 Tm (        \)) Tj
+1 0 0 1 54 270.89 Tm (    }\)\)?;) Tj
+1 0 0 1 54 259.89 Tm () Tj
+1 0 0 1 54 248.89 Tm (    Ok\(\(\)\)) Tj
+1 0 0 1 54 237.89 Tm (}\);) Tj
+1 0 0 1 54 226.89 Tm () Tj
+1 0 0 1 54 215.89 Tm (figure.evcxr_display\(\);) Tj
+/F1 9 Tf
+1 0 0 1 54 204.89 Tm (Dataset shape: \(1000, 20\)) Tj
+1 0 0 1 54 193.89 Tm (Class 0: 503) Tj
+1 0 0 1 54 182.89 Tm (Class 1: 497) Tj
+1 0 0 1 54 171.89 Tm (Training set size: 800) Tj
+1 0 0 1 54 160.89 Tm (Test set size: 200) Tj
+1 0 0 1 54 149.89 Tm (Train - Class 0: 395, Class 1: 405) Tj
+1 0 0 1 54 138.89 Tm (Test - Class 0: 108, Class 1: 92) Tj
+1 0 0 1 54 127.88999999999999 Tm (Model trained successfully!) Tj
+1 0 0 1 54 116.88999999999999 Tm (Feature weights \(first 5\): [0.3217576513043745, 0.33310742204780963, 0.3287711160149271, 0.3538047019203475) Tj
+1 0 0 1 54 105.88999999999999 Tm (, 0.34642548062337203]) Tj
+1 0 0 1 54 94.88999999999999 Tm (Bias: -0.0086) Tj
+1 0 0 1 54 83.88999999999999 Tm (Accuracy: 0.9850) Tj
+1 0 0 1 54 72.88999999999999 Tm () Tj
+1 0 0 1 54 61.889999999999986 Tm (Confusion Matrix:) Tj
+1 0 0 1 54 50.889999999999986 Tm (            Predicted) Tj
+1 0 0 1 54 39.889999999999986 Tm (       |    0    |    1    |) Tj
+1 0 0 1 54 28.889999999999986 Tm (Actual 0 |   106    |   2    |) Tj
+1 0 0 1 54 17.889999999999986 Tm (       1 |   1    |   91    |) Tj
+1 0 0 1 54 6.889999999999986 Tm (Top 10 most important features:) Tj
+1 0 0 1 54 -4.110000000000014 Tm (  1. feature_10: 0.3773) Tj
+1 0 0 1 54 -15.110000000000014 Tm (  2. feature_6: 0.3643) Tj
+1 0 0 1 54 -26.110000000000014 Tm (  3. feature_3: 0.3538) Tj
+1 0 0 1 54 -37.110000000000014 Tm (  4. feature_17: 0.3486) Tj
+1 0 0 1 54 -48.110000000000014 Tm (  5. feature_15: 0.3469) Tj
+1 0 0 1 54 -59.110000000000014 Tm (  6. feature_4: 0.3464) Tj
+1 0 0 1 54 -70.11000000000001 Tm (  7. feature_5: 0.3458) Tj
+1 0 0 1 54 -81.11000000000001 Tm (  8. feature_19: 0.3388) Tj
+1 0 0 1 54 -92.11000000000001 Tm (  9. feature_14: 0.3387) Tj
+1 0 0 1 54 -103.11000000000001 Tm (  10. feature_7: 0.3368) Tj
+1 0 0 1 54 -114.11000000000001 Tm (\(\)) Tj
+1 0 0 1 54 -125.11000000000001 Tm () Tj
+1 0 0 1 54 -136.11 Tm (=== Feature Importance Plot ===) Tj
+1 0 0 1 54 -147.11 Tm ([MIME image: image/svg+xml, 12031 bytes]) Tj
+ET
+
+endstream
+endobj
+
+17 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 16 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+18 0 obj
+<< /Length 1329 >>
+stream
+BT
+/F1 12 Tf
+1 0 0 1 54 787.89 Tm (Summary) Tj
+1 0 0 1 54 775.89 Tm (This notebook demonstrated:) Tj
+1 0 0 1 54 763.89 Tm (Synthetic data generation \(like) Tj
+1 0 0 1 54 751.89 Tm (make_classification) Tj
+1 0 0 1 54 739.89 Tm (\)) Tj
+1 0 0 1 54 727.89 Tm (Train/test split \(like) Tj
+1 0 0 1 54 715.89 Tm (train_test_split) Tj
+1 0 0 1 54 703.89 Tm (\)) Tj
+1 0 0 1 54 691.89 Tm (Logistic regression \(like) Tj
+1 0 0 1 54 679.89 Tm (LogisticRegression) Tj
+1 0 0 1 54 667.89 Tm (\)) Tj
+1 0 0 1 54 655.89 Tm (Model evaluation with accuracy and confusion matrix) Tj
+1 0 0 1 54 643.89 Tm (Feature importance analysis \(like model coefficients\)) Tj
+1 0 0 1 54 631.89 Tm (Note:) Tj
+1 0 0 1 54 619.89 Tm (This is a simplified implementation using the standard library. A full implementation would use:) Tj
+1 0 0 1 54 607.89 Tm (polars) Tj
+1 0 0 1 54 595.89 Tm (for DataFrame operations \(similar to pandas\)) Tj
+1 0 0 1 54 583.89 Tm (ndarray) Tj
+1 0 0 1 54 571.89 Tm (for numerical arrays \(similar to numpy\)) Tj
+1 0 0 1 54 559.89 Tm (linfa) Tj
+1 0 0 1 54 547.89 Tm (for ML algorithms \(similar to scikit-learn\)) Tj
+1 0 0 1 54 535.89 Tm (plotters) Tj
+1 0 0 1 54 523.89 Tm (for visualization \(similar to matplotlib\)) Tj
+1 0 0 1 54 511.89 Tm (These libraries would be added as dependencies in a real Mars project's Cargo.toml.) Tj
+ET
+
+endstream
+endobj
+
+19 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 18 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+20 0 obj
+<< /Type /Catalog /Pages 5 0 R >>
+endobj
+
+xref
+0 21
+
+0000000000 65535 f 
+0000000015 00000 n 
+0000000086 00000 n 
+0000000155 00000 n 
+0000000231 00000 n 
+0000000317 00000 n 
+0000000416 00000 n 
+0000003948 00000 n 
+0000004059 00000 n 
+0000005848 00000 n 
+0000005959 00000 n 
+0000009075 00000 n 
+0000009188 00000 n 
+0000011901 00000 n 
+0000012014 00000 n 
+0000014535 00000 n 
+0000014648 00000 n 
+0000019733 00000 n 
+0000019846 00000 n 
+0000021229 00000 n 
+0000021342 00000 n 
+trailer
+<< /Size 21 /Root 20 0 R >>
+startxref
+21393
+%%EOF

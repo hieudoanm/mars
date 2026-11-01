@@ -1,0 +1,70 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+
+4 0 obj
+<< /ProcSet [/PDF /Text] /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >>
+endobj
+
+5 0 obj
+<< /Type /Pages /Kids [7 0 R] /Count 1 >>
+endobj
+
+6 0 obj
+<< /Length 370 >>
+stream
+BT
+/F3 18 Tf
+1 0 0 1 54 787.89 Tm (Getting started with Mars) Tj
+/F1 12 Tf
+1 0 0 1 54 771.89 Tm (Welcome to Mars) Tj
+/F3 10 Tf
+1 0 0 1 54 747.89 Tm (In [1]) Tj
+/F2 9 Tf
+1 0 0 1 54 736.89 Tm (let numbers = vec![1, 2, 3, 4, 5];) Tj
+/F3 10 Tf
+1 0 0 1 54 712.89 Tm (In [2]) Tj
+/F2 9 Tf
+1 0 0 1 54 701.89 Tm (numbers) Tj
+/F1 9 Tf
+1 0 0 1 54 690.89 Tm ([1, 2, 3, 4, 5]) Tj
+ET
+
+endstream
+endobj
+
+7 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 6 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+8 0 obj
+<< /Type /Catalog /Pages 5 0 R >>
+endobj
+
+xref
+0 9
+
+0000000000 65535 f 
+0000000015 00000 n 
+0000000086 00000 n 
+0000000155 00000 n 
+0000000231 00000 n 
+0000000317 00000 n 
+0000000375 00000 n 
+0000000797 00000 n 
+0000000908 00000 n 
+trailer
+<< /Size 9 /Root 8 0 R >>
+startxref
+958
+%%EOF

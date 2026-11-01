@@ -1,0 +1,93 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+
+4 0 obj
+<< /ProcSet [/PDF /Text] /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >>
+endobj
+
+5 0 obj
+<< /Type /Pages /Kids [7 0 R] /Count 1 >>
+endobj
+
+6 0 obj
+<< /Length 1734 >>
+stream
+BT
+/F3 18 Tf
+1 0 0 1 54 787.89 Tm (Plotting with Plotters) Tj
+/F1 12 Tf
+1 0 0 1 54 771.89 Tm (Plotting with Plotters) Tj
+1 0 0 1 54 759.89 Tm (Plotters renders vector figures for notebook output, similar to matplotlib in Jupyter. Mars displays the SVG MIME representation directly.) Tj
+/F3 10 Tf
+1 0 0 1 54 735.89 Tm (In [1]) Tj
+/F2 9 Tf
+1 0 0 1 54 724.89 Tm (use plotters::prelude::*;) Tj
+/F3 10 Tf
+1 0 0 1 54 700.89 Tm (In [2]) Tj
+/F2 9 Tf
+1 0 0 1 54 689.89 Tm (let figure = plotters::evcxr::evcxr_figure\(\(640, 480\), |root| {) Tj
+1 0 0 1 54 678.89 Tm (    root.fill\(&WHITE\)?;) Tj
+1 0 0 1 54 667.89 Tm () Tj
+1 0 0 1 54 656.89 Tm (    let mut chart = ChartBuilder::on\(&root\)) Tj
+1 0 0 1 54 645.89 Tm (        .caption\("Sine wave", \("sans-serif", 28\)\)) Tj
+1 0 0 1 54 634.89 Tm (        .margin\(12\)) Tj
+1 0 0 1 54 623.89 Tm (        .x_label_area_size\(30\)) Tj
+1 0 0 1 54 612.89 Tm (        .y_label_area_size\(36\)) Tj
+1 0 0 1 54 601.89 Tm (        .build_cartesian_2d\(0.0_f64..10.0, -1.0_f64..1.0\)?;) Tj
+1 0 0 1 54 590.89 Tm () Tj
+1 0 0 1 54 579.89 Tm (    chart.configure_mesh\(\).draw\(\)?;) Tj
+1 0 0 1 54 568.89 Tm (    chart.draw_series\(LineSeries::new\() Tj
+1 0 0 1 54 557.89 Tm (        \(0..=200\).map\(|step| {) Tj
+1 0 0 1 54 546.89 Tm (            let x = step as f64 / 20.0;) Tj
+1 0 0 1 54 535.89 Tm (            \(x, x.sin\(\)\)) Tj
+1 0 0 1 54 524.89 Tm (        }\),) Tj
+1 0 0 1 54 513.89 Tm (        &RED,) Tj
+1 0 0 1 54 502.89 Tm (    \)\)?;) Tj
+1 0 0 1 54 491.89 Tm () Tj
+1 0 0 1 54 480.89 Tm (    Ok\(\(\)\)) Tj
+1 0 0 1 54 469.89 Tm (}\);) Tj
+1 0 0 1 54 458.89 Tm () Tj
+1 0 0 1 54 447.89 Tm (figure.evcxr_display\(\);) Tj
+/F1 9 Tf
+1 0 0 1 54 436.89 Tm ([MIME image: image/svg+xml, 27686 bytes]) Tj
+ET
+
+endstream
+endobj
+
+7 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 6 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+8 0 obj
+<< /Type /Catalog /Pages 5 0 R >>
+endobj
+
+xref
+0 9
+
+0000000000 65535 f 
+0000000015 00000 n 
+0000000086 00000 n 
+0000000155 00000 n 
+0000000231 00000 n 
+0000000317 00000 n 
+0000000375 00000 n 
+0000002162 00000 n 
+0000002273 00000 n 
+trailer
+<< /Size 9 /Root 8 0 R >>
+startxref
+2323
+%%EOF

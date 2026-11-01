@@ -1,0 +1,76 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+
+4 0 obj
+<< /ProcSet [/PDF /Text] /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >>
+endobj
+
+5 0 obj
+<< /Type /Pages /Kids [7 0 R] /Count 1 >>
+endobj
+
+6 0 obj
+<< /Length 868 >>
+stream
+BT
+/F3 18 Tf
+1 0 0 1 54 787.89 Tm (Linear regression) Tj
+/F1 12 Tf
+1 0 0 1 54 771.89 Tm (Linear regression) Tj
+1 0 0 1 54 759.89 Tm (Compute a simple least-squares slope.) Tj
+/F3 10 Tf
+1 0 0 1 54 735.89 Tm (In [1]) Tj
+/F2 9 Tf
+1 0 0 1 54 724.89 Tm (let x = vec![1.0_f64, 2.0, 3.0, 4.0];) Tj
+1 0 0 1 54 713.89 Tm (let y = vec![2.0_f64, 4.1, 5.9, 8.2];) Tj
+/F3 10 Tf
+1 0 0 1 54 689.89 Tm (In [2]) Tj
+/F2 9 Tf
+1 0 0 1 54 678.89 Tm (let x_mean = x.iter\(\).sum::<f64>\(\) / x.len\(\) as f64;) Tj
+1 0 0 1 54 667.89 Tm (let y_mean = y.iter\(\).sum::<f64>\(\) / y.len\(\) as f64;) Tj
+1 0 0 1 54 656.89 Tm (let slope = x.iter\(\).zip\(&y\).map\(|\(x, y\)| \(x - x_mean\) * \(y - y_mean\)\).sum::<f64>\(\) / x.iter\(\).map\(|x| \(x -) Tj
+1 0 0 1 54 645.89 Tm ( x_mean\).powi\(2\)\).sum::<f64>\(\);) Tj
+1 0 0 1 54 634.89 Tm (slope) Tj
+/F1 9 Tf
+1 0 0 1 54 623.89 Tm (2.04) Tj
+ET
+
+endstream
+endobj
+
+7 0 obj
+<< /Type /Page /Parent 5 0 R /Resources 4 0 R /Contents 6 0 R /MediaBox [0 0 595.28 841.89] >>
+endobj
+
+8 0 obj
+<< /Type /Catalog /Pages 5 0 R >>
+endobj
+
+xref
+0 9
+
+0000000000 65535 f 
+0000000015 00000 n 
+0000000086 00000 n 
+0000000155 00000 n 
+0000000231 00000 n 
+0000000317 00000 n 
+0000000375 00000 n 
+0000001295 00000 n 
+0000001406 00000 n 
+trailer
+<< /Size 9 /Root 8 0 R >>
+startxref
+1456
+%%EOF
