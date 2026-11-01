@@ -16,6 +16,6 @@
     "vscode:package": "turbo run package --filter=@mars/vscode"
   },
   "devDependencies": {
-    "turbo": "^2.5.6"
+    "turbo": "2.11.10"
   }
 }
