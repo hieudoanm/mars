@@ -10,7 +10,7 @@ name = "mars_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.5.0", features = [] }
+tauri-build = { version = "=2.7.4", features = [] }
 
 [dependencies]
 mars-kernel = { path = "../../../crates/mars-kernel" }
@@ -18,8 +18,8 @@ mars-document = { path = "../../../crates/mars-document" }
 mars-protocol = { path = "../../../crates/mars-protocol" }
 serde.workspace = true
 serde_json.workspace = true
-tauri = { version = "2.8.5", features = [] }
-tauri-plugin-dialog = "2.4.0"
+tauri = { version = "=2.12.5", features = [] }
+tauri-plugin-dialog = "=2.8.4"
 thiserror.workspace = true
 
 [features]

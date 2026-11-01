@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/hieudoanm/mars"
   },
-  "engines": { "vscode": "^1.85.0" },
+  "engines": { "vscode": "1.144.0" },
   "categories": ["Programming Languages", "Notebooks"],
   "activationEvents": ["onLanguage:mars", "onCommand:mars.exportHtml", "onCommand:mars.preview", "onCommand:mars.runNotebook", "onCommand:mars.openCell"],
   "main": "./out/extension.js",
@@ -65,9 +65,9 @@
     "package": "npm run compile && vsce package"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/vscode": "^1.85.0",
-    "typescript": "^5.9.3",
-    "@vscode/vsce": "^3.6.0"
+    "@types/node": "22.20.5",
+    "@types/vscode": "1.144.0",
+    "typescript": "5.9.3",
+    "@vscode/vsce": "3.9.2"
   }
 }
