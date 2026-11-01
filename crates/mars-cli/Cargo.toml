@@ -1,0 +1,25 @@
+[package]
+name = "mars"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "mars"
+path = "src/main.rs"
+
+[dependencies]
+mars-core = { path = "../mars-core" }
+mars-document = { path = "../mars-document" }
+mars-runtime = { path = "../mars-runtime" }
+mars-jupyter = { path = "../mars-jupyter" }
+mars-renderer = { path = "../mars-renderer" }
+mars-kernel = { path = "../mars-kernel" }
+mars-mcp = { path = "../mars-mcp" }
+mars-protocol = { path = "../mars-protocol" }
+serde.workspace = true
+serde_json.workspace = true
+
+[features]
+experimental-evcxr = ["mars-kernel/experimental-evcxr"]

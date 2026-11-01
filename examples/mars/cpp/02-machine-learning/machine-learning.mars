@@ -1,0 +1,34 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "C++ Machine Learning with Eigen",
+    "language": "cpp",
+    "dependencies": {
+      "eigen": "3.4.0"
+    }
+  },
+  "cells": [
+    {
+      "id": "intro",
+      "cell_type": "markdown",
+      "source": "# C++ Machine Learning with Eigen\n\nUsing the Eigen library for numerical computing.",
+      "metadata": {}
+    },
+    {
+      "id": "data",
+      "cell_type": "code",
+      "source": "#include <iostream>\n#include <Eigen/Dense>\n\nEigen::VectorXd x(4);\nx << 1.0, 2.0, 3.0, 4.0;\n\nEigen::VectorXd y(4);\ny << 2.0, 4.1, 5.9, 8.2;\n\nstd::cout << \"x: \" << x.transpose() << std::endl;\nstd::cout << \"y: \" << y.transpose() << std::endl;",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "slope",
+      "cell_type": "code",
+      "source": "// Simple linear regression: y = mx + b\nEigen::VectorXd ones = Eigen::VectorXd::Ones(x.size());\nEigen::MatrixXd A(x.size(), 2);\nA.col(0) = x;\nA.col(1) = ones;\n\nEigen::VectorXd coefficients = A.householderQr().solve(y);\ndouble slope = coefficients(0);\ndouble intercept = coefficients(1);\n\nstd::cout << \"Slope: \" << slope << std::endl;\nstd::cout << \"Intercept: \" << intercept << std::endl;",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[package]
+name = "mars-lsp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Minimal rust-analyzer LSP client for Mars notebook sessions"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+mars-runtime = { path = "../mars-runtime" }

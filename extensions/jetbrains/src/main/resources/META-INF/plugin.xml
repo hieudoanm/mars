@@ -1,0 +1,93 @@
+<idea-plugin>
+    <id>com.mars.idea</id>
+    <name>Mars Notebooks</name>
+    <vendor>project-mars</vendor>
+    <description><![CDATA[
+        Mars notebook (.mars) support for JetBrains IDEs.
+
+        Provides the .mars file type with JSON-aware highlighting, actions to
+        run/export/inspect notebooks through the Mars CLI, cell execution via
+        `mars kernel serve`, and a Mars Kernel tool window showing session
+        status and live variables.
+
+        Requires the `mars` CLI on PATH (configurable in Settings → Tools →
+        Mars).
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.json</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+            name="Mars Notebook"
+            implementationClass="com.mars.idea.MarsFileType"
+            fieldName="MARS_FILE_TYPE"
+            language="JSON"
+            extensions="mars"
+            description="Mars notebook"
+            defaultExtension="mars"/>
+
+        <applicationService
+            serviceImplementation="com.mars.idea.MarsSettings"/>
+        <applicationService
+            serviceImplementation="com.mars.idea.kernel.MarsKernelManager"/>
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.mars.idea.MarsSettingsConfigurable"
+            id="com.mars.idea.settings"
+            displayName="Mars"/>
+        <toolWindow
+            id="Mars Kernel"
+            anchor="right"
+            factoryClass="com.mars.idea.ui.MarsToolWindowFactory"
+            icon="AllIcons.FileTypes.Json"/>
+    </extensions>
+
+    <actions>
+        <group id="Mars" text="Mars" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <action id="Mars.NewNotebook" class="com.mars.idea.actions.NewNotebookAction"
+                    text="New Mars Notebook" description="Create a new .mars notebook">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt N"/>
+            </action>
+            <action id="Mars.RunNotebook" class="com.mars.idea.actions.RunNotebookAction"
+                    text="Run Notebook" description="Execute all cells with `mars run`">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
+            </action>
+            <action id="Mars.ExecuteCell" class="com.mars.idea.actions.ExecuteCellAction"
+                    text="Execute Cell at Caret" description="Execute the .mars cell under the caret">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt ENTER"/>
+            </action>
+            <action id="Mars.ExecuteAllCells" class="com.mars.idea.actions.ExecuteAllCellsAction"
+                    text="Execute All Cells" description="Run all code cells in order"/>
+            <action id="Mars.NextCell" class="com.mars.idea.actions.NextCellAction"
+                    text="Next Cell" description="Move caret to the next cell">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt DOWN"/>
+            </action>
+            <action id="Mars.PreviousCell" class="com.mars.idea.actions.PreviousCellAction"
+                    text="Previous Cell" description="Move caret to the previous cell">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt UP"/>
+            </action>
+            <action id="Mars.DiagnoseNotebook" class="com.mars.idea.actions.DiagnoseNotebookAction"
+                    text="Check Notebook" description="Compile-check all code cells"/>
+            <action id="Mars.SendKernelInput" class="com.mars.idea.actions.SendKernelInputAction"
+                    text="Send Input to Kernel" description="Write a line to the running kernel's stdin"/>
+            <action id="Mars.CreateCheckpoint" class="com.mars.idea.actions.CreateCheckpointAction"
+                    text="Create Checkpoint" description="Snapshot the notebook file"/>
+            <action id="Mars.RestoreCheckpoint" class="com.mars.idea.actions.RestoreCheckpointAction"
+                    text="Restore Checkpoint" description="Restore a checkpoint snapshot"/>
+            <action id="Mars.InterruptExecution" class="com.mars.idea.actions.InterruptExecutionAction"
+                    text="Interrupt Execution" description="Cancel the in-flight kernel execution"/>
+            <action id="Mars.RestartKernel" class="com.mars.idea.actions.RestartKernelAction"
+                    text="Restart Kernel" description="Reset the Mars kernel session"/>
+            <action id="Mars.ExportHtml" class="com.mars.idea.actions.ExportHtmlAction"
+                    text="Export to HTML" description="Export the notebook to standalone HTML"/>
+            <action id="Mars.ExportMarkdown" class="com.mars.idea.actions.ExportMarkdownAction"
+                    text="Export to Markdown" description="Export the notebook to Markdown"/>
+            <action id="Mars.ExportIpynb" class="com.mars.idea.actions.ExportIpynbAction"
+                    text="Export to Jupyter (.ipynb)" description="Export the notebook to .ipynb"/>
+            <action id="Mars.InspectNotebook" class="com.mars.idea.actions.InspectNotebookAction"
+                    text="Inspect Notebook" description="Show notebook metadata via `mars inspect`"/>
+        </group>
+    </actions>
+</idea-plugin>

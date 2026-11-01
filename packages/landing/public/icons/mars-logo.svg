@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Mars logo</title>
+  <desc id="desc">A warm red planet with a white M-shaped notebook mark.</desc>
+  <defs>
+    <radialGradient id="planet" cx="34%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#ff8a5c"/>
+      <stop offset=".48" stop-color="#e34d3d"/>
+      <stop offset="1" stop-color="#9f2631"/>
+    </radialGradient>
+    <clipPath id="planetClip">
+      <circle cx="256" cy="256" r="256"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#planetClip)">
+    <circle cx="256" cy="256" r="256" fill="url(#planet)"/>
+    <g fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
+      <path d="M-40 187c146-81 319-99 560-27" stroke-width="32"/>
+      <path d="M-18 389c132-70 306-97 515-56" stroke-width="23"/>
+      <path d="M117 -15c-45 99-45 222 20 353s173 211 313 238" stroke-width="20"/>
+      <path d="M-4 281c92 31 200 34 317 5 112-27 207-81 272-159" stroke-width="14"/>
+    </g>
+    <path d="M130 361V159l126 124 126-124v202" fill="none" stroke="#fff7ed" stroke-width="49" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M130 361V159l126 124 126-124v202" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

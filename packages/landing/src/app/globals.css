@@ -1,0 +1,339 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #0b1018;
+  --color-bg-alt: #0b1118;
+  --color-panel: #111923;
+  --color-panel-2: #151e2a;
+  --color-panel-3: #111a25;
+  --color-panel-4: #0e151f;
+  --color-panel-5: #0d141e;
+  --color-surface-1: #151d28;
+  --color-surface-2: #151f2d;
+  --color-surface-3: #182634;
+  --color-surface-4: #1b2a38;
+  --color-surface-5: #141d28e8;
+  --color-surface-6: #0d141d;
+  --color-ink: #f7f1e8;
+  --color-ink-2: #e6ebf2;
+  --color-ink-3: #d8dde5;
+  --color-ink-4: #fff7ed;
+  --color-ink-5: #fff3e7;
+  --color-muted: #9da8b7;
+  --color-muted-2: #8b96a6;
+  --color-muted-3: #77869a;
+  --color-muted-4: #738398;
+  --color-muted-5: #718096;
+  --color-muted-6: #7e8da0;
+  --color-muted-7: #7f8c9c;
+  --color-muted-8: #7f8da0;
+  --color-faint: #657184;
+  --color-faint-2: #6d7a8a;
+  --color-faint-3: #6e7c8f;
+  --color-faint-4: #566578;
+  --color-orange: #f06b4d;
+  --color-orange-2: #ffac70;
+  --color-orange-3: #ff7955;
+  --color-orange-4: #ff8c5a;
+  --color-orange-5: #f39467;
+  --color-orange-6: #f5986d;
+  --color-orange-7: #ffb478;
+  --color-orange-8: #c35f4a;
+  --color-line: #24303d;
+  --color-line-2: #1e2b38;
+  --color-line-3: #283646;
+  --color-line-4: #2b3a4a;
+  --color-line-5: #304052;
+  --color-line-6: #344455;
+  --color-line-7: #354556;
+  --color-line-8: #3b4857;
+  --color-line-9: #263341;
+  --color-mint: #76d5a5;
+  --color-mint-2: #75d6a5;
+  --color-mint-3: #72d3a2;
+  --color-mint-4: #81dcae;
+  --color-mint-5: #214e3d;
+  --color-mint-6: #83d6ae;
+  --color-blue-1: #77b7ff;
+  --color-violet-1: #d39cff;
+  --color-sand-1: #ffc07b;
+  --color-sand-2: #c4cbd5;
+  --color-tool-1: #285541;
+  --color-tool-2: #384a75;
+  --color-tool-3: #9be0bc;
+  --color-tool-4: #b1caff;
+  --color-tool-5: #b9523d;
+  --color-gold-1: #d39b55;
+  --color-code: #ffb477;
+
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, monospace;
+  --font-serif: Georgia, serif;
+
+  --font-weight-semibold-plus: 620;
+  --font-weight-bold-plus: 650;
+  --font-weight-heavy: 750;
+
+  --text-2xs: 0.5625rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs-plus: 0.6875rem;
+  --text-xs-plus--line-height: 1rem;
+  --text-sm-plus: 0.8125rem;
+  --text-sm-plus--line-height: 1.25rem;
+  --text-md-plus: 1.0625rem;
+  --text-md-plus--line-height: 1.5rem;
+  --text-lg-plus: 1.1875rem;
+  --text-lg-plus--line-height: 1.75rem;
+  --text-hero: clamp(3.375rem, 7vw, 5.75rem);
+  --text-hero--line-height: 0.96;
+  --text-hero--letter-spacing: -0.075em;
+  --text-hero-md: 4rem;
+  --text-hero-md--line-height: 0.96;
+  --text-hero-md--letter-spacing: -0.075em;
+  --text-hero-sm: 3.25rem;
+  --text-hero-sm--line-height: 0.96;
+  --text-hero-sm--letter-spacing: -0.075em;
+  --text-display: clamp(2.375rem, 5vw, 3.875rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.065em;
+  --text-display-sm: 2.625rem;
+  --text-display-sm--line-height: 1.02;
+  --text-display-sm--letter-spacing: -0.065em;
+  --text-page: clamp(2.375rem, 7vw, 3.875rem);
+  --text-page--line-height: 1.02;
+  --text-page--letter-spacing: -0.075em;
+
+  --tracking-tightest: -0.075em;
+  --tracking-tighter-plus: -0.065em;
+  --tracking-tight-plus: -0.04em;
+  --tracking-snug: -0.035em;
+  --tracking-brand: -0.03em;
+  --tracking-caps: 0.08em;
+  --tracking-caps-sm: 0.12em;
+  --tracking-caps-md: 0.15em;
+  --tracking-caps-lg: 0.16em;
+  --tracking-caps-xl: 0.18em;
+
+  --spacing-4\.5: 1.125rem;
+  --spacing-5\.5: 1.375rem;
+  --spacing-7\.5: 1.875rem;
+  --spacing-13: 3.25rem;
+  --spacing-15: 3.75rem;
+  --spacing-18: 4.5rem;
+  --spacing-18\.5: 4.625rem;
+  --spacing-19: 4.75rem;
+  --spacing-22: 5.5rem;
+  --spacing-23: 5.75rem;
+  --spacing-25: 6.25rem;
+  --spacing-26: 6.5rem;
+  --spacing-27: 6.75rem;
+  --spacing-30: 7.5rem;
+  --spacing-33: 8.25rem;
+  --spacing-34: 8.5rem;
+  --spacing-36\.5: 9.125rem;
+  --spacing-38: 9.5rem;
+  --spacing-55: 13.75rem;
+  --spacing-70: 17.5rem;
+  --spacing-75: 18.75rem;
+  --spacing-82: 20.5rem;
+  --spacing-95: 23.75rem;
+  --spacing-98: 24.5rem;
+  --spacing-102: 25.5rem;
+  --spacing-105: 26.25rem;
+  --spacing-120: 30rem;
+  --spacing-130: 32.5rem;
+  --spacing-132: 33rem;
+  --spacing-138: 34.5rem;
+  --spacing-148: 37rem;
+  --spacing-150: 37.5rem;
+  --spacing-160: 40rem;
+  --spacing-168: 42rem;
+
+  --container-shell: 72.5rem;
+  --container-header: 77.5rem;
+  --container-content: 41.875rem;
+  --container-prose: 37rem;
+  --container-prose-sm: 36.875rem;
+  --container-prose-md: 33.4375rem;
+  --container-prose-lg: 29.375rem;
+  --container-prose-xl: 30rem;
+
+  --radius-2\.5xl: 1.375rem;
+
+  --shadow-glow-orange: 0 0 15px #f06b4d;
+  --shadow-btn-orange: 0 10px 30px #f06b4d40;
+  --shadow-card: 0 12px 25px #00000033;
+  --shadow-float: 0 15px 25px #00000099;
+  --shadow-hero: 0 28px 45px #00000088;
+  --shadow-code: 0 18px 40px #00000055;
+
+  --breakpoint-sm-nav: 520px;
+  --breakpoint-md-nav: 850px;
+  --breakpoint-lg-nav: 900px;
+
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-drift: drift 18s ease-in-out infinite;
+  --animate-drift-reverse: drift-reverse 22s ease-in-out infinite;
+  --animate-shimmer: shimmer 8s linear infinite;
+
+  --background-image-feature-card: linear-gradient(145deg, #151f2b, #101720);
+  --background-image-hero-glow-1: radial-gradient(circle, #d9554420 0, transparent 68%);
+  --background-image-hero-glow-2: radial-gradient(circle, #28405d30 0, transparent 70%);
+  --background-image-cta-glow: radial-gradient(circle, #d8564238, transparent 66%);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(18px, -14px, 0) scale(1.04);
+  }
+}
+
+@keyframes drift-reverse {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-16px, 12px, 0) scale(1.03);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-bg text-ink min-w-[320px] overflow-x-hidden font-sans;
+    margin: 0;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  code {
+    @apply font-mono text-[.92em] text-[#ffb477];
+  }
+
+  p {
+    @apply text-muted leading-[1.7];
+  }
+}
+
+@layer components {
+  .markdown h1 {
+    @apply text-ink m-0 mb-[26px] text-[clamp(38px,5vw,54px)] leading-[1.15] font-semibold tracking-[-.035em];
+  }
+
+  .markdown h2 {
+    @apply border-line text-ink mt-[46px] mb-[14px] border-t pt-[22px] text-[28px] leading-[1.15] font-semibold tracking-[-.035em];
+  }
+
+  .markdown h3 {
+    @apply text-ink mt-[30px] mb-[10px] text-xl leading-[1.15] font-semibold tracking-[-.035em];
+  }
+
+  .markdown h4 {
+    @apply text-ink font-semibold;
+  }
+
+  .markdown p {
+    @apply text-muted mb-4 text-[15px] leading-[1.75];
+  }
+
+  .markdown ul {
+    @apply mb-[18px] list-disc pl-[22px];
+  }
+
+  .markdown ol {
+    @apply mb-[18px] list-decimal pl-[22px];
+  }
+
+  .markdown li {
+    @apply text-muted text-[15px] leading-[1.75];
+  }
+
+  .markdown li + li {
+    @apply mt-1.5;
+  }
+
+  .markdown a {
+    @apply text-orange-2 decoration-orange-2/35 underline underline-offset-[3px] hover:decoration-current;
+  }
+
+  .markdown strong {
+    @apply text-ink;
+  }
+
+  .markdown code {
+    @apply bg-panel-2 rounded-[5px] px-1.5 py-0.5 text-[.88em] text-[#ffb477];
+  }
+
+  .markdown pre {
+    @apply border-line bg-bg mb-[22px] overflow-x-auto rounded-xl border px-5 py-[18px];
+  }
+
+  .markdown pre code {
+    @apply text-ink bg-transparent p-0 text-[13px] leading-[1.65];
+  }
+
+  .markdown blockquote {
+    @apply border-orange mb-[22px] border-l-[3px] px-[18px] py-0.5;
+    background: color-mix(in srgb, var(--color-orange) 6%, transparent);
+  }
+
+  .markdown table {
+    @apply mb-[22px] w-full border-collapse text-sm;
+  }
+
+  .markdown th {
+    @apply border-line bg-panel-2 text-ink border px-3 py-[9px] text-left;
+  }
+
+  .markdown td {
+    @apply border-line text-muted border px-3 py-[9px] text-left;
+  }
+
+  .markdown hr {
+    @apply border-line my-9 border-0 border-t;
+  }
+}
