@@ -1,0 +1,20 @@
+{
+  "scopeName": "source.mars",
+  "name": "Mars Notebook",
+  "patterns": [
+    { "include": "#markdown" },
+    { "include": "#rust" }
+  ],
+  "repository": {
+    "markdown": {
+      "begin": "\"cell_type\"\\s*:\\s*\"markdown\"",
+      "end": "(?=\\n\\s*\\})",
+      "patterns": [{ "include": "text.html.markdown" }]
+    },
+    "rust": {
+      "begin": "\"cell_type\"\\s*:\\s*\"code\"",
+      "end": "(?=\\n\\s*\\})",
+      "patterns": [{ "include": "source.rust" }]
+    }
+  }
+}

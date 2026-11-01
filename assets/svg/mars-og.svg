@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Mars interactive notebook platform</title>
+  <desc id="desc">Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1018"/>
+      <stop offset=".6" stop-color="#151b27"/>
+      <stop offset="1" stop-color="#241721"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e95643" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#e95643" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="planet" cx="32%" cy="25%" r="78%">
+      <stop offset="0" stop-color="#ff9b68"/>
+      <stop offset=".48" stop-color="#e2503e"/>
+      <stop offset="1" stop-color="#9c2832"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000" flood-opacity=".42"/>
+    </filter>
+    <clipPath id="planetClip">
+      <circle cx="1020" cy="320" r="178"/>
+    </clipPath>
+  </defs>
+  <rect width="1280" height="640" rx="34" fill="url(#background)"/>
+  <circle cx="980" cy="320" r="330" fill="url(#glow)"/>
+  <g opacity=".28" fill="#ffb36b">
+    <circle cx="86" cy="96" r="3"/>
+    <circle cx="150" cy="174" r="5"/>
+    <circle cx="1132" cy="86" r="4"/>
+    <circle cx="1186" cy="534" r="3"/>
+    <circle cx="756" cy="104" r="3"/>
+    <circle cx="672" cy="548" r="4"/>
+  </g>
+  <g transform="translate(82 120)">
+    <rect x="0" y="0" width="82" height="82" rx="20" fill="#e75240"/>
+    <path d="M22 58V24l19 20 19-20v34" fill="none" stroke="#fff8ef" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="82" y="300" fill="#fff8ef" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="102" font-weight="760" letter-spacing="-4">Mars</text>
+  <text x="88" y="366" fill="#ffb36b" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="28" font-weight="650" letter-spacing="3">EXPLORE IDEAS. EXECUTE CODE.</text>
+  <text x="88" y="420" fill="#b9c3d4" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="25">A Rust-powered interactive notebook platform.</text>
+  <g transform="translate(88 486)">
+    <rect width="284" height="50" rx="25" fill="#202937" stroke="#3a4659"/>
+    <circle cx="28" cy="25" r="7" fill="#ed6a4c"/>
+    <text x="50" y="33" fill="#e8edf5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="20">notebook.mars</text>
+  </g>
+  <circle cx="1020" cy="320" r="178" fill="url(#planet)" filter="url(#shadow)"/>
+  <g clip-path="url(#planetClip)" fill="none" stroke="#ffb28e" stroke-linecap="round" opacity=".3">
+    <path d="M827 273c105-54 222-62 391-22" stroke-width="21"/>
+    <path d="M830 391c112-47 242-55 383-21" stroke-width="16"/>
+    <path d="M948 141c-31 81-24 161 22 239s126 133 225 157" stroke-width="13"/>
+    <path d="M845 329c80 25 166 28 258 7 87-20 158-61 212-121" stroke-width="10"/>
+  </g>
+  <path d="M940 385V244l80 79 80-79v141" fill="none" stroke="#fff8ef" stroke-width="31" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M940 385V244l80 79 80-79v141" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
