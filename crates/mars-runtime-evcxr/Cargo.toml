@@ -1,0 +1,21 @@
+[package]
+name = "mars-runtime-evcxr"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+evcxr = "=0.22.0"
+mars-core = { path = "../mars-core" }
+mars-runtime = { path = "../mars-runtime" }
+serde_json.workspace = true
+crossbeam-channel = "=0.5.17"
+
+[dev-dependencies]
+regex = "=1.13.1"
+
+[[test]]
+name = "evcxr_runtime"
+path = "tests/evcxr_runtime.rs"
+harness = false

@@ -1,0 +1,30 @@
+[workspace]
+members = [
+    "crates/mars-core",
+    "crates/mars-document",
+    "crates/mars-runtime",
+    "crates/mars-runtime-evcxr",
+    "crates/mars-protocol",
+    "crates/mars-kernel",
+    "crates/mars-jupyter",
+    "crates/mars-renderer",
+    "crates/mars-cli",
+    "apps/desktop/src-tauri",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+
+[workspace.dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+thiserror = "=2.0.21"
+libc = "=0.2.191"
+uuid = { version = "=1.29.0", features = ["serde", "v4"] }
+pulldown-cmark = "=0.13.6"
+ammonia = "=4.2.4"
+base64 = "=0.23.1"

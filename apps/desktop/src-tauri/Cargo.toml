@@ -1,0 +1,28 @@
+[package]
+name = "mars-desktop"
+version = "0.0.1"
+description = "Mars interactive notebook"
+authors = ["Mars contributors"]
+edition = "2024"
+
+[lib]
+name = "mars_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "=2.7.4", features = [] }
+
+[dependencies]
+mars-kernel = { path = "../../../crates/mars-kernel" }
+mars-document = { path = "../../../crates/mars-document" }
+mars-protocol = { path = "../../../crates/mars-protocol" }
+mars-renderer = { path = "../../../crates/mars-renderer" }
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "=2.12.5", features = [] }
+tauri-plugin-dialog = "=2.8.4"
+thiserror.workspace = true
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+experimental-evcxr = ["mars-kernel/experimental-evcxr"]

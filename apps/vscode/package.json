@@ -1,0 +1,208 @@
+{
+  "name": "mars-vscode",
+  "displayName": "Mars Notebooks",
+  "description": "Language support and preview commands for .mars notebooks.",
+  "version": "0.1.0",
+  "publisher": "mars-project",
+  "icon": "assets/images/mars-logo.png",
+  "license": "MIT",
+  "packageManager": "pnpm@12.16.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hieudoanm/mars"
+  },
+  "engines": {
+    "vscode": "1.145.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Notebooks"
+  ],
+  "activationEvents": [
+    "onNotebook:mars-notebook",
+    "onLanguage:mars",
+    "onCommand:mars.exportHtml",
+    "onCommand:mars.exportMarkdown",
+    "onCommand:mars.preview",
+    "onCommand:mars.runNotebook",
+    "onCommand:mars.openCell"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "notebooks": [
+      {
+        "type": "mars-notebook",
+        "displayName": "Mars Notebook",
+        "selector": [
+          {
+            "filenamePattern": "*.mars"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "mars-icons",
+        "label": "Mars File Icons",
+        "path": "./icons/mars-icon-theme.json"
+      }
+    ],
+    "languages": [
+      {
+        "id": "mars",
+        "aliases": [
+          "Mars Notebook"
+        ],
+        "extensions": [
+          ".mars"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./assets/images/mars-file-logo.png",
+          "dark": "./assets/images/mars-file-logo.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mars",
+        "scopeName": "source.mars",
+        "path": "./syntaxes/mars.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.rust": "rust",
+          "text.html.markdown": "markdown"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "mars.exportHtml",
+        "title": "Mars: Export Notebook to HTML"
+      },
+      {
+        "command": "mars.exportMarkdown",
+        "title": "Mars: Export Notebook to Markdown"
+      },
+      {
+        "command": "mars.preview",
+        "title": "Mars: Preview Notebook"
+      },
+      {
+        "command": "mars.runNotebook",
+        "title": "Mars: Run Notebook"
+      },
+      {
+        "command": "mars.openCell",
+        "title": "Mars: Go to Cell"
+      },
+      {
+        "command": "mars.createNotebook",
+        "title": "Mars: Create New Notebook"
+      },
+      {
+        "command": "mars.restartKernel",
+        "title": "Mars: Restart Kernel"
+      }
+    ],
+    "configuration": {
+      "title": "Mars Notebooks",
+      "properties": {
+        "mars.cliPath": {
+          "type": "string",
+          "default": "mars",
+          "description": "Path to the Mars CLI executable."
+        },
+        "mars.previewAfterExport": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open the generated HTML or Markdown file after exporting a notebook."
+        },
+        "mars.runArguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional arguments passed to `mars run`."
+        },
+        "mars.executionTimeout": {
+          "type": "number",
+          "default": 30000,
+          "description": "Timeout in milliseconds for cell execution. Rust compilation can be slow, so increase this if needed."
+        },
+        "mars.runtime": {
+          "type": "string",
+          "enum": [
+            "replay",
+            "evcxr"
+          ],
+          "default": "replay",
+          "description": "Runtime backend passed to `mars kernel serve`. Use `evcxr` for plotters/evcxr display output; the Mars CLI must be built with the experimental-evcxr feature."
+        }
+      }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mars.exportHtml",
+          "when": "resourceLangId == mars || resourceExtname == .mars",
+          "group": "navigation"
+        },
+        {
+          "command": "mars.exportMarkdown",
+          "when": "resourceLangId == mars || resourceExtname == .mars",
+          "group": "navigation"
+        }
+      ],
+      "notebook/toolbar": [
+        {
+          "command": "mars.exportMarkdown",
+          "when": "notebookType == mars-notebook",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mars.createNotebook",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "mars.createNotebook",
+        "key": "ctrl+shift+n",
+        "mac": "cmd+shift+n",
+        "when": "!notebookEditorFocused"
+      }
+    ]
+  },
+  "scripts": {
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
+    "build": "npm run compile",
+    "check": "npm run compile",
+    "compile": "tsc -p .",
+    "package": "npm run compile && node -e \"require('fs').mkdirSync('vsix',{recursive:true})\" && vsce package --out vsix/mars-vscode.vsix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.6",
+    "@types/vscode": "1.145.0",
+    "@vitest/coverage-v8": "5.1.0",
+    "@vscode/vsce": "4.1.0",
+    "eslint": "10.14.0",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0"
+  }
+}
