@@ -3,4 +3,7 @@ packages:
   - apps/vscode
   - apps/landing
 
+onlyBuiltDependencies:
+  - "@vscode/vsce-sign"
+
 minimumReleaseAge: 0
