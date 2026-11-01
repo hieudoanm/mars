@@ -8,15 +8,20 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          codemirror: [
-            "@codemirror/lang-markdown",
-            "@codemirror/lang-rust",
-            "@codemirror/state",
-            "@codemirror/theme-one-dark",
-            "@codemirror/view",
-          ],
-          vendor: ["react", "react-dom", "dompurify"],
+        manualChunks(id) {
+          if (
+            id.includes("@codemirror/") ||
+            id.includes("@lezer/")
+          ) {
+            return "codemirror";
+          }
+          if (
+            id.includes("/react/") ||
+            id.includes("/react-dom/") ||
+            id.includes("dompurify")
+          ) {
+            return "vendor";
+          }
         },
       },
     },
