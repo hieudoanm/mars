@@ -1,0 +1,6 @@
+.ipynb_checkpoints
+.venv
+__pycache__
+.ruff_cache
+*.pyc
+*_executed.ipynb

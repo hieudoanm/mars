@@ -1,0 +1,1585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting started with Mars</title>
+<style>
+:root { color-scheme: dark; font-family: system-ui, sans-serif; background: #171717; color: #e5e5e5; }
+body { max-width: 960px; margin: 0 auto; padding: 2rem; }
+.cell { margin: 1.5rem 0; }
+.cell-label { color: #f97316; font-size: .85rem; margin-bottom: .35rem; }
+pre { overflow-x: auto; border-radius: .5rem; padding: 1rem; }
+.code { background: #262626; border: 1px solid #3a3a3a; border-left: 4px solid #f97316; }
+.raw { background: #262626; border: 1px solid #3a3a3a; border-left: 4px solid #a3a3a3; }
+.code code, .raw code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .9rem; line-height: 1.5; }
+.rust-keyword { color: #c678dd; }
+.rust-type { color: #e06c75; }
+.rust-comment { color: #5c6370; font-style: italic; }
+.rust-string { color: #c3e88d; }
+.rust-number { color: #d19a66; }
+.rust-ident { color: #e5e5e5; }
+.rust-macro { color: #e2c08d; font-weight: 600; }
+.output-text { background: #1f2937; border: 1px solid #374151; border-left: 4px solid #3b82f6; }
+.output-error { background: #262626; border: 1px solid #3a3a3a; border-left: 4px solid #ef4444; color: #fecaca; }
+table { border-collapse: collapse; } th, td { border: 1px solid #525252; padding: .4rem .7rem; }
+img { max-width: 100%; }
+a { color: #fb923c; }
+.math { color: #fbbf24; font-family: serif; font-size: 1.15rem; }
+.chart { background: #202020; border: 1px solid #404040; padding: .5rem; }
+.math-text { display: inline-block; padding: .6rem 1rem; border-radius: .35rem; background: #202020; font-family: Georgia, serif; font-size: 1.2rem; }
+.math-frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.1; margin: 0 .15rem; }
+.math-frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .2rem .1rem; }
+.math-frac > span:last-child { padding: .1rem .2rem 0; }
+.chart-svg { width: 100%; max-width: 720px; height: 260px; }
+</style>
+</head>
+<body>
+<h1>Getting started with Mars</h1>
+<article class="cell cell-markdown"><h1>Getting started with Mars</h1>
+<p><strong>Mars</strong> is a Rust-first interactive notebook. A <code>.mars</code> notebook is a JSON
+document made of <strong>markdown</strong>, <strong>code</strong>, and <strong>raw</strong> cells. Code cells are
+written in Rust and share state as they run from top to bottom.</p>
+<p>This notebook is a tour of the basics. It covers:</p>
+<ul>
+<li>notebook cells, Markdown, and outputs</li>
+<li>variables, types, operators, and strings</li>
+<li>mutability, shadowing, constants, and statics</li>
+<li>control flow, loops, functions, and closures</li>
+<li>tuples, arrays, slices, vectors, iterators, and hash maps</li>
+<li>structs, enums, traits, <code>Option</code>, and <code>Result</code></li>
+<li>modules, macros, attributes, references, lifetimes, generics, and type aliases</li>
+<li>summary statistics and a least-squares regression</li>
+</ul>
+<p>Run the cells in order. Each code cell can use every binding created before it.</p>
+</article><article class="cell cell-markdown"><h2>How a notebook works</h2>
+<table><thead><tr><th>Cell type</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>markdown</code></td><td>Explanations, headings, lists, tables, links, and code snippets</td></tr>
+<tr><td><code>code</code></td><td>Rust source that is compiled and executed</td></tr>
+<tr><td><code>raw</code></td><td>Text that is preserved without Markdown or Rust processing</td></tr>
+</tbody></table>
+<p>When a code cell runs:</p>
+<ol>
+<li>Mars replays all earlier successful code cells, so their bindings are available.</li>
+<li>The current cell is compiled and executed.</li>
+<li>Its final expression is displayed automatically.</li>
+<li>Standard output and errors are captured.</li>
+<li>The execution count and outputs are stored in the <code>.mars</code> file.</li>
+</ol>
+<p>Because earlier cells are replayed, side effects such as printing, file writes,
+or random numbers can happen again. Keep side-effecting cells idempotent, or
+run them once and store the result.</p>
+<blockquote>
+<p>Tip: the final expression of a code cell is shown without a <code>println!</code>.
+End a cell with a semicolon when you do not want output.</p>
+</blockquote>
+</article><article class="cell cell-markdown"><h3>Markdown essentials</h3>
+<p>Markdown cells support <strong>bold</strong>, <em>italic</em>, <del>strikethrough</del>, <code>inline code</code>,
+<a href="https://github.com/hieudoanm/mars" rel="noopener noreferrer">links</a>, lists, tables, block quotes, and
+fenced code blocks.</p>
+<ul>
+<li>unordered list item</li>
+<li>another item
+<ul>
+<li>nested item</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>ordered item</li>
+<li>another item</li>
+</ol>
+<pre><code>mars run getting-started.mars --report
+</code></pre>
+</article><article class="cell cell-raw"><pre class="raw"><code>A raw cell is stored and exported verbatim.
+It is useful for generated text or content that should not be parsed.</code></pre></article><article class="cell cell-markdown"><h2>Your first code cell</h2>
+<p>The next cell sets up a tiny <code>Report</code> helper. It wraps formatted text and
+implements <code>Debug</code>, so multi-line output prints exactly as written instead of
+being wrapped in quotes.</p>
+<p>The helper is defined once and stays available to every later cell.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [1]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">use</span> <span class="rust-ident">std</span>::<span class="rust-ident">fmt</span>;
+
+<span class="rust-keyword">struct</span> <span class="rust-ident">Report</span>(<span class="rust-type">String</span>);
+
+<span class="rust-keyword">impl</span> <span class="rust-ident">fmt</span>::<span class="rust-ident">Debug</span> <span class="rust-keyword">for</span> <span class="rust-ident">Report</span> {
+    <span class="rust-keyword">fn</span> <span class="rust-ident">fmt</span>(&<span class="rust-keyword">self</span>, <span class="rust-ident">formatter</span>: &<span class="rust-keyword">mut</span> <span class="rust-ident">fmt</span>::<span class="rust-ident">Formatter</span><<span class="rust-string">&#39;_&gt;) -&gt; fmt::Result {
+        formatter.write_str(&amp;self.0)
+    }
+}
+
+fn report(text: impl Into&lt;String&gt;) -&gt; Report {
+    Report(text.into())
+</span>}</code></pre></article><article class="cell cell-markdown"><h2>Variables and types</h2>
+<p>Rust infers types, but you can annotate them. Names use <code>snake_case</code>, and
+bindings are immutable unless declared with <code>mut</code>.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [2]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">language</span> = <span class="rust-string">&quot;Rust&quot;</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">year</span>: <span class="rust-type">u32</span> = <span class="rust-number">2024</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">pi</span> = <span class="rust-number">3.141_592_653_589_793</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">is_fun</span> = <span class="rust-keyword">true</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">initial</span> = <span class="rust-string">&#39;M&#39;</span>;
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;language = {language}\nyear = {year}\npi = {pi}\nis_fun = {is_fun}\ninitial = {initial}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+</pre></div></article><article class="cell cell-markdown"><h2>Arithmetic and operators</h2>
+<p>Rust distinguishes integer division (<code>/</code>) from floating-point division and uses
+<code>%</code> for the remainder.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [3]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">sum</span> = <span class="rust-number">7</span> + <span class="rust-number">5</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">difference</span> = <span class="rust-number">7</span> - <span class="rust-number">5</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">product</span> = <span class="rust-number">7</span> * <span class="rust-number">5</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">quotient</span> = <span class="rust-number">7</span> / <span class="rust-number">5</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">remainder</span> = <span class="rust-number">7</span> % <span class="rust-number">5</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">float_quotient</span> = <span class="rust-number">7.0</span> / <span class="rust-number">5.0</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">power</span> = <span class="rust-number">2_</span><span class="rust-type">i32</span>.<span class="rust-ident">pow</span>(<span class="rust-number">10</span>);
+
+(<span class="rust-ident">sum</span>, <span class="rust-ident">difference</span>, <span class="rust-ident">product</span>, <span class="rust-ident">quotient</span>, <span class="rust-ident">remainder</span>, <span class="rust-ident">float_quotient</span>, <span class="rust-ident">power</span>)</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+</pre></div></article><article class="cell cell-markdown"><h2>Mutability and shadowing</h2>
+<p>Use <code>mut</code> when a binding changes. Shadowing creates a new binding with the same
+name, which is handy for changing a value's type.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [4]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">counter</span> = <span class="rust-number">0</span>;
+<span class="rust-ident">counter</span> += <span class="rust-number">1</span>;
+<span class="rust-ident">counter</span> *= <span class="rust-number">10</span>;
+<span class="rust-ident">counter</span> -= <span class="rust-number">5</span>;
+
+<span class="rust-keyword">let</span> <span class="rust-ident">answer</span> = <span class="rust-number">21</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">answer</span> = <span class="rust-ident">answer</span> * <span class="rust-number">2</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">answer</span>: <span class="rust-type">f64</span> = <span class="rust-ident">answer</span> <span class="rust-keyword">as</span> <span class="rust-type">f64</span> + <span class="rust-number">0.5</span>;
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;counter = {counter}\nanswer = {answer}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+</pre></div></article><article class="cell cell-markdown"><h2>Strings</h2>
+<p><code>&amp;str</code> is a borrowed string slice, while <code>String</code> owns its contents. Both can
+be formatted with <code>format!</code>, and many string methods return new values.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [5]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">name</span> = <span class="rust-type">String</span>::<span class="rust-ident">from</span>(<span class="rust-string">&quot;Mars&quot;</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">greeting</span> = <span class="rust-macro">format</span>!(<span class="rust-string">&quot;Hello, {name}!&quot;</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">shout</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">to_uppercase</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">words</span>: <span class="rust-type">Vec</span><&<span class="rust-type">str</span>> = <span class="rust-ident">greeting</span>.<span class="rust-ident">split</span>(<span class="rust-string">&#39; &#39;</span>).<span class="rust-ident">collect</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">character_count</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">chars</span>().<span class="rust-ident">count</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">replaced</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">replace</span>(<span class="rust-string">&quot;Mars&quot;</span>, <span class="rust-string">&quot;notebooks&quot;</span>);
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;greeting = {greeting}\nshout = {shout}\nwords = {words:?}\ncharacters = {character_count}\nreplaced = {replaced}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+</pre></div></article><article class="cell cell-markdown"><h2>Control flow</h2>
+<p><code>if</code> is an expression, so it can produce a value. <code>match</code> compares patterns and
+can bind parts of the value.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [6]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">temperature</span> = <span class="rust-number">21</span>;
+
+<span class="rust-keyword">let</span> <span class="rust-ident">advice</span> = <span class="rust-keyword">if</span> <span class="rust-ident">temperature</span> > <span class="rust-number">25</span> {
+    <span class="rust-string">&quot;Wear something light&quot;</span>
+} <span class="rust-keyword">else</span> <span class="rust-keyword">if</span> <span class="rust-ident">temperature</span> >= <span class="rust-number">15</span> {
+    <span class="rust-string">&quot;A jacket is enough&quot;</span>
+} <span class="rust-keyword">else</span> {
+    <span class="rust-string">&quot;Bring a coat&quot;</span>
+};
+
+<span class="rust-keyword">let</span> <span class="rust-ident">description</span> = <span class="rust-keyword">match</span> <span class="rust-ident">temperature</span> {
+    <span class="rust-ident">value</span> <span class="rust-keyword">if</span> <span class="rust-ident">value</span> < <span class="rust-number">0</span> => <span class="rust-string">&quot;freezing&quot;</span>,
+    <span class="rust-number">0..</span>=<span class="rust-number">14</span> => <span class="rust-string">&quot;cold&quot;</span>,
+    <span class="rust-number">15..</span>=<span class="rust-number">24</span> => <span class="rust-string">&quot;mild&quot;</span>,
+    <span class="rust-ident">_</span> => <span class="rust-string">&quot;warm&quot;</span>,
+};
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;{temperature} C is {description}: {advice}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+</pre></div></article><article class="cell cell-markdown"><h2>Loops</h2>
+<p><code>for</code> walks an iterator, <code>while</code> repeats while a condition holds, <code>while let</code>
+repeats while a pattern matches, and <code>loop</code> repeats until <code>break</code>.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [7]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">countdown</span> = <span class="rust-type">Vec</span>::<span class="rust-ident">new</span>();
+<span class="rust-keyword">for</span> <span class="rust-ident">number</span> <span class="rust-keyword">in</span> (<span class="rust-number">1..</span>=<span class="rust-number">5</span>).<span class="rust-ident">rev</span>() {
+    <span class="rust-ident">countdown</span>.<span class="rust-ident">push</span>(<span class="rust-ident">number</span>);
+}
+
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">doubled</span> = <span class="rust-number">0</span>;
+<span class="rust-keyword">while</span> <span class="rust-ident">doubled</span> < <span class="rust-number">10</span> {
+    <span class="rust-ident">doubled</span> += <span class="rust-number">2</span>;
+}
+
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">stack</span> = <span class="rust-macro">vec</span>![<span class="rust-number">1</span>, <span class="rust-number">2</span>, <span class="rust-number">3</span>];
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">popped</span> = <span class="rust-type">Vec</span>::<span class="rust-ident">new</span>();
+<span class="rust-keyword">while</span> <span class="rust-keyword">let</span> <span class="rust-keyword">Some</span>(<span class="rust-ident">value</span>) = <span class="rust-ident">stack</span>.<span class="rust-ident">pop</span>() {
+    <span class="rust-ident">popped</span>.<span class="rust-ident">push</span>(<span class="rust-ident">value</span>);
+}
+
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">loop_count</span> = <span class="rust-number">0</span>;
+<span class="rust-keyword">loop</span> {
+    <span class="rust-ident">loop_count</span> += <span class="rust-number">1</span>;
+    <span class="rust-keyword">if</span> <span class="rust-ident">loop_count</span> == <span class="rust-number">3</span> {
+        <span class="rust-keyword">break</span>;
+    }
+}
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;countdown = {countdown:?}\ndoubled = {doubled}\npopped = {popped:?}\nloop_count = {loop_count}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+</pre></div></article><article class="cell cell-markdown"><h2>Functions</h2>
+<p>Functions declare their parameter and return types. A function's final
+expression is its return value when there is no semicolon.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [8]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">fn</span> <span class="rust-ident">square</span>(<span class="rust-ident">value</span>: <span class="rust-type">i32</span>) -> <span class="rust-type">i32</span> {
+    <span class="rust-ident">value</span> * <span class="rust-ident">value</span>
+}
+
+<span class="rust-keyword">fn</span> <span class="rust-ident">average</span>(<span class="rust-ident">values</span>: &[<span class="rust-type">f64</span>]) -> <span class="rust-type">f64</span> {
+    <span class="rust-ident">values</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">sum</span>::<<span class="rust-type">f64</span>>() / <span class="rust-ident">values</span>.<span class="rust-ident">len</span>() <span class="rust-keyword">as</span> <span class="rust-type">f64</span>
+}
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;square(9) = {}\naverage([2, 4, 6, 8]) = {}&quot;</span>,
+    <span class="rust-ident">square</span>(<span class="rust-number">9</span>),
+    <span class="rust-ident">average</span>(&[<span class="rust-number">2.0</span>, <span class="rust-number">4.0</span>, <span class="rust-number">6.0</span>, <span class="rust-number">8.0</span>])
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+</pre></div></article><article class="cell cell-markdown"><h2>Tuples, arrays, and slices</h2>
+<p>Tuples group values of different types. Arrays have a fixed length. Slices
+borrow a contiguous range from an array or vector.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [9]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">point</span> = (<span class="rust-number">3</span>, <span class="rust-number">4</span>);
+<span class="rust-keyword">let</span> (<span class="rust-ident">x</span>, <span class="rust-ident">y</span>) = <span class="rust-ident">point</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">array</span> = [<span class="rust-number">10</span>, <span class="rust-number">20</span>, <span class="rust-number">30</span>, <span class="rust-number">40</span>];
+<span class="rust-keyword">let</span> <span class="rust-ident">slice</span> = &<span class="rust-ident">array</span>[<span class="rust-number">1..3</span>];
+<span class="rust-keyword">let</span> <span class="rust-ident">array_total</span>: <span class="rust-type">i32</span> = <span class="rust-ident">array</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">sum</span>();
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;point = {point:?}\nx = {x}, y = {y}\narray = {array:?}\nslice = {slice:?}\ntotal = {array_total}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+</pre></div></article><article class="cell cell-markdown"><h2>Vectors</h2>
+<p><code>Vec&lt;T&gt;</code> is a growable list. You can push values, read them by index, borrow a
+range, and inspect the first or last item safely with <code>Option</code>.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [10]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">primes</span> = <span class="rust-macro">vec</span>![<span class="rust-number">2</span>, <span class="rust-number">3</span>, <span class="rust-number">5</span>, <span class="rust-number">7</span>, <span class="rust-number">11</span>];
+<span class="rust-ident">primes</span>.<span class="rust-ident">push</span>(<span class="rust-number">13</span>);
+
+<span class="rust-keyword">let</span> <span class="rust-ident">first</span> = <span class="rust-ident">primes</span>.<span class="rust-ident">first</span>().<span class="rust-ident">copied</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">last</span> = <span class="rust-ident">primes</span>.<span class="rust-ident">last</span>().<span class="rust-ident">copied</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">middle</span> = &<span class="rust-ident">primes</span>[<span class="rust-number">1..4</span>];
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;primes = {primes:?}\nfirst = {first:?}\nlast = {last:?}\nmiddle = {middle:?}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+</pre></div></article><article class="cell cell-markdown"><h2>Iterators</h2>
+<p>Iterator chains are the idiomatic way to transform collections. Methods such
+as <code>map</code>, <code>filter</code>, <code>sum</code>, <code>product</code>, <code>max</code>, and <code>collect</code> consume or build
+iterators without writing manual loops.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [11]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">numbers</span> = <span class="rust-macro">vec</span>![<span class="rust-number">1</span>, <span class="rust-number">2</span>, <span class="rust-number">3</span>, <span class="rust-number">4</span>, <span class="rust-number">5</span>, <span class="rust-number">6</span>];
+
+<span class="rust-keyword">let</span> <span class="rust-ident">squares</span>: <span class="rust-type">Vec</span><<span class="rust-type">i32</span>> = <span class="rust-ident">numbers</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">map</span>(|<span class="rust-ident">value</span>| <span class="rust-ident">value</span> * <span class="rust-ident">value</span>).<span class="rust-ident">collect</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">evens</span>: <span class="rust-type">Vec</span><<span class="rust-type">i32</span>> = <span class="rust-ident">numbers</span>
+    .<span class="rust-ident">iter</span>()
+    .<span class="rust-ident">copied</span>()
+    .<span class="rust-ident">filter</span>(|<span class="rust-ident">value</span>| *<span class="rust-ident">value</span> % <span class="rust-number">2</span> == <span class="rust-number">0</span>)
+    .<span class="rust-ident">collect</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">total</span>: <span class="rust-type">i32</span> = <span class="rust-ident">numbers</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">sum</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">product</span>: <span class="rust-type">i32</span> = <span class="rust-ident">numbers</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">product</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">maximum</span> = <span class="rust-ident">numbers</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">max</span>();
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;numbers = {numbers:?}\nsquares = {squares:?}\nevens = {evens:?}\nsum = {total}\nproduct = {product}\nmax = {maximum:?}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+</pre></div></article><article class="cell cell-markdown"><h2>Hash maps</h2>
+<p><code>HashMap</code> stores key-value pairs and provides fast lookup. The <code>entry</code> API
+inserts a default value and returns a mutable reference, which makes counting
+simple.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [12]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">use</span> <span class="rust-ident">std</span>::<span class="rust-ident">collections</span>::<span class="rust-ident">HashMap</span>;
+
+<span class="rust-keyword">let</span> <span class="rust-ident">text</span> = <span class="rust-string">&quot;to be or not to be&quot;</span>;
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">word_counts</span> = <span class="rust-ident">HashMap</span>::<span class="rust-ident">new</span>();
+
+<span class="rust-keyword">for</span> <span class="rust-ident">word</span> <span class="rust-keyword">in</span> <span class="rust-ident">text</span>.<span class="rust-ident">split_whitespace</span>() {
+    *<span class="rust-ident">word_counts</span>.<span class="rust-ident">entry</span>(<span class="rust-ident">word</span>).<span class="rust-ident">or_insert</span>(<span class="rust-number">0</span>) += <span class="rust-number">1</span>;
+}
+
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">counts</span>: <span class="rust-type">Vec</span><(&<span class="rust-type">str</span>, <span class="rust-type">i32</span>)> = <span class="rust-ident">word_counts</span>.<span class="rust-ident">into_iter</span>().<span class="rust-ident">collect</span>();
+<span class="rust-ident">counts</span>.<span class="rust-ident">sort</span>();
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;{counts:?}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+</pre></div></article><article class="cell cell-markdown"><h2>Structs and methods</h2>
+<p>A <code>struct</code> groups related fields. An <code>impl</code> block adds methods, and <code>&amp;self</code>
+borrows the value without taking ownership.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [13]</div><pre class="code"><code class="language-rust">#[<span class="rust-ident">derive</span>(<span class="rust-ident">Debug</span>)]
+<span class="rust-keyword">struct</span> <span class="rust-ident">Rectangle</span> {
+    <span class="rust-ident">width</span>: <span class="rust-type">f64</span>,
+    <span class="rust-ident">height</span>: <span class="rust-type">f64</span>,
+}
+
+<span class="rust-keyword">impl</span> <span class="rust-ident">Rectangle</span> {
+    <span class="rust-keyword">fn</span> <span class="rust-ident">area</span>(&<span class="rust-keyword">self</span>) -> <span class="rust-type">f64</span> {
+        <span class="rust-keyword">self</span>.<span class="rust-ident">width</span> * <span class="rust-keyword">self</span>.<span class="rust-ident">height</span>
+    }
+
+    <span class="rust-keyword">fn</span> <span class="rust-ident">perimeter</span>(&<span class="rust-keyword">self</span>) -> <span class="rust-type">f64</span> {
+        <span class="rust-number">2.0</span> * (<span class="rust-keyword">self</span>.<span class="rust-ident">width</span> + <span class="rust-keyword">self</span>.<span class="rust-ident">height</span>)
+    }
+}
+
+<span class="rust-keyword">let</span> <span class="rust-ident">rectangle</span> = <span class="rust-ident">Rectangle</span> {
+    <span class="rust-ident">width</span>: <span class="rust-number">3.0</span>,
+    <span class="rust-ident">height</span>: <span class="rust-number">4.0</span>,
+};
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;rectangle = {rectangle:?}\narea = {}\nperimeter = {}&quot;</span>,
+    <span class="rust-ident">rectangle</span>.<span class="rust-ident">area</span>(),
+    <span class="rust-ident">rectangle</span>.<span class="rust-ident">perimeter</span>()
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+</pre></div></article><article class="cell cell-markdown"><h2>Enums and pattern matching</h2>
+<p>An <code>enum</code> represents one of several variants. Variants can carry data, and
+<code>match</code> handles every case explicitly.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [14]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">enum</span> <span class="rust-ident">Shape</span> {
+    <span class="rust-ident">Circle</span> { <span class="rust-ident">radius</span>: <span class="rust-type">f64</span> },
+    <span class="rust-ident">Rectangle</span> { <span class="rust-ident">width</span>: <span class="rust-type">f64</span>, <span class="rust-ident">height</span>: <span class="rust-type">f64</span> },
+}
+
+<span class="rust-keyword">impl</span> <span class="rust-ident">Shape</span> {
+    <span class="rust-keyword">fn</span> <span class="rust-ident">name</span>(&<span class="rust-keyword">self</span>) -> &<span class="rust-type">str</span> {
+        <span class="rust-keyword">match</span> <span class="rust-keyword">self</span> {
+            <span class="rust-ident">Shape</span>::<span class="rust-ident">Circle</span> { .. } => <span class="rust-string">&quot;circle&quot;</span>,
+            <span class="rust-ident">Shape</span>::<span class="rust-ident">Rectangle</span> { .. } => <span class="rust-string">&quot;rectangle&quot;</span>,
+        }
+    }
+
+    <span class="rust-keyword">fn</span> <span class="rust-ident">area</span>(&<span class="rust-keyword">self</span>) -> <span class="rust-type">f64</span> {
+        <span class="rust-keyword">match</span> <span class="rust-keyword">self</span> {
+            <span class="rust-ident">Shape</span>::<span class="rust-ident">Circle</span> { <span class="rust-ident">radius</span> } => <span class="rust-ident">std</span>::<span class="rust-type">f64</span>::<span class="rust-ident">consts</span>::<span class="rust-ident">PI</span> * <span class="rust-ident">radius</span> * <span class="rust-ident">radius</span>,
+            <span class="rust-ident">Shape</span>::<span class="rust-ident">Rectangle</span> { <span class="rust-ident">width</span>, <span class="rust-ident">height</span> } => <span class="rust-ident">width</span> * <span class="rust-ident">height</span>,
+        }
+    }
+}
+
+<span class="rust-keyword">let</span> <span class="rust-ident">shapes</span> = <span class="rust-macro">vec</span>![
+    <span class="rust-ident">Shape</span>::<span class="rust-ident">Circle</span> { <span class="rust-ident">radius</span>: <span class="rust-number">2.0</span> },
+    <span class="rust-ident">Shape</span>::<span class="rust-ident">Rectangle</span> { <span class="rust-ident">width</span>: <span class="rust-number">3.0</span>, <span class="rust-ident">height</span>: <span class="rust-number">4.0</span> },
+];
+
+<span class="rust-keyword">let</span> <span class="rust-ident">summary</span>: <span class="rust-type">Vec</span><<span class="rust-type">String</span>> = <span class="rust-ident">shapes</span>
+    .<span class="rust-ident">iter</span>()
+    .<span class="rust-ident">map</span>(|<span class="rust-ident">shape</span>| <span class="rust-macro">format</span>!(<span class="rust-string">&quot;{} = {:.2}&quot;</span>, <span class="rust-ident">shape</span>.<span class="rust-ident">name</span>(), <span class="rust-ident">shape</span>.<span class="rust-ident">area</span>()))
+    .<span class="rust-ident">collect</span>();
+
+<span class="rust-ident">report</span>(<span class="rust-ident">summary</span>.<span class="rust-ident">join</span>(<span class="rust-string">&quot;\n&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+</pre></div></article><article class="cell cell-markdown"><h2>Option and Result</h2>
+<p><code>Option&lt;T&gt;</code> models a value that may be missing. <code>Result&lt;T, E&gt;</code> models an
+operation that may fail. Both can be inspected with <code>match</code>, <code>if let</code>, <code>?</code>, or
+combinators such as <code>map</code> and <code>unwrap_or</code>.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [15]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">fn</span> <span class="rust-ident">parse_score</span>(<span class="rust-ident">text</span>: &<span class="rust-type">str</span>) -> <span class="rust-type">Result</span><<span class="rust-type">i32</span>, <span class="rust-type">String</span>> {
+    <span class="rust-ident">text</span>.<span class="rust-ident">parse</span>::<<span class="rust-type">i32</span>>()
+        .<span class="rust-ident">map_err</span>(|<span class="rust-ident">_</span>| <span class="rust-macro">format</span>!(<span class="rust-string">&quot;`{text}` is not a number&quot;</span>))
+}
+
+<span class="rust-keyword">let</span> <span class="rust-ident">good</span> = <span class="rust-ident">parse_score</span>(<span class="rust-string">&quot;42&quot;</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">bad</span> = <span class="rust-ident">parse_score</span>(<span class="rust-string">&quot;forty-two&quot;</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">first_even</span> = (<span class="rust-number">1..10</span>).<span class="rust-ident">find</span>(|<span class="rust-ident">value</span>| <span class="rust-ident">value</span> % <span class="rust-number">2</span> == <span class="rust-number">0</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">fallback</span> = <span class="rust-ident">bad</span>.<span class="rust-ident">clone</span>().<span class="rust-ident">unwrap_or</span>(-<span class="rust-number">1</span>);
+
+<span class="rust-keyword">let</span> <span class="rust-ident">parsed</span> = <span class="rust-keyword">if</span> <span class="rust-keyword">let</span> <span class="rust-keyword">Ok</span>(<span class="rust-ident">score</span>) = &<span class="rust-ident">good</span> {
+    <span class="rust-macro">format</span>!(<span class="rust-string">&quot;parsed {score}&quot;</span>)
+} <span class="rust-keyword">else</span> {
+    <span class="rust-string">&quot;invalid&quot;</span>.<span class="rust-ident">to_owned</span>()
+};
+
+<span class="rust-keyword">let</span> <span class="rust-ident">category</span> = <span class="rust-keyword">match</span> &<span class="rust-ident">good</span> {
+    <span class="rust-keyword">Ok</span>(<span class="rust-ident">score</span>) <span class="rust-keyword">if</span> *<span class="rust-ident">score</span> >= <span class="rust-number">40</span> => <span class="rust-string">&quot;pass&quot;</span>,
+    <span class="rust-keyword">Ok</span>(<span class="rust-ident">_</span>) => <span class="rust-string">&quot;retry&quot;</span>,
+    <span class="rust-keyword">Err</span>(<span class="rust-ident">_</span>) => <span class="rust-string">&quot;invalid&quot;</span>,
+};
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;good = {good:?}\nbad = {bad:?}\nfirst_even = {first_even:?}\nfallback = {fallback}\nparsed = {parsed}\ncategory = {category}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+</pre></div></article><article class="cell cell-markdown"><h2>Closures</h2>
+<p>Closures are anonymous functions that can capture values from their
+environment. They are commonly passed to iterator methods.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [16]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">offset</span> = <span class="rust-number">10</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">add_offset</span> = |<span class="rust-ident">value</span>: <span class="rust-type">i32</span>| <span class="rust-ident">value</span> + <span class="rust-ident">offset</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">values</span> = <span class="rust-macro">vec</span>![<span class="rust-number">1</span>, <span class="rust-number">2</span>, <span class="rust-number">3</span>, <span class="rust-number">4</span>];
+<span class="rust-keyword">let</span> <span class="rust-ident">adjusted</span>: <span class="rust-type">Vec</span><<span class="rust-type">i32</span>> = <span class="rust-ident">values</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">map</span>(|<span class="rust-ident">value</span>| <span class="rust-ident">add_offset</span>(*<span class="rust-ident">value</span>)).<span class="rust-ident">collect</span>();
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;offset = {offset}\nvalues = {values:?}\nadjusted = {adjusted:?}&quot;</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+</pre></div></article><article class="cell cell-markdown"><h2>Constants and statics</h2>
+<p><code>const</code> values are inlined at compile time, evaluated each time they are
+used, and cannot be mutated. <code>static</code> items live for the entire program and
+may be shared across threads. Both require an explicit type annotation.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [17]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">const</span> <span class="rust-ident">MAX_POINTS</span>: <span class="rust-type">u32</span> = <span class="rust-number">100</span>;
+<span class="rust-keyword">static</span> <span class="rust-ident">NEXT_ID</span>: <span class="rust-type">u32</span> = <span class="rust-number">1</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">constant</span> = <span class="rust-ident">MAX_POINTS</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">static_ref</span>: &<span class="rust-string">&#39;static u32 = &amp;NEXT_ID;
+
+report(format!(&quot;MAX_POINTS = {MAX_POINTS}\nNEXT_ID = {NEXT_ID}\nstatic_ref = {static_ref}&quot;)</span>)</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+</pre></div></article><article class="cell cell-markdown"><h2>References and borrowing</h2>
+<p>A reference (<code>&amp;T</code>) borrows a value without taking ownership. <code>&amp;mut T</code> grants
+exclusive, mutable borrow access. Rust's borrow checker prevents a mutable
+reference from coexisting with any other reference to the same data.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [18]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">total</span> = <span class="rust-number">100</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">reference</span> = &<span class="rust-ident">total</span>;
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">counter</span> = <span class="rust-number">5</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">mut_ref</span> = &<span class="rust-keyword">mut</span> <span class="rust-ident">counter</span>;
+*<span class="rust-ident">mut_ref</span> += <span class="rust-number">1</span>;
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;total = {total}\nreference = {reference}\ncounter = {counter}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+</pre></div></article><article class="cell cell-markdown"><h2>Modules</h2>
+<p>A <code>mod</code> groups related items and can be nested. <code>pub</code> makes items visible
+outside the module, and <code>use</code> brings names into the current scope.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [19]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">mod</span> <span class="rust-ident">math</span> {
+    <span class="rust-keyword">pub</span> <span class="rust-keyword">fn</span> <span class="rust-ident">double</span>(<span class="rust-ident">value</span>: <span class="rust-type">i32</span>) -> <span class="rust-type">i32</span> {
+        <span class="rust-ident">value</span> * <span class="rust-number">2</span>
+    }
+}
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;math::double(21) = {}&quot;</span>, <span class="rust-ident">math</span>::<span class="rust-ident">double</span>(<span class="rust-number">21</span>)))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+</pre></div></article><article class="cell cell-markdown"><h2>Macros</h2>
+<p>Declarative macros (<code>macro_rules!</code>) expand at compile time using pattern
+matching. They generate code from code, which is why their output can look
+very different from the invocation.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [20]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">macro_rules</span>! <span class="rust-ident">greet</span> {
+    ($<span class="rust-ident">name</span>:<span class="rust-ident">expr</span>) => {
+        <span class="rust-macro">format</span>!(<span class="rust-string">&quot;hello, {name}&quot;</span>)
+    };
+}
+
+<span class="rust-ident">report</span>(<span class="rust-macro">greet</span>!(<span class="rust-string">&quot;Mars&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+</pre></div></article><article class="cell cell-markdown"><h2>Attributes</h2>
+<p>Attributes like <code>#[derive(...)]</code> attach metadata to items. The compiler uses
+them to generate code, enforce rules, or control warnings.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [21]</div><pre class="code"><code class="language-rust">#[<span class="rust-ident">derive</span>(<span class="rust-ident">Debug</span>, <span class="rust-ident">PartialEq</span>)]
+<span class="rust-keyword">struct</span> <span class="rust-ident">Point2D</span> {
+    <span class="rust-ident">x</span>: <span class="rust-type">i32</span>,
+    <span class="rust-ident">y</span>: <span class="rust-type">i32</span>,
+}
+
+<span class="rust-keyword">let</span> <span class="rust-ident">origin</span> = <span class="rust-ident">Point2D</span> { <span class="rust-ident">x</span>: <span class="rust-number">0</span>, <span class="rust-ident">y</span>: <span class="rust-number">0</span> };
+<span class="rust-keyword">let</span> <span class="rust-ident">other</span> = <span class="rust-ident">Point2D</span> { <span class="rust-ident">x</span>: <span class="rust-number">0</span>, <span class="rust-ident">y</span>: <span class="rust-number">0</span> };
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;origin = {origin:?}\norigin == other: {}&quot;</span>, <span class="rust-ident">origin</span> == <span class="rust-ident">other</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+origin = Point2D { x: 0, y: 0 }
+origin == other: true
+</pre></div></article><article class="cell cell-markdown"><h2>Lifetimes, generics, and type aliases</h2>
+<p>Generics let you write functions and types that work for many types.
+Lifetimes are a special kind of generic that describe how references relate
+to each other. <code>type</code> aliases give a fresh name to an existing type.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [22]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">type</span> <span class="rust-ident">Meters</span> = <span class="rust-type">f64</span>;
+<span class="rust-keyword">fn</span> <span class="rust-ident">pick_first</span><<span class="rust-string">&#39;a&gt;(items: &amp;&#39;</span><span class="rust-ident">a</span> [<span class="rust-type">i32</span>]) -> &<span class="rust-string">&#39;a i32 {
+    &amp;items[0]
+}
+fn identity&lt;T&gt;(value: T) -&gt; T {
+    value
+}
+
+let distance: Meters = 12.5;
+let numbers = vec![7, 14, 21];
+
+report(format!(
+    &quot;distance = {distance} m\nidentity(3) = {}\nfirst = {}&quot;,
+    identity(3),
+    pick_first(&amp;numbers)
+)</span>)</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+origin = Point2D { x: 0, y: 0 }
+origin == other: true
+distance = 12.5 m
+identity(3) = 3
+first = 7
+</pre></div></article><article class="cell cell-markdown"><h2>Traits</h2>
+<p>A <code>trait</code> defines shared behavior that many types can implement. Trait
+objects (<code>&amp;dyn Trait</code>) let you work with several different types through one
+common interface.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [23]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">trait</span> <span class="rust-ident">Describe</span> {
+    <span class="rust-keyword">fn</span> <span class="rust-ident">describe</span>(&<span class="rust-keyword">self</span>) -> <span class="rust-type">String</span>;
+}
+
+<span class="rust-keyword">impl</span> <span class="rust-ident">Describe</span> <span class="rust-keyword">for</span> <span class="rust-type">i32</span> {
+    <span class="rust-keyword">fn</span> <span class="rust-ident">describe</span>(&<span class="rust-keyword">self</span>) -> <span class="rust-type">String</span> {
+        <span class="rust-macro">format</span>!(<span class="rust-string">&quot;integer {self}&quot;</span>)
+    }
+}
+
+<span class="rust-keyword">let</span> <span class="rust-ident">number</span> = <span class="rust-number">42</span>;
+
+<span class="rust-ident">report</span>(<span class="rust-ident">number</span>.<span class="rust-ident">describe</span>())</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+origin = Point2D { x: 0, y: 0 }
+origin == other: true
+distance = 12.5 m
+identity(3) = 3
+first = 7
+integer 42
+</pre></div></article><article class="cell cell-markdown"><h2>Summary statistics</h2>
+<p>The next cell computes count, total, mean, minimum, maximum, and median for a
+small list of integers. This is the data-analysis example merged into the tour.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [24]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">values</span> = <span class="rust-macro">vec</span>![<span class="rust-number">3_</span><span class="rust-type">i32</span>, <span class="rust-number">7</span>, <span class="rust-number">4</span>, <span class="rust-number">9</span>, <span class="rust-number">12</span>, <span class="rust-number">6</span>];
+<span class="rust-keyword">let</span> <span class="rust-ident">total</span>: <span class="rust-type">i32</span> = <span class="rust-ident">values</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">sum</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">mean</span> = <span class="rust-ident">total</span> <span class="rust-keyword">as</span> <span class="rust-type">f64</span> / <span class="rust-ident">values</span>.<span class="rust-ident">len</span>() <span class="rust-keyword">as</span> <span class="rust-type">f64</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">minimum</span> = <span class="rust-ident">values</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">min</span>().<span class="rust-ident">copied</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">maximum</span> = <span class="rust-ident">values</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">max</span>().<span class="rust-ident">copied</span>();
+
+<span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">sorted</span> = <span class="rust-ident">values</span>.<span class="rust-ident">clone</span>();
+<span class="rust-ident">sorted</span>.<span class="rust-ident">sort</span>();
+<span class="rust-keyword">let</span> <span class="rust-ident">median</span> = <span class="rust-keyword">if</span> <span class="rust-ident">sorted</span>.<span class="rust-ident">len</span>() % <span class="rust-number">2</span> == <span class="rust-number">0</span> {
+    <span class="rust-keyword">let</span> <span class="rust-ident">middle</span> = <span class="rust-ident">sorted</span>.<span class="rust-ident">len</span>() / <span class="rust-number">2</span>;
+    (<span class="rust-ident">sorted</span>[<span class="rust-ident">middle</span> - <span class="rust-number">1</span>] + <span class="rust-ident">sorted</span>[<span class="rust-ident">middle</span>]) <span class="rust-keyword">as</span> <span class="rust-type">f64</span> / <span class="rust-number">2.0</span>
+} <span class="rust-keyword">else</span> {
+    <span class="rust-ident">sorted</span>[<span class="rust-ident">sorted</span>.<span class="rust-ident">len</span>() / <span class="rust-number">2</span>] <span class="rust-keyword">as</span> <span class="rust-type">f64</span>
+};
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;values = {values:?}\ncount = {}\ntotal = {total}\nmean = {mean}\nmin = {minimum:?}\nmax = {maximum:?}\nmedian = {median}&quot;</span>,
+    <span class="rust-ident">values</span>.<span class="rust-ident">len</span>()
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+origin = Point2D { x: 0, y: 0 }
+origin == other: true
+distance = 12.5 m
+identity(3) = 3
+first = 7
+integer 42
+values = [3, 7, 4, 9, 12, 6]
+count = 6
+total = 41
+mean = 6.833333333333333
+min = Some(3)
+max = Some(12)
+median = 6.5
+</pre></div></article><article class="cell cell-markdown"><h2>Least-squares regression</h2>
+<p>A simple linear regression finds the line <code>y = slope * x + intercept</code> that
+minimizes squared error. The slope is the covariance of <code>x</code> and <code>y</code> divided by
+the variance of <code>x</code>. This is the linear-regression example merged into the tour.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [25]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">x</span> = <span class="rust-macro">vec</span>![<span class="rust-number">1.0_</span><span class="rust-type">f64</span>, <span class="rust-number">2.0</span>, <span class="rust-number">3.0</span>, <span class="rust-number">4.0</span>];
+<span class="rust-keyword">let</span> <span class="rust-ident">y</span> = <span class="rust-macro">vec</span>![<span class="rust-number">2.0_</span><span class="rust-type">f64</span>, <span class="rust-number">4.1</span>, <span class="rust-number">5.9</span>, <span class="rust-number">8.2</span>];
+
+<span class="rust-keyword">let</span> <span class="rust-ident">x_mean</span> = <span class="rust-ident">x</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">sum</span>::<<span class="rust-type">f64</span>>() / <span class="rust-ident">x</span>.<span class="rust-ident">len</span>() <span class="rust-keyword">as</span> <span class="rust-type">f64</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">y_mean</span> = <span class="rust-ident">y</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">sum</span>::<<span class="rust-type">f64</span>>() / <span class="rust-ident">y</span>.<span class="rust-ident">len</span>() <span class="rust-keyword">as</span> <span class="rust-type">f64</span>;
+
+<span class="rust-keyword">let</span> <span class="rust-ident">covariance</span> = <span class="rust-ident">x</span>
+    .<span class="rust-ident">iter</span>()
+    .<span class="rust-ident">zip</span>(&<span class="rust-ident">y</span>)
+    .<span class="rust-ident">map</span>(|(<span class="rust-ident">x</span>, <span class="rust-ident">y</span>)| (<span class="rust-ident">x</span> - <span class="rust-ident">x_mean</span>) * (<span class="rust-ident">y</span> - <span class="rust-ident">y_mean</span>))
+    .<span class="rust-ident">sum</span>::<<span class="rust-type">f64</span>>();
+<span class="rust-keyword">let</span> <span class="rust-ident">variance</span> = <span class="rust-ident">x</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">map</span>(|<span class="rust-ident">x</span>| (<span class="rust-ident">x</span> - <span class="rust-ident">x_mean</span>).<span class="rust-ident">powi</span>(<span class="rust-number">2</span>)).<span class="rust-ident">sum</span>::<<span class="rust-type">f64</span>>();
+
+<span class="rust-keyword">let</span> <span class="rust-ident">slope</span> = <span class="rust-ident">covariance</span> / <span class="rust-ident">variance</span>;
+<span class="rust-keyword">let</span> <span class="rust-ident">intercept</span> = <span class="rust-ident">y_mean</span> - <span class="rust-ident">slope</span> * <span class="rust-ident">x_mean</span>;
+
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
+    <span class="rust-string">&quot;x mean = {x_mean}\ny mean = {y_mean}\nslope = {slope}\nintercept = {intercept}\nprediction at x = 5: {:.2}&quot;</span>,
+    <span class="rust-ident">slope</span> * <span class="rust-number">5.0</span> + <span class="rust-ident">intercept</span>
+))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+origin = Point2D { x: 0, y: 0 }
+origin == other: true
+distance = 12.5 m
+identity(3) = 3
+first = 7
+integer 42
+values = [3, 7, 4, 9, 12, 6]
+count = 6
+total = 41
+mean = 6.833333333333333
+min = Some(3)
+max = Some(12)
+median = 6.5
+x mean = 2.5
+y mean = 5.05
+slope = 2.04
+intercept = -0.04999999999999982
+prediction at x = 5: 10.15
+</pre></div></article><article class="cell cell-markdown"><h2>Recap</h2>
+<p>The final code cell collects the topics from this tour into an aligned summary.</p>
+</article><article class="cell cell-code"><div class="cell-label">In [26]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">topics</span> = <span class="rust-macro">vec</span>![
+    (<span class="rust-string">&quot;cells&quot;</span>, <span class="rust-string">&quot;markdown, code, raw&quot;</span>),
+    (<span class="rust-string">&quot;basics&quot;</span>, <span class="rust-string">&quot;variables, types, operators&quot;</span>),
+    (<span class="rust-string">&quot;flow&quot;</span>, <span class="rust-string">&quot;if, match, loops, functions&quot;</span>),
+    (<span class="rust-string">&quot;collections&quot;</span>, <span class="rust-string">&quot;tuples, arrays, vectors, iterators, maps&quot;</span>),
+    (<span class="rust-string">&quot;abstractions&quot;</span>, <span class="rust-string">&quot;structs, enums, traits, closures&quot;</span>),
+    (<span class="rust-string">&quot;modules&quot;</span>, <span class="rust-string">&quot;mod, use, pub&quot;</span>),
+    (<span class="rust-string">&quot;macros&quot;</span>, <span class="rust-string">&quot;macro_rules!, attributes&quot;</span>),
+    (<span class="rust-string">&quot;generics&quot;</span>, <span class="rust-string">&quot;lifetimes, generics, type aliases&quot;</span>),
+    (<span class="rust-string">&quot;results&quot;</span>, <span class="rust-string">&quot;Option and Result&quot;</span>),
+    (<span class="rust-string">&quot;analysis&quot;</span>, <span class="rust-string">&quot;statistics and regression&quot;</span>),
+];
+
+<span class="rust-keyword">let</span> <span class="rust-ident">width</span> = <span class="rust-ident">topics</span>.<span class="rust-ident">iter</span>().<span class="rust-ident">map</span>(|(<span class="rust-ident">name</span>, <span class="rust-ident">_</span>)| <span class="rust-ident">name</span>.<span class="rust-ident">len</span>()).<span class="rust-ident">max</span>().<span class="rust-ident">unwrap_or</span>(<span class="rust-number">0</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">summary</span>: <span class="rust-type">Vec</span><<span class="rust-type">String</span>> = <span class="rust-ident">topics</span>
+    .<span class="rust-ident">iter</span>()
+    .<span class="rust-ident">map</span>(|(<span class="rust-ident">name</span>, <span class="rust-ident">detail</span>)| <span class="rust-macro">format</span>!(<span class="rust-string">&quot;{name:width$}  {detail}&quot;</span>))
+    .<span class="rust-ident">collect</span>();
+
+<span class="rust-ident">report</span>(<span class="rust-ident">summary</span>.<span class="rust-ident">join</span>(<span class="rust-string">&quot;\n&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+year = 2024
+pi = 3.141592653589793
+is_fun = true
+initial = M
+(12, 2, 35, 1, 2, 1.4, 1024)
+counter = 5
+answer = 42.5
+greeting = Hello, Mars!
+shout = HELLO, MARS!
+words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+characters = 12
+replaced = Hello, notebooks!
+21 C is mild: A jacket is enough
+countdown = [5, 4, 3, 2, 1]
+doubled = 10
+popped = [3, 2, 1]
+loop_count = 3
+square(9) = 81
+average([2, 4, 6, 8]) = 5
+point = (3, 4)
+x = 3, y = 4
+array = [10, 20, 30, 40]
+slice = [20, 30]
+total = 100
+primes = [2, 3, 5, 7, 11, 13]
+first = Some(2)
+last = Some(13)
+middle = [3, 5, 7]
+numbers = [1, 2, 3, 4, 5, 6]
+squares = [1, 4, 9, 16, 25, 36]
+evens = [2, 4, 6]
+sum = 21
+product = 720
+max = Some(6)
+[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+rectangle = Rectangle { width: 3.0, height: 4.0 }
+area = 12
+perimeter = 14
+circle = 12.57
+rectangle = 12.00
+good = Ok(42)
+bad = Err(&quot;`forty-two` is not a number&quot;)
+first_even = Some(2)
+fallback = -1
+parsed = parsed 42
+category = pass
+offset = 10
+values = [1, 2, 3, 4]
+adjusted = [11, 12, 13, 14]
+MAX_POINTS = 100
+NEXT_ID = 1
+static_ref = 1
+total = 100
+reference = 100
+counter = 6
+math::double(21) = 42
+hello, Mars
+origin = Point2D { x: 0, y: 0 }
+origin == other: true
+distance = 12.5 m
+identity(3) = 3
+first = 7
+integer 42
+values = [3, 7, 4, 9, 12, 6]
+count = 6
+total = 41
+mean = 6.833333333333333
+min = Some(3)
+max = Some(12)
+median = 6.5
+x mean = 2.5
+y mean = 5.05
+slope = 2.04
+intercept = -0.04999999999999982
+prediction at x = 5: 10.15
+cells         markdown, code, raw
+basics        variables, types, operators
+flow          if, match, loops, functions
+collections   tuples, arrays, vectors, iterators, maps
+abstractions  structs, enums, traits, closures
+modules       mod, use, pub
+macros        macro_rules!, attributes
+generics      lifetimes, generics, type aliases
+results       Option and Result
+analysis      statistics and regression
+</pre></div></article><article class="cell cell-markdown"><h2>What comes next</h2>
+<p>You have now seen the core of a Mars notebook: Markdown and raw cells, Rust
+code cells, persisted bindings, automatic output, and stored results.</p>
+<p>This tour also maps onto a Rust syllabus. It covers basic syntax
+(statements, expressions, variables, mutability, constants, modules,
+macros, and attributes), control flow (<code>if</code>, <code>if let</code>, <code>match</code>, loops),
+functions and closures, the type system (primitives, arrays, <code>Vec</code>,
+<code>&amp;str</code>/<code>String</code>, tuples, structs, enums, <code>Option</code>, <code>Result</code>), and traits and
+generics (lifetimes, type aliasing, traits, generics). Two topics are
+intentionally left out of this tour: procedural macros, which need a separate
+<code>proc-macro</code> crate, and the Cargo toolchain (<code>cargo build</code>, <code>cargo test</code>,
+<code>cargo doc</code>, crates.io), which you run from a terminal rather than a notebook.</p>
+<p>Continue with:</p>
+<table><thead><tr><th>Example</th><th>What it adds</th></tr></thead><tbody>
+<tr><td><code>04-machine-learning/machine-learning.mars</code></td><td>A longer workflow with data generation, evaluation, and a plotters chart</td></tr>
+<tr><td><code>05-plotting/plotting.mars</code></td><td>Vector figures rendered as SVG output</td></tr>
+</tbody></table>
+<p>Useful commands:</p>
+<pre><code>mars run getting-started.mars --report   # execute and save outputs
+mars run getting-started.mars --no-save  # check without writing
+mars export getting-started.mars md      # Markdown export
+mars export getting-started.mars html    # HTML export
+mars export getting-started.mars pdf     # PDF export
+</code></pre>
+</article>
+</body>
+</html>

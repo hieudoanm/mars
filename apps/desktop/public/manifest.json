@@ -1,0 +1,23 @@
+{
+  "name": "Mars",
+  "short_name": "Mars",
+  "description": "A Rust-powered interactive notebook for exploratory programming and data science.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f111a",
+  "theme_color": "#c94a3a",
+  "icons": [
+    {
+      "src": "/branding/svg/mars-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/png/mars-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

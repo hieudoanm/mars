@@ -1,0 +1,108 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import Markdown from '@/components/shared/Markdown';
+import { getPost, getPosts } from '@/lib/blog';
+
+export const dynamicParams = false;
+
+export const generateStaticParams = () => {
+  return getPosts().map((post) => ({ slug: post.slug }));
+};
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> => {
+  const { slug } = await params;
+  const post = getPost(slug);
+  return post ? { title: `${post.title} | Mars Blog`, description: post.description } : {};
+};
+
+type BlogPostPageProps = Readonly<{
+  params: Promise<{ slug: string }>;
+}>;
+
+const BlogPostPage = async ({ params }: BlogPostPageProps) => {
+  const { slug } = await params;
+  const post = getPost(slug);
+  if (!post) notFound();
+
+  const posts = getPosts();
+  const currentIndex = posts.findIndex((p) => p.slug === slug);
+  const previous = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
+  const next =
+    currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : undefined;
+
+  return (
+    <div>
+      <div className='text-muted mb-8 flex items-center gap-3 text-xs'>
+        <Link href='/blog' className='hover:text-ink'>
+          ← All posts
+        </Link>
+        {post.date ? (
+          <>
+            <span aria-hidden='true'>·</span>
+            <time dateTime={post.date}>{post.date}</time>
+          </>
+        ) : null}
+        {post.author ? (
+          <>
+            <span aria-hidden='true'>·</span>
+            <span>{post.author}</span>
+          </>
+        ) : null}
+      </div>
+
+      <h1 className='text-ink text-3xl font-bold tracking-tight sm:text-4xl'>{post.title}</h1>
+      {post.description ? <p className='text-muted mt-3 text-lg'>{post.description}</p> : null}
+      {post.tags.length > 0 ? (
+        <div className='mt-4 flex flex-wrap gap-2'>
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className='border-line bg-panel-2 text-muted rounded-full border px-2.5 py-1 text-xs'>
+              {tag}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      <article className='mt-8'>
+        <Markdown content={post.content} />
+      </article>
+
+      <nav className='border-line mt-12 flex items-center justify-between gap-4 border-t pt-6'>
+        <div className='flex-1'>
+          {previous ? (
+            <Link
+              className='group border-line text-ink hover:bg-panel-2 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition'
+              href={`/blog/${previous.slug}`}>
+              <span aria-hidden='true'>←</span>
+              <span className='flex flex-col'>
+                <span className='text-muted text-xs'>Previous</span>
+                <span className='font-medium'>{previous.title}</span>
+              </span>
+            </Link>
+          ) : null}
+        </div>
+        <div className='flex-1 text-right'>
+          {next ? (
+            <Link
+              className='group border-line text-ink hover:bg-panel-2 ml-auto flex items-center justify-end gap-2 rounded-lg border px-4 py-2 text-sm transition'
+              href={`/blog/${next.slug}`}>
+              <span className='flex flex-col items-end'>
+                <span className='text-muted text-xs'>Next</span>
+                <span className='font-medium'>{next.title}</span>
+              </span>
+              <span aria-hidden='true'>→</span>
+            </Link>
+          ) : null}
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default BlogPostPage;

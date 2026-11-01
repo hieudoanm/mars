@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title">
+  <title id="title">Mars orbit motion</title>
+  <style>
+    .orbit { fill: none; stroke: #f06b4d; stroke-opacity: .28; stroke-width: 1.5; }
+    .planet { fill: #f06b4d; }
+    .moon { fill: #ffac70; }
+    .spin-a { transform-origin: 80px 80px; animation: spin 14s linear infinite; }
+    .spin-b { transform-origin: 80px 80px; animation: spin 9s linear infinite reverse; }
+    .pulse { transform-origin: 80px 80px; animation: pulse 3.6s ease-in-out infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.06); opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { .spin-a,.spin-b,.pulse { animation: none; } }
+  </style>
+  <circle class="orbit" cx="80" cy="80" r="54" />
+  <circle class="orbit" cx="80" cy="80" r="34" stroke-opacity=".18" />
+  <g class="spin-a"><circle class="moon" cx="80" cy="26" r="4.5" /></g>
+  <g class="spin-b"><circle class="moon" cx="114" cy="80" r="3" opacity=".8" /></g>
+  <circle class="planet pulse" cx="80" cy="80" r="14" />
+</svg>

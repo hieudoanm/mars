@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@layer base {
+  :root {
+    color: #e8e7e5;
+    background: #141414;
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-synthesis: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-width: 960px;
+    height: 100vh;
+    overflow: hidden;
+    background: #141414;
+  }
+
+  button,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  h1,
+  h2 {
+    margin: 0;
+  }
+}

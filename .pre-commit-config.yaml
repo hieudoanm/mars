@@ -1,0 +1,70 @@
+default_language_version:
+  python: python3
+
+exclude: ^(target/|apps/desktop/node_modules/|extensions/vscode/node_modules/|apps/desktop/dist/|extensions/vscode/.*\.vsix$)
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: [--fix=no]
+
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt
+        entry: cargo fmt --all --check
+        language: system
+        pass_filenames: false
+        files: \.(rs|toml)$
+
+      - id: cargo-clippy
+        name: cargo clippy
+        entry: cargo clippy --workspace --all-targets -- -D warnings
+        language: system
+        pass_filenames: false
+        files: \.(rs|toml)$
+
+      - id: cargo-test
+        name: cargo test
+        entry: cargo test --workspace
+        language: system
+        pass_filenames: false
+        files: \.(rs|toml|mars|ipynb)$
+
+      - id: desktop-typecheck
+        name: desktop TypeScript build
+        entry: npm run build
+        language: system
+        files: ^apps/desktop/(src/|index\.html|package(-lock)?\.json|vite\.config\.ts)
+        pass_filenames: false
+        require_serial: true
+
+      - id: vscode-package
+        name: VS Code extension package
+        entry: npm run package
+        language: system
+        files: ^extensions/vscode/(src/|syntaxes/|assets/|package(-lock)?\.json|tsconfig\.json)
+        pass_filenames: false
+        require_serial: true
+
+      - id: landing-page-assets
+        name: landing page asset check
+        entry: >-
+          python3 -c "from pathlib import Path; root=Path('apps/landing');
+          required=['package.json','next.config.ts','app/page.tsx','app/layout.tsx',
+          'app/globals.css','app/LandingPage.tsx','docs/index.md',
+          'public/mars-logo.svg','public/mars-file-logo.svg','public/mars-og.svg',
+          'public/mars-logo.png','public/mars-file-logo.png','public/mars-og.png'];
+          missing=[str(root/p) for p in required if not (root/p).is_file()];
+          assert not missing, 'Missing landing page assets: ' + ', '.join(missing)"
+        language: system
+        files: ^apps/landing/
+        pass_filenames: false
