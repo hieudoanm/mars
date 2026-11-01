@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Mars — Explore ideas. Execute code.",
+  "short_name": "Mars",
+  "description": "A Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111113",
+  "theme_color": "#111113",
+  "icons": [
+    {
+      "src": "/images/png/mars-file-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

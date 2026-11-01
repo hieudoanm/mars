@@ -1,0 +1,17 @@
+[package]
+name = "mars-kernel"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+mars-core = { path = "../mars-core" }
+mars-protocol = { path = "../mars-protocol" }
+mars-runtime = { path = "../mars-runtime" }
+mars-runtime-evcxr = { path = "../mars-runtime-evcxr", optional = true }
+thiserror.workspace = true
+
+[features]
+experimental-evcxr = ["dep:mars-runtime-evcxr"]
+

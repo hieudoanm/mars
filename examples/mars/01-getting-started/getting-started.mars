@@ -1,0 +1,37 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Getting started with Mars",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "welcome",
+      "cell_type": "markdown",
+      "source": "# Welcome to Mars",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "numbers",
+      "cell_type": "code",
+      "source": "let numbers = vec![1, 2, 3, 4, 5];",
+      "metadata": {},
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "display-numbers",
+      "cell_type": "code",
+      "source": "numbers",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "[1, 2, 3, 4, 5]\n"
+        }
+      ]
+    }
+  ]
+}

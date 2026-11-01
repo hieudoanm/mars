@@ -1,0 +1,7 @@
+/* TEAM */
+Project: Mars
+Role: Open-source Rust-powered interactive notebook
+Repository: https://github.com/hieudoanm/mars
+
+/* THANKS */
+Built with Rust, Next.js, React, and the open-source community.
