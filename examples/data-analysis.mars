@@ -1,0 +1,23 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Data analysis",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "analysis-intro",
+      "cell_type": "markdown",
+      "source": "# Data analysis\n\nA small dependency-free summary workflow.",
+      "metadata": {}
+    },
+    {
+      "id": "analysis-data",
+      "cell_type": "code",
+      "source": "let values = vec![3_i32, 7, 4, 9, 12, 6];\nlet total: i32 = values.iter().sum();\nlet mean = total as f64 / values.len() as f64;\n(mean, values.iter().min(), values.iter().max())",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}

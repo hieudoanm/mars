@@ -1,0 +1,13 @@
+[package]
+name = "mars-renderer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+ammonia.workspace = true
+serde_json.workspace = true
+mars-core = { path = "../mars-core" }
+mars-document = { path = "../mars-document" }
+pulldown-cmark.workspace = true

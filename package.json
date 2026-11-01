@@ -1,0 +1,21 @@
+{
+  "name": "@mars/workspace",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.12.1",
+  "scripts": {
+    "build": "turbo run build",
+    "check": "turbo run check",
+    "dev": "turbo run dev --parallel",
+    "landing:build": "turbo run build --filter=@mars/landing",
+    "landing:check": "turbo run check --filter=@mars/landing",
+    "landing:serve": "pnpm --filter @mars/landing serve",
+    "desktop:build": "turbo run build --filter=@mars/desktop",
+    "desktop:e2e": "turbo run test:e2e --filter=@mars/desktop",
+    "vscode:compile": "turbo run check --filter=@mars/vscode",
+    "vscode:package": "turbo run package --filter=@mars/vscode"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.6"
+  }
+}
