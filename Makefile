@@ -1,6 +1,6 @@
 SHELL := /bin/sh
 
-.PHONY: all fmt check clippy test test-runtime test-jupyter build desktop-build e2e benchmark clean
+.PHONY: all fmt check clippy test test-runtime test-jupyter build desktop-build e2e benchmark clean install-cli run-examples
 
 all: check desktop-build
 
@@ -35,3 +35,9 @@ benchmark:
 
 clean:
 	cargo clean
+
+install-cli:
+	cargo install --path crates/mars-cli --force
+
+run-examples:
+	cd examples/mars && ./run.sh
