@@ -7,6 +7,7 @@ rust-version.workspace = true
 
 [dependencies]
 ammonia.workspace = true
+base64.workspace = true
 serde_json.workspace = true
 mars-core = { path = "../mars-core" }
 mars-document = { path = "../mars-document" }

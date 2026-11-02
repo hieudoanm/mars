@@ -27,3 +27,4 @@ libc = "=0.2.191"
 uuid = { version = "=1.29.0", features = ["serde", "v4"] }
 pulldown-cmark = "=0.13.6"
 ammonia = "=4.2.4"
+base64 = "=0.21.7"

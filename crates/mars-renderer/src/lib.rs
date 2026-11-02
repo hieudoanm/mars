@@ -1,6 +1,8 @@
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use mars_core::{CellType, Output};
 use mars_document::Notebook;
 use pulldown_cmark::{Options, Parser, html};
+use serde_json::Value;
 
 pub fn render_notebook(notebook: &Notebook) -> String {
     let title = notebook
@@ -84,7 +86,7 @@ fn render_markdown(source: &str) -> String {
 }
 
 fn render_output(output: &Output) -> String {
-    return match output {
+    match output {
         Output::Text { text } => format!(
             "<div class=\"output output-text\"><pre>{}</pre></div>",
             escape_html(text)
@@ -106,17 +108,8 @@ fn render_output(output: &Output) -> String {
                 }
             )
         }
-        Output::Html { html } => {
-            format!("<div class=\"output\">{}</div>", ammonia::clean(html))
-        }
-        Output::Image { mime_type, data } if is_safe_image_type(mime_type) => format!(
-            "<div class=\"output\"><img src=\"data:{};base64,{}\" alt=\"Notebook output\"></div>",
-            escape_html(mime_type),
-            escape_html(data)
-        ),
-        Output::Image { .. } => {
-            "<div class=\"output output-error\">Unsupported image MIME type</div>".to_owned()
-        }
+        Output::Html { html } => render_html_output(html),
+        Output::Image { mime_type, data } => render_image_output(mime_type, data),
         Output::Table { columns, rows } => {
             let headers = columns
                 .iter()
@@ -148,106 +141,242 @@ fn render_output(output: &Output) -> String {
                 render_chart_svg(spec)
             )
         }
-        Output::MimeBundle { data, .. } => format!(
-            "<pre class=\"output\">{}</pre>",
-            escape_html(&serde_json::Value::Object(data.clone()).to_string())
-        ),
-    };
-
-    fn render_chart_svg(spec: &serde_json::Value) -> String {
-        let values = spec
-            .get("data")
-            .and_then(|data| data.get("values"))
-            .and_then(serde_json::Value::as_array);
-        let Some(values) = values else {
-            return "<pre>Chart data is unavailable</pre>".to_owned();
-        };
-        let mark = spec
-            .get("mark")
-            .and_then(serde_json::Value::as_str)
-            .unwrap_or("point");
-        let encoding = spec.get("encoding").and_then(serde_json::Value::as_object);
-        let x_field = encoding
-            .and_then(|value| value.get("x"))
-            .and_then(|value| value.get("field"))
-            .and_then(serde_json::Value::as_str);
-        let y_field = encoding
-            .and_then(|value| value.get("y"))
-            .and_then(|value| value.get("field"))
-            .and_then(serde_json::Value::as_str);
-        let Some(y_field) = y_field else {
-            return "<pre>Chart requires an encoded y field</pre>".to_owned();
-        };
-        let y_values = values
-            .iter()
-            .filter_map(|value| value.get(y_field).and_then(serde_json::Value::as_f64))
-            .collect::<Vec<_>>();
-        if y_values.is_empty() {
-            return "<pre>Chart data has no numeric y values</pre>".to_owned();
-        }
-        let max = y_values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
-        let width = 720.0;
-        let height = 240.0;
-        let left = 42.0;
-        let bottom = 24.0;
-        let plot_width = width - left - 12.0;
-        let plot_height = height - bottom - 12.0;
-        let points = y_values
-            .iter()
-            .enumerate()
-            .map(|(index, value)| {
-                let x = left + (index as f64 / y_values.len().max(1) as f64) * plot_width;
-                let y = 12.0 + plot_height - (value / max) * plot_height;
-                (x, y, value)
-            })
-            .collect::<Vec<_>>();
-        let shapes = match mark {
-            "bar" => points
-                .iter()
-                .map(|(x, y, value)| {
-                    let bar_width = (plot_width / y_values.len().max(1) as f64 * 0.7).max(2.0);
-                    format!(
-                        "<rect x=\"{x:.1}\" y=\"{y:.1}\" width=\"{bar_width:.1}\" height=\"{height:.1}\" fill=\"#f97316\"><title>{value}</title></rect>",
-                        height = 12.0 + plot_height - y,
-                    )
-                })
-                .collect::<String>(),
-            "line" | "point" => {
-                let path = points
-                    .iter()
-                    .map(|(x, y, _)| format!("{x:.1},{y:.1}"))
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                let line = if mark == "line" {
-                    format!("<polyline points=\"{path}\" fill=\"none\" stroke=\"#fb923c\" stroke-width=\"3\"/>")
-                } else {
-                    String::new()
-                };
-                let circles = points
-                    .iter()
-                    .map(|(x, y, value)| {
-                        format!("<circle cx=\"{x:.1}\" cy=\"{y:.1}\" r=\"5\" fill=\"#f97316\"><title>{value}</title></circle>")
-                    })
-                    .collect::<String>();
-                format!("{line}{circles}")
-            }
-            _ => "<text x=\"42\" y=\"30\" fill=\"#fca5a5\">Unsupported chart mark</text>".to_owned(),
-        };
-        let x_label = x_field.map_or(String::new(), |field| {
-            format!(
-                "<text x=\"{left}\" y=\"{height}\" fill=\"#a3a09b\">{}</text>",
-                escape_html(field)
-            )
-        });
-        format!(
-            "<svg class=\"chart-svg\" viewBox=\"0 0 {width} {height}\" role=\"img\" aria-label=\"Offline chart\"><line x1=\"{left}\" y1=\"12\" x2=\"{left}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/><line x1=\"{left}\" y1=\"{plot_bottom}\" x2=\"{width}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/>{shapes}{x_label}</svg>",
-            plot_bottom = 12.0 + plot_height,
-        )
+        Output::MimeBundle { data, .. } => render_mime_bundle(data),
     }
 }
 
+fn render_mime_bundle(data: &serde_json::Map<String, Value>) -> String {
+    for mime_type in [
+        "image/svg+xml",
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "image/webp",
+    ] {
+        if let Some(value) = data.get(mime_type).and_then(mime_value_to_string) {
+            return render_image_output(mime_type, &value);
+        }
+    }
+
+    if let Some(spec) = data
+        .get("application/vnd.vega.v5+json")
+        .or_else(|| data.get("application/vnd.vega-lite.v5+json"))
+        .or_else(|| data.get("application/vnd.vega-lite+json"))
+    {
+        let encoded = escape_html(&spec.to_string());
+        return format!(
+            "<div class=\"output chart\" data-chart=\"{encoded}\">{}</div>",
+            render_chart_svg(spec)
+        );
+    }
+
+    if let Some(html) = data.get("text/html").and_then(mime_value_to_string) {
+        return render_html_output(&html);
+    }
+    if let Some(latex) = data.get("text/latex").and_then(mime_value_to_string) {
+        return format!(
+            "<div class=\"output math\" data-latex=\"{}\"><span class=\"math-text\">{}</span></div>",
+            escape_html(&latex),
+            render_latex_static(&latex)
+        );
+    }
+    if let Some(markdown) = data.get("text/markdown").and_then(mime_value_to_string) {
+        return format!("<div class=\"output\">{}</div>", render_markdown(&markdown));
+    }
+    if let Some(text) = data.get("text/plain").and_then(mime_value_to_string) {
+        return format!(
+            "<div class=\"output output-text\"><pre>{}</pre></div>",
+            escape_html(&text)
+        );
+    }
+
+    format!(
+        "<pre class=\"output\">{}</pre>",
+        escape_html(&Value::Object(data.clone()).to_string())
+    )
+}
+
+fn mime_value_to_string(value: &Value) -> Option<String> {
+    match value {
+        Value::String(value) => Some(value.clone()),
+        Value::Array(parts) => {
+            let mut text = String::new();
+            for part in parts {
+                text.push_str(part.as_str()?);
+            }
+            Some(text)
+        }
+        _ => None,
+    }
+}
+
+fn render_html_output(html: &str) -> String {
+    if let Some(svg) = extract_svg(html) {
+        return render_image_output("image/svg+xml", svg);
+    }
+    format!("<div class=\"output\">{}</div>", ammonia::clean(html))
+}
+
+fn render_image_output(mime_type: &str, data: &str) -> String {
+    if !is_safe_image_type(mime_type) {
+        return "<div class=\"output output-error\">Unsupported image MIME type</div>".to_owned();
+    }
+    let Some(source) = image_data_uri(mime_type, data) else {
+        return "<div class=\"output output-error\">Image data is empty</div>".to_owned();
+    };
+    format!(
+        "<div class=\"output output-image\"><img src=\"{}\" alt=\"Notebook output\"></div>",
+        escape_html(&source)
+    )
+}
+
+fn image_data_uri(mime_type: &str, data: &str) -> Option<String> {
+    let data = data.trim();
+    if data.is_empty() {
+        return None;
+    }
+    if data.starts_with("data:") {
+        return Some(data.to_owned());
+    }
+    if mime_type == "image/svg+xml" {
+        let payload = if data.starts_with('<') {
+            STANDARD.encode(data.as_bytes())
+        } else {
+            data.to_owned()
+        };
+        return Some(format!("data:image/svg+xml;base64,{payload}"));
+    }
+    Some(format!("data:{mime_type};base64,{data}"))
+}
+
+fn extract_svg(html: &str) -> Option<&str> {
+    let lowercase = html.to_ascii_lowercase();
+    let start = lowercase.find("<svg")?;
+    let open_end = start + lowercase[start..].find('>')? + 1;
+    let end = if lowercase[start..open_end].trim_end().ends_with("/>") {
+        open_end
+    } else {
+        let after_open = &lowercase[open_end..];
+        open_end + after_open.find("</svg>")? + "</svg>".len()
+    };
+
+    // An SVG embedded in a larger HTML document (for example an icon inside a
+    // table) is not a figure on its own. Only promote documents whose visible
+    // content is the SVG itself.
+    if has_visible_text(&html[..start]) || has_visible_text(&html[end..]) {
+        return None;
+    }
+
+    Some(&html[start..end])
+}
+
+fn has_visible_text(fragment: &str) -> bool {
+    let mut text = String::new();
+    let mut in_tag = false;
+    for character in fragment.chars() {
+        match character {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => text.push(character),
+            _ => {}
+        }
+    }
+    !text.trim().is_empty()
+}
+
+fn render_chart_svg(spec: &Value) -> String {
+    let values = spec
+        .get("data")
+        .and_then(|data| data.get("values"))
+        .and_then(Value::as_array);
+    let Some(values) = values else {
+        return "<pre>Chart data is unavailable</pre>".to_owned();
+    };
+    let mark = spec.get("mark").and_then(Value::as_str).unwrap_or("point");
+    let encoding = spec.get("encoding").and_then(Value::as_object);
+    let x_field = encoding
+        .and_then(|value| value.get("x"))
+        .and_then(|value| value.get("field"))
+        .and_then(Value::as_str);
+    let y_field = encoding
+        .and_then(|value| value.get("y"))
+        .and_then(|value| value.get("field"))
+        .and_then(Value::as_str);
+    let Some(y_field) = y_field else {
+        return "<pre>Chart requires an encoded y field</pre>".to_owned();
+    };
+    let y_values = values
+        .iter()
+        .filter_map(|value| value.get(y_field).and_then(Value::as_f64))
+        .collect::<Vec<_>>();
+    if y_values.is_empty() {
+        return "<pre>Chart data has no numeric y values</pre>".to_owned();
+    }
+    let max = y_values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+    let width = 720.0;
+    let height = 240.0;
+    let left = 42.0;
+    let bottom = 24.0;
+    let plot_width = width - left - 12.0;
+    let plot_height = height - bottom - 12.0;
+    let points = y_values
+        .iter()
+        .enumerate()
+        .map(|(index, value)| {
+            let x = left + (index as f64 / y_values.len().max(1) as f64) * plot_width;
+            let y = 12.0 + plot_height - (value / max) * plot_height;
+            (x, y, value)
+        })
+        .collect::<Vec<_>>();
+    let shapes = match mark {
+        "bar" => points
+            .iter()
+            .map(|(x, y, value)| {
+                let bar_width = (plot_width / y_values.len().max(1) as f64 * 0.7).max(2.0);
+                format!(
+                    "<rect x=\"{x:.1}\" y=\"{y:.1}\" width=\"{bar_width:.1}\" height=\"{height:.1}\" fill=\"#f97316\"><title>{value}</title></rect>",
+                    height = 12.0 + plot_height - y,
+                )
+            })
+            .collect::<String>(),
+        "line" | "point" => {
+            let path = points
+                .iter()
+                .map(|(x, y, _)| format!("{x:.1},{y:.1}"))
+                .collect::<Vec<_>>()
+                .join(" ");
+            let line = if mark == "line" {
+                format!("<polyline points=\"{path}\" fill=\"none\" stroke=\"#fb923c\" stroke-width=\"3\"/>")
+            } else {
+                String::new()
+            };
+            let circles = points
+                .iter()
+                .map(|(x, y, value)| {
+                    format!("<circle cx=\"{x:.1}\" cy=\"{y:.1}\" r=\"5\" fill=\"#f97316\"><title>{value}</title></circle>")
+                })
+                .collect::<String>();
+            format!("{line}{circles}")
+        }
+        _ => "<text x=\"42\" y=\"30\" fill=\"#fca5a5\">Unsupported chart mark</text>".to_owned(),
+    };
+    let x_label = x_field.map_or(String::new(), |field| {
+        format!(
+            "<text x=\"{left}\" y=\"{height}\" fill=\"#a3a09b\">{}</text>",
+            escape_html(field)
+        )
+    });
+    format!(
+        "<svg class=\"chart-svg\" viewBox=\"0 0 {width} {height}\" role=\"img\" aria-label=\"Offline chart\"><line x1=\"{left}\" y1=\"12\" x2=\"{left}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/><line x1=\"{left}\" y1=\"{plot_bottom}\" x2=\"{width}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/>{shapes}{x_label}</svg>",
+        plot_bottom = 12.0 + plot_height,
+    )
+}
+
 fn is_safe_image_type(mime_type: &str) -> bool {
-    matches!(mime_type, "image/png" | "image/jpeg" | "image/svg+xml")
+    matches!(
+        mime_type,
+        "image/png" | "image/jpeg" | "image/gif" | "image/webp" | "image/svg+xml"
+    )
 }
 
 fn render_latex_static(latex: &str) -> String {
@@ -393,5 +522,95 @@ mod tests {
         assert!(html.contains("class=\"chart-svg\""));
         assert!(html.contains("<polyline"));
         assert!(!html.contains("https://"));
+    }
+
+    #[test]
+    fn prefers_svg_when_rendering_image_mime_bundles() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "plot()");
+        cell.outputs.push(Output::MimeBundle {
+            data: serde_json::json!({
+                "image/png": "iVBORw0KGgo=",
+                "image/svg+xml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"4\" cy=\"4\" r=\"4\"/></svg>",
+                "text/plain": "<Figure size 640x480 with 1 Axes>"
+            })
+            .as_object()
+            .cloned()
+            .unwrap_or_default(),
+            metadata: serde_json::Map::new(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let html = render_notebook(&notebook);
+
+        assert!(html.contains("data:image/svg+xml;base64,"));
+        assert!(!html.contains("data:image/png;base64,"));
+        assert!(html.contains("alt=\"Notebook output\""));
+    }
+
+    #[test]
+    fn renders_base64_png_mime_bundles() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "plot()");
+        cell.outputs.push(Output::MimeBundle {
+            data: serde_json::json!({
+                "image/png": "iVBORw0KGgo=",
+                "text/plain": "<Figure size 640x480 with 1 Axes>"
+            })
+            .as_object()
+            .cloned()
+            .unwrap_or_default(),
+            metadata: serde_json::Map::new(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let html = render_notebook(&notebook);
+
+        assert!(html.contains("data:image/png;base64,iVBORw0KGgo="));
+    }
+
+    #[test]
+    fn renders_plotters_svg_html_as_vector_image() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "chart.evcxr_display()");
+        cell.outputs.push(Output::Html {
+            html: "<div style=\"\"><svg xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"10\" height=\"10\"/></svg></div>".to_owned(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let html = render_notebook(&notebook);
+
+        assert!(html.contains("class=\"output output-image\""));
+        assert!(html.contains("data:image/svg+xml;base64,"));
+        assert!(!html.contains("<div style=\"\">"));
+    }
+
+    #[test]
+    fn keeps_html_with_an_embedded_svg_and_visible_text() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "report()");
+        cell.outputs.push(Output::Html {
+            html: "<p>Quarterly report</p><svg xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"4\" height=\"4\"/></svg>".to_owned(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let html = render_notebook(&notebook);
+
+        assert!(html.contains("Quarterly report"));
+        assert!(!html.contains("data:image/svg+xml;base64,"));
+    }
+
+    #[test]
+    fn renders_self_closing_svg_html_as_a_vector_image() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "icon()");
+        cell.outputs.push(Output::Html {
+            html: "<svg xmlns=\"http://www.w3.org/2000/svg\"/>".to_owned(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let html = render_notebook(&notebook);
+
+        assert!(html.contains("data:image/svg+xml;base64,"));
     }
 }

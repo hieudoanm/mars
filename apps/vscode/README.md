@@ -72,6 +72,12 @@ export PATH="$HOME/.local/bin:$PATH"
 4. Use the "+" button to add new cells
 5. Cells can be code (Rust) or Markdown
 
+### Runtime Selection
+Set `mars.runtime` to `evcxr` to run cells through the Evcxr backend, which is
+required for packages such as `plotters` that emit their display output during
+execution. The default `replay` backend re-executes prior cells. Evcxr is
+experimental and requires a Mars CLI built with `--features experimental-evcxr`.
+
 ### Keyboard Shortcuts
 - `Shift+Enter`: Run cell and move to next
 - `Ctrl/Cmd+Enter`: Run cell

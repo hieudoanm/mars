@@ -1,0 +1,35 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Plotting with Plotters",
+    "language": "rust",
+    "dependencies": {
+      "plotters": "{ version = \"0.3\", features = [\"evcxr\"] }"
+    }
+  },
+  "cells": [
+    {
+      "id": "plotting-intro",
+      "cell_type": "markdown",
+      "source": "# Plotting with Plotters\n\nPlotters renders vector figures for notebook output, similar to matplotlib in Jupyter. Mars displays the SVG MIME representation directly.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "plotting-import",
+      "cell_type": "code",
+      "source": "use plotters::prelude::*;",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "plotting-sine",
+      "cell_type": "code",
+      "source": "let figure = plotters::evcxr::evcxr_figure((640, 480), |root| {\n    root.fill(&WHITE)?;\n\n    let mut chart = ChartBuilder::on(&root)\n        .caption(\"Sine wave\", (\"sans-serif\", 28))\n        .margin(12)\n        .x_label_area_size(30)\n        .y_label_area_size(36)\n        .build_cartesian_2d(0.0_f64..10.0, -1.0_f64..1.0)?;\n\n    chart.configure_mesh().draw()?;\n    chart.draw_series(LineSeries::new(\n        (0..=200).map(|step| {\n            let x = step as f64 / 20.0;\n            (x, x.sin())\n        }),\n        &RED,\n    ))?;\n\n    Ok(())\n});\n\nfigure.evcxr_display();",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}

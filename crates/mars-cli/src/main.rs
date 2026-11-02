@@ -343,7 +343,10 @@ fn print_execution_result(index: usize, result: &mars_runtime::ExecutionResult) 
                 print_indented_error(message);
             }
             Output::Html { .. } => println!("  html output"),
-            Output::Image { mime_type, .. } => println!("  image output ({mime_type})"),
+            Output::Image { mime_type, data } => println!(
+                "  image output ({mime_type}, {})",
+                format_image_size(mime_type, data)
+            ),
             Output::Table { columns, rows } => println!(
                 "  table output ({} columns, {} rows)",
                 columns.len(),
@@ -352,9 +355,46 @@ fn print_execution_result(index: usize, result: &mars_runtime::ExecutionResult) 
             Output::Latex { .. } => println!("  LaTeX output"),
             Output::Chart { .. } => println!("  chart output"),
             Output::MimeBundle { data, .. } => {
-                println!("  MIME bundle output ({} types)", data.len())
+                if let Some((mime_type, value)) = preferred_image(data) {
+                    println!(
+                        "  image output ({mime_type}, {})",
+                        format_image_size(mime_type, value)
+                    );
+                } else {
+                    let types = data.keys().cloned().collect::<Vec<_>>().join(", ");
+                    println!("  MIME bundle output ({types})");
+                }
             }
         }
+    }
+}
+
+fn preferred_image(data: &serde_json::Map<String, serde_json::Value>) -> Option<(&str, &str)> {
+    [
+        "image/svg+xml",
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "image/webp",
+    ]
+    .into_iter()
+    .find_map(|mime_type| {
+        data.get(mime_type)
+            .and_then(serde_json::Value::as_str)
+            .map(|value| (mime_type, value))
+    })
+}
+
+fn format_image_size(mime_type: &str, data: &str) -> String {
+    let bytes = if mime_type == "image/svg+xml" && data.trim_start().starts_with('<') {
+        data.len()
+    } else {
+        data.trim().len().saturating_mul(3) / 4
+    };
+    if bytes >= 1024 {
+        format!("{:.1} KB", bytes as f64 / 1024.0)
+    } else {
+        format!("{bytes} B")
     }
 }
 

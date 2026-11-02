@@ -86,6 +86,18 @@ errors, HTML, images, tables, LaTeX, chart specifications, and arbitrary
 MIME bundles. A MIME bundle preserves multiple representations and associated
 display metadata instead of selecting one value too early.
 
+Image representations follow the Jupyter convention: binary image MIME values
+such as `image/png`, `image/jpeg`, `image/gif`, and `image/webp` contain
+base64-encoded bytes, while `image/svg+xml` contains the SVG document itself.
+When multiple image representations are available, frontends prefer vector SVG
+and fall back to the bitmap variants. Evcxr/plotters HTML containing an SVG is
+promoted to an `image/svg+xml` MIME entry at the runtime boundary.
+
+The desktop and VS Code notebook views render MIME bundles directly, and the
+standalone HTML renderer embeds images as `data:` URLs so exports stay
+self-contained. Unsupported representations remain preserved as fallback text
+instead of being discarded.
+
 The desktop may render rich outputs interactively using bundled frontend
 libraries. Standalone HTML export uses a dependency-free renderer with
 sanitized HTML and static fallbacks. Unsupported or unknown MIME values are

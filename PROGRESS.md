@@ -45,6 +45,11 @@ Phase 7 — Desktop and rendering polish
 - Added notebook-declared Cargo dependencies through temporary Cargo projects.
 - Added LaTeX, chart-spec, and arbitrary MIME-bundle output variants across the
   core model, Jupyter conversion, standalone renderer, CLI, and desktop UI.
+- Added MIME-bundle image rendering for base64 PNG/JPEG/GIF/WebP and vector SVG
+  across the standalone HTML renderer, desktop output view, and VS Code
+  notebook renderer.
+- Promoted Evcxr/plotters SVG HTML output to `image/svg+xml` MIME bundles and
+  allowed sanitized SVG in desktop HTML output.
 - Added a Playwright browser smoke-test harness for the desktop editor.
 - Added KaTeX equation rendering and Vega/Vega-Lite chart rendering to the
   desktop output view.

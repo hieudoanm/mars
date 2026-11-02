@@ -106,7 +106,7 @@ npm run tauri build
 - Item declarations and statement-only cells require explicit output.
 - Runtime timeouts cover both compilation and execution, terminating the active child process when the total cell limit expires.
 
-- HTML export renders Markdown, code, text, errors, tables, images, sanitized HTML outputs, common LaTeX expressions, and supported line/point/bar chart specifications into a standalone dark-themed document.
+- HTML export renders Markdown, code, text, errors, tables, images (including base64 PNG and inline SVG MIME bundles), sanitized HTML outputs, common LaTeX expressions, and supported line/point/bar chart specifications into a standalone dark-themed document.
 - Unknown MIME bundles represented safely as fallback blocks.
 
 - Rust notebooks may declare registry dependencies in `metadata.dependencies`, for example `{ "serde": "1" }`.

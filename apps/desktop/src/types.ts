@@ -8,7 +8,7 @@ export type Output =
   | { type: "table"; columns: string[]; rows: string[][] }
   | { type: "latex"; latex: string }
   | { type: "chart"; spec: Record<string, unknown> }
-  | { type: "mime_bundle"; data: Record<string, unknown>; metadata: Record<string, unknown> };
+  | { type: "mime_bundle"; data: Record<string, unknown>; metadata?: Record<string, unknown> };
 
 export type NotebookCell = {
   id: string;

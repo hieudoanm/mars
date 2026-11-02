@@ -10,6 +10,7 @@ This directory contains example Mars notebooks demonstrating various features of
 | `02-data-analysis.mars`     | Simple data analysis with vectors, sums, and statistics                                                                     |
 | `03-linear-regression.mars` | Computing least-squares linear regression from scratch                                                                      |
 | `04-machine-learning.mars`  | Machine learning workflow using Rust libraries (polars, ndarray, linfa) similar to Python's pandas, numpy, and scikit-learn |
+| `05-plotting.mars`          | Vector plotting with plotters, rendered as an SVG image output like matplotlib in Jupyter                        |
 
 ## Running the Examples
 

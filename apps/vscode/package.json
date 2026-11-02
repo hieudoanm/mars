@@ -125,6 +125,12 @@
           "type": "number",
           "default": 30000,
           "description": "Timeout in milliseconds for cell execution. Rust compilation can be slow, so increase this if needed."
+        },
+        "mars.runtime": {
+          "type": "string",
+          "enum": ["replay", "evcxr"],
+          "default": "replay",
+          "description": "Runtime backend passed to `mars kernel serve`. Use `evcxr` for plotters/evcxr display output; the Mars CLI must be built with the experimental-evcxr feature."
         }
       }
     },

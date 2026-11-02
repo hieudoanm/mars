@@ -257,6 +257,7 @@ fn append_mime_output(outputs: &mut Vec<Output>, mut data: Map<String, Value>) {
     if data.is_empty() {
         return;
     }
+    promote_html_svg(&mut data);
     if data.len() == 1 {
         if let Some(Value::String(text)) = data.remove("text/plain") {
             outputs.push(Output::Text { text });
@@ -271,6 +272,60 @@ fn append_mime_output(outputs: &mut Vec<Output>, mut data: Map<String, Value>) {
         data,
         metadata: Map::new(),
     });
+}
+
+/// Plotters and similar Evcxr display helpers return an SVG wrapped in HTML.
+/// Promote that representation to an `image/svg+xml` MIME entry so every Mars
+/// frontend can render it as a vector image without sanitising away the SVG.
+fn promote_html_svg(data: &mut Map<String, Value>) {
+    if data.keys().any(|mime_type| mime_type.starts_with("image/")) {
+        return;
+    }
+    let Some(Value::String(html)) = data.get("text/html") else {
+        return;
+    };
+    let Some(svg) = extract_svg(html) else {
+        return;
+    };
+    let svg = svg.to_owned();
+    data.remove("text/html");
+    data.insert("image/svg+xml".to_owned(), Value::String(svg));
+    data.entry("text/plain".to_owned())
+        .or_insert_with(|| Value::String("Figure (SVG)".to_owned()));
+}
+
+fn extract_svg(html: &str) -> Option<&str> {
+    let lowercase = html.to_ascii_lowercase();
+    let start = lowercase.find("<svg")?;
+    let open_end = start + lowercase[start..].find('>')? + 1;
+    let end = if lowercase[start..open_end].trim_end().ends_with("/>") {
+        open_end
+    } else {
+        let after_open = &lowercase[open_end..];
+        open_end + after_open.find("</svg>")? + "</svg>".len()
+    };
+
+    // Do not promote HTML that merely contains an SVG (such as an inline
+    // icon); plotters figures consist of nothing but the SVG plus wrappers.
+    if has_visible_text(&html[..start]) || has_visible_text(&html[end..]) {
+        return None;
+    }
+
+    Some(&html[start..end])
+}
+
+fn has_visible_text(fragment: &str) -> bool {
+    let mut text = String::new();
+    let mut in_tag = false;
+    for character in fragment.chars() {
+        match character {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => text.push(character),
+            _ => {}
+        }
+    }
+    !text.trim().is_empty()
 }
 
 fn terminate_evaluator(process_handle: &Arc<std::sync::Mutex<std::process::Child>>) {
@@ -295,4 +350,101 @@ fn interrupted_result(duration: Duration, execution_count: u64, message: &str) -
 /// Route Evcxr's re-executed runtime process into its user-code loop.
 pub fn runtime_hook() {
     evcxr::runtime_hook();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn promotes_plotters_svg_html_to_a_mime_bundle() {
+        let mut outputs = Vec::new();
+        append_mime_output(
+            &mut outputs,
+            Map::from_iter([(
+                "text/html".to_owned(),
+                Value::String(
+                    "<div style=\"\"><svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"4\" cy=\"4\" r=\"4\"/></svg></div>"
+                        .to_owned(),
+                ),
+            )]),
+        );
+
+        assert!(matches!(
+            outputs.as_slice(),
+            [Output::MimeBundle { data, .. }]
+                if data.contains_key("image/svg+xml")
+                    && data.contains_key("text/plain")
+                    && !data.contains_key("text/html")
+        ));
+        let Output::MimeBundle { data, .. } = &outputs[0] else {
+            return;
+        };
+        assert!(
+            data["image/svg+xml"]
+                .as_str()
+                .is_some_and(|svg| svg.starts_with("<svg"))
+        );
+    }
+
+    #[test]
+    fn keeps_image_mime_bundles_untouched() {
+        let mut outputs = Vec::new();
+        append_mime_output(
+            &mut outputs,
+            Map::from_iter([
+                (
+                    "image/png".to_owned(),
+                    Value::String("iVBORw0KGgo=".to_owned()),
+                ),
+                (
+                    "text/html".to_owned(),
+                    Value::String("<svg><circle/></svg>".to_owned()),
+                ),
+            ]),
+        );
+
+        assert!(matches!(
+            outputs.as_slice(),
+            [Output::MimeBundle { data, .. }]
+                if data.contains_key("image/png") && data.contains_key("text/html")
+        ));
+    }
+
+    #[test]
+    fn leaves_html_with_surrounding_text_as_html() {
+        let mut outputs = Vec::new();
+        append_mime_output(
+            &mut outputs,
+            Map::from_iter([(
+                "text/html".to_owned(),
+                Value::String("<p>Inline icon</p><svg><circle/></svg>".to_owned()),
+            )]),
+        );
+
+        assert!(matches!(
+            outputs.as_slice(),
+            [Output::Html { html }] if html.contains("Inline icon")
+        ));
+    }
+
+    #[test]
+    fn still_collapses_single_text_and_html_outputs() {
+        let mut outputs = Vec::new();
+        append_mime_output(
+            &mut outputs,
+            Map::from_iter([("text/plain".to_owned(), Value::String("42".to_owned()))]),
+        );
+        assert!(matches!(outputs.as_slice(), [Output::Text { text }] if text == "42"));
+
+        let mut outputs = Vec::new();
+        append_mime_output(
+            &mut outputs,
+            Map::from_iter([(
+                "text/html".to_owned(),
+                Value::String("<b>safe</b>".to_owned()),
+            )]),
+        );
+        assert!(matches!(outputs.as_slice(), [Output::Html { html }] if html == "<b>safe</b>"));
+    }
 }

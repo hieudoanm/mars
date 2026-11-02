@@ -47,6 +47,13 @@ button.danger { color: #fecaca; border-color: #7f1d1d; background: #451a1a; }
 .text-output { color: #d6d3d1; } .error-output { color: #fecaca; border-left: 3px solid #ef4444; } .error-output strong { color: #f87171; }
 .math-output { color: #fbbf24; font-family: Georgia, serif; font-size: 1.15rem; }
 .chart-output { border: 1px solid #404040; }
+.image-output { display: flex; justify-content: center; padding: 12px; background: #fff; }
+.image-output img { display: block; max-width: 100%; height: auto; }
+.html-output svg { max-width: 100%; height: auto; }
+.table-output table { width: 100%; border-collapse: collapse; }
+.table-output th, .table-output td { padding: 7px 9px; border: 1px solid #3f3f3f; text-align: left; }
+.table-output th { color: #f4f4f5; background: #242424; }
+.table-output td { color: #d6d3d1; background: #1b1b1b; }
 .statusbar { display: flex; gap: 20px; padding: 8px 15px; color: #888; border-top: 1px solid #2c2c2c; background: #1a1a1a; font-size: 11px; }
 .modal-backdrop { position: fixed; inset: 0; display: grid; place-items: center; background: rgb(0 0 0 / 65%); }
 .confirm-modal { width: min(460px, calc(100vw - 40px)); padding: 24px; border: 1px solid #4a3324; border-radius: 12px; background: #202020; box-shadow: 0 20px 70px rgb(0 0 0 / 45%); }
