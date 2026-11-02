@@ -2,12 +2,14 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "commonjs",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "outDir": "out",
     "rootDir": "src",
     "strict": true,
+    "skipLibCheck": true,
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["vitest/globals"]
   },
   "include": ["src"]
 }

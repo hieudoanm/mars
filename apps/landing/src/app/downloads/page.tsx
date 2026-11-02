@@ -32,7 +32,7 @@ export default function DownloadsPage() {
           className='inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-[-.03em]'
           href='/'
           aria-label='Mars home'>
-          <img className='h-[30px] w-[30px] rounded-lg' src='/mars-logo.svg' alt='' />
+          <img className='h-[30px] w-[30px] rounded-lg' src='/images/svg/mars-logo.svg' alt='' />
           <span>Mars</span>
         </a>
         <nav className='flex gap-[30px] text-[13px] text-[#8b96a6] max-[850px]:hidden'>
@@ -108,7 +108,7 @@ export default function DownloadsPage() {
         <a
           className='inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-[-.03em] text-[#d8dde5]'
           href='/'>
-          <img className='h-6 w-6 rounded-lg' src='/mars-logo.svg' alt='' />
+          <img className='h-6 w-6 rounded-lg' src='/images/svg/mars-logo.svg' alt='' />
           <span>Mars</span>
         </a>
         <span>Explore ideas. Execute code. Discover possibilities.</span>

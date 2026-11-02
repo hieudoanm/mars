@@ -6,11 +6,12 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/out/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.test.ts', 'src/extension.ts'],
+      exclude: ['src/**/*.test.ts', 'src/__tests__/**', 'src/output/types.ts'],
       thresholds: {
         lines: 80,
         functions: 80,

@@ -10,14 +10,15 @@ export const metadata: Metadata = {
   },
   description:
     'Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
+  manifest: '/manifest.json',
   icons: {
-    icon: '/mars-file-logo.svg',
+    icon: '/images/svg/mars-file-logo.svg',
   },
   openGraph: {
     title: 'Mars - Explore ideas. Execute code.',
     description:
       'A Rust-first interactive notebook with isolated execution, rich output, and its own native document format.',
-    images: ['/mars-og.png'],
+    images: ['/images/png/mars-og.png'],
   },
 };
 

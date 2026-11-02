@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://hieudoanm.github.io/mars/</loc></url>
+  <url><loc>https://hieudoanm.github.io/mars/docs/</loc></url>
+  <url><loc>https://hieudoanm.github.io/mars/docs/cli/</loc></url>
+  <url><loc>https://hieudoanm.github.io/mars/docs/getting-started/</loc></url>
+  <url><loc>https://hieudoanm.github.io/mars/docs/notebook-format/</loc></url>
+  <url><loc>https://hieudoanm.github.io/mars/docs/runtime/</loc></url>
+  <url><loc>https://hieudoanm.github.io/mars/docs/vscode/</loc></url>
+</urlset>

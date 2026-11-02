@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 
 if (typeof window !== 'undefined') {
   const storage = new Map<string, string>();
