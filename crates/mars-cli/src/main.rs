@@ -6,7 +6,7 @@ use mars_protocol::RequestEnvelope;
 use mars_renderer::render_notebook;
 use std::{
     env, fs,
-    io::{self, BufRead, Write},
+    io::{self, Write},
     path::Path,
     process::{Command, ExitCode},
     time::Duration,
@@ -65,8 +65,8 @@ fn run(args: Vec<String>) -> Result<(), String> {
                 Ok(())
             }
             Some("serve") => {
-                let backend = parse_backend_option(&args[2..])?;
-                serve_kernel(backend)
+                let options = parse_serve_options(&args[2..])?;
+                serve_kernel(options)
             }
             _ => {
                 Err("usage: mars kernel list | mars kernel restart | mars kernel serve".to_owned())
@@ -183,7 +183,7 @@ fn run(args: Vec<String>) -> Result<(), String> {
 }
 
 fn usage() -> String {
-    "usage: mars new <file.mars> | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr]]".to_owned()
+    "usage: mars new <file.mars> | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr] [--notebook <file.mars>]]".to_owned()
 }
 
 struct RunOptions {
@@ -258,14 +258,37 @@ fn open_with_system(path: &str) -> Result<(), String> {
         .map_err(|error| format!("failed to open {path}: {error}"))
 }
 
-fn parse_backend_option(args: &[String]) -> Result<RuntimeBackendKind, String> {
-    if args.is_empty() {
-        return Ok(RuntimeBackendKind::Replay);
+fn parse_serve_options(args: &[String]) -> Result<ServeOptions, String> {
+    let mut options = ServeOptions {
+        backend: RuntimeBackendKind::Replay,
+        notebook: None,
+    };
+    let mut index = 0;
+    while index < args.len() {
+        match args[index].as_str() {
+            "--runtime" => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| "missing value for --runtime".to_owned())?;
+                options.backend = parse_backend(value)?;
+                index += 2;
+            }
+            "--notebook" => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| "missing value for --notebook".to_owned())?;
+                options.notebook = Some(value.clone());
+                index += 2;
+            }
+            unknown => return Err(format!("unknown kernel serve option: {unknown}")),
+        }
     }
-    if args.len() == 2 && args[0] == "--runtime" {
-        return parse_backend(&args[1]);
-    }
-    Err("usage: mars kernel serve [--runtime replay|evcxr]".to_owned())
+    Ok(options)
+}
+
+struct ServeOptions {
+    backend: RuntimeBackendKind,
+    notebook: Option<String>,
 }
 
 fn parse_backend(value: &str) -> Result<RuntimeBackendKind, String> {
@@ -276,13 +299,33 @@ fn parse_backend(value: &str) -> Result<RuntimeBackendKind, String> {
     }
 }
 
-fn serve_kernel(backend: RuntimeBackendKind) -> Result<(), String> {
+fn serve_kernel(options: ServeOptions) -> Result<(), String> {
     let stdin = io::stdin();
     let mut stdout = io::BufWriter::new(io::stdout().lock());
-    let mut kernel = Kernel::with_backend(Default::default(), backend, false)
-        .map_err(|error| error.to_string())?;
-    for line in stdin.lock().lines() {
-        let line = line.map_err(|error| error.to_string())?;
+    let mut kernel = if let Some(path) = options.notebook {
+        let notebook = Notebook::load(&path).map_err(|error| error.to_string())?;
+        Kernel::with_configuration(
+            notebook.metadata.dependencies,
+            notebook.metadata.cargo_lock,
+            false,
+            false,
+            options.backend,
+        )
+        .map_err(|error| error.to_string())?
+    } else {
+        Kernel::with_backend(Default::default(), options.backend, false)
+            .map_err(|error| error.to_string())?
+    };
+    let mut line = String::new();
+    loop {
+        line.clear();
+        if stdin
+            .read_line(&mut line)
+            .map_err(|error| error.to_string())?
+            == 0
+        {
+            break;
+        }
         if line.trim().is_empty() {
             continue;
         }

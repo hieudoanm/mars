@@ -2,5 +2,8 @@ node_modules
 src
 tsconfig.json
 *.map
+**/*.map
 *.vsix
 package-lock.json
+.turbo
+**/.turbo/**

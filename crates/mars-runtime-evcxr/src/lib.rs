@@ -1,6 +1,8 @@
 use evcxr::{CommandContext, Error as EvcxrError, EvalContextOutputs};
 use mars_core::Output;
-use mars_runtime::{ExecutionResult, RuntimeBackend, RuntimeError, validate_dependencies};
+use mars_runtime::{
+    ExecutionResult, RuntimeBackend, RuntimeError, extract_standalone_svg, validate_dependencies,
+};
 use serde_json::{Map, Value};
 use std::{
     collections::BTreeMap,
@@ -284,7 +286,7 @@ fn promote_html_svg(data: &mut Map<String, Value>) {
     let Some(Value::String(html)) = data.get("text/html") else {
         return;
     };
-    let Some(svg) = extract_svg(html) else {
+    let Some(svg) = extract_standalone_svg(html) else {
         return;
     };
     let svg = svg.to_owned();
@@ -292,40 +294,6 @@ fn promote_html_svg(data: &mut Map<String, Value>) {
     data.insert("image/svg+xml".to_owned(), Value::String(svg));
     data.entry("text/plain".to_owned())
         .or_insert_with(|| Value::String("Figure (SVG)".to_owned()));
-}
-
-fn extract_svg(html: &str) -> Option<&str> {
-    let lowercase = html.to_ascii_lowercase();
-    let start = lowercase.find("<svg")?;
-    let open_end = start + lowercase[start..].find('>')? + 1;
-    let end = if lowercase[start..open_end].trim_end().ends_with("/>") {
-        open_end
-    } else {
-        let after_open = &lowercase[open_end..];
-        open_end + after_open.find("</svg>")? + "</svg>".len()
-    };
-
-    // Do not promote HTML that merely contains an SVG (such as an inline
-    // icon); plotters figures consist of nothing but the SVG plus wrappers.
-    if has_visible_text(&html[..start]) || has_visible_text(&html[end..]) {
-        return None;
-    }
-
-    Some(&html[start..end])
-}
-
-fn has_visible_text(fragment: &str) -> bool {
-    let mut text = String::new();
-    let mut in_tag = false;
-    for character in fragment.chars() {
-        match character {
-            '<' => in_tag = true,
-            '>' => in_tag = false,
-            _ if !in_tag => text.push(character),
-            _ => {}
-        }
-    }
-    !text.trim().is_empty()
 }
 
 fn terminate_evaluator(process_handle: &Arc<std::sync::Mutex<std::process::Child>>) {

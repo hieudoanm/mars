@@ -143,6 +143,15 @@ Phase 7 — Desktop and rendering polish
 - Added timeout/cancellation handling that kills Evcxr's evaluator process,
   abandons a stuck controller call, and recreates the session; reset, process
   failure, and compilation errors map through the existing runtime outputs.
+- Added target-aware installation (`--cli`, `--vscode`/`--vscode-only`,
+  `--desktop`, and `--no-*` flags) so the VS Code extension can be rebuilt and
+  installed without the desktop app.
+- Fixed replay-runtime display capture: `EVCXR_BEGIN_CONTENT` markers are now
+  parsed, standalone SVG HTML is promoted to an `image/svg+xml` MIME bundle, and
+  `examples/mars/05-plotting.mars` stores the figure instead of marker text.
+- Added `mars kernel serve --notebook <file.mars>` so the VS Code extension
+  loads notebook Cargo dependencies and restarts the kernel when the active
+  notebook changes.
 
 ## Outstanding
 

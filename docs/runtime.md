@@ -107,6 +107,23 @@ without splitting Unicode characters incorrectly. Cargo-backed compilation
 falls back to Cargo's emitted diagnostic text when Cargo wraps compiler
 messages.
 
+## Display output
+
+The replay runtime also translates Evcxr-style display markers in captured
+stdout. Libraries such as `plotters` print:
+
+```text
+EVCXR_BEGIN_CONTENT text/html
+<div><svg ...></svg></div>
+EVCXR_END_CONTENT
+```
+
+Mars removes the markers and turns a standalone SVG payload into an
+`image/svg+xml` MIME bundle (with a `text/plain` fallback), so saved notebook
+outputs render as figures instead of raw marker text. HTML that merely contains
+an SVG alongside visible content stays an HTML output. The same extraction is
+shared with the experimental Evcxr backend.
+
 ## Performance decision
 
 Replay compilation is intentionally the validated default, not an assumption

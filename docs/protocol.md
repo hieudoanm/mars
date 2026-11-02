@@ -34,12 +34,14 @@ serve clients other than the desktop UI.
 The CLI provides a persistent newline-delimited JSON adapter today:
 
 ```bash
-mars kernel serve
+mars kernel serve [--runtime replay|evcxr] [--notebook <file.mars>]
 ```
 
 It reads one `RequestEnvelope` per line and writes one `ResponseEnvelope` per
 line, allowing integrations to keep a kernel session alive without coupling
-the runtime to the desktop process.
+the runtime to the desktop process. `--notebook` supplies the notebook metadata
+(Cargo dependency declarations and an optional lockfile) used to configure the
+session; the VS Code extension passes the active notebook path for this reason.
 
 Timed-out execution returns an execution response containing an `Interrupted`
 error output, leaves the execution count unchanged, and reports

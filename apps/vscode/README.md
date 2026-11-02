@@ -44,17 +44,24 @@ npm run package
 
 ## Installation
 
-To install the extension with the Mars CLI:
+To install the extension together with the Mars CLI:
 
 ```bash
 # From the repository root
-./scripts/install.sh
+./scripts/install.sh --cli --vscode
 ```
 
-This script will:
-1. Build the Mars CLI from source
+To rebuild and reinstall only the extension (keeping an existing `mars` on
+`PATH`):
+
+```bash
+./scripts/install.sh --vscode
+```
+
+The script will:
+1. Build the Mars CLI from source (`--cli` or `--all` only)
 2. Install the Mars CLI to `~/.local/bin/mars`
-3. Build the VSCode extension
+3. Build the VSCode extension from scratch (`out/` and `vsix/` are removed first)
 4. Install the extension in VSCode
 
 Make sure to add `~/.local/bin` to your PATH:
@@ -73,10 +80,23 @@ export PATH="$HOME/.local/bin:$PATH"
 5. Cells can be code (Rust) or Markdown
 
 ### Runtime Selection
-Set `mars.runtime` to `evcxr` to run cells through the Evcxr backend, which is
-required for packages such as `plotters` that emit their display output during
-execution. The default `replay` backend re-executes prior cells. Evcxr is
-experimental and requires a Mars CLI built with `--features experimental-evcxr`.
+Set `mars.runtime` to `evcxr` to run cells through the Evcxr backend. The
+default `replay` backend re-executes prior cells and now also converts
+`EVCXR_BEGIN_CONTENT` display markers (used by `plotters`) into
+`image/svg+xml` MIME bundles. Evcxr is experimental and requires a Mars CLI
+built with `--features experimental-evcxr`.
+
+The extension passes the open notebook to `mars kernel serve --notebook <file>`
+so the kernel loads that notebook's declared Cargo dependencies and lockfile,
+then restarts the kernel when you switch to a different notebook.
+
+### Images and rich output
+
+The built-in VS Code notebook renderer displays `image/svg+xml`, PNG, JPEG, and
+GIF output. SVG and HTML output are only rendered while the workspace is
+trusted; otherwise VS Code falls back to the `text/plain` alternative. Use
+**Workspaces: Manage Workspace Trust** to trust the folder if figures show as
+text.
 
 ### Keyboard Shortcuts
 - `Shift+Enter`: Run cell and move to next

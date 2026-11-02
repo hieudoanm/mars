@@ -74,14 +74,18 @@ class MarsKernelService {
   private process: ReturnType<typeof spawn> | null = null;
   private requestId = 0;
   private cliPath: string;
+  private notebookPath: string | null = null;
 
   constructor(cliPath: string) {
     this.cliPath = cliPath;
   }
 
-  async start(): Promise<void> {
-    if (this.process) {
+  async start(notebookPath: string | null = null): Promise<void> {
+    if (this.process && this.notebookPath === notebookPath) {
       return;
+    }
+    if (this.process) {
+      this.stop();
     }
 
     // Check if the command exists
@@ -97,12 +101,18 @@ class MarsKernelService {
     if (runtime === "evcxr") {
       kernelArguments.push("--runtime", "evcxr");
     }
+    // Passing the notebook lets the CLI load its declared Cargo dependencies
+    // and lockfile, so cells that use external crates compile in the editor.
+    if (notebookPath) {
+      kernelArguments.push("--notebook", notebookPath);
+    }
 
     console.log(`Starting Mars kernel: ${this.cliPath} ${kernelArguments.join(" ")}`);
 
     this.process = spawn(this.cliPath, kernelArguments, {
       stdio: ["pipe", "pipe", "pipe"]
     });
+    this.notebookPath = notebookPath;
 
     this.process.on("error", (error) => {
       console.error("Mars kernel process error:", error);
@@ -118,14 +128,12 @@ class MarsKernelService {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  async execute(code: string, timeoutMs?: number): Promise<{
+  async execute(code: string, timeoutMs?: number, notebookPath: string | null = null): Promise<{
     status: "success" | "error" | "interrupted";
     execution_count: number;
     outputs: MarsOutput[];
   }> {
-    if (!this.process) {
-      await this.start();
-    }
+    await this.start(notebookPath);
 
     const requestId = (++this.requestId).toString();
     const request: RequestEnvelope = {
@@ -195,7 +203,7 @@ class MarsKernelService {
 
   async reset(): Promise<void> {
     if (!this.process) {
-      await this.start();
+      await this.start(this.notebookPath);
     }
 
     const requestId = (++this.requestId).toString();
@@ -415,15 +423,18 @@ class MarsNotebookController {
 
   private async _executeAll(
     cells: vscode.NotebookCell[],
-    _notebook: vscode.NotebookDocument,
+    notebook: vscode.NotebookDocument,
     _controller: vscode.NotebookController
   ): Promise<void> {
     for (const cell of cells) {
-      await this._executeCell(cell);
+      await this._executeCell(cell, notebook);
     }
   }
 
-  private async _executeCell(cell: vscode.NotebookCell): Promise<void> {
+  private async _executeCell(
+    cell: vscode.NotebookCell,
+    notebook?: vscode.NotebookDocument
+  ): Promise<void> {
     const exec = this._controller.createNotebookCellExecution(cell);
     this._executionOrder++;
     exec.executionOrder = this._executionOrder;
@@ -471,7 +482,11 @@ class MarsNotebookController {
 
         // Execute using the Mars kernel service with timeout
         const result = await Promise.race([
-          kernel.execute(code, timeoutMs),
+          kernel.execute(
+            code,
+            timeoutMs,
+            notebook?.uri.scheme === "file" ? notebook.uri.fsPath : null
+          ),
           new Promise<{ status: "error"; execution_count: number; outputs: MarsOutput[] }>((_, reject) =>
             setTimeout(() => reject(new Error(`Execution timeout after ${timeoutMs}ms. Try increasing mars.executionTimeout in settings.`)), timeoutMs)
           )

@@ -38,6 +38,7 @@ exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const node_child_process_1 = require("node:child_process");
 const node_util_1 = require("node:util");
+const output_1 = require("./output");
 const execFileAsync = (0, node_util_1.promisify)(node_child_process_1.execFile);
 async function commandExists(command) {
     const checkCommand = process.platform === "win32" ? "where" : "which";
@@ -53,22 +54,39 @@ class MarsKernelService {
     process = null;
     requestId = 0;
     cliPath;
+    notebookPath = null;
     constructor(cliPath) {
         this.cliPath = cliPath;
     }
-    async start() {
-        if (this.process) {
+    async start(notebookPath = null) {
+        if (this.process && this.notebookPath === notebookPath) {
             return;
+        }
+        if (this.process) {
+            this.stop();
         }
         // Check if the command exists
         const exists = await commandExists(this.cliPath);
         if (!exists) {
             throw new Error(`Mars CLI not found at '${this.cliPath}'. Please install Mars CLI and ensure it's on your PATH.`);
         }
-        console.log(`Starting Mars kernel: ${this.cliPath} kernel serve`);
-        this.process = (0, node_child_process_1.spawn)(this.cliPath, ["kernel", "serve"], {
+        const runtime = vscode.workspace
+            .getConfiguration("mars")
+            .get("runtime", "replay");
+        const kernelArguments = ["kernel", "serve"];
+        if (runtime === "evcxr") {
+            kernelArguments.push("--runtime", "evcxr");
+        }
+        // Passing the notebook lets the CLI load its declared Cargo dependencies
+        // and lockfile, so cells that use external crates compile in the editor.
+        if (notebookPath) {
+            kernelArguments.push("--notebook", notebookPath);
+        }
+        console.log(`Starting Mars kernel: ${this.cliPath} ${kernelArguments.join(" ")}`);
+        this.process = (0, node_child_process_1.spawn)(this.cliPath, kernelArguments, {
             stdio: ["pipe", "pipe", "pipe"]
         });
+        this.notebookPath = notebookPath;
         this.process.on("error", (error) => {
             console.error("Mars kernel process error:", error);
             this.process = null;
@@ -80,19 +98,16 @@ class MarsKernelService {
         // Wait a bit for the process to start
         await new Promise((resolve) => setTimeout(resolve, 500));
     }
-    async execute(code, timeoutMs) {
-        if (!this.process) {
-            await this.start();
-        }
+    async execute(code, timeoutMs, notebookPath = null) {
+        await this.start(notebookPath);
         const requestId = (++this.requestId).toString();
         const request = {
             id: requestId,
             request: {
-                Execute: {
-                    code,
-                    timeout_millis: timeoutMs
-                }
-            }
+                type: "execute",
+                source: code,
+                timeout_millis: timeoutMs,
+            },
         };
         return new Promise((resolve, reject) => {
             if (!this.process?.stdout) {
@@ -112,17 +127,17 @@ class MarsKernelService {
                         if (response.id === requestId) {
                             this.process?.stdout?.removeListener("data", onData);
                             this.process?.stdout?.removeListener("error", onError);
-                            if ("Error" in response.response) {
-                                reject(new Error(response.response.Error.message));
+                            if (response.response.type === "error") {
+                                reject(new Error(response.response.message));
                                 return;
                             }
-                            if ("Execute" in response.response) {
-                                const exec = response.response.Execute;
-                                const outputs = this.convertProtocolOutputs(exec.outputs);
+                            if (response.response.type === "execution") {
+                                const exec = response.response;
+                                const failed = exec.outputs.some((output) => output.type === "error");
                                 resolve({
-                                    status: exec.status,
+                                    status: failed ? "error" : "success",
                                     execution_count: exec.execution_count,
-                                    outputs
+                                    outputs: exec.outputs,
                                 });
                             }
                         }
@@ -145,12 +160,12 @@ class MarsKernelService {
     }
     async reset() {
         if (!this.process) {
-            await this.start();
+            await this.start(this.notebookPath);
         }
         const requestId = (++this.requestId).toString();
         const request = {
             id: requestId,
-            request: { Reset: {} }
+            request: { type: "reset" },
         };
         return new Promise((resolve, reject) => {
             if (!this.process?.stdout) {
@@ -170,8 +185,8 @@ class MarsKernelService {
                         if (response.id === requestId) {
                             this.process?.stdout?.removeListener("data", onData);
                             this.process?.stdout?.removeListener("error", onError);
-                            if ("Error" in response.response) {
-                                reject(new Error(response.response.Error.message));
+                            if (response.response.type === "error") {
+                                reject(new Error(response.response.message));
                             }
                             else {
                                 resolve();
@@ -198,29 +213,6 @@ class MarsKernelService {
             this.process.kill();
             this.process = null;
         }
-    }
-    convertProtocolOutputs(protocolOutputs) {
-        return protocolOutputs.map((po) => {
-            if ("Text" in po) {
-                return { type: "text", text: po.Text.text };
-            }
-            if ("Error" in po) {
-                return { type: "error", text: po.Error.message };
-            }
-            if ("Html" in po) {
-                return { type: "html", text: po.Html.html };
-            }
-            if ("Latex" in po) {
-                return { type: "latex", text: po.Latex.latex };
-            }
-            if ("MimeBundle" in po) {
-                return { type: "mime_bundle", data: po.MimeBundle.data };
-            }
-            if ("ImagePng" in po) {
-                return { type: "image_png", data: { png: po.ImagePng.data } };
-            }
-            return { type: "unknown" };
-        });
     }
 }
 class MarsNotebookSerializer {
@@ -298,39 +290,10 @@ class MarsNotebookSerializer {
         return new TextEncoder().encode(JSON.stringify(marsNotebook, null, 2));
     }
     convertMarsOutput(marsOutput) {
-        const items = [];
-        if (marsOutput.text) {
-            items.push(new vscode.NotebookCellOutputItem(Buffer.from(marsOutput.text, "utf-8"), "text/plain"));
-        }
-        if (marsOutput.data) {
-            for (const [mimeType, value] of Object.entries(marsOutput.data)) {
-                items.push(new vscode.NotebookCellOutputItem(Buffer.from(value, "utf-8"), mimeType));
-            }
-        }
-        return new vscode.NotebookCellOutput(items);
+        return (0, output_1.marsOutputToNotebookOutput)(marsOutput);
     }
     convertNotebookOutput(output) {
-        const marsOutput = { type: "unknown" };
-        for (const item of output.items) {
-            const data = item.data;
-            const text = new TextDecoder().decode(data);
-            if (item.mime === "text/plain" || item.mime === undefined) {
-                marsOutput.text = text;
-                marsOutput.type = "text";
-            }
-            else if (item.mime === "application/vnd.code.notebook.error") {
-                marsOutput.type = "error";
-                marsOutput.text = text;
-            }
-            else {
-                if (!marsOutput.data) {
-                    marsOutput.data = {};
-                }
-                marsOutput.data[item.mime] = text;
-                marsOutput.type = "mime_bundle";
-            }
-        }
-        return marsOutput;
+        return (0, output_1.notebookOutputToMarsOutput)(output);
     }
     generateId() {
         return `cell-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -367,12 +330,12 @@ class MarsNotebookController {
         }
         return this.kernelService;
     }
-    async _executeAll(cells, _notebook, _controller) {
+    async _executeAll(cells, notebook, _controller) {
         for (const cell of cells) {
-            await this._executeCell(cell);
+            await this._executeCell(cell, notebook);
         }
     }
-    async _executeCell(cell) {
+    async _executeCell(cell, notebook) {
         const exec = this._controller.createNotebookCellExecution(cell);
         this._executionOrder++;
         exec.executionOrder = this._executionOrder;
@@ -404,15 +367,14 @@ class MarsNotebookController {
                 ]));
                 // Execute using the Mars kernel service with timeout
                 const result = await Promise.race([
-                    kernel.execute(code, timeoutMs),
+                    kernel.execute(code, timeoutMs, notebook?.uri.scheme === "file" ? notebook.uri.fsPath : null),
                     new Promise((_, reject) => setTimeout(() => reject(new Error(`Execution timeout after ${timeoutMs}ms. Try increasing mars.executionTimeout in settings.`)), timeoutMs))
                 ]);
                 // Clear previous outputs
                 await exec.clearOutput();
                 // Add new outputs
                 for (const output of result.outputs) {
-                    const items = this.convertMarsOutputToNotebookItems(output);
-                    await exec.appendOutput(new vscode.NotebookCellOutput(items));
+                    await exec.appendOutput((0, output_1.marsOutputToNotebookOutput)(output));
                 }
                 success = result.status === "success";
             }
@@ -428,22 +390,6 @@ class MarsNotebookController {
             // Always end execution
             exec.end(success, Date.now());
         }
-    }
-    convertMarsOutputToNotebookItems(marsOutput) {
-        const items = [];
-        if (marsOutput.text) {
-            const mime = marsOutput.type === "error" ? "application/vnd.code.notebook.error" :
-                marsOutput.type === "html" ? "text/html" :
-                    marsOutput.type === "latex" ? "text/latex" :
-                        "text/plain";
-            items.push(new vscode.NotebookCellOutputItem(Buffer.from(marsOutput.text, "utf-8"), mime));
-        }
-        if (marsOutput.data) {
-            for (const [mimeType, value] of Object.entries(marsOutput.data)) {
-                items.push(new vscode.NotebookCellOutputItem(Buffer.from(value, "utf-8"), mimeType));
-            }
-        }
-        return items;
     }
 }
 function activate(context) {

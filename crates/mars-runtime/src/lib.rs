@@ -814,9 +814,12 @@ fn strip_trailing_line_comments(source: &str) -> String {
 fn execution_outputs(stdout: &[u8], stderr: &[u8], error_name: &str) -> Vec<Output> {
     let mut outputs = Vec::new();
     if !stdout.is_empty() {
-        outputs.push(Output::Text {
-            text: normalize_stdout(&String::from_utf8_lossy(stdout)),
-        });
+        let normalized = normalize_stdout(&String::from_utf8_lossy(stdout));
+        let (text, content_outputs) = parse_evcxr_content(&normalized);
+        if !text.is_empty() {
+            outputs.push(Output::Text { text });
+        }
+        outputs.extend(content_outputs);
     }
     if !stderr.is_empty() {
         outputs.push(Output::Error {
@@ -826,6 +829,127 @@ fn execution_outputs(stdout: &[u8], stderr: &[u8], error_name: &str) -> Vec<Outp
         });
     }
     outputs
+}
+
+/// Split Evcxr display markers out of captured stdout.
+///
+/// Libraries such as `plotters` print display payloads as:
+///
+/// ```text
+/// EVCXR_BEGIN_CONTENT text/html
+/// <div><svg ...></svg></div>
+/// EVCXR_END_CONTENT
+/// ```
+///
+/// The replay runtime executes that code as a normal program, so without this
+/// translation the payload would be saved as plain text instead of an image.
+/// Returns the remaining plain text followed by one output per payload.
+pub fn parse_evcxr_content(stdout: &str) -> (String, Vec<Output>) {
+    const BEGIN: &str = "EVCXR_BEGIN_CONTENT";
+    const END: &str = "EVCXR_END_CONTENT";
+
+    let lines = stdout.lines().collect::<Vec<_>>();
+    let mut text_lines = Vec::new();
+    let mut outputs = Vec::new();
+    let mut index = 0;
+
+    while index < lines.len() {
+        let line = lines[index];
+        if let Some(mime_type) = line.trim_start().strip_prefix(BEGIN) {
+            let mime_type = mime_type.trim();
+            if !mime_type.is_empty() {
+                let terminator = lines[index + 1..]
+                    .iter()
+                    .position(|candidate| candidate.trim() == END);
+                if let Some(relative) = terminator {
+                    let end = index + 1 + relative;
+                    let content = lines[index + 1..end].join("\n");
+                    outputs.push(content_output(mime_type, content));
+                    index = end + 1;
+                    continue;
+                }
+            }
+        }
+        text_lines.push(line);
+        index += 1;
+    }
+
+    let mut text = text_lines.join("\n");
+    if stdout.ends_with('\n') && !text.is_empty() {
+        text.push('\n');
+    }
+    (text, outputs)
+}
+
+fn content_output(mime_type: &str, content: String) -> Output {
+    match mime_type {
+        "text/plain" => Output::Text { text: content },
+        "text/html" => match extract_standalone_svg(&content) {
+            Some(svg) => mime_bundle("image/svg+xml", svg, "Figure (SVG)"),
+            None => Output::Html { html: content },
+        },
+        mime if mime.starts_with("image/") => mime_bundle(mime, &content, "Notebook image"),
+        mime => {
+            let mut data = serde_json::Map::new();
+            data.insert(mime.to_owned(), serde_json::Value::String(content));
+            Output::MimeBundle {
+                data,
+                metadata: serde_json::Map::new(),
+            }
+        }
+    }
+}
+
+fn mime_bundle(mime_type: &str, content: &str, alt_text: &str) -> Output {
+    let mut data = serde_json::Map::new();
+    data.insert(
+        mime_type.to_owned(),
+        serde_json::Value::String(content.to_owned()),
+    );
+    data.insert(
+        "text/plain".to_owned(),
+        serde_json::Value::String(alt_text.to_owned()),
+    );
+    Output::MimeBundle {
+        data,
+        metadata: serde_json::Map::new(),
+    }
+}
+
+/// Return the SVG document when `html` consists only of an SVG plus wrappers.
+///
+/// An SVG nested inside a larger HTML document (for example an icon inside a
+/// table) is not a figure on its own and must stay as HTML.
+pub fn extract_standalone_svg(html: &str) -> Option<&str> {
+    let lowercase = html.to_ascii_lowercase();
+    let start = lowercase.find("<svg")?;
+    let open_end = start + lowercase[start..].find('>')? + 1;
+    let end = if lowercase[start..open_end].trim_end().ends_with("/>") {
+        open_end
+    } else {
+        let after_open = &lowercase[open_end..];
+        open_end + after_open.find("</svg>")? + "</svg>".len()
+    };
+
+    if has_visible_text(&html[..start]) || has_visible_text(&html[end..]) {
+        return None;
+    }
+
+    Some(&html[start..end])
+}
+
+fn has_visible_text(fragment: &str) -> bool {
+    let mut text = String::new();
+    let mut in_tag = false;
+    for character in fragment.chars() {
+        match character {
+            '<' => in_tag = true,
+            '>' => in_tag = false,
+            _ if !in_tag => text.push(character),
+            _ => {}
+        }
+    }
+    !text.trim().is_empty()
 }
 
 fn normalize_stdout(stdout: &str) -> String {
@@ -1099,5 +1223,56 @@ DisplayOnly
             RustSession::with_dependencies(dependencies),
             Err(RuntimeError::InvalidDependency { .. })
         ));
+    }
+
+    #[test]
+    fn parses_evcxr_svg_content_from_stdout() {
+        let stdout = concat!(
+            "before\n",
+            "EVCXR_BEGIN_CONTENT text/html\n",
+            "<div style=\"\"><svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"4\" cy=\"4\" r=\"4\"/></svg></div>\n",
+            "EVCXR_END_CONTENT\n",
+            "after\n",
+        );
+
+        let (text, outputs) = parse_evcxr_content(stdout);
+
+        assert_eq!(text, "before\nafter\n");
+        assert_eq!(outputs.len(), 1);
+        let Output::MimeBundle { data, .. } = &outputs[0] else {
+            panic!("expected a MIME bundle");
+        };
+        assert!(
+            data["image/svg+xml"]
+                .as_str()
+                .is_some_and(|svg| svg.starts_with("<svg"))
+        );
+        assert!(!data.contains_key("text/html"));
+        assert_eq!(data["text/plain"], "Figure (SVG)");
+    }
+
+    #[test]
+    fn keeps_evcxr_html_that_is_not_only_an_svg() {
+        let stdout = concat!(
+            "EVCXR_BEGIN_CONTENT text/html\n",
+            "<p>Before</p><svg><circle/></svg>\n",
+            "EVCXR_END_CONTENT\n",
+        );
+
+        let (text, outputs) = parse_evcxr_content(stdout);
+
+        assert_eq!(text, "");
+        assert!(matches!(
+            outputs.as_slice(),
+            [Output::Html { html }] if html.contains("Before")
+        ));
+    }
+
+    #[test]
+    fn leaves_plain_stdout_untouched() {
+        let (text, outputs) = parse_evcxr_content("hello\n");
+
+        assert_eq!(text, "hello\n");
+        assert!(outputs.is_empty());
     }
 }

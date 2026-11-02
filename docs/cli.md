@@ -83,12 +83,14 @@ Kernel lifecycle and integration commands:
 ```bash
 mars kernel list
 mars kernel restart
-mars kernel serve
+mars kernel serve [--runtime replay|evcxr] [--notebook <file.mars>]
 ```
 
 `mars kernel serve` runs a persistent newline-delimited JSON transport. Each
 input line is a serialized `RequestEnvelope`; the corresponding output line is
-a serialized `ResponseEnvelope`.
+a serialized `ResponseEnvelope`. Pass `--notebook` to load the notebook's
+declared Cargo dependencies and lockfile into the kernel; without it the kernel
+starts with an empty dependency set.
 
 ## Examples
 
