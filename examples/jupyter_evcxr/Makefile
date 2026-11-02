@@ -1,22 +1,37 @@
-.PHONY: setup install-kernel run execute clean
+SHELL := /bin/bash
 
-VENV := .venv
-JUPYTER := $(VENV)/bin/jupyter
+.PHONY: all run install clean execute execute-output help
 
-setup:
-	uv venv
-	uv pip install jupyterlab
+all: install
 
-install-kernel:
-	cargo install --locked evcxr_jupyter
+help:
+	@echo "Available targets:"
+	@echo "  make run            - Run Jupyter notebook with evcxr kernel"
+	@echo "  make execute       - Execute notebook cells and save outputs in-place"
+	@echo "  make execute-output - Execute notebook and save to notebook_executed.ipynb"
+	@echo "  make install       - Install evcxr_jupyter and register kernel"
+	@echo "  make clean         - Clean generated files"
+	@echo "  make all           - Install dependencies"
+
+install:
+	@echo "Installing evcxr_jupyter..."
+	cargo install evcxr_jupyter --version 0.21.0
+	@echo "Registering evcxr kernel..."
 	evcxr_jupyter --install
-	$(JUPYTER) kernelspec list
+	@echo "Installing Python dependencies..."
+	uv sync
+	@echo "Installation complete. Run 'make run' to start the notebook."
 
 run:
-	$(JUPYTER) lab
+	.venv/bin/jupyter notebook notebook.ipynb
 
 execute:
-	$(JUPYTER) nbconvert --to notebook --execute rust_demo.ipynb --inplace
+	.venv/bin/jupyter nbconvert --to notebook --execute --inplace notebook.ipynb
+
+execute-output:
+	.venv/bin/jupyter nbconvert --to notebook --execute notebook.ipynb --output notebook_executed.ipynb
 
 clean:
-	rm -rf $(VENV) __pycache__ .ipynb_checkpoints
+	rm -rf __pycache__
+	rm -rf .ipynb_checkpoints
+	rm -f notebook_executed.ipynb

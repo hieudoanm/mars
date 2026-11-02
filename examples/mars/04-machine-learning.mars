@@ -1,0 +1,106 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning with Rust Libraries",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "ml-intro",
+      "cell_type": "markdown",
+      "source": "# Machine Learning with Rust Libraries\n\nThis notebook demonstrates a machine learning workflow using Rust libraries:\n- polars for data manipulation\n- ndarray for numerical operations\n- linfa for machine learning\n\nSimilar to the Python workflow using pandas, numpy, and scikit-learn.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "deps",
+      "cell_type": "code",
+      "source": "// Note: These dependencies would be added to Cargo.toml in a real project\n// :dep polars = { version = \"0.44\", features = [\"lazy\", \"ndarray\"] }\n// :dep ndarray = { version = \"0.16\", features = [\"rand\"] }\n// :dep ndarray-rand = \"0.15\"\n// :dep linfa = \"0.7\"\n// :dep linfa-logistic = \"0.7\"\n// :dep rand = \"0.8\"\n\n// For now, we'll use standard library to demonstrate the concept\n// since Mars runtime doesn't yet support external dependencies",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "dataset-intro",
+      "cell_type": "markdown",
+      "source": "## 1. Generate Synthetic Dataset\n\nWe'll create a binary classification dataset similar to sklearn's `make_classification`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "generate-data",
+      "cell_type": "code",
+      "source": "use rand::Rng;\n\nlet n_samples: usize = 1000;\nlet n_features: usize = 20;\n\n// Generate random features using standard library\nlet mut rng = rand::thread_rng();\nlet mut x: Vec<Vec<f64>> = Vec::new();\nlet mut y: Vec<i32> = Vec::new();\n\nfor _ in 0..n_samples {\n    let mut row: Vec<f64> = Vec::new();\n    for _ in 0..n_features {\n        row.push(rng.gen_range(-10.0..10.0));\n    }\n    let sum: f64 = row.iter().sum();\n    x.push(row);\n    y.push(if sum > 0.0 { 1 } else { 0 });\n}\n\nprintln!(\"Dataset shape: ({}, {})\", n_samples, n_features);\nprintln!(\"Class 0: {}\", y.iter().filter(|&&v| v == 0).count());\nprintln!(\"Class 1: {}\", y.iter().filter(|&&v| v == 1).count());\n\n// In a full implementation with polars, this would be:\n// let df = DataFrame::new(x, feature_names.clone())?;\n// df.with_column(Series::new(\"target\", y)?);",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "split-intro",
+      "cell_type": "markdown",
+      "source": "## 2. Train/Test Split\n\nSimilar to sklearn's `train_test_split`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "split-data",
+      "cell_type": "code",
+      "source": "let split_point: usize = (n_samples * 8) / 10;\n\nlet x_train: Vec<Vec<f64>> = x[..split_point].to_vec();\nlet x_test: Vec<Vec<f64>> = x[split_point..].to_vec();\nlet y_train: Vec<i32> = y[..split_point].to_vec();\nlet y_test: Vec<i32> = y[split_point..].to_vec();\n\nprintln!(\"Training set size: {}\", x_train.len());\nprintln!(\"Test set size: {}\", x_test.len());\nprintln!(\"Train - Class 0: {}, Class 1: {}\", \n    y_train.iter().filter(|&&v| v == 0).count(), \n    y_train.iter().filter(|&&v| v == 1).count());\nprintln!(\"Test - Class 0: {}, Class 1: {}\", \n    y_test.iter().filter(|&&v| v == 0).count(), \n    y_test.iter().filter(|v| v == 1).count());",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "train-intro",
+      "cell_type": "markdown",
+      "source": "## 3. Train Logistic Regression\n\nSimilar to sklearn's `LogisticRegression`. In a full implementation, this would use linfa-logistic.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "train-model",
+      "cell_type": "code",
+      "source": "// Simple logistic regression implementation\n// In a full implementation, this would be:\n// let model = LogisticRegression::default();\n// let fitted_model = model.fit(&dataset)?;\n\n// For now, a simplified version:\nlet mut w: Vec<f64> = (0..n_features).map(|_| rng.gen_range(-0.5..0.5)).collect();\nlet mut bias: f64 = 0.0;\n\nlet epochs: usize = 1000;\nlet learning_rate: f64 = 0.01;\nlet n: usize = x_train.len();\n\nfor _ in 0..epochs {\n    let mut grad_w: Vec<f64> = vec![0.0; n_features];\n    let mut grad_b: f64 = 0.0;\n    \n    for i in 0..n {\n        let z: f64 = w.iter().zip(&x_train[i]).map(|(&w_j, &x_j)| w_j * x_j).sum::<f64>() + bias;\n        let pred: f64 = 1.0 / (1.0 + (-z).exp());\n        let error: f64 = pred - y_train[i] as f64;\n        grad_b += error;\n        for j in 0..n_features {\n            grad_w[j] += error * x_train[i][j];\n        }\n    }\n    \n    for j in 0..n_features {\n        w[j] -= learning_rate * grad_w[j] / n as f64;\n    }\n    bias -= learning_rate * grad_b / n as f64;\n}\n\nprintln!(\"Model trained successfully!\");\nprintln!(\"Feature weights (first 5): {:?}\", &w[..5]);\nprintln!(\"Bias: {:.4}\", bias);",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "predict-intro",
+      "cell_type": "markdown",
+      "source": "## 4. Make Predictions and Evaluate\n\nSimilar to sklearn's `accuracy_score` and `classification_report`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "predict",
+      "cell_type": "code",
+      "source": "let mut y_pred: Vec<i32> = Vec::new();\n\nfor i in 0..x_test.len() {\n    let z: f64 = w.iter().zip(&x_test[i]).map(|(&w_j, &x_j)| w_j * x_j).sum::<f64>() + bias;\n    let pred: f64 = 1.0 / (1.0 + (-z).exp());\n    y_pred.push(if pred > 0.5 { 1 } else { 0 });\n}\n\nlet correct: usize = y_test.iter().zip(y_pred.iter()).filter(|(&t, &p)| t == p).count();\nlet accuracy: f64 = correct as f64 / y_test.len() as f64;\n\nprintln!(\"Accuracy: {:.4}\", accuracy);\n\n// Confusion matrix\nlet mut cm: [[usize; 2]; 2] = [[0; 2]; 2];\nfor i in 0..y_test.len() {\n    cm[y_test[i] as usize][y_pred[i] as usize] += 1;\n}\n\nprintln!(\"\\nConfusion Matrix:\");\nprintln!(\"            Predicted\");\nprintln!(\"       |    0    |    1    |\");\nprintln!(\"Actual 0 |   {}    |   {}    |\", cm[0][0], cm[0][1]);\nprintln!(\"       1 |   {}    |   {}    |\", cm[1][0], cm[1][1]);",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "feature-importance",
+      "cell_type": "markdown",
+      "source": "## 5. Feature Importance\n\nSimilar to analyzing model coefficients in sklearn.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "importance",
+      "cell_type": "code",
+      "source": "let feature_names: Vec<String> = (0..n_features)\n    .map(|i| format!(\"feature_{}\", i))\n    .collect();\n\nlet mut importance: Vec<(usize, f64)> = w.iter()\n    .enumerate()\n    .map(|(i, &w)| (i, w.abs()))\n    .collect();\nimportance.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());\n\nprintln!(\"Top 10 most important features:\");\nfor (i, (idx, imp)) in importance.iter().take(10).enumerate() {\n    println!(\"  {}. {}: {:.4}\", i + 1, feature_names[idx], imp);\n}",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "summary",
+      "cell_type": "markdown",
+      "source": "## Summary\n\nThis notebook demonstrated:\n1. Synthetic data generation (like `make_classification`)\n2. Train/test split (like `train_test_split`)\n3. Logistic regression (like `LogisticRegression`)\n4. Model evaluation with accuracy and confusion matrix\n5. Feature importance analysis (like model coefficients)\n\n**Note:** This is a simplified implementation using the standard library. A full implementation would use:\n- **polars** for DataFrame operations (similar to pandas)\n- **ndarray** for numerical arrays (similar to numpy)\n- **linfa** for ML algorithms (similar to scikit-learn)\n- **plotters** for visualization (similar to matplotlib)\n\nThese libraries would be added as dependencies in a real Mars project's Cargo.toml.",
+      "metadata": {},
+      "outputs": []
+    }
+  ]
+}
