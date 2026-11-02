@@ -1,16 +1,12 @@
-import * as vscode from "vscode";
-import { spawn, execFile } from "node:child_process";
-import { promisify } from "node:util";
-import {
-  marsOutputToNotebookOutput,
-  notebookOutputToMarsOutput,
-  type MarsOutput,
-} from "./output";
+import * as vscode from 'vscode';
+import { spawn, execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { marsOutputToNotebookOutput, notebookOutputToMarsOutput, type MarsOutput } from './output';
 
 const execFileAsync = promisify(execFile);
 
 async function commandExists(command: string): Promise<boolean> {
-  const checkCommand = process.platform === "win32" ? "where" : "which";
+  const checkCommand = process.platform === 'win32' ? 'where' : 'which';
   try {
     await execFileAsync(checkCommand, [command]);
     return true;
@@ -22,7 +18,7 @@ async function commandExists(command: string): Promise<boolean> {
 // Mars notebook types
 interface MarsCell {
   id: string;
-  cell_type: "code" | "markdown" | "raw";
+  cell_type: 'code' | 'markdown' | 'raw';
   source: string;
   metadata: Record<string, unknown>;
   execution_count?: number | null;
@@ -45,30 +41,30 @@ interface MarsNotebook {
 type RequestEnvelope =
   | {
       id: string;
-      request: { type: "execute"; source: string; timeout_millis?: number };
+      request: { type: 'execute'; source: string; timeout_millis?: number };
     }
-  | { id: string; request: { type: "reset" } };
+  | { id: string; request: { type: 'reset' } };
 
 type ResponseEnvelope =
   | {
       id: string;
       response: {
-        type: "execution";
+        type: 'execution';
         outputs: MarsOutput[];
         execution_count: number;
         duration_millis: number;
       };
     }
-  | { id: string; response: { type: "reset"; status: string } }
+  | { id: string; response: { type: 'reset'; status: string } }
   | {
       id: string;
       response: {
-        type: "status";
+        type: 'status';
         status: string;
         execution_count: number;
       };
     }
-  | { id: string; response: { type: "error"; message: string } };
+  | { id: string; response: { type: 'error'; message: string } };
 
 class MarsKernelService {
   private process: ReturnType<typeof spawn> | null = null;
@@ -91,35 +87,35 @@ class MarsKernelService {
     // Check if the command exists
     const exists = await commandExists(this.cliPath);
     if (!exists) {
-      throw new Error(`Mars CLI not found at '${this.cliPath}'. Please install Mars CLI and ensure it's on your PATH.`);
+      throw new Error(
+        `Mars CLI not found at '${this.cliPath}'. Please install Mars CLI and ensure it's on your PATH.`,
+      );
     }
 
-    const runtime = vscode.workspace
-      .getConfiguration("mars")
-      .get<string>("runtime", "replay");
-    const kernelArguments = ["kernel", "serve"];
-    if (runtime === "evcxr") {
-      kernelArguments.push("--runtime", "evcxr");
+    const runtime = vscode.workspace.getConfiguration('mars').get<string>('runtime', 'replay');
+    const kernelArguments = ['kernel', 'serve'];
+    if (runtime === 'evcxr') {
+      kernelArguments.push('--runtime', 'evcxr');
     }
     // Passing the notebook lets the CLI load its declared Cargo dependencies
     // and lockfile, so cells that use external crates compile in the editor.
     if (notebookPath) {
-      kernelArguments.push("--notebook", notebookPath);
+      kernelArguments.push('--notebook', notebookPath);
     }
 
-    console.log(`Starting Mars kernel: ${this.cliPath} ${kernelArguments.join(" ")}`);
+    console.log(`Starting Mars kernel: ${this.cliPath} ${kernelArguments.join(' ')}`);
 
     this.process = spawn(this.cliPath, kernelArguments, {
-      stdio: ["pipe", "pipe", "pipe"]
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
     this.notebookPath = notebookPath;
 
-    this.process.on("error", (error) => {
-      console.error("Mars kernel process error:", error);
+    this.process.on('error', (error) => {
+      console.error('Mars kernel process error:', error);
       this.process = null;
     });
 
-    this.process.on("exit", (code) => {
+    this.process.on('exit', (code) => {
       console.error(`Mars kernel process exited with code ${code}`);
       this.process = null;
     });
@@ -128,8 +124,12 @@ class MarsKernelService {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  async execute(code: string, timeoutMs?: number, notebookPath: string | null = null): Promise<{
-    status: "success" | "error" | "interrupted";
+  async execute(
+    code: string,
+    timeoutMs?: number,
+    notebookPath: string | null = null,
+  ): Promise<{
+    status: 'success' | 'error' | 'interrupted';
     execution_count: number;
     outputs: MarsOutput[];
   }> {
@@ -139,7 +139,7 @@ class MarsKernelService {
     const request: RequestEnvelope = {
       id: requestId,
       request: {
-        type: "execute",
+        type: 'execute',
         source: code,
         timeout_millis: timeoutMs,
       },
@@ -147,35 +147,35 @@ class MarsKernelService {
 
     return new Promise((resolve, reject) => {
       if (!this.process?.stdout) {
-        reject(new Error("Kernel process not available"));
+        reject(new Error('Kernel process not available'));
         return;
       }
 
-      let buffer = "";
+      let buffer = '';
 
       const onData = (chunk: Buffer) => {
         buffer += chunk.toString();
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
           if (!line.trim()) continue;
           try {
             const response: ResponseEnvelope = JSON.parse(line);
             if (response.id === requestId) {
-              this.process?.stdout?.removeListener("data", onData);
-              this.process?.stdout?.removeListener("error", onError);
+              this.process?.stdout?.removeListener('data', onData);
+              this.process?.stdout?.removeListener('error', onError);
 
-              if (response.response.type === "error") {
+              if (response.response.type === 'error') {
                 reject(new Error(response.response.message));
                 return;
               }
 
-              if (response.response.type === "execution") {
+              if (response.response.type === 'execution') {
                 const exec = response.response;
-                const failed = exec.outputs.some((output) => output.type === "error");
+                const failed = exec.outputs.some((output) => output.type === 'error');
                 resolve({
-                  status: failed ? "error" : "success",
+                  status: failed ? 'error' : 'success',
                   execution_count: exec.execution_count,
                   outputs: exec.outputs,
                 });
@@ -188,16 +188,16 @@ class MarsKernelService {
       };
 
       const onError = (error: Error) => {
-        this.process?.stdout?.removeListener("data", onData);
-        this.process?.stdout?.removeListener("error", onError);
+        this.process?.stdout?.removeListener('data', onData);
+        this.process?.stdout?.removeListener('error', onError);
         reject(error);
       };
 
-      this.process.stdout.on("data", onData);
-      this.process.stdout.on("error", onError);
+      this.process.stdout.on('data', onData);
+      this.process.stdout.on('error', onError);
 
       // Send the request
-      this.process.stdin?.write(JSON.stringify(request) + "\n");
+      this.process.stdin?.write(JSON.stringify(request) + '\n');
     });
   }
 
@@ -209,40 +209,40 @@ class MarsKernelService {
     const requestId = (++this.requestId).toString();
     const request: RequestEnvelope = {
       id: requestId,
-      request: { type: "reset" },
+      request: { type: 'reset' },
     };
 
     return new Promise((resolve, reject) => {
       if (!this.process?.stdout) {
-        reject(new Error("Kernel process not available"));
+        reject(new Error('Kernel process not available'));
         return;
       }
 
-      let buffer = "";
+      let buffer = '';
 
       const onData = (chunk: Buffer) => {
         buffer += chunk.toString();
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
           if (!line.trim()) continue;
           try {
             const response: ResponseEnvelope = JSON.parse(line);
             if (response.id === requestId) {
-              this.process?.stdout?.removeListener("data", onData);
-              this.process?.stdout?.removeListener("error", onError);
+              this.process?.stdout?.removeListener('data', onData);
+              this.process?.stdout?.removeListener('error', onError);
 
-              if (response.response.type === "error") {
+              if (response.response.type === 'error') {
                 reject(new Error(response.response.message));
                 return;
               }
 
-              if (response.response.type === "execution") {
+              if (response.response.type === 'execution') {
                 const exec = response.response;
-                const failed = exec.outputs.some((output) => output.type === "error");
+                const failed = exec.outputs.some((output) => output.type === 'error');
                 resolve({
-                  status: failed ? "error" : "success",
+                  status: failed ? 'error' : 'success',
                   execution_count: exec.execution_count,
                   outputs: exec.outputs,
                 });
@@ -250,7 +250,7 @@ class MarsKernelService {
               }
 
               resolve({
-                status: "success",
+                status: 'success',
                 execution_count: 0,
                 outputs: [],
               });
@@ -262,15 +262,15 @@ class MarsKernelService {
       };
 
       const onError = (error: Error) => {
-        this.process?.stdout?.removeListener("data", onData);
-        this.process?.stdout?.removeListener("error", onError);
+        this.process?.stdout?.removeListener('data', onData);
+        this.process?.stdout?.removeListener('error', onError);
         reject(error);
       };
 
-      this.process.stdout.on("data", onData);
-      this.process.stdout.on("error", onError);
+      this.process.stdout.on('data', onData);
+      this.process.stdout.on('error', onError);
 
-      this.process.stdin?.write(JSON.stringify(request) + "\n");
+      this.process.stdin?.write(JSON.stringify(request) + '\n');
     });
   }
 
@@ -285,7 +285,7 @@ class MarsKernelService {
 class MarsNotebookSerializer implements vscode.NotebookSerializer {
   async deserializeNotebook(
     content: Uint8Array,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<vscode.NotebookData> {
     void _token;
     const text = new TextDecoder().decode(content);
@@ -297,28 +297,28 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
       // If parsing fails, create an empty notebook
       marsNotebook = {
         format_version: 2,
-        metadata: { language: "rust" },
-        cells: []
+        metadata: { language: 'rust' },
+        cells: [],
       };
     }
 
     // Convert Mars cells to VSCode notebook cells
     const cells = marsNotebook.cells.map((marsCell) => {
       const kind =
-        marsCell.cell_type === "code"
+        marsCell.cell_type === 'code'
           ? vscode.NotebookCellKind.Code
           : vscode.NotebookCellKind.Markup;
 
       const cell = new vscode.NotebookCellData(
         kind,
         marsCell.source,
-        marsCell.cell_type === "code" ? "rust" : "markdown"
+        marsCell.cell_type === 'code' ? 'rust' : 'markdown',
       );
 
       // Preserve metadata (excluding execution_count which is handled separately)
       cell.metadata = {
         ...marsCell.metadata,
-        marsId: marsCell.id
+        marsId: marsCell.id,
       };
 
       // Restore outputs if they exist
@@ -332,7 +332,7 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
     const notebookData = new vscode.NotebookData(cells);
     notebookData.metadata = {
       ...marsNotebook.metadata,
-      marsFormatVersion: marsNotebook.format_version
+      marsFormatVersion: marsNotebook.format_version,
     } as Record<string, unknown>;
 
     return notebookData;
@@ -340,17 +340,17 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
 
   async serializeNotebook(
     data: vscode.NotebookData,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<Uint8Array> {
     void _token;
     // Convert VSCode notebook cells back to Mars format
     const cells: MarsCell[] = data.cells.map((cell) => {
       const marsCell: MarsCell = {
         id: (cell.metadata as { marsId?: string }).marsId || this.generateId(),
-        cell_type: cell.kind === vscode.NotebookCellKind.Code ? "code" : "markdown",
+        cell_type: cell.kind === vscode.NotebookCellKind.Code ? 'code' : 'markdown',
         source: cell.value,
         metadata: { ...(cell.metadata as Record<string, unknown>) },
-        execution_count: null // VSCode handles execution counts separately
+        execution_count: null, // VSCode handles execution counts separately
       };
 
       // Remove our internal metadata
@@ -362,7 +362,7 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
       }
 
       // Only code cells should have execution_count and outputs
-      if (marsCell.cell_type !== "code") {
+      if (marsCell.cell_type !== 'code') {
         delete marsCell.execution_count;
         delete marsCell.outputs;
       }
@@ -374,9 +374,9 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
       format_version: (data.metadata as { marsFormatVersion?: number }).marsFormatVersion || 2,
       metadata: {
         ...(data.metadata as Record<string, unknown>),
-        language: (data.metadata as { language?: string }).language || "rust"
+        language: (data.metadata as { language?: string }).language || 'rust',
       },
-      cells
+      cells,
     };
 
     // Remove our internal metadata
@@ -407,12 +407,12 @@ class MarsNotebookController {
   constructor() {
     MarsNotebookController.instance = this;
     this._controller = vscode.notebooks.createNotebookController(
-      "mars-kernel",
-      "mars-notebook",
-      "Mars Kernel"
+      'mars-kernel',
+      'mars-notebook',
+      'Mars Kernel',
     );
 
-    this._controller.supportedLanguages = ["rust"];
+    this._controller.supportedLanguages = ['rust'];
     this._controller.supportsExecutionOrder = true;
     this._controller.executeHandler = this._executeAll.bind(this);
     void this._controller;
@@ -432,9 +432,7 @@ class MarsNotebookController {
 
   private getKernelService(): MarsKernelService {
     if (!this.kernelService) {
-      const cliPath = vscode.workspace
-        .getConfiguration("mars")
-        .get<string>("cliPath", "mars");
+      const cliPath = vscode.workspace.getConfiguration('mars').get<string>('cliPath', 'mars');
       this.kernelService = new MarsKernelService(cliPath);
     }
     return this.kernelService;
@@ -443,7 +441,7 @@ class MarsNotebookController {
   private async _executeAll(
     cells: vscode.NotebookCell[],
     notebook: vscode.NotebookDocument,
-    _controller: vscode.NotebookController
+    _controller: vscode.NotebookController,
   ): Promise<void> {
     void _controller;
     for (const cell of cells) {
@@ -453,7 +451,7 @@ class MarsNotebookController {
 
   private async _executeCell(
     cell: vscode.NotebookCell,
-    notebook?: vscode.NotebookDocument
+    notebook?: vscode.NotebookDocument,
   ): Promise<void> {
     const exec = this._controller.createNotebookCellExecution(cell);
     this._executionOrder++;
@@ -464,9 +462,7 @@ class MarsNotebookController {
 
     try {
       const code = cell.document.getText();
-      const cliPath = vscode.workspace
-        .getConfiguration("mars")
-        .get<string>("cliPath", "mars");
+      const cliPath = vscode.workspace.getConfiguration('mars').get<string>('cliPath', 'mars');
 
       // Check if Mars CLI is available
       const cliExists = await commandExists(cliPath);
@@ -476,10 +472,13 @@ class MarsNotebookController {
         await exec.appendOutput(
           new vscode.NotebookCellOutput([
             new vscode.NotebookCellOutputItem(
-              Buffer.from(`Mars CLI not found at '${cliPath}'.\n\nInstall Mars CLI to enable actual code execution.\n\nFor now, showing placeholder output:\n\n${code}`, "utf-8"),
-              "text/plain"
-            )
-          ])
+              Buffer.from(
+                `Mars CLI not found at '${cliPath}'.\n\nInstall Mars CLI to enable actual code execution.\n\nFor now, showing placeholder output:\n\n${code}`,
+                'utf-8',
+              ),
+              'text/plain',
+            ),
+          ]),
         );
         success = true;
       } else {
@@ -487,17 +486,20 @@ class MarsNotebookController {
 
         // Get timeout from configuration (default 30 seconds)
         const timeoutMs = vscode.workspace
-          .getConfiguration("mars")
-          .get<number>("executionTimeout", 30000);
+          .getConfiguration('mars')
+          .get<number>('executionTimeout', 30000);
 
         // Add a message that execution is starting
         await exec.appendOutput(
           new vscode.NotebookCellOutput([
             new vscode.NotebookCellOutputItem(
-              Buffer.from("Compiling and executing Rust code (this may take a while)...\n", "utf-8"),
-              "text/plain"
-            )
-          ])
+              Buffer.from(
+                'Compiling and executing Rust code (this may take a while)...\n',
+                'utf-8',
+              ),
+              'text/plain',
+            ),
+          ]),
         );
 
         // Execute using the Mars kernel service with timeout
@@ -505,11 +507,20 @@ class MarsNotebookController {
           kernel.execute(
             code,
             timeoutMs,
-            notebook?.uri.scheme === "file" ? notebook.uri.fsPath : null
+            notebook?.uri.scheme === 'file' ? notebook.uri.fsPath : null,
           ),
-          new Promise<{ status: "error"; execution_count: number; outputs: MarsOutput[] }>((_, reject) =>
-            setTimeout(() => reject(new Error(`Execution timeout after ${timeoutMs}ms. Try increasing mars.executionTimeout in settings.`)), timeoutMs)
-          )
+          new Promise<{ status: 'error'; execution_count: number; outputs: MarsOutput[] }>(
+            (_, reject) =>
+              setTimeout(
+                () =>
+                  reject(
+                    new Error(
+                      `Execution timeout after ${timeoutMs}ms. Try increasing mars.executionTimeout in settings.`,
+                    ),
+                  ),
+                timeoutMs,
+              ),
+          ),
         ]);
 
         // Clear previous outputs
@@ -520,7 +531,7 @@ class MarsNotebookController {
           await exec.appendOutput(marsOutputToNotebookOutput(output));
         }
 
-        success = result.status === "success";
+        success = result.status === 'success';
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -528,10 +539,13 @@ class MarsNotebookController {
       await exec.appendOutput(
         new vscode.NotebookCellOutput([
           new vscode.NotebookCellOutputItem(
-            Buffer.from(`Error: ${errorMessage}\n\nMake sure:\n1. Mars CLI is installed and on PATH\n2. 'mars kernel serve' command is available\n3. Rust toolchain is installed`, "utf-8"),
-            "application/vnd.code.notebook.error"
-          )
-        ])
+            Buffer.from(
+              `Error: ${errorMessage}\n\nMake sure:\n1. Mars CLI is installed and on PATH\n2. 'mars kernel serve' command is available\n3. Rust toolchain is installed`,
+              'utf-8',
+            ),
+            'application/vnd.code.notebook.error',
+          ),
+        ]),
       );
     } finally {
       // Always end execution
@@ -544,7 +558,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // Register notebook serializer
   const serializer = new MarsNotebookSerializer();
   context.subscriptions.push(
-    vscode.workspace.registerNotebookSerializer("mars-notebook", serializer)
+    vscode.workspace.registerNotebookSerializer('mars-notebook', serializer),
   );
 
   // Register notebook controller for execution
@@ -553,95 +567,93 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Keep existing CLI commands for compatibility
   context.subscriptions.push(
-    vscode.commands.registerCommand("mars.exportHtml", () => exportHtml()),
-    vscode.commands.registerCommand("mars.exportMarkdown", () => exportMarkdown()),
-    vscode.commands.registerCommand("mars.preview", () => exportHtml()),
-    vscode.commands.registerCommand("mars.runNotebook", () => runNotebook()),
-    vscode.commands.registerCommand("mars.openCell", () => openCell()),
-    vscode.commands.registerCommand("mars.createNotebook", () => createNotebook()),
-    vscode.commands.registerCommand("mars.restartKernel", () => {
+    vscode.commands.registerCommand('mars.exportHtml', () => exportHtml()),
+    vscode.commands.registerCommand('mars.exportMarkdown', () => exportMarkdown()),
+    vscode.commands.registerCommand('mars.preview', () => exportHtml()),
+    vscode.commands.registerCommand('mars.runNotebook', () => runNotebook()),
+    vscode.commands.registerCommand('mars.openCell', () => openCell()),
+    vscode.commands.registerCommand('mars.createNotebook', () => createNotebook()),
+    vscode.commands.registerCommand('mars.restartKernel', () => {
       controller.restartKernel().then(() => {
-        void vscode.window.showInformationMessage("Mars kernel restarted");
+        void vscode.window.showInformationMessage('Mars kernel restarted');
       });
     }),
   );
 }
 
 async function createNotebook(): Promise<void> {
-  const notebookUri = vscode.Uri.parse("untitled:Untitled.mars");
-  await vscode.commands.executeCommand("vscode.openWith", notebookUri, "mars-notebook");
+  const notebookUri = vscode.Uri.parse('untitled:Untitled.mars');
+  await vscode.commands.executeCommand('vscode.openWith', notebookUri, 'mars-notebook');
 }
 
 async function runNotebook(): Promise<void> {
   const document = vscode.window.activeTextEditor?.document;
-  if (!document || !document.fileName.endsWith(".mars")) {
-    void vscode.window.showErrorMessage("Open a .mars notebook first.");
+  if (!document || !document.fileName.endsWith('.mars')) {
+    void vscode.window.showErrorMessage('Open a .mars notebook first.');
     return;
   }
-  const cliPath = vscode.workspace.getConfiguration("mars").get<string>("cliPath", "mars");
-  const runArguments = vscode.workspace
-    .getConfiguration("mars")
-    .get<string[]>("runArguments", []);
-  const output = vscode.window.createOutputChannel("Mars");
+  const cliPath = vscode.workspace.getConfiguration('mars').get<string>('cliPath', 'mars');
+  const runArguments = vscode.workspace.getConfiguration('mars').get<string[]>('runArguments', []);
+  const output = vscode.window.createOutputChannel('Mars');
   output.show(true);
-  output.appendLine(`$ ${cliPath} run ${document.fileName} ${runArguments.join(" ")}`.trim());
+  output.appendLine(`$ ${cliPath} run ${document.fileName} ${runArguments.join(' ')}`.trim());
   try {
-    const result = await execFileAsync(cliPath, ["run", document.fileName, ...runArguments]);
+    const result = await execFileAsync(cliPath, ['run', document.fileName, ...runArguments]);
     if (result.stdout) output.append(result.stdout);
     if (result.stderr) output.append(result.stderr);
-    void vscode.window.showInformationMessage("Mars notebook completed.");
+    void vscode.window.showInformationMessage('Mars notebook completed.');
   } catch (error) {
     const failure = error as { stdout?: string; stderr?: string; message?: string };
     if (failure.stdout) output.append(failure.stdout);
     if (failure.stderr) output.append(failure.stderr);
-    void vscode.window.showErrorMessage(failure.message ?? "Mars notebook execution failed");
+    void vscode.window.showErrorMessage(failure.message ?? 'Mars notebook execution failed');
   }
 }
 
 function activeMarsFilePath(): string | undefined {
   const notebook = vscode.window.activeNotebookEditor?.notebook;
-  if (notebook?.uri.scheme === "file" && notebook.uri.fsPath.endsWith(".mars")) {
+  if (notebook?.uri.scheme === 'file' && notebook.uri.fsPath.endsWith('.mars')) {
     return notebook.uri.fsPath;
   }
   const document = vscode.window.activeTextEditor?.document;
-  if (document?.fileName.endsWith(".mars")) return document.fileName;
+  if (document?.fileName.endsWith('.mars')) return document.fileName;
   return undefined;
 }
 
-async function exportNotebook(format: "html" | "md", extension: string): Promise<void> {
+async function exportNotebook(format: 'html' | 'md', extension: string): Promise<void> {
   const filePath = activeMarsFilePath();
   if (!filePath) {
-    void vscode.window.showErrorMessage("Open a .mars notebook first.");
+    void vscode.window.showErrorMessage('Open a .mars notebook first.');
     return;
   }
   const output = filePath.replace(/\.mars$/i, `.${extension}`);
   try {
-    const cliPath = vscode.workspace.getConfiguration("mars").get<string>("cliPath", "mars");
-    await execFileAsync(cliPath, ["export", filePath, format, output]);
-    if (vscode.workspace.getConfiguration("mars").get<boolean>("previewAfterExport", true)) {
+    const cliPath = vscode.workspace.getConfiguration('mars').get<string>('cliPath', 'mars');
+    await execFileAsync(cliPath, ['export', filePath, format, output]);
+    if (vscode.workspace.getConfiguration('mars').get<boolean>('previewAfterExport', true)) {
       const uri = vscode.Uri.file(output);
-      await vscode.commands.executeCommand("vscode.open", uri);
+      await vscode.commands.executeCommand('vscode.open', uri);
     } else {
       void vscode.window.showInformationMessage(`Exported Mars notebook to ${output}`);
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Mars export failed";
+    const message = error instanceof Error ? error.message : 'Mars export failed';
     void vscode.window.showErrorMessage(message);
   }
 }
 
 async function exportHtml(): Promise<void> {
-  await exportNotebook("html", "html");
+  await exportNotebook('html', 'html');
 }
 
 async function exportMarkdown(): Promise<void> {
-  await exportNotebook("md", "md");
+  await exportNotebook('md', 'md');
 }
 
 async function openCell(): Promise<void> {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
-  const input = await vscode.window.showInputBox({ prompt: "Cell number" });
+  const input = await vscode.window.showInputBox({ prompt: 'Cell number' });
   const cellNumber = Number(input);
   if (!Number.isInteger(cellNumber) || cellNumber < 1) return;
   const text = editor.document.getText();

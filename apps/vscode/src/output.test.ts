@@ -1,7 +1,7 @@
-import { appendOutput } from "./output";
+import { appendOutput } from './output';
 
-describe("output", () => {
-  it("appends output", () => {
-    expect(typeof appendOutput).toBe("function");
+describe('output', () => {
+  it('appends output', () => {
+    expect(typeof appendOutput).toBe('function');
   });
 });

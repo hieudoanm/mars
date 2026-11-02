@@ -7,6 +7,7 @@ This companion extension provides a full-featured notebook editor for `.mars` fi
 ## Features
 
 ### Notebook Editor
+
 - **Interactive cell editing**: Edit Markdown and code cells in a true notebook interface
 - **Cell execution**: Run individual cells or entire notebooks
 - **Output rendering**: View execution results, errors, and rich outputs
@@ -15,7 +16,9 @@ This companion extension provides a full-featured notebook editor for `.mars` fi
 - **Persistent state**: Execution counts and outputs are preserved in the `.mars` file
 
 ### Legacy Commands
+
 The extension also provides CLI-backed commands for compatibility:
+
 - **Mars: Export Notebook to HTML**: Export to HTML via Mars CLI
 - **Mars: Export Notebook to Markdown**: Export to Markdown via Mars CLI
 - **Mars: Preview Notebook**: Export and preview HTML
@@ -60,6 +63,7 @@ To rebuild and reinstall only the extension (keeping an existing `mars` on
 ```
 
 The script will:
+
 1. Build the Mars CLI from source (`--cli` or `--all` only)
 2. Install the Mars CLI to `~/.local/bin/mars`
 3. Build the VSCode extension from scratch (`out/` and `vsix/` are removed first)
@@ -74,6 +78,7 @@ export PATH="$HOME/.local/bin:$PATH"
 ## Usage
 
 ### Using the Notebook Editor
+
 1. Open any `.mars` file in VSCode
 2. The file will automatically open in the notebook editor
 3. Click the play button on a cell to execute it
@@ -81,6 +86,7 @@ export PATH="$HOME/.local/bin:$PATH"
 5. Cells can be code (Rust) or Markdown
 
 ### Exporting
+
 Run **Mars: Export Notebook to HTML** or **Mars: Export Notebook to Markdown**
 from the Command Palette or the notebook toolbar. The export is written next to
 the notebook and opens automatically when `mars.previewAfterExport` is enabled.
@@ -88,6 +94,7 @@ Markdown export preserves Markdown cells, fences Rust code, and converts tables,
 LaTeX, images, and offline charts into portable Markdown.
 
 ### Runtime Selection
+
 Set `mars.runtime` to `evcxr` to run cells through the Evcxr backend. The
 default `replay` backend re-executes prior cells and now also converts
 `EVCXR_BEGIN_CONTENT` display markers (used by `plotters`) into
@@ -107,12 +114,14 @@ trusted; otherwise VS Code falls back to the `text/plain` alternative. Use
 text.
 
 ### Keyboard Shortcuts
+
 - `Shift+Enter`: Run cell and move to next
 - `Ctrl/Cmd+Enter`: Run cell
 - `Alt+Enter`: Run cell and insert new cell below
 - `Ctrl/Cmd+Shift+N`: Create new notebook (when not in notebook editor)
 
 ### Configuration
+
 Configure the Mars CLI path and execution arguments:
 
 ```json

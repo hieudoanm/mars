@@ -142,7 +142,7 @@ class MarsKernelService {
                             }
                         }
                     }
-                    catch (e) {
+                    catch {
                         // Invalid JSON, skip
                     }
                 }
@@ -187,13 +187,26 @@ class MarsKernelService {
                             this.process?.stdout?.removeListener("error", onError);
                             if (response.response.type === "error") {
                                 reject(new Error(response.response.message));
+                                return;
                             }
-                            else {
-                                resolve();
+                            if (response.response.type === "execution") {
+                                const exec = response.response;
+                                const failed = exec.outputs.some((output) => output.type === "error");
+                                resolve({
+                                    status: failed ? "error" : "success",
+                                    execution_count: exec.execution_count,
+                                    outputs: exec.outputs,
+                                });
+                                return;
                             }
+                            resolve({
+                                status: "success",
+                                execution_count: 0,
+                                outputs: [],
+                            });
                         }
                     }
-                    catch (e) {
+                    catch {
                         // Invalid JSON, skip
                     }
                 }
@@ -217,6 +230,7 @@ class MarsKernelService {
 }
 class MarsNotebookSerializer {
     async deserializeNotebook(content, _token) {
+        void _token;
         const text = new TextDecoder().decode(content);
         let marsNotebook;
         try {
@@ -255,6 +269,7 @@ class MarsNotebookSerializer {
         return notebookData;
     }
     async serializeNotebook(data, _token) {
+        void _token;
         // Convert VSCode notebook cells back to Mars format
         const cells = data.cells.map((cell) => {
             const marsCell = {
@@ -310,6 +325,7 @@ class MarsNotebookController {
         this._controller.supportedLanguages = ["rust"];
         this._controller.supportsExecutionOrder = true;
         this._controller.executeHandler = this._executeAll.bind(this);
+        void this._controller;
     }
     dispose() {
         this._controller.dispose();
@@ -331,6 +347,7 @@ class MarsNotebookController {
         return this.kernelService;
     }
     async _executeAll(cells, notebook, _controller) {
+        void _controller;
         for (const cell of cells) {
             await this._executeCell(cell, notebook);
         }

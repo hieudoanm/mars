@@ -1,7 +1,7 @@
-import { activate } from "./extension";
+import { activate } from './extension';
 
-describe("extension", () => {
-  it("has activate function", () => {
-    expect(typeof activate).toBe("function");
+describe('extension', () => {
+  it('has activate function', () => {
+    expect(typeof activate).toBe('function');
   });
 });

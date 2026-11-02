@@ -84,11 +84,11 @@ Manage Workspace Trust** to trust the folder if figures show as text.
 
 ## Keyboard shortcuts
 
-| Shortcut | Action |
-| --- | --- |
-| `Shift+Enter` | Run cell and move to the next cell |
-| `Ctrl/Cmd+Enter` | Run cell |
-| `Alt+Enter` | Run cell and insert a new cell below |
+| Shortcut           | Action                                                |
+| ------------------ | ----------------------------------------------------- |
+| `Shift+Enter`      | Run cell and move to the next cell                    |
+| `Ctrl/Cmd+Enter`   | Run cell                                              |
+| `Alt+Enter`        | Run cell and insert a new cell below                  |
 | `Ctrl/Cmd+Shift+N` | Create a new notebook when not in the notebook editor |
 
 ## Configuration
