@@ -249,8 +249,8 @@ importers:
         specifier: 6.2.1
         version: 6.2.1(vite@8.3.5(@types/node@26.6.6)(jiti@2.7.0))
       '@vitest/coverage-v8':
-        specifier: 2.1.8
-        version: 2.1.8(supports-color@7.2.0)(vitest@2.1.8)
+        specifier: 2.1.9
+        version: 2.1.9(supports-color@7.2.0)(vitest@2.1.8)
       eslint:
         specifier: 10.14.0
         version: 10.14.0(jiti@2.7.0)(supports-color@7.2.0)
@@ -373,8 +373,8 @@ importers:
         specifier: 1.144.0
         version: 1.144.0
       '@vitest/coverage-v8':
-        specifier: 2.1.8
-        version: 2.1.8(supports-color@7.2.0)(vitest@2.1.8)
+        specifier: 2.1.9
+        version: 2.1.9(supports-color@7.2.0)(vitest@2.1.8)
       '@vscode/vsce':
         specifier: 4.1.0
         version: 4.1.0(supports-color@7.2.0)
@@ -1831,11 +1831,11 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@vitest/coverage-v8@2.1.8':
-    resolution: {integrity: sha512-2Y7BPlKH18mAZYAW1tYByudlCYrQyl5RGvnnDYJKW5tCiO5qg3KSAy3XAxcxKz900a0ZXxWtKrMuZLe3lKBpJw==}
+  '@vitest/coverage-v8@2.1.9':
+    resolution: {integrity: sha512-Z2cOr0ksM00MpEfyVE8KXIYPEcBFxdbLSs56L8PO0QQMxt/6bDj45uQfxoc96v05KW3clk7vvgP0qfDit9DmfQ==}
     peerDependencies:
-      '@vitest/browser': 2.1.8
-      vitest: 2.1.8
+      '@vitest/browser': 2.1.9
+      vitest: 2.1.9
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -5575,7 +5575,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.3.5(@types/node@26.6.6)(jiti@2.7.0)
 
-  '@vitest/coverage-v8@2.1.8(supports-color@7.2.0)(vitest@2.1.8)':
+  '@vitest/coverage-v8@2.1.9(supports-color@7.2.0)(vitest@2.1.8)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
