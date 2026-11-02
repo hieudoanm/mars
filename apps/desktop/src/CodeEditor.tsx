@@ -1,15 +1,27 @@
-import { markdown } from "@codemirror/lang-markdown";
-import { rust } from "@codemirror/lang-rust";
-import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from "@codemirror/autocomplete";
-import { defaultKeymap, indentWithTab } from "@codemirror/commands";
-import { bracketMatching, defaultHighlightStyle, foldGutter, foldKeymap, indentOnInput, syntaxHighlighting } from "@codemirror/language";
-import { EditorState } from "@codemirror/state";
-import { oneDark } from "@codemirror/theme-one-dark";
-import { EditorView, keymap, ViewUpdate } from "@codemirror/view";
-import { setDiagnostics } from "@codemirror/lint";
-import { useEffect, useRef } from "react";
-import type { CellType } from "./types";
-import type { Diagnostic } from "@codemirror/lint";
+import { markdown } from '@codemirror/lang-markdown';
+import { rust } from '@codemirror/lang-rust';
+import {
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from '@codemirror/autocomplete';
+import { defaultKeymap, indentWithTab } from '@codemirror/commands';
+import {
+  bracketMatching,
+  defaultHighlightStyle,
+  foldGutter,
+  foldKeymap,
+  indentOnInput,
+  syntaxHighlighting,
+} from '@codemirror/language';
+import { EditorState } from '@codemirror/state';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { EditorView, keymap, ViewUpdate } from '@codemirror/view';
+import { setDiagnostics } from '@codemirror/lint';
+import { useEffect, useRef } from 'react';
+import type { CellType } from './types';
+import type { Diagnostic } from '@codemirror/lint';
 
 type CodeEditorProps = {
   cellType: CellType;
@@ -74,38 +86,38 @@ export default function CodeEditor({
           EditorView.lineWrapping,
           updateListener,
           EditorView.theme({
-            "&": {
-              backgroundColor: "#242424",
-              color: "#e5e5e5",
-              minHeight: "76px",
-              border: "1px solid #333",
-              borderRadius: "7px",
+            '&': {
+              backgroundColor: '#242424',
+              color: '#e5e5e5',
+              minHeight: '76px',
+              border: '1px solid #333',
+              borderRadius: '7px',
               fontSize: `${fontSize}px`,
             },
-            "&.cm-focused": {
-              outline: "none",
-              borderColor: "#c2410c",
+            '&.cm-focused': {
+              outline: 'none',
+              borderColor: '#c2410c',
             },
-            ".cm-scroller": {
-              minHeight: "76px",
-              padding: "14px",
+            '.cm-scroller': {
+              minHeight: '76px',
+              padding: '14px',
             },
-            ".cm-content": {
-              minHeight: "48px",
-              padding: "0",
+            '.cm-content': {
+              minHeight: '48px',
+              padding: '0',
             },
-            ".cm-gutters": {
-              display: "none",
+            '.cm-gutters': {
+              display: 'none',
             },
-            ".cm-placeholder": {
-              color: "#77736e",
+            '.cm-placeholder': {
+              color: '#77736e',
             },
           }),
           EditorView.contentAttributes.of({
-            "aria-label": placeholder,
-            "data-placeholder": placeholder,
+            'aria-label': placeholder,
+            'data-placeholder': placeholder,
           }),
-          cellType === "markdown" ? markdown() : rust(),
+          cellType === 'markdown' ? markdown() : rust(),
         ],
       }),
       parent: containerRef.current,
@@ -133,5 +145,5 @@ export default function CodeEditor({
     });
   }, [value]);
 
-  return <div className="code-editor" ref={containerRef} />;
+  return <div className='code-editor' ref={containerRef} />;
 }

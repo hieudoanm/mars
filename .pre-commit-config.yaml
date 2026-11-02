@@ -59,10 +59,11 @@ repos:
         name: landing page asset check
         entry: >-
           python3 -c "from pathlib import Path; root=Path('apps/landing');
-          required=['index.html','styles.css','README.md','assets/mars-logo.svg',
-          'assets/mars-file-logo.svg','assets/mars-og.svg','assets/mars-logo.png',
-          'assets/mars-file-logo.png','assets/mars-og.png']; missing=[str(root/p)
-          for p in required if not (root/p).is_file()];
+          required=['package.json','next.config.ts','app/page.tsx','app/layout.tsx',
+          'app/globals.css','app/LandingPage.tsx','docs/index.md',
+          'public/mars-logo.svg','public/mars-file-logo.svg','public/mars-og.svg',
+          'public/mars-logo.png','public/mars-file-logo.png','public/mars-og.png'];
+          missing=[str(root/p) for p in required if not (root/p).is_file()];
           assert not missing, 'Missing landing page assets: ' + ', '.join(missing)"
         language: system
         files: ^apps/landing/

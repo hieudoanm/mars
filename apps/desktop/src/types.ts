@@ -1,14 +1,14 @@
-export type CellType = "markdown" | "code" | "raw";
+export type CellType = 'markdown' | 'code' | 'raw';
 
 export type Output =
-  | { type: "text"; text: string }
-  | { type: "error"; name: string; message: string; traceback: string[] }
-  | { type: "html"; html: string }
-  | { type: "image"; mime_type: string; data: string }
-  | { type: "table"; columns: string[]; rows: string[][] }
-  | { type: "latex"; latex: string }
-  | { type: "chart"; spec: Record<string, unknown> }
-  | { type: "mime_bundle"; data: Record<string, unknown>; metadata?: Record<string, unknown> };
+  | { type: 'text'; text: string }
+  | { type: 'error'; name: string; message: string; traceback: string[] }
+  | { type: 'html'; html: string }
+  | { type: 'image'; mime_type: string; data: string }
+  | { type: 'table'; columns: string[]; rows: string[][] }
+  | { type: 'latex'; latex: string }
+  | { type: 'chart'; spec: Record<string, unknown> }
+  | { type: 'mime_bundle'; data: Record<string, unknown>; metadata?: Record<string, unknown> };
 
 export type NotebookCell = {
   id: string;
@@ -33,11 +33,11 @@ export type Notebook = {
 
 export type KernelResponse =
   | {
-      type: "execution";
+      type: 'execution';
       outputs: Output[];
       execution_count: number;
       duration_millis: number;
     }
-  | { type: "reset"; status: string }
-  | { type: "status"; status: string; execution_count: number }
-  | { type: "error"; message: string };
+  | { type: 'reset'; status: string }
+  | { type: 'status'; status: string; execution_count: number }
+  | { type: 'error'; message: string };

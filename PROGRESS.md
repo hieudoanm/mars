@@ -24,6 +24,9 @@ Phase 7 — Desktop and rendering polish
 - Added a shared `mars export <file.mars> md <output.md>` Markdown exporter used
   by the CLI, desktop export command, and VS Code **Export Notebook to
   Markdown** command.
+- Converted `apps/landing` to a Next.js static export and added Markdown
+  documentation under `apps/landing/docs`, served at `/docs` with a generated
+  sidebar and per-document static pages.
 - Added `mars-protocol` typed kernel requests, responses, and events.
 - Added `mars-kernel` service boundary over the isolated Rust runtime.
 - Added a Tauri 2 desktop shell with a React/TypeScript notebook editor.

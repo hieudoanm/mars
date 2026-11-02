@@ -49,8 +49,8 @@ pnpm turbo run build --filter=@mars/landing
 pnpm turbo run package --filter=@mars/vscode
 ```
 
-Use `pnpm run dev` for parallel development servers. The landing page and
-desktop Vite servers are long-running tasks; stop them with the terminal
+Use `pnpm run dev` for parallel development servers. The landing page (Next.js)
+and desktop Vite servers are long-running tasks; stop them with the terminal
 session that started them.
 
 Use `npm run tauri dev` from `apps/desktop` for the native application. The

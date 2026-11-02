@@ -181,7 +181,7 @@ class MarsKernelService {
                 });
               }
             }
-          } catch (e) {
+          } catch {
             // Invalid JSON, skip
           }
         }
@@ -235,11 +235,27 @@ class MarsKernelService {
 
               if (response.response.type === "error") {
                 reject(new Error(response.response.message));
-              } else {
-                resolve();
+                return;
               }
+
+              if (response.response.type === "execution") {
+                const exec = response.response;
+                const failed = exec.outputs.some((output) => output.type === "error");
+                resolve({
+                  status: failed ? "error" : "success",
+                  execution_count: exec.execution_count,
+                  outputs: exec.outputs,
+                });
+                return;
+              }
+
+              resolve({
+                status: "success",
+                execution_count: 0,
+                outputs: [],
+              });
             }
-          } catch (e) {
+          } catch {
             // Invalid JSON, skip
           }
         }
@@ -271,6 +287,7 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
     content: Uint8Array,
     _token: vscode.CancellationToken
   ): Promise<vscode.NotebookData> {
+    void _token;
     const text = new TextDecoder().decode(content);
     let marsNotebook: MarsNotebook;
 
@@ -325,6 +342,7 @@ class MarsNotebookSerializer implements vscode.NotebookSerializer {
     data: vscode.NotebookData,
     _token: vscode.CancellationToken
   ): Promise<Uint8Array> {
+    void _token;
     // Convert VSCode notebook cells back to Mars format
     const cells: MarsCell[] = data.cells.map((cell) => {
       const marsCell: MarsCell = {
@@ -397,6 +415,7 @@ class MarsNotebookController {
     this._controller.supportedLanguages = ["rust"];
     this._controller.supportsExecutionOrder = true;
     this._controller.executeHandler = this._executeAll.bind(this);
+    void this._controller;
   }
 
   dispose(): void {
@@ -426,6 +445,7 @@ class MarsNotebookController {
     notebook: vscode.NotebookDocument,
     _controller: vscode.NotebookController
   ): Promise<void> {
+    void _controller;
     for (const cell of cells) {
       await this._executeCell(cell, notebook);
     }

@@ -1,4 +1,4 @@
-import type { NotebookCell } from "./types";
+import type { NotebookCell } from './types';
 
 type ExecutionCommandsOptions = {
   cells: NotebookCell[];

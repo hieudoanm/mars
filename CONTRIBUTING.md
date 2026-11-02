@@ -20,7 +20,7 @@ The Node workspace contains:
 
 - `@mars/desktop` — React/Vite frontend and Tauri shell.
 - `@mars/vscode` — VS Code language and notebook companion.
-- `@mars/landing` — React/Vite public landing page.
+- `@mars/landing` — Next.js static landing page with Markdown docs.
 
 Turborepo coordinates package tasks and caches successful work locally:
 

@@ -13,7 +13,6 @@ MARS_CARGO_FEATURES="${MARS_CARGO_FEATURES:-}"
 INSTALL_CLI=0
 INSTALL_VSCODE=0
 INSTALL_DESKTOP=0
-SELECTED_TARGET=0
 
 usage() {
   cat <<'USAGE'
@@ -23,11 +22,7 @@ Options:
   --all                Install CLI, VS Code extension, and desktop app (default)
   --cli                Install only the Mars CLI
   --vscode             Install only the VS Code extension
-  --vscode-only        Alias for --vscode
   --desktop            Install only the desktop app
-  --no-cli             Skip CLI build/install
-  --no-vscode          Skip VS Code extension build/install
-  --no-desktop         Skip desktop app build/install
   -h, --help           Show this help
 
 Environment:
@@ -44,37 +39,24 @@ while [[ $# -gt 0 ]]; do
       INSTALL_CLI=1
       INSTALL_VSCODE=1
       INSTALL_DESKTOP=1
-      SELECTED_TARGET=1
       shift
       ;;
     --cli)
       INSTALL_CLI=1
-      SELECTED_TARGET=1
+      INSTALL_VSCODE=0
+      INSTALL_DESKTOP=0
       shift
       ;;
-    --vscode|--vscode-only)
+    --vscode)
+      INSTALL_CLI=0
       INSTALL_VSCODE=1
-      SELECTED_TARGET=1
+      INSTALL_DESKTOP=0
       shift
       ;;
     --desktop)
-      INSTALL_DESKTOP=1
-      SELECTED_TARGET=1
-      shift
-      ;;
-    --no-cli)
       INSTALL_CLI=0
-      SELECTED_TARGET=1
-      shift
-      ;;
-    --no-vscode)
       INSTALL_VSCODE=0
-      SELECTED_TARGET=1
-      shift
-      ;;
-    --no-desktop)
-      INSTALL_DESKTOP=0
-      SELECTED_TARGET=1
+      INSTALL_DESKTOP=1
       shift
       ;;
     -h|--help)
@@ -89,16 +71,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$SELECTED_TARGET" -eq 0 ]]; then
+# Default to all if nothing was specified
+if [[ "$INSTALL_CLI" -eq 0 && "$INSTALL_VSCODE" -eq 0 && "$INSTALL_DESKTOP" -eq 0 ]]; then
   INSTALL_CLI=1
   INSTALL_VSCODE=1
   INSTALL_DESKTOP=1
-fi
-
-if [[ "$INSTALL_CLI" -eq 0 && "$INSTALL_VSCODE" -eq 0 && "$INSTALL_DESKTOP" -eq 0 ]]; then
-  echo "Nothing to install."
-  usage
-  exit 1
 fi
 
 echo "Installing Mars"

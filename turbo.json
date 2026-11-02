@@ -9,13 +9,30 @@
       "dependsOn": ["^check"],
       "outputs": []
     },
-    "package": {
-      "dependsOn": ["build"],
-      "outputs": ["*.vsix"]
+    "lint": {
+      "dependsOn": ["^lint"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputs": []
+    },
+    "test:coverage": {
+      "dependsOn": ["^test:coverage"],
+      "cache": false
     },
     "test:e2e": {
       "dependsOn": ["build"],
       "cache": false
+    },
+
+    "serve": {
+      "dependsOn": ["^serve"],
+      "outputs": []
+    },
+    "package": {
+      "dependsOn": ["build"],
+      "outputs": ["*.vsix"]
     },
     "dev": {
       "cache": false,

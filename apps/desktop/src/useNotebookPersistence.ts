@@ -1,14 +1,14 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { open, save } from "@tauri-apps/plugin-dialog";
-import { useEffect, useRef, useState } from "react";
-import type { Notebook } from "./types";
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { open, save } from '@tauri-apps/plugin-dialog';
+import { useEffect, useRef, useState } from 'react';
+import type { Notebook } from './types';
 import {
   configureKernel,
   exportMarkdownFile,
   loadNotebookFile,
   saveNotebookFile,
-} from "./kernelService";
-import { serializeNotebook } from "./notebookOperations";
+} from './kernelService';
+import { serializeNotebook } from './notebookOperations';
 
 type PersistenceOptions = {
   notebook: Notebook;
@@ -34,18 +34,20 @@ export function useNotebookPersistence({
 
   const saveNotebook = async (): Promise<boolean> => {
     try {
-      const path = filePath ?? (await save({
-        defaultPath: "Untitled.mars",
-        filters: [{ name: "Mars notebook", extensions: ["mars"] }],
-      }));
+      const path =
+        filePath ??
+        (await save({
+          defaultPath: 'Untitled.mars',
+          filters: [{ name: 'Mars notebook', extensions: ['mars'] }],
+        }));
       if (!path) return false;
       await saveNotebookFile(path, snapshot);
       setFilePath(path);
       setSavedSnapshot(snapshot);
-      setStatus("Saved");
+      setStatus('Saved');
       return true;
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Save failed");
+      setStatus(error instanceof Error ? error.message : 'Save failed');
       return false;
     }
   };
@@ -53,17 +55,15 @@ export function useNotebookPersistence({
   const exportMarkdown = async (): Promise<boolean> => {
     try {
       const path = await save({
-        defaultPath: filePath
-          ? filePath.replace(/\.mars$/i, ".md")
-          : "Untitled.md",
-        filters: [{ name: "Markdown", extensions: ["md"] }],
+        defaultPath: filePath ? filePath.replace(/\.mars$/i, '.md') : 'Untitled.md',
+        filters: [{ name: 'Markdown', extensions: ['md'] }],
       });
       if (!path) return false;
       await exportMarkdownFile(path, snapshot);
-      setStatus("Exported Markdown");
+      setStatus('Exported Markdown');
       return true;
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Markdown export failed");
+      setStatus(error instanceof Error ? error.message : 'Markdown export failed');
       return false;
     }
   };
@@ -76,10 +76,10 @@ export function useNotebookPersistence({
       resetHistory(loadedFile.notebook);
       setSavedSnapshot(serializeNotebook(loadedFile.notebook));
       setFilePath(path);
-      setStatus("Opened");
+      setStatus('Opened');
       setPendingOpenPath(null);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Open failed");
+      setStatus(error instanceof Error ? error.message : 'Open failed');
     }
   };
 
@@ -87,13 +87,13 @@ export function useNotebookPersistence({
     try {
       const path = await open({
         multiple: false,
-        filters: [{ name: "Mars notebook", extensions: ["mars"] }],
+        filters: [{ name: 'Mars notebook', extensions: ['mars'] }],
       });
       if (!path || Array.isArray(path)) return;
       if (isDirty) setPendingOpenPath(path);
       else await loadNotebook(path);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Open failed");
+      setStatus(error instanceof Error ? error.message : 'Open failed');
     }
   };
 
@@ -105,10 +105,10 @@ export function useNotebookPersistence({
       void saveNotebookFile(filePath, snapshot)
         .then(() => {
           setSavedSnapshot(snapshot);
-          setStatus("Autosaved");
+          setStatus('Autosaved');
         })
         .catch((error: unknown) => {
-          setStatus(error instanceof Error ? error.message : "Autosave failed");
+          setStatus(error instanceof Error ? error.message : 'Autosave failed');
         })
         .finally(() => {
           autosaveInFlight.current = false;
@@ -118,7 +118,7 @@ export function useNotebookPersistence({
   }, [filePath, isDirty, snapshot]);
 
   useEffect(() => {
-    if (!("__TAURI_INTERNALS__" in window)) return;
+    if (!('__TAURI_INTERNALS__' in window)) return;
     let unlisten: (() => void) | undefined;
     let disposed = false;
     void getCurrentWindow()
@@ -132,7 +132,7 @@ export function useNotebookPersistence({
         else unlisten = cleanup;
       })
       .catch((error: unknown) => {
-        setStatus(error instanceof Error ? error.message : "Close handling unavailable");
+        setStatus(error instanceof Error ? error.message : 'Close handling unavailable');
       });
     return () => {
       disposed = true;

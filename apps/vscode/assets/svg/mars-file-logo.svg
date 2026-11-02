@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="114 114 284 284" role="img" aria-labelledby="title desc">
   <title id="title">Mars file logo</title>
   <desc id="desc">The Mars planet mark without the notebook symbol.</desc>
   <defs>
@@ -14,7 +14,6 @@
       <circle cx="256" cy="256" r="142"/>
     </clipPath>
   </defs>
-  <rect width="512" height="512" rx="112" fill="#11151d"/>
   <circle cx="256" cy="256" r="142" fill="url(#planet)" filter="url(#shadow)"/>
   <g clip-path="url(#planetClip)" fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
     <path d="M92 218c81-45 177-55 311-15" stroke-width="18"/>

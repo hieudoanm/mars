@@ -133,7 +133,10 @@
         },
         "mars.runtime": {
           "type": "string",
-          "enum": ["replay", "evcxr"],
+          "enum": [
+            "replay",
+            "evcxr"
+          ],
           "default": "replay",
           "description": "Runtime backend passed to `mars kernel serve`. Use `evcxr` for plotters/evcxr display output; the Mars CLI must be built with the experimental-evcxr feature."
         }
@@ -176,15 +179,30 @@
     ]
   },
   "scripts": {
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
     "build": "npm run compile",
     "check": "npm run compile",
     "compile": "tsc -p .",
-    "package": "npm run compile && node -e \"require('fs').mkdirSync('vsix',{recursive:true})\" && vsce package --out vsix/mars-vscode.vsix"
+    "package": "npm run compile && node -e \"require('fs').mkdirSync('vsix',{recursive:true})\" && vsce package --out vsix/mars-vscode.vsix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@types/node": "26.6.6",
     "@types/vscode": "1.144.0",
     "@vscode/vsce": "4.1.0",
-    "typescript": "5.9.3"
+    "@vitest/coverage-v8": "2.1.8",
+    "eslint": "10.14.0",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "2.1.8"
   }
 }

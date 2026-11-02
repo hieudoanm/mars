@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export type EditorPreferences = {
   autocomplete: boolean;
@@ -12,14 +12,16 @@ const DEFAULT_PREFERENCES: EditorPreferences = {
 };
 
 function readFontSize() {
-  const stored = window.localStorage.getItem("mars.editor.fontSize");
+  const stored = window.localStorage.getItem('mars.editor.fontSize');
   const value = stored ? Number(stored) : DEFAULT_FONT_SIZE;
   return Number.isFinite(value) && value >= 10 && value <= 28 ? value : DEFAULT_FONT_SIZE;
 }
 
 function readPreferences(): EditorPreferences {
   try {
-    const stored = JSON.parse(window.localStorage.getItem("mars.editor.preferences") ?? "{}") as Partial<EditorPreferences>;
+    const stored = JSON.parse(
+      window.localStorage.getItem('mars.editor.preferences') ?? '{}',
+    ) as Partial<EditorPreferences>;
     return {
       autocomplete: stored.autocomplete ?? DEFAULT_PREFERENCES.autocomplete,
       folding: stored.folding ?? DEFAULT_PREFERENCES.folding,
@@ -34,11 +36,11 @@ export function useEditorPreferences() {
   const [preferences, setPreferences] = useState(readPreferences);
 
   useEffect(() => {
-    window.localStorage.setItem("mars.editor.fontSize", String(fontSize));
+    window.localStorage.setItem('mars.editor.fontSize', String(fontSize));
   }, [fontSize]);
 
   useEffect(() => {
-    window.localStorage.setItem("mars.editor.preferences", JSON.stringify(preferences));
+    window.localStorage.setItem('mars.editor.preferences', JSON.stringify(preferences));
   }, [preferences]);
 
   const updateFontSize = (value: number) => {

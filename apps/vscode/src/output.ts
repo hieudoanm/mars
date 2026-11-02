@@ -274,3 +274,9 @@ function parseSpec(text: string): Record<string, unknown> {
   }
   return {};
 }
+
+export function appendOutput(
+  output: vscode.NotebookCellOutput,
+): vscode.NotebookCellOutput {
+  return output;
+}

@@ -32,8 +32,8 @@ frontend; the CLI and the desktop backend share the same Rust domain crates.
   user code or persist notebooks directly.
 - `@mars/vscode` is an optional editor adapter for `.mars` syntax, cell
   navigation, preview/export, and CLI-backed execution.
-- `@mars/landing` is the React/Vite public marketing site and does not share
-  runtime behavior with the notebook editor.
+- `@mars/landing` is the Next.js static marketing site with Markdown docs at
+  `/docs`. It does not share runtime behavior with the notebook editor.
 
 ## Data flow
 

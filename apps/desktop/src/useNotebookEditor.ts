@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import type { Notebook } from "./types";
+import { useEffect, useRef, useState } from 'react';
+import type { Notebook } from './types';
 import {
   clearCellOutputs,
   convertCell,
@@ -10,14 +10,16 @@ import {
   moveCell,
   serializeNotebook,
   updateCellSource,
-} from "./notebookOperations";
+} from './notebookOperations';
 
-type CellType = "markdown" | "code";
+type CellType = 'markdown' | 'code';
 
 export function useNotebookEditor(initialNotebook: Notebook) {
   const [notebook, setNotebook] = useState(initialNotebook);
-  const [selectedId, setSelectedId] = useState(initialNotebook.cells[1]?.id ?? initialNotebook.cells[0]?.id ?? "");
-  const [mode, setMode] = useState<"edit" | "command">("edit");
+  const [selectedId, setSelectedId] = useState(
+    initialNotebook.cells[1]?.id ?? initialNotebook.cells[0]?.id ?? '',
+  );
+  const [mode, setMode] = useState<'edit' | 'command'>('edit');
   const historyRef = useRef<{ past: string[]; future: string[] }>({
     past: [serializeNotebook(initialNotebook)],
     future: [],
@@ -48,7 +50,7 @@ export function useNotebookEditor(initialNotebook: Notebook) {
     const restored = JSON.parse(snapshot) as Notebook;
     applyingHistoryRef.current = true;
     setNotebook(restored);
-    setSelectedId(restored.cells[0]?.id ?? "");
+    setSelectedId(restored.cells[0]?.id ?? '');
   };
 
   const updateCell = (id: string, source: string) => {
@@ -59,14 +61,14 @@ export function useNotebookEditor(initialNotebook: Notebook) {
     const cell = createCell(cellType);
     setNotebook((current) => ({ ...current, cells: [...current.cells, cell] }));
     setSelectedId(cell.id);
-    setMode("edit");
+    setMode('edit');
   };
 
   const insertCell = (index: number, cellType: CellType) => {
     const result = insertCellAt(notebook, index, cellType);
     setNotebook(result.notebook);
     setSelectedId(result.cell.id);
-    setMode("edit");
+    setMode('edit');
   };
 
   const duplicateSelected = () => {

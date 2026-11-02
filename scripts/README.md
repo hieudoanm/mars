@@ -25,8 +25,8 @@ bundle.
 
 ### Installing a single target
 
-Pass one target flag to install only that target. Flags can be combined, and
-`--no-<target>` skips an otherwise selected target.
+Pass one or more target flags to install the specified targets. If no targets are
+selected, all components are installed by default.
 
 ```bash
 ./scripts/install.sh --cli          # Mars CLI only
@@ -35,9 +35,9 @@ Pass one target flag to install only that target. Flags can be combined, and
 ./scripts/install.sh --cli --vscode # CLI plus extension (recommended for editors)
 ```
 
-`--vscode` is an alias for `--vscode-only`. The VS Code extension executes cells
-through the `mars` CLI, so install the CLI too unless it is already on `PATH`.
-The desktop app embeds the kernel and does not need the CLI.
+The VS Code extension executes cells through the `mars` CLI, so install the CLI too
+unless it is already on `PATH`. The desktop app embeds the kernel and does not need
+the CLI.
 
 Use `./scripts/install.sh --help` for the full option list.
 

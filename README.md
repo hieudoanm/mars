@@ -22,7 +22,8 @@
 - Jupyter conversion with common rich MIME outputs.
 - Sanitized HTML rendering.
 - Functional Tauri desktop editor.
-- React landing page and optional VS Code companion in pnpm/Turborepo workspace.
+- Next.js landing page with Markdown documentation and an optional VS Code
+  companion in a pnpm/Turborepo workspace.
 
 ## Quick start
 

@@ -1,25 +1,33 @@
 # Mars landing page
 
-This is the React/Vite marketing page for Mars. It is the
-`@mars/landing` workspace package and produces static files suitable for
-GitHub Pages, Netlify, Cloudflare Pages, or any static file host.
+The landing page is the Next.js static site for the Mars project (`@mars/landing`).
+It is deployed as static files suitable for GitHub Pages, Netlify, Cloudflare
+Pages, or any static file host.
+
+## Development
+
+```bash
+pnpm --filter @mars/landing dev
+pnpm --filter @mars/landing check
+```
+
+## Build
 
 ```bash
 pnpm --filter @mars/landing build
 ```
 
-For local development:
+Set `NEXT_PUBLIC_SITE_URL` to the deployed origin when building so Open Graph
+image URLs are absolute:
 
 ```bash
-pnpm --filter @mars/landing check
-pnpm --filter @mars/landing dev
+NEXT_PUBLIC_SITE_URL=https://example.com pnpm --filter @mars/landing build
 ```
 
-The production output is written to `dist/`. The page uses local copies of the
-shared project assets under `assets/`; keep those files synchronized with the
+The production output is written to `out/`. The site uses a static export with
+trailing slashes and serves documentation at `/docs` from Markdown files in
+`apps/landing/docs/`.
+
+Brand assets are stored in `public/`. Keep those files synchronized with the
 canonical files in `../../assets/svg` and `../../assets/images` when branding
 changes.
-
-The page uses copies of the shared project assets under `assets/`. Keep those
-files synchronized with the canonical files in `../../assets/svg` and
-`../../assets/images` when branding changes.

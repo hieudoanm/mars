@@ -1,7 +1,12 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
-import type { Notebook, NotebookCell } from "./types";
-import { hasInterruptedOutput, executeSource, cancelKernelExecution, resetKernel } from "./kernelService";
-import { parseExecutionTimeout } from "./diagnostics";
+import { useState, type Dispatch, type SetStateAction } from 'react';
+import type { Notebook, NotebookCell } from './types';
+import {
+  hasInterruptedOutput,
+  executeSource,
+  cancelKernelExecution,
+  resetKernel,
+} from './kernelService';
+import { parseExecutionTimeout } from './diagnostics';
 
 type ExecutionOptions = {
   setNotebook: Dispatch<SetStateAction<Notebook>>;
@@ -13,8 +18,8 @@ export function useKernelExecution({ setNotebook, timeout, setStatus }: Executio
   const [isExecuting, setIsExecuting] = useState(false);
 
   const executeCell = async (cell: NotebookCell, manageExecutionState = true): Promise<boolean> => {
-    if (cell.cell_type !== "code") return true;
-    setStatus("Running");
+    if (cell.cell_type !== 'code') return true;
+    setStatus('Running');
     if (manageExecutionState) setIsExecuting(true);
     try {
       const parsed = parseExecutionTimeout(timeout);
@@ -32,10 +37,14 @@ export function useKernelExecution({ setNotebook, timeout, setStatus }: Executio
             : item,
         ),
       }));
-      setStatus(interrupted ? `Interrupted after ${response.duration_millis} ms` : `Succeeded in ${response.duration_millis} ms`);
+      setStatus(
+        interrupted
+          ? `Interrupted after ${response.duration_millis} ms`
+          : `Succeeded in ${response.duration_millis} ms`,
+      );
       return !interrupted;
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Execution failed");
+      setStatus(error instanceof Error ? error.message : 'Execution failed');
       return false;
     } finally {
       if (manageExecutionState) setIsExecuting(false);
@@ -43,13 +52,13 @@ export function useKernelExecution({ setNotebook, timeout, setStatus }: Executio
   };
 
   const executeCells = async (cells: NotebookCell[]) => {
-    setStatus("Running");
+    setStatus('Running');
     setIsExecuting(true);
     try {
       for (const cell of cells) {
         if (!(await executeCell(cell, false))) return;
       }
-      setStatus(`Executed ${cells.filter((cell) => cell.cell_type === "code").length} code cells`);
+      setStatus(`Executed ${cells.filter((cell) => cell.cell_type === 'code').length} code cells`);
     } finally {
       setIsExecuting(false);
     }
@@ -61,15 +70,15 @@ export function useKernelExecution({ setNotebook, timeout, setStatus }: Executio
       ...current,
       cells: current.cells.map((cell) => ({ ...cell, execution_count: null, outputs: [] })),
     }));
-    setStatus("Idle");
+    setStatus('Idle');
   };
 
   const cancelExecution = async () => {
     try {
       await cancelKernelExecution();
-      setStatus("Cancelling");
+      setStatus('Cancelling');
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Cancellation failed");
+      setStatus(error instanceof Error ? error.message : 'Cancellation failed');
     }
   };
 

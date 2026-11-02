@@ -49,11 +49,14 @@ have the Tauri CLI binary installed. In that case `npm run tauri info` and
 `npm run tauri build` must be run on a configured release machine; do not treat
 the browser build as a substitute for native artifact validation.
 
-The landing page can be deployed from `apps/landing/dist` after:
+The landing page can be deployed from `apps/landing/out` after:
 
 ```bash
 pnpm --filter @mars/landing build
 ```
+
+The build statically exports the marketing page and the Markdown documentation
+served at `/docs`, including one page per document in `apps/landing/docs`.
 
 The VS Code package is built with:
 
@@ -89,7 +92,8 @@ Before publishing:
 
 For the landing page, verify that the generated site serves the favicon,
 Open Graph image, logo assets, JavaScript bundle, and CSS bundle from the
-deployed base path. For the VS Code extension, install the `.vsix` into a
+deployed base path, and that `/docs` and every `/docs/<slug>/` page load
+without missing assets. For the VS Code extension, install the `.vsix` into a
 clean VS Code profile and verify `.mars` language activation, preview/export,
 cell navigation, and CLI-backed execution.
 
