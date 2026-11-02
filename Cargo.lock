@@ -2245,6 +2245,7 @@ dependencies = [
  "mars-document",
  "mars-kernel",
  "mars-protocol",
+ "mars-renderer",
  "serde",
  "serde_json",
  "tauri",

@@ -57,7 +57,7 @@ export default function App() {
   const {
     filePath, isDirty, pendingOpenPath, closeRequested,
     setPendingOpenPath, setCloseRequested, openNotebook, saveNotebook,
-    discardAndOpen, saveAndOpen, discardAndClose, saveAndClose,
+    exportMarkdown, discardAndOpen, saveAndOpen, discardAndClose, saveAndClose,
   } = persistence;
   const { isExecuting, executeCell, restart, cancelExecution } = execution;
 
@@ -94,6 +94,7 @@ export default function App() {
           <span>{ui.status} · {editor.mode === "command" ? "Command mode" : "Edit mode"}</span>
           <button onClick={() => void openNotebook()}>Open</button>
           <button onClick={() => void saveNotebook()}>Save</button>
+          <button onClick={() => void exportMarkdown()}>Export Markdown</button>
           <button onClick={() => void restart()}>Restart runtime</button>
         </div>
       </header>

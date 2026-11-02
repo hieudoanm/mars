@@ -21,6 +21,9 @@ Phase 7 — Desktop and rendering polish
 - Added `mars-renderer` with Markdown, code, text, errors, tables, images, and sanitized HTML output rendering.
 - Added functional `mars export <file.mars> html <output.html>` with standalone
   styling.
+- Added a shared `mars export <file.mars> md <output.md>` Markdown exporter used
+  by the CLI, desktop export command, and VS Code **Export Notebook to
+  Markdown** command.
 - Added `mars-protocol` typed kernel requests, responses, and events.
 - Added `mars-kernel` service boundary over the isolated Rust runtime.
 - Added a Tauri 2 desktop shell with a React/TypeScript notebook editor.

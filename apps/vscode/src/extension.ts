@@ -534,6 +534,7 @@ export function activate(context: vscode.ExtensionContext): void {
   // Keep existing CLI commands for compatibility
   context.subscriptions.push(
     vscode.commands.registerCommand("mars.exportHtml", () => exportHtml()),
+    vscode.commands.registerCommand("mars.exportMarkdown", () => exportMarkdown()),
     vscode.commands.registerCommand("mars.preview", () => exportHtml()),
     vscode.commands.registerCommand("mars.runNotebook", () => runNotebook()),
     vscode.commands.registerCommand("mars.openCell", () => openCell()),
@@ -577,16 +578,26 @@ async function runNotebook(): Promise<void> {
   }
 }
 
-async function exportHtml(): Promise<void> {
+function activeMarsFilePath(): string | undefined {
+  const notebook = vscode.window.activeNotebookEditor?.notebook;
+  if (notebook?.uri.scheme === "file" && notebook.uri.fsPath.endsWith(".mars")) {
+    return notebook.uri.fsPath;
+  }
   const document = vscode.window.activeTextEditor?.document;
-  if (!document || !document.fileName.endsWith(".mars")) {
+  if (document?.fileName.endsWith(".mars")) return document.fileName;
+  return undefined;
+}
+
+async function exportNotebook(format: "html" | "md", extension: string): Promise<void> {
+  const filePath = activeMarsFilePath();
+  if (!filePath) {
     void vscode.window.showErrorMessage("Open a .mars notebook first.");
     return;
   }
-  const output = document.fileName.replace(/\.mars$/i, ".html");
+  const output = filePath.replace(/\.mars$/i, `.${extension}`);
   try {
     const cliPath = vscode.workspace.getConfiguration("mars").get<string>("cliPath", "mars");
-    await execFileAsync(cliPath, ["export", document.fileName, "html", output]);
+    await execFileAsync(cliPath, ["export", filePath, format, output]);
     if (vscode.workspace.getConfiguration("mars").get<boolean>("previewAfterExport", true)) {
       const uri = vscode.Uri.file(output);
       await vscode.commands.executeCommand("vscode.open", uri);
@@ -597,6 +608,14 @@ async function exportHtml(): Promise<void> {
     const message = error instanceof Error ? error.message : "Mars export failed";
     void vscode.window.showErrorMessage(message);
   }
+}
+
+async function exportHtml(): Promise<void> {
+  await exportNotebook("html", "html");
+}
+
+async function exportMarkdown(): Promise<void> {
+  await exportNotebook("md", "md");
 }
 
 async function openCell(): Promise<void> {

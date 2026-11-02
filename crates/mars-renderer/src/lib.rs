@@ -85,6 +85,229 @@ fn render_markdown(source: &str) -> String {
     ammonia::clean(&rendered)
 }
 
+/// Render a notebook as a portable Markdown document.
+///
+/// Markdown cells keep their original source, code cells become fenced Rust
+/// blocks, and outputs are converted into Markdown-friendly equivalents such
+/// as tables, LaTeX blocks, and data-URI images.
+pub fn render_markdown_notebook(notebook: &Notebook) -> String {
+    let title = notebook
+        .metadata
+        .title
+        .as_deref()
+        .map(str::trim)
+        .filter(|title| !title.is_empty());
+    let has_title_heading = title.is_some_and(|title| {
+        notebook
+            .cells
+            .iter()
+            .find(|cell| cell.cell_type == CellType::Markdown && !cell.source.trim().is_empty())
+            .is_some_and(|cell| {
+                cell.source
+                    .trim_start()
+                    .lines()
+                    .next()
+                    .is_some_and(|line| line.trim() == format!("# {title}"))
+            })
+    });
+
+    let mut blocks = Vec::new();
+    if let Some(title) = title.filter(|_| !has_title_heading) {
+        blocks.push(format!("# {title}"));
+    }
+
+    for cell in &notebook.cells {
+        match cell.cell_type {
+            CellType::Markdown => {
+                let source = cell.source.trim();
+                if !source.is_empty() {
+                    blocks.push(source.to_owned());
+                }
+            }
+            CellType::Code => {
+                let mut block = fenced_code("rust", &cell.source);
+                for output in &cell.outputs {
+                    if let Some(rendered) = render_markdown_output(output) {
+                        block.push_str("\n\n");
+                        block.push_str(&rendered);
+                    }
+                }
+                blocks.push(block);
+            }
+            CellType::Raw => {
+                let source = cell.source.trim();
+                if !source.is_empty() {
+                    blocks.push(fenced_code("text", source));
+                }
+            }
+        }
+    }
+
+    blocks.join("\n\n")
+}
+
+fn render_markdown_output(output: &Output) -> Option<String> {
+    match output {
+        Output::Text { text } => {
+            let text = text.trim_end_matches('\n');
+            (!text.is_empty()).then(|| fenced_code("text", text))
+        }
+        Output::Error {
+            name,
+            message,
+            traceback,
+        } => {
+            let mut content = message.trim_end_matches('\n').to_owned();
+            let trace = traceback.join("\n");
+            if !trace.trim().is_empty() {
+                content.push('\n');
+                content.push_str(trace.trim_end_matches('\n'));
+            }
+            Some(format!("**{name}**\n\n{}", fenced_code("text", &content)))
+        }
+        Output::Html { html } => Some(render_markdown_html_output(html)),
+        Output::Image { mime_type, data } => Some(render_markdown_image(mime_type, data)),
+        Output::Table { columns, rows } => Some(render_markdown_table(columns, rows)),
+        Output::Latex { latex } => {
+            let latex = latex.trim();
+            (!latex.is_empty()).then(|| format!("$$\n{latex}\n$$"))
+        }
+        Output::Chart { spec } => Some(render_markdown_chart(spec)),
+        Output::MimeBundle { data, .. } => render_markdown_mime_bundle(data),
+    }
+}
+
+fn render_markdown_html_output(html: &str) -> String {
+    if let Some(svg) = extract_svg(html) {
+        return render_markdown_image("image/svg+xml", svg);
+    }
+    ammonia::clean(html)
+}
+
+fn render_markdown_image(mime_type: &str, data: &str) -> String {
+    if !is_safe_image_type(mime_type) {
+        return "_Unsupported image output._".to_owned();
+    }
+    let Some(source) = image_data_uri(mime_type, data) else {
+        return "_Image output is empty._".to_owned();
+    };
+    format!("![Notebook output]({source})")
+}
+
+fn render_markdown_chart(spec: &Value) -> String {
+    let svg = render_chart_svg(spec);
+    if svg.trim_start().starts_with("<svg") {
+        render_markdown_image("image/svg+xml", &svg)
+    } else {
+        svg
+    }
+}
+
+fn render_markdown_table(columns: &[String], rows: &[Vec<String>]) -> String {
+    if columns.is_empty() {
+        return "_Empty table._".to_owned();
+    }
+    let header = columns
+        .iter()
+        .map(|column| escape_markdown_cell(column))
+        .collect::<Vec<_>>()
+        .join(" | ");
+    let divider = columns
+        .iter()
+        .map(|_| "---")
+        .collect::<Vec<_>>()
+        .join(" | ");
+    let mut lines = vec![format!("| {header} |"), format!("| {divider} |")];
+    for row in rows {
+        let cells = (0..columns.len())
+            .map(|index| {
+                row.get(index)
+                    .map_or_else(String::new, |value| escape_markdown_cell(value))
+            })
+            .collect::<Vec<_>>()
+            .join(" | ");
+        lines.push(format!("| {cells} |"));
+    }
+    lines.join("\n")
+}
+
+fn render_markdown_mime_bundle(data: &serde_json::Map<String, Value>) -> Option<String> {
+    for mime_type in [
+        "image/svg+xml",
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "image/webp",
+    ] {
+        if let Some(value) = data.get(mime_type).and_then(mime_value_to_string) {
+            return Some(render_markdown_image(mime_type, &value));
+        }
+    }
+
+    if let Some(spec) = data
+        .get("application/vnd.vega.v5+json")
+        .or_else(|| data.get("application/vnd.vega-lite.v5+json"))
+        .or_else(|| data.get("application/vnd.vega-lite+json"))
+    {
+        return Some(render_markdown_chart(spec));
+    }
+
+    if let Some(html) = data.get("text/html").and_then(mime_value_to_string) {
+        return Some(render_markdown_html_output(&html));
+    }
+    if let Some(latex) = data.get("text/latex").and_then(mime_value_to_string) {
+        let latex = latex.trim();
+        if !latex.is_empty() {
+            return Some(format!("$$\n{latex}\n$$"));
+        }
+    }
+    if let Some(markdown) = data.get("text/markdown").and_then(mime_value_to_string) {
+        let markdown = markdown.trim();
+        if !markdown.is_empty() {
+            return Some(markdown.to_owned());
+        }
+    }
+    if let Some(text) = data.get("text/plain").and_then(mime_value_to_string) {
+        let text = text.trim_end_matches('\n');
+        if !text.is_empty() {
+            return Some(fenced_code("text", text));
+        }
+    }
+
+    let json = serde_json::to_string_pretty(&Value::Object(data.clone())).ok()?;
+    Some(fenced_code("json", &json))
+}
+
+fn escape_markdown_cell(value: &str) -> String {
+    value
+        .replace('\\', "\\\\")
+        .replace('|', "\\|")
+        .replace("\r\n", "<br>")
+        .replace(['\r', '\n'], "<br>")
+}
+
+fn fenced_code(language: &str, content: &str) -> String {
+    let fence = code_fence(content);
+    format!(
+        "{fence}{language}\n{}\n{fence}",
+        content.trim_end_matches('\n')
+    )
+}
+
+fn code_fence(content: &str) -> String {
+    let mut longest = 0;
+    let mut run = 0;
+    for character in content.chars() {
+        if character == '`' {
+            run += 1;
+            longest = longest.max(run);
+        } else {
+            run = 0;
+        }
+    }
+    "`".repeat(longest.max(2) + 1)
+}
+
 fn render_output(output: &Output) -> String {
     match output {
         Output::Text { text } => format!(
@@ -367,7 +590,7 @@ fn render_chart_svg(spec: &Value) -> String {
         )
     });
     format!(
-        "<svg class=\"chart-svg\" viewBox=\"0 0 {width} {height}\" role=\"img\" aria-label=\"Offline chart\"><line x1=\"{left}\" y1=\"12\" x2=\"{left}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/><line x1=\"{left}\" y1=\"{plot_bottom}\" x2=\"{width}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/>{shapes}{x_label}</svg>",
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"chart-svg\" viewBox=\"0 0 {width} {height}\" role=\"img\" aria-label=\"Offline chart\"><line x1=\"{left}\" y1=\"12\" x2=\"{left}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/><line x1=\"{left}\" y1=\"{plot_bottom}\" x2=\"{width}\" y2=\"{plot_bottom}\" stroke=\"#737373\"/>{shapes}{x_label}</svg>",
         plot_bottom = 12.0 + plot_height,
     )
 }
@@ -612,5 +835,127 @@ mod tests {
         let html = render_notebook(&notebook);
 
         assert!(html.contains("data:image/svg+xml;base64,"));
+    }
+
+    #[test]
+    fn exports_markdown_with_cells_and_outputs() {
+        let mut notebook = Notebook::new();
+        notebook.metadata.title = Some("Demo notebook".to_owned());
+        notebook
+            .add_cell(Cell::new(CellType::Markdown, "# Hello\n\n**Mars**"))
+            .expect("unique ID");
+        let mut cell = Cell::new(CellType::Code, "println!(\"hi\");");
+        cell.outputs.push(Output::Text {
+            text: "hi\n".to_owned(),
+        });
+        cell.outputs.push(Output::Latex {
+            latex: "E = mc^2".to_owned(),
+        });
+        cell.outputs.push(Output::Table {
+            columns: vec!["name".to_owned(), "value".to_owned()],
+            rows: vec![vec!["a|b".to_owned(), "1".to_owned()]],
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let markdown = render_markdown_notebook(&notebook);
+
+        assert!(markdown.starts_with("# Demo notebook\n\n# Hello"));
+        assert!(markdown.contains("**Mars**"));
+        assert!(markdown.contains("```rust\nprintln!(\"hi\");\n```"));
+        assert!(markdown.contains("```text\nhi\n```"));
+        assert!(markdown.contains("$$\nE = mc^2\n$$"));
+        assert!(markdown.contains("| name | value |"));
+        assert!(markdown.contains("| a\\|b | 1 |"));
+    }
+
+    #[test]
+    fn avoids_duplicating_an_existing_title_heading() {
+        let mut notebook = Notebook::new();
+        notebook.metadata.title = Some("Demo notebook".to_owned());
+        notebook
+            .add_cell(Cell::new(CellType::Markdown, "# Demo notebook\n\nBody"))
+            .expect("unique ID");
+
+        let markdown = render_markdown_notebook(&notebook);
+
+        assert_eq!(markdown.matches("# Demo notebook").count(), 1);
+        assert!(markdown.ends_with("\n\nBody"));
+    }
+
+    #[test]
+    fn exports_markdown_images_as_data_uris() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "plot()");
+        cell.outputs.push(Output::MimeBundle {
+            data: serde_json::json!({
+                "image/png": "iVBORw0KGgo=",
+                "image/svg+xml": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"4\" cy=\"4\" r=\"4\"/></svg>",
+                "text/plain": "<Figure size 640x480 with 1 Axes>"
+            })
+            .as_object()
+            .cloned()
+            .unwrap_or_default(),
+            metadata: serde_json::Map::new(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let markdown = render_markdown_notebook(&notebook);
+
+        assert!(markdown.contains("![Notebook output](data:image/svg+xml;base64,"));
+        assert!(!markdown.contains("data:image/png"));
+        assert!(!markdown.contains("<Figure size"));
+    }
+
+    #[test]
+    fn exports_markdown_charts_as_images() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "chart()");
+        cell.outputs.push(Output::Chart {
+            spec: serde_json::json!({
+                "mark": "line",
+                "data": {"values": [{"x": 1, "y": 2}, {"x": 2, "y": 4}]},
+                "encoding": {"x": {"field": "x"}, "y": {"field": "y"}}
+            }),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let markdown = render_markdown_notebook(&notebook);
+
+        assert!(markdown.contains("![Notebook output](data:image/svg+xml;base64,"));
+    }
+
+    #[test]
+    fn exports_markdown_errors_and_sanitizes_html() {
+        let mut notebook = Notebook::new();
+        let mut cell = Cell::new(CellType::Code, "report()");
+        cell.outputs.push(Output::Error {
+            name: "RuntimeError".to_owned(),
+            message: "boom".to_owned(),
+            traceback: vec!["at line 1".to_owned()],
+        });
+        cell.outputs.push(Output::Html {
+            html: "<script>alert(1)</script><b>safe</b>".to_owned(),
+        });
+        notebook.add_cell(cell).expect("unique ID");
+
+        let markdown = render_markdown_notebook(&notebook);
+
+        assert!(markdown.contains("**RuntimeError**"));
+        assert!(markdown.contains("boom"));
+        assert!(markdown.contains("at line 1"));
+        assert!(markdown.contains("<b>safe</b>"));
+        assert!(!markdown.contains("<script>"));
+    }
+
+    #[test]
+    fn lengthens_markdown_fences_when_source_contains_backticks() {
+        let mut notebook = Notebook::new();
+        notebook
+            .add_cell(Cell::new(CellType::Code, "let fence = \"```\";"))
+            .expect("unique ID");
+
+        let markdown = render_markdown_notebook(&notebook);
+
+        assert!(markdown.contains("````rust\nlet fence = \"```\";\n````"));
     }
 }

@@ -4,13 +4,15 @@ This directory contains example Mars notebooks demonstrating various features of
 
 ## Examples
 
-| File                        | Description                                                                                                                 |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `01-getting-started.mars`   | Basic introduction to Mars - variables and expressions                                                                      |
-| `02-data-analysis.mars`     | Simple data analysis with vectors, sums, and statistics                                                                     |
-| `03-linear-regression.mars` | Computing least-squares linear regression from scratch                                                                      |
-| `04-machine-learning.mars`  | Machine learning workflow using Rust libraries (polars, ndarray, linfa) similar to Python's pandas, numpy, and scikit-learn |
-| `05-plotting.mars`          | Vector plotting with plotters, rendered as an SVG image output like matplotlib in Jupyter                        |
+Each example lives in its own directory alongside a generated Markdown export:
+
+| File                                          | Description                                                                                                                 |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `01-getting-started/getting-started.mars`     | Basic introduction to Mars - variables and expressions                                                                      |
+| `02-data-analysis/data-analysis.mars`         | Simple data analysis with vectors, sums, and statistics                                                                     |
+| `03-linear-regression/linear-regression.mars` | Computing least-squares linear regression from scratch                                                                      |
+| `04-machine-learning/machine-learning.mars`   | Machine learning workflow using Rust libraries (polars, ndarray, linfa) similar to Python's pandas, numpy, and scikit-learn |
+| `05-plotting/plotting.mars`                   | Vector plotting with plotters, rendered as an SVG image output like matplotlib in Jupyter                                    |
 
 ## Running the Examples
 
@@ -20,15 +22,22 @@ This directory contains example Mars notebooks demonstrating various features of
 ./run.sh
 ```
 
-This will execute all `.mars` files in order and display their outputs.
+This discovers every `.mars` notebook recursively, executes them in sorted
+order, and displays their outputs.
 
 ### Running individually
 
 ```bash
-mars run 01-getting-started.mars --report
+mars run 01-getting-started/getting-started.mars --report
 ```
 
 Or without the `--report` flag for default output.
+
+Regenerate an example's Markdown export after editing it:
+
+```bash
+mars export 01-getting-started/getting-started.mars md
+```
 
 ## Requirements
 
@@ -39,6 +48,12 @@ To install the Mars CLI:
 
 ```bash
 cd ../..
+./scripts/install.sh --cli
+```
+
+Alternatively, install it directly with Cargo:
+
+```bash
 cargo install --path crates/mars-cli
 ```
 

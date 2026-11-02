@@ -13,7 +13,7 @@ mars open <file.mars>
 mars inspect <file.mars>
 mars run <file.mars> [options]
 mars import <file.ipynb> [file.mars]
-mars export <file.mars> [ipynb|html] [output]
+mars export <file.mars> [ipynb|html|md] [output]
 mars kernel [list|restart|serve]
 ```
 
@@ -38,7 +38,14 @@ Convert notebooks:
 mars import notebook.ipynb analysis.mars
 mars export analysis.mars ipynb notebook.ipynb
 mars export analysis.mars html analysis.html
+mars export analysis.mars md analysis.md
 ```
+
+Markdown export preserves Markdown cells, writes code cells as fenced `rust`
+blocks, and converts outputs into portable Markdown: text and errors become
+fenced blocks, tables become Markdown tables, LaTeX becomes `$$` blocks, and
+images or offline charts become data-URI images. `markdown` is accepted as an
+alias for `md`.
 
 `mars run` saves partial outputs when execution fails or is interrupted and
 returns a nonzero exit code.
@@ -111,4 +118,5 @@ Generate default output paths:
 ```bash
 mars export analysis.mars html
 mars export analysis.mars ipynb
+mars export analysis.mars md
 ```

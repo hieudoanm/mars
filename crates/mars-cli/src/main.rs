@@ -3,7 +3,7 @@ use mars_document::{Cell, Notebook};
 use mars_jupyter::{export_ipynb, import_ipynb};
 use mars_kernel::{Kernel, RuntimeBackendKind, create_runtime};
 use mars_protocol::RequestEnvelope;
-use mars_renderer::render_notebook;
+use mars_renderer::{render_markdown_notebook, render_notebook};
 use std::{
     env, fs,
     io::{self, Write},
@@ -172,6 +172,7 @@ fn run(args: Vec<String>) -> Result<(), String> {
             let content = match format {
                 "ipynb" => export_ipynb(&notebook).map_err(|error| error.to_string())?,
                 "html" => render_notebook(&notebook),
+                "md" | "markdown" => render_markdown_notebook(&notebook),
                 _ => return Err(format!("unsupported export format: {format}")),
             };
             fs::write(&output, format!("{content}\n")).map_err(|error| error.to_string())?;
@@ -183,7 +184,7 @@ fn run(args: Vec<String>) -> Result<(), String> {
 }
 
 fn usage() -> String {
-    "usage: mars new <file.mars> | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr] [--notebook <file.mars>]]".to_owned()
+    "usage: mars new <file.mars> | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html|md] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr] [--notebook <file.mars>]]".to_owned()
 }
 
 struct RunOptions {
@@ -350,6 +351,7 @@ fn default_ipynb_path(input: &str) -> std::path::PathBuf {
 fn default_export_path(input: &str, format: &str) -> std::path::PathBuf {
     match format {
         "html" => Path::new(input).with_extension("html"),
+        "md" | "markdown" => Path::new(input).with_extension("md"),
         _ => default_ipynb_path(input),
     }
 }

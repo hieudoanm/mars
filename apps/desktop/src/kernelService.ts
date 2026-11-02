@@ -39,6 +39,10 @@ export async function saveNotebookFile(path: string, content: string): Promise<v
   await invoke("save_notebook", { path, content });
 }
 
+export async function exportMarkdownFile(path: string, content: string): Promise<void> {
+  await invoke("export_notebook_markdown", { path, content });
+}
+
 export function hasInterruptedOutput(outputs: Output[]): boolean {
   return outputs.some((output) => output.type === "error" && output.name === "Interrupted");
 }

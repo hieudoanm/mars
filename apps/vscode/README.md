@@ -2,7 +2,7 @@
 
 ![Mars](assets/mars-og.png)
 
-This companion extension provides a full-featured notebook editor for `.mars` files using VSCode's Notebook API, along with syntax recognition, Rust/Markdown embedded highlighting, CLI-backed HTML export, and headless notebook execution.
+This companion extension provides a full-featured notebook editor for `.mars` files using VSCode's Notebook API, along with syntax recognition, Rust/Markdown embedded highlighting, CLI-backed HTML and Markdown export, and headless notebook execution.
 
 ## Features
 
@@ -17,6 +17,7 @@ This companion extension provides a full-featured notebook editor for `.mars` fi
 ### Legacy Commands
 The extension also provides CLI-backed commands for compatibility:
 - **Mars: Export Notebook to HTML**: Export to HTML via Mars CLI
+- **Mars: Export Notebook to Markdown**: Export to Markdown via Mars CLI
 - **Mars: Preview Notebook**: Export and preview HTML
 - **Mars: Run Notebook**: Execute entire notebook via Mars CLI
 - **Mars: Go to Cell**: Navigate to a specific cell in text editor mode
@@ -78,6 +79,13 @@ export PATH="$HOME/.local/bin:$PATH"
 3. Click the play button on a cell to execute it
 4. Use the "+" button to add new cells
 5. Cells can be code (Rust) or Markdown
+
+### Exporting
+Run **Mars: Export Notebook to HTML** or **Mars: Export Notebook to Markdown**
+from the Command Palette or the notebook toolbar. The export is written next to
+the notebook and opens automatically when `mars.previewAfterExport` is enabled.
+Markdown export preserves Markdown cells, fences Rust code, and converts tables,
+LaTeX, images, and offline charts into portable Markdown.
 
 ### Runtime Selection
 Set `mars.runtime` to `evcxr` to run cells through the Evcxr backend. The

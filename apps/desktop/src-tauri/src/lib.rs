@@ -1,6 +1,7 @@
 use mars_document::Notebook;
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
+use mars_renderer::render_markdown_notebook;
 use std::sync::{
     Arc, Mutex,
     atomic::{AtomicBool, Ordering},
@@ -114,6 +115,13 @@ fn save_notebook(path: String, content: String) -> Result<(), String> {
         .map_err(|error| error.to_string())
 }
 
+#[tauri::command]
+fn export_notebook_markdown(path: String, content: String) -> Result<(), String> {
+    let notebook = Notebook::from_json(&content).map_err(|error| error.to_string())?;
+    let markdown = render_markdown_notebook(&notebook);
+    std::fs::write(&path, format!("{markdown}\n")).map_err(|error| error.to_string())
+}
+
 pub fn run() -> tauri::Result<()> {
     let backend = RuntimeBackendKind::from_environment();
     let kernel = Kernel::with_backend(Default::default(), backend, false)
@@ -133,7 +141,8 @@ pub fn run() -> tauri::Result<()> {
             kernel_status,
             configure_kernel,
             open_notebook,
-            save_notebook
+            save_notebook,
+            export_notebook_markdown
         ])
         .run(tauri::generate_context!())
 }

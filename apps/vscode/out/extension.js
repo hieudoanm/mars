@@ -400,7 +400,7 @@ function activate(context) {
     const controller = new MarsNotebookController();
     context.subscriptions.push(controller);
     // Keep existing CLI commands for compatibility
-    context.subscriptions.push(vscode.commands.registerCommand("mars.exportHtml", () => exportHtml()), vscode.commands.registerCommand("mars.preview", () => exportHtml()), vscode.commands.registerCommand("mars.runNotebook", () => runNotebook()), vscode.commands.registerCommand("mars.openCell", () => openCell()), vscode.commands.registerCommand("mars.createNotebook", () => createNotebook()), vscode.commands.registerCommand("mars.restartKernel", () => {
+    context.subscriptions.push(vscode.commands.registerCommand("mars.exportHtml", () => exportHtml()), vscode.commands.registerCommand("mars.exportMarkdown", () => exportMarkdown()), vscode.commands.registerCommand("mars.preview", () => exportHtml()), vscode.commands.registerCommand("mars.runNotebook", () => runNotebook()), vscode.commands.registerCommand("mars.openCell", () => openCell()), vscode.commands.registerCommand("mars.createNotebook", () => createNotebook()), vscode.commands.registerCommand("mars.restartKernel", () => {
         controller.restartKernel().then(() => {
             void vscode.window.showInformationMessage("Mars kernel restarted");
         });
@@ -440,16 +440,26 @@ async function runNotebook() {
         void vscode.window.showErrorMessage(failure.message ?? "Mars notebook execution failed");
     }
 }
-async function exportHtml() {
+function activeMarsFilePath() {
+    const notebook = vscode.window.activeNotebookEditor?.notebook;
+    if (notebook?.uri.scheme === "file" && notebook.uri.fsPath.endsWith(".mars")) {
+        return notebook.uri.fsPath;
+    }
     const document = vscode.window.activeTextEditor?.document;
-    if (!document || !document.fileName.endsWith(".mars")) {
+    if (document?.fileName.endsWith(".mars"))
+        return document.fileName;
+    return undefined;
+}
+async function exportNotebook(format, extension) {
+    const filePath = activeMarsFilePath();
+    if (!filePath) {
         void vscode.window.showErrorMessage("Open a .mars notebook first.");
         return;
     }
-    const output = document.fileName.replace(/\.mars$/i, ".html");
+    const output = filePath.replace(/\.mars$/i, `.${extension}`);
     try {
         const cliPath = vscode.workspace.getConfiguration("mars").get("cliPath", "mars");
-        await execFileAsync(cliPath, ["export", document.fileName, "html", output]);
+        await execFileAsync(cliPath, ["export", filePath, format, output]);
         if (vscode.workspace.getConfiguration("mars").get("previewAfterExport", true)) {
             const uri = vscode.Uri.file(output);
             await vscode.commands.executeCommand("vscode.open", uri);
@@ -462,6 +472,12 @@ async function exportHtml() {
         const message = error instanceof Error ? error.message : "Mars export failed";
         void vscode.window.showErrorMessage(message);
     }
+}
+async function exportHtml() {
+    await exportNotebook("html", "html");
+}
+async function exportMarkdown() {
+    await exportNotebook("md", "md");
 }
 async function openCell() {
     const editor = vscode.window.activeTextEditor;

@@ -22,6 +22,7 @@
     "onNotebook:mars-notebook",
     "onLanguage:mars",
     "onCommand:mars.exportHtml",
+    "onCommand:mars.exportMarkdown",
     "onCommand:mars.preview",
     "onCommand:mars.runNotebook",
     "onCommand:mars.openCell"
@@ -80,6 +81,10 @@
         "title": "Mars: Export Notebook to HTML"
       },
       {
+        "command": "mars.exportMarkdown",
+        "title": "Mars: Export Notebook to Markdown"
+      },
+      {
         "command": "mars.preview",
         "title": "Mars: Preview Notebook"
       },
@@ -111,7 +116,7 @@
         "mars.previewAfterExport": {
           "type": "boolean",
           "default": true,
-          "description": "Open the generated HTML after exporting a notebook."
+          "description": "Open the generated HTML or Markdown file after exporting a notebook."
         },
         "mars.runArguments": {
           "type": "array",
@@ -138,7 +143,19 @@
       "editor/title": [
         {
           "command": "mars.exportHtml",
-          "when": "resourceLangId == mars",
+          "when": "resourceLangId == mars || resourceExtname == .mars",
+          "group": "navigation"
+        },
+        {
+          "command": "mars.exportMarkdown",
+          "when": "resourceLangId == mars || resourceExtname == .mars",
+          "group": "navigation"
+        }
+      ],
+      "notebook/toolbar": [
+        {
+          "command": "mars.exportMarkdown",
+          "when": "notebookType == mars-notebook",
           "group": "navigation"
         }
       ],

@@ -38,6 +38,7 @@ cargo run -p mars -- run analysis.mars
 cargo run -p mars -- import notebook.ipynb analysis.mars
 cargo run -p mars -- export analysis.mars ipynb notebook.ipynb
 cargo run -p mars -- export analysis.mars html analysis.html
+cargo run -p mars -- export analysis.mars md analysis.md
 cargo test --workspace
 ```
 
@@ -107,6 +108,7 @@ npm run tauri build
 - Runtime timeouts cover both compilation and execution, terminating the active child process when the total cell limit expires.
 
 - HTML export renders Markdown, code, text, errors, tables, images (including base64 PNG and inline SVG MIME bundles), sanitized HTML outputs, common LaTeX expressions, and supported line/point/bar chart specifications into a standalone dark-themed document.
+- Markdown export preserves Markdown cells, fences Rust code, and converts outputs into Markdown tables, `$$` LaTeX blocks, and data-URI images for portability across Git forges and static-site generators.
 - Unknown MIME bundles represented safely as fallback blocks.
 
 - Rust notebooks may declare registry dependencies in `metadata.dependencies`, for example `{ "serde": "1" }`.

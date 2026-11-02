@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Notebook } from "./types";
 import {
   configureKernel,
+  exportMarkdownFile,
   loadNotebookFile,
   saveNotebookFile,
 } from "./kernelService";
@@ -45,6 +46,24 @@ export function useNotebookPersistence({
       return true;
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Save failed");
+      return false;
+    }
+  };
+
+  const exportMarkdown = async (): Promise<boolean> => {
+    try {
+      const path = await save({
+        defaultPath: filePath
+          ? filePath.replace(/\.mars$/i, ".md")
+          : "Untitled.md",
+        filters: [{ name: "Markdown", extensions: ["md"] }],
+      });
+      if (!path) return false;
+      await exportMarkdownFile(path, snapshot);
+      setStatus("Exported Markdown");
+      return true;
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Markdown export failed");
       return false;
     }
   };
@@ -147,6 +166,7 @@ export function useNotebookPersistence({
     setCloseRequested,
     openNotebook,
     saveNotebook,
+    exportMarkdown,
     discardAndOpen,
     saveAndOpen,
     discardAndClose,
