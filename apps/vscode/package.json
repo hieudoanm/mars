@@ -162,7 +162,7 @@
     "build": "npm run compile",
     "check": "npm run compile",
     "compile": "tsc -p .",
-    "package": "npm run compile && vsce package --out vsix/"
+    "package": "npm run compile && node -e \"require('fs').mkdirSync('vsix',{recursive:true})\" && vsce package --out vsix/mars-vscode.vsix"
   },
   "devDependencies": {
     "@types/node": "26.6.6",
