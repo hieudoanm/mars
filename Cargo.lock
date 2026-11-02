@@ -2301,7 +2301,7 @@ name = "mars-renderer"
 version = "0.1.0"
 dependencies = [
  "ammonia",
- "base64 0.21.7",
+ "base64 0.23.1",
  "mars-core",
  "mars-document",
  "pulldown-cmark 0.13.6",
