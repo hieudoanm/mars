@@ -1,8 +1,11 @@
-import { vi } from "vitest";
+import { vi } from 'vitest';
 
-vi.mock("vscode", () => {
+vi.mock('vscode', () => {
   class NotebookCellOutputItem {
-    constructor(public data: Uint8Array, public mime?: string) {}
+    constructor(
+      public data: Uint8Array,
+      public mime?: string,
+    ) {}
   }
   class NotebookCellOutput {
     constructor(public items: NotebookCellOutputItem[]) {}

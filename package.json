@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "packageManager": "pnpm@12.16.1",
   "scripts": {
+    "format": "turbo run format",
     "build": "turbo run build",
     "check": "turbo run check",
     "test": "turbo run test",
