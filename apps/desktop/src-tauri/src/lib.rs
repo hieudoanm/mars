@@ -1,4 +1,4 @@
-use mars_document::Notebook;
+use mars_document::{from_json, load, save_atomic, to_json_pretty};
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
 use mars_renderer::render_markdown_notebook;
@@ -89,7 +89,7 @@ fn kernel_status(state: tauri::State<'_, AppState>) -> Result<KernelResponse, St
 
 #[tauri::command]
 fn configure_kernel(state: tauri::State<'_, AppState>, content: String) -> Result<(), String> {
-    let notebook = Notebook::from_json(&content).map_err(|error| error.to_string())?;
+    let notebook = from_json(&content).map_err(|error| error.to_string())?;
     let kernel = Kernel::with_backend(notebook.metadata.dependencies, state.backend, false)
         .map_err(|error| error.to_string())?;
     let mut current = state
@@ -102,22 +102,20 @@ fn configure_kernel(state: tauri::State<'_, AppState>, content: String) -> Resul
 
 #[tauri::command]
 fn open_notebook(path: String) -> Result<String, String> {
-    Notebook::load(&path)
-        .and_then(|notebook| notebook.to_json_pretty())
+    load(&path)
+        .and_then(|notebook| to_json_pretty(&notebook))
         .map_err(|error| error.to_string())
 }
 
 #[tauri::command]
 fn save_notebook(path: String, content: String) -> Result<(), String> {
-    let notebook = Notebook::from_json(&content).map_err(|error| error.to_string())?;
-    notebook
-        .save_atomic(&path)
-        .map_err(|error| error.to_string())
+    let notebook = from_json(&content).map_err(|error| error.to_string())?;
+    save_atomic(&notebook, &path).map_err(|error| error.to_string())
 }
 
 #[tauri::command]
 fn export_notebook_markdown(path: String, content: String) -> Result<(), String> {
-    let notebook = Notebook::from_json(&content).map_err(|error| error.to_string())?;
+    let notebook = from_json(&content).map_err(|error| error.to_string())?;
     let markdown = render_markdown_notebook(&notebook);
     std::fs::write(&path, format!("{markdown}\n")).map_err(|error| error.to_string())
 }

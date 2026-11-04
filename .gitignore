@@ -4,3 +4,37 @@
 node_modules/
 .turbo/
 vsix/
+
+# Frontend / build outputs
+coverage/
+apps/*/dist/
+apps/*/out/
+apps/*/.next/
+
+# Logs & env
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+.env.local
+.env.*.local
+
+# OS
+Thumbs.db
+Desktop.ini
+.Spotlight-V100
+.Trashes
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-*
+
+# Package stores
+pnpm-store/
+*.tgz
+
+# Python virtualenvs
+examples/*/.venv/
+.venv/

@@ -1,0 +1,130 @@
+use crate::conversion::table_to_html;
+use crate::error::JupyterError;
+use mars_core::{CellType, Output};
+use mars_document::{Cell, Notebook};
+use serde::Serialize;
+use serde_json::{Map, Value};
+
+#[derive(Debug, Serialize)]
+pub struct ExportedNotebook {
+    pub cells: Vec<ExportedCell>,
+    pub metadata: Map<String, Value>,
+    pub nbformat: u32,
+    pub nbformat_minor: u32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ExportedCell {
+    pub cell_type: String,
+    pub source: String,
+    pub metadata: Map<String, Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub execution_count: Option<u64>,
+    pub outputs: Vec<ExportedOutput>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(tag = "output_type")]
+pub enum ExportedOutput {
+    #[serde(rename = "stream")]
+    Stream { name: String, text: String },
+    #[serde(rename = "error")]
+    Error {
+        ename: String,
+        evalue: String,
+        traceback: Vec<String>,
+    },
+    #[serde(rename = "display_data")]
+    DisplayData {
+        data: Map<String, Value>,
+        metadata: Map<String, Value>,
+    },
+}
+
+pub fn export_ipynb(notebook: &Notebook) -> Result<String, JupyterError> {
+    mars_document::validate(notebook).map_err(JupyterError::Document)?;
+    let metadata = notebook
+        .metadata
+        .extra
+        .get("jupyter")
+        .and_then(Value::as_object)
+        .cloned()
+        .unwrap_or_default();
+    let cells = notebook
+        .cells
+        .iter()
+        .map(export_cell)
+        .collect::<Result<Vec<_>, JupyterError>>()?;
+    let exported = ExportedNotebook {
+        cells,
+        metadata,
+        nbformat: 4,
+        nbformat_minor: 5,
+    };
+    serde_json::to_string_pretty(&exported).map_err(JupyterError::Serialization)
+}
+
+pub fn export_cell(cell: &Cell) -> Result<ExportedCell, JupyterError> {
+    let outputs = cell
+        .outputs
+        .iter()
+        .map(export_output)
+        .collect::<Result<Vec<_>, JupyterError>>()?;
+    Ok(ExportedCell {
+        cell_type: match cell.cell_type {
+            CellType::Code => "code",
+            CellType::Markdown => "markdown",
+            CellType::Raw => "raw",
+        }
+        .to_owned(),
+        source: cell.source.clone(),
+        metadata: cell.metadata.clone(),
+        execution_count: cell.execution_count,
+        outputs,
+    })
+}
+
+pub fn export_output(output: &Output) -> Result<ExportedOutput, JupyterError> {
+    match output {
+        Output::Text { text } => Ok(ExportedOutput::Stream {
+            name: "stdout".to_owned(),
+            text: text.clone(),
+        }),
+        Output::Error {
+            name,
+            message,
+            traceback,
+        } => Ok(ExportedOutput::Error {
+            ename: name.clone(),
+            evalue: message.clone(),
+            traceback: traceback.clone(),
+        }),
+        Output::Html { html } => Ok(ExportedOutput::DisplayData {
+            data: Map::from_iter([("text/html".to_owned(), Value::String(html.clone()))]),
+            metadata: Map::new(),
+        }),
+        Output::Image { mime_type, data } => Ok(ExportedOutput::DisplayData {
+            data: Map::from_iter([(mime_type.clone(), Value::String(data.clone()))]),
+            metadata: Map::new(),
+        }),
+        Output::Table { columns, rows } => Ok(ExportedOutput::DisplayData {
+            data: Map::from_iter([(
+                "text/html".to_owned(),
+                Value::String(table_to_html(columns, rows)),
+            )]),
+            metadata: Map::new(),
+        }),
+        Output::Latex { latex } => Ok(ExportedOutput::DisplayData {
+            data: Map::from_iter([("text/latex".to_owned(), Value::String(latex.clone()))]),
+            metadata: Map::new(),
+        }),
+        Output::Chart { spec } => Ok(ExportedOutput::DisplayData {
+            data: Map::from_iter([("application/vnd.vega-lite+json".to_owned(), spec.clone())]),
+            metadata: Map::new(),
+        }),
+        Output::MimeBundle { data, metadata } => Ok(ExportedOutput::DisplayData {
+            data: data.clone(),
+            metadata: metadata.clone(),
+        }),
+    }
+}
