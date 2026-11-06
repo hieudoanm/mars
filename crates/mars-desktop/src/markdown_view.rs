@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use gpui::{FontStyle, FontWeight, HighlightStyle, StyledText, rgb};
+use gpui::{FontStyle, FontWeight, HighlightStyle, StyledText, UnderlineStyle, px, rgb};
 
 use crate::app::{ACCENT, CODE_BG, MUTED, TEXT};
 
@@ -75,7 +75,7 @@ fn push_line_with_inline(
     while !rest.is_empty() {
         // Find the earliest inline marker; "**" must win over "*" at the same pos.
         let mut earliest: Option<(usize, &'static str)> = None;
-        for marker in ["**", "`", "*"] {
+        for marker in ["**", "`", "*", "["] {
             if let Some(pos) = rest.find(marker)
                 && earliest.is_none_or(|(p, _)| pos < p)
             {
@@ -86,6 +86,38 @@ fn push_line_with_inline(
             text.push_str(rest);
             break;
         };
+        if marker == "[" {
+            // Try to parse "[text](url)"; emit link text underlined, skip the URL.
+            let after = &rest[pos + 1..];
+            let Some(close) = after.find("](") else {
+                text.push('[');
+                rest = after;
+                continue;
+            };
+            let link_text = &after[..close];
+            let after_close = &after[close + 2..];
+            let Some(url_end) = after_close.find(')') else {
+                text.push('[');
+                rest = after;
+                continue;
+            };
+            let inner_start = text.len();
+            text.push_str(link_text);
+            highlights.push((
+                inner_start..text.len(),
+                HighlightStyle {
+                    color: Some(rgb(ACCENT).into()),
+                    underline: Some(UnderlineStyle {
+                        thickness: px(1.),
+                        color: Some(rgb(ACCENT).into()),
+                        wavy: false,
+                    }),
+                    ..Default::default()
+                },
+            ));
+            rest = &after_close[url_end + 1..];
+            continue;
+        }
 
         if pos > 0 {
             text.push_str(&rest[..pos]);

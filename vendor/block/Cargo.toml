@@ -1,0 +1,16 @@
+[package]
+name = "block"
+version = "0.1.6"
+authors = ["Steven Sheldon"]
+
+description = "Rust interface for Apple's C language extension of blocks."
+keywords = ["blocks", "osx", "ios", "objective-c"]
+readme = "README.md"
+repository = "http://github.com/SSheldon/rust-block"
+documentation = "http://ssheldon.github.io/rust-objc/block/"
+license = "MIT"
+
+# Vendored copy of block 0.1.6 (crates.io) with a one-line fix for the
+# `static_of_uninhabited` future-incompat lint: `Class` gains a marker variant
+# so the extern static `_NSConcreteStackBlock` is no longer uninhabited. Only
+# the symbol's address is used, so this does not change behavior.

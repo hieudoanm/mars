@@ -32,3 +32,49 @@ pub fn output_lines(output: &Output) -> Vec<String> {
         }
     }
 }
+
+/// Strip an HTML output down to readable text for the plain-text fallback.
+pub fn html_text(html: &str) -> String {
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(start) = rest.find('<') {
+        out.push_str(&rest[..start]);
+        let after = &rest[start..];
+        let Some(end) = after.find('>') else {
+            rest = "";
+            break;
+        };
+        let tag = &after[..=end];
+        let lower = tag.to_ascii_lowercase();
+        if lower.starts_with("<script") || lower.starts_with("<style") {
+            // Drop the whole element including content.
+            let close = format!(
+                "</{}",
+                &lower[1..lower.find(' ').unwrap_or(lower.len() - 1)]
+            );
+            if let Some(close_pos) = rest[start..].to_ascii_lowercase().find(&close) {
+                rest = &rest[start + close_pos + close.len()..];
+                continue;
+            }
+        }
+        // Insert a space for block-ish tags to keep words separated.
+        if lower.starts_with("<br")
+            || lower.starts_with("<p")
+            || lower.starts_with("<div")
+            || lower.starts_with("<li")
+            || lower.starts_with("</")
+        {
+            out.push(' ');
+        }
+        rest = &after[end + 1..];
+    }
+    out.push_str(rest);
+    out = out
+        .replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'");
+    out.split_whitespace().collect::<Vec<_>>().join(" ")
+}

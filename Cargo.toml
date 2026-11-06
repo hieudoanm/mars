@@ -31,3 +31,8 @@ pulldown-cmark = "=0.13.6"
 ammonia = "=4.2.4"
 base64 = "=0.23.1"
 gpui = { package = "gpui-pre", version = "=0.3.9" }
+
+[patch.crates-io]
+# Vendored block 0.1.6 with a fix for the `static_of_uninhabited`
+# future-incompat warning (see vendor/block/).
+block = { path = "vendor/block" }

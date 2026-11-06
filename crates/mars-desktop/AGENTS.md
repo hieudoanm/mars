@@ -15,7 +15,8 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 ## Architecture
 
 - `src/main.rs` — `gpui_platform::application()` bootstrap with `PhosphorAssets`, key bindings (`cmd-n/o/s`, `cmd-shift-enter`, `cmd-r`, `cmd-q`), window creation, optional notebook path from `argv[1]`.
-- `src/app.rs` — `NotebookApp` view: toolbar, scrollable cell list, status bar. Owns the `Notebook`, file `path`, and an `Option<Arc<Mutex<Kernel>>>` (kernel creation/configuration failure is surfaced in the status bar, not `expect`ed).
+- `src/app.rs` — `NotebookApp` view state (struct + `new`) and the Mars palette `const` colors; declares the `app/` submodules. Owns the `Notebook`, file `path`, and an `Option<Arc<Mutex<Kernel>>>` (kernel creation/configuration failure is surfaced in the status bar, not `expect`ed).
+- `src/app/` — `NotebookApp` impl blocks split by concern: `editors.rs` (editor state lifecycle), `file_ops.rs` (new/open/save/autosave), `cells.rs` (cell CRUD/type/preview), `execution.rs` (kernel run loop), `commands.rs` (command-mode key handlers), `render.rs` (`Render` impl + action listeners), `render_view.rs` (toolbar/status bar), `render_cell.rs` (per-cell card), `render_output.rs` (output widgets), `widgets.rs` (buttons). Cross-module methods are `pub(super)`; keep each file under ~200 lines.
 - `src/output_text.rs` — flattens `mars_core::Output` into plain-text lines for display.
 
 ## Rules
@@ -25,7 +26,7 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 - Notebook persistence uses `mars_document::{load, save_atomic}`; kernel (re)configuration uses `Kernel::with_backend` with `RuntimeBackendKind::from_environment()` (`MARS_EXPERIMENTAL_RUNTIME=evcxr` selects the experimental backend).
 - Cell operations go through `Notebook::{insert_cell, remove_cell, move_cell, cell_mut}` — never mutate `notebook.cells` directly.
 - File dialogs use GPUI's `prompt_for_paths` / `prompt_for_new_path` — no external dialog crates.
-- Keep the dark Mars palette in the `const` colors at the top of `app.rs`.
+- Keep the dark Mars palette in the `const` colors at the top of `app.rs` (`pub(crate)`, shared via `super::`).
 - Avoid `unwrap`/`expect` in production paths (kernel creation, window open, file I/O all degrade to status-bar messages).
 
 ## GPUI gotchas (learned the hard way)
