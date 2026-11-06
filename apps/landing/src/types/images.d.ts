@@ -1,8 +1,8 @@
 declare module '*.svg' {
-  const src: string;
-  export default src;
+  const value: { src: string; width: number; height: number };
+  export default value;
 }
 declare module '*.png' {
-  const src: string;
-  export default src;
+  const value: { src: string; width: number; height: number };
+  export default value;
 }
