@@ -2,7 +2,7 @@
   "name": "@mars/workspace",
   "private": true,
   "version": "0.1.0",
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.18.0",
   "scripts": {
     "format": "turbo run format",
     "build": "turbo run build",
