@@ -187,10 +187,12 @@ Phase 7 — Desktop and rendering polish
 
 ## Outstanding
 
-- `crates/mars-desktop` (GPUI) cells are now editable plain textareas with
-  per-cell insert-below/duplicate/clear-outputs controls and an unsaved-changes
-  `•` marker in the title bar. Remaining gaps: no syntax highlighting or
-  markdown preview, plain-text outputs only, no autosave, no per-cell
+- `crates/mars-desktop` (GPUI) code cells now use `gpui-component`'s
+  `EditorState`/`Editor` with tree-sitter Rust syntax highlighting
+  (`tree-sitter-rust` feature); Markdown/Raw cells keep auto-growing
+  `Textarea`s. Per-cell insert-below/duplicate/clear-outputs controls and an
+  unsaved-changes `•` marker in the title bar are in place. Remaining gaps:
+  no markdown preview, plain-text outputs only, no autosave, no per-cell
   keyboard shortcuts. Port remaining `apps/desktop` functionality
   incrementally.
 - Longer-lived compiler/runtime strategies remain a future optimization; the

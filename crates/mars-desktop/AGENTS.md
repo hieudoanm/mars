@@ -10,7 +10,7 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 - `gpui` — alias for `gpui-pre = "=0.3.9"` (workspace dep in root `Cargo.toml`). Do not mix with the crates.io `gpui` crate; types are incompatible.
 - `gpui-platform` — alias for `gpui-pre-platform = "=0.3.9"`; provides `application()` since `gpui-pre` has no built-in platform backend.
 - `gpui-kit-phosphor = "=0.1.0"` — Phosphor icons. Registered via `PhosphorAssets` in `main.rs` (`application().with_assets(PhosphorAssets)`). `PhosphorIcon`/`Phosphor` render directly as elements, sized by the surrounding text size and colored by text color; default features include the `regular` weight only — enable `bold`/`fill`/etc. features if other weights are needed.
-- `gpui-component = "=0.7.3"` — component library providing `input::Textarea`/`TextareaState` for cell editing. Must stay on the 0.7.x line: 0.8+/0.9 require `gpui-pre 0.3.10+`/`0.3.11`, which conflicts with `gpui-kit-phosphor`'s `=0.3.9` pin. Initialized via `gpui_component::init(cx)` + `Theme::change(ThemeMode::Dark, ..)` in `main.rs`.
+- `gpui-component = "=0.7.3"` (features: `tree-sitter-rust`) — component library providing `input::{Textarea, TextareaState}` for Markdown/Raw cells and `input::{Editor, EditorState}` for Rust code cells. Must stay on the 0.7.x line: 0.8+/0.9 require `gpui-pre 0.3.10+`/`0.3.11`, which conflicts with `gpui-kit-phosphor`'s `=0.3.9` pin. Initialized via `gpui_component::init(cx)` + `Theme::change(ThemeMode::Dark, ..)` in `main.rs`.
 
 ## Architecture
 
@@ -37,13 +37,13 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 
 ## Cell editing
 
-- Each cell owns an `Entity<TextareaState>` (auto-growing, 1–12 rows) stored in `NotebookApp::editors` keyed by `CellId`; created lazily in `ensure_editors` during `render` (needs `&mut Window`).
+- Code cells use `Entity<EditorState>` (`code_editors`, `.language("rust")`, line numbers off) rendered as `Editor`; Markdown/Raw cells use `Entity<TextareaState>` (`editors`, auto-grow 1–12 rows) rendered as `Textarea`. Both keyed by `CellId` and created lazily in `ensure_editors` during `render` (needs `&mut Window`).
 - `InputEvent::Change` subscriptions write edits back into `Notebook.cells[].source` via `apply_source_edit`; editing a code cell clears its outputs and execution count. `set_value` emits no `Change`, so there is no feedback loop.
-- `reset_editors` runs on New/Open so stale editor state never leaks across notebooks. Insert/delete/move/toggle keep editors because they are keyed by stable `CellId`.
+- `reset_editors` runs on New/Open so stale editor state never leaks across notebooks. Insert/delete/move/toggle keep editors because they are keyed by stable `CellId`; a type toggle lazily creates the other editor kind on next render.
 
 ## Current limitations (v3 scaffold)
 
-- All cells share the same plain `Textarea` — no syntax highlighting yet (`gpui_component::input::Editor`/`EditorState` with a Rust `LanguageProvider` is the upgrade path), no markdown preview.
+- Code cells have tree-sitter Rust syntax highlighting, auto-indent and bracket handling via `EditorState`; Markdown/Raw cells are plain textareas (no markdown preview).
 - Outputs render as plain text; rich outputs (HTML, images, LaTeX, charts) show placeholders.
 - Cell add (code/markdown at end), insert-below, duplicate, delete, reorder (up/down), clear outputs, and Code↔Markdown/Raw toggle are implemented.
 - `dirty` tracks unsaved changes (set by edits and cell ops, cleared on save) and shows as `•` in the title bar.

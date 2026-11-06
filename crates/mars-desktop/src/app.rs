@@ -2,7 +2,7 @@ use crate::output_text::output_lines;
 use crate::{NewNotebook, OpenNotebook, Quit, RestartKernel, RunAllCells, SaveNotebook};
 use gpui::*;
 use gpui_component::Sizable as _;
-use gpui_component::input::{InputEvent, Textarea, TextareaState};
+use gpui_component::input::{Editor, EditorState, InputEvent, Textarea, TextareaState};
 use gpui_kit_phosphor::PhosphorIcon;
 use mars_core::{CellId, CellType, ExecutionStatus, Output};
 use mars_document::{Cell, Notebook, load, save_atomic};
@@ -34,6 +34,7 @@ pub struct NotebookApp {
     kernel_status: ExecutionStatus,
     focus_handle: FocusHandle,
     editors: HashMap<CellId, Entity<TextareaState>>,
+    code_editors: HashMap<CellId, Entity<EditorState>>,
     subscriptions: Vec<Subscription>,
     dirty: bool,
 }
@@ -59,6 +60,7 @@ impl NotebookApp {
             kernel_status: ExecutionStatus::Idle,
             focus_handle,
             editors: HashMap::new(),
+            code_editors: HashMap::new(),
             subscriptions: Vec::new(),
             dirty: false,
         };
@@ -70,14 +72,15 @@ impl NotebookApp {
     }
 
     fn ensure_editors(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let missing = self
+        let missing_text = self
             .notebook
             .cells
             .iter()
+            .filter(|cell| cell.cell_type != CellType::Code)
             .filter(|cell| !self.editors.contains_key(&cell.id))
             .map(|cell| (cell.id.clone(), cell.source.clone()))
             .collect::<Vec<_>>();
-        for (id, source) in missing {
+        for (id, source) in missing_text {
             let state = cx.new(|cx| TextareaState::new(window, cx).auto_grow(1, 12));
             state.update(cx, |state, cx| state.set_value(source, window, cx));
             let edit_id = id.clone();
@@ -89,6 +92,32 @@ impl NotebookApp {
             });
             self.subscriptions.push(subscription);
             self.editors.insert(id, state);
+        }
+
+        let missing_code = self
+            .notebook
+            .cells
+            .iter()
+            .filter(|cell| cell.cell_type == CellType::Code)
+            .filter(|cell| !self.code_editors.contains_key(&cell.id))
+            .map(|cell| (cell.id.clone(), cell.source.clone()))
+            .collect::<Vec<_>>();
+        for (id, source) in missing_code {
+            let state = cx.new(|cx| {
+                EditorState::new(window, cx)
+                    .language("rust")
+                    .line_number(false)
+            });
+            state.update(cx, |state, cx| state.set_value(source, window, cx));
+            let edit_id = id.clone();
+            let subscription = cx.subscribe(&state, move |this, state, event: &InputEvent, cx| {
+                if matches!(event, InputEvent::Change) {
+                    let value = state.read(cx).value().to_string();
+                    this.apply_source_edit(edit_id.clone(), value);
+                }
+            });
+            self.subscriptions.push(subscription);
+            self.code_editors.insert(id, state);
         }
     }
 
@@ -107,6 +136,7 @@ impl NotebookApp {
 
     fn reset_editors(&mut self) {
         self.editors.clear();
+        self.code_editors.clear();
         self.subscriptions.clear();
     }
 
@@ -719,7 +749,12 @@ impl NotebookApp {
         }
         header = header.child(controls);
 
-        let body = if let Some(state) = self.editors.get(&cell.id) {
+        let body = if is_code && let Some(state) = self.code_editors.get(&cell.id) {
+            div()
+                .px_3()
+                .py_2()
+                .child(Editor::new(state).appearance(false).bordered(false))
+        } else if !is_code && let Some(state) = self.editors.get(&cell.id) {
             div().px_3().py_2().child(
                 Textarea::new(state)
                     .appearance(false)
