@@ -1,3 +1,4 @@
+use crate::markdown_view::markdown_preview;
 use crate::output_text::output_lines;
 use crate::{NewNotebook, OpenNotebook, Quit, RestartKernel, RunAllCells, SaveNotebook};
 use gpui::*;
@@ -8,21 +9,21 @@ use mars_core::{CellId, CellType, ExecutionStatus, Output};
 use mars_document::{Cell, Notebook, load, save_atomic};
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, atomic::AtomicBool};
 
-const BG: u32 = 0x141414;
-const PANEL: u32 = 0x1c1c1c;
-const HEADER: u32 = 0x202020;
-const BORDER: u32 = 0x2a2a2a;
-const TEXT: u32 = 0xe5e5e5;
-const MUTED: u32 = 0x9ca3af;
-const FAINT: u32 = 0x6b7280;
-const ACCENT: u32 = 0xf97316;
-const CODE_BG: u32 = 0x1f2937;
-const ERROR_BG: u32 = 0x2a1518;
-const ERROR_BORDER: u32 = 0xef4444;
+pub(crate) const BG: u32 = 0x141414;
+pub(crate) const PANEL: u32 = 0x1c1c1c;
+pub(crate) const HEADER: u32 = 0x202020;
+pub(crate) const BORDER: u32 = 0x2a2a2a;
+pub(crate) const TEXT: u32 = 0xe5e5e5;
+pub(crate) const MUTED: u32 = 0x9ca3af;
+pub(crate) const FAINT: u32 = 0x6b7280;
+pub(crate) const ACCENT: u32 = 0xf97316;
+pub(crate) const CODE_BG: u32 = 0x1f2937;
+pub(crate) const ERROR_BG: u32 = 0x2a1518;
+pub(crate) const ERROR_BORDER: u32 = 0xef4444;
 
 pub struct NotebookApp {
     notebook: Notebook,
@@ -37,6 +38,8 @@ pub struct NotebookApp {
     code_editors: HashMap<CellId, Entity<EditorState>>,
     subscriptions: Vec<Subscription>,
     dirty: bool,
+    scroll_handle: ScrollHandle,
+    preview_cells: HashSet<CellId>,
 }
 
 impl NotebookApp {
@@ -63,6 +66,8 @@ impl NotebookApp {
             code_editors: HashMap::new(),
             subscriptions: Vec::new(),
             dirty: false,
+            scroll_handle: ScrollHandle::new(),
+            preview_cells: HashSet::new(),
         };
         if let Some(path) = path {
             this.open_path(PathBuf::from(path), cx);
@@ -445,6 +450,17 @@ impl NotebookApp {
         cx.notify();
     }
 
+    fn toggle_preview(&mut self, index: usize, cx: &mut Context<Self>) {
+        if let Some(cell) = self.notebook.cells.get(index) {
+            if self.preview_cells.contains(&cell.id) {
+                self.preview_cells.remove(&cell.id);
+            } else {
+                self.preview_cells.insert(cell.id.clone());
+            }
+        }
+        cx.notify();
+    }
+
     fn toggle_cell_type(&mut self, index: usize, cx: &mut Context<Self>) {
         let Some(cell) = self.notebook.cells.get(index) else {
             return;
@@ -488,6 +504,41 @@ impl Render for NotebookApp {
             .enumerate()
             .map(|(index, cell)| self.render_cell(index, cell, &entity))
             .collect::<Vec<_>>();
+        let body = if cells.is_empty() {
+            div()
+                .id("empty-state")
+                .flex_1()
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(
+                    div()
+                        .text_sm()
+                        .text_color(rgb(MUTED))
+                        .child("No cells yet — add a Markdown or Code cell to get started."),
+                )
+        } else {
+            // gpui-pre 0.3.9 fails to paint children of a scrollable element when
+            // they are direct siblings; wrap them in a single content div (the
+            // same structure gpui-component's Scrollable uses).
+            let content = div()
+                .id("cells-content")
+                .flex_none()
+                .h_auto()
+                .min_h_full()
+                .flex()
+                .flex_col()
+                .gap_4()
+                .px_4()
+                .py_4()
+                .children(cells);
+            div()
+                .id("cells")
+                .flex_1()
+                .overflow_y_scroll()
+                .track_scroll(&self.scroll_handle)
+                .child(content)
+        };
 
         div()
             .id("root")
@@ -504,18 +555,7 @@ impl Render for NotebookApp {
             .bg(rgb(BG))
             .text_color(rgb(TEXT))
             .child(self.render_toolbar(&entity))
-            .child(
-                div()
-                    .id("cells")
-                    .flex_1()
-                    .overflow_y_scroll()
-                    .px_4()
-                    .py_4()
-                    .flex()
-                    .flex_col()
-                    .gap_4()
-                    .children(cells),
-            )
+            .child(body)
             .child(self.render_statusbar())
     }
 }
@@ -747,9 +787,29 @@ impl NotebookApp {
                     |this, index, cx| this.execute_cell(index, cx),
                 ));
         }
+        if !is_code {
+            controls = controls.child(cell_icon_button(
+                if self.preview_cells.contains(&cell.id) {
+                    PhosphorIcon::EyeSlash
+                } else {
+                    PhosphorIcon::Eye
+                },
+                format!("preview-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.toggle_preview(index, cx),
+            ));
+        }
         header = header.child(controls);
 
-        let body = if is_code && let Some(state) = self.code_editors.get(&cell.id) {
+        let body = if !is_code && self.preview_cells.contains(&cell.id) {
+            div()
+                .px_3()
+                .py_2()
+                .text_sm()
+                .text_color(rgb(TEXT))
+                .child(markdown_preview(&cell.source))
+        } else if is_code && let Some(state) = self.code_editors.get(&cell.id) {
             div()
                 .px_3()
                 .py_2()

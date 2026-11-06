@@ -11,7 +11,10 @@ path = "src/main.rs"
 
 [dependencies]
 gpui.workspace = true
-gpui-platform = { package = "gpui-pre-platform", version = "=0.3.9" }
+gpui-platform = { package = "gpui-pre-platform", version = "=0.3.9", features = [
+    "font-kit",
+    "runtime_shaders",
+] }
 gpui-component = { version = "=0.7.3", features = ["tree-sitter-rust"] }
 gpui-kit-phosphor = "=0.1.0"
 mars-core = { path = "../mars-core" }

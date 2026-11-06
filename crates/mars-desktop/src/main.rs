@@ -1,4 +1,5 @@
 mod app;
+mod markdown_view;
 mod output_text;
 
 use app::NotebookApp;

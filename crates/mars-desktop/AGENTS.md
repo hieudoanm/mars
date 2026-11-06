@@ -34,16 +34,19 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 - Action handlers must be element-level `.on_action(cx.listener(...))` on a focused stateful element — `Context::on_action` outside the dispatch tree panics in `key_dispatch.rs`.
 - `Window::focus` takes `(&FocusHandle, &mut App)`; pass `cx` from a `Context`.
 - `cx.open_window` returns `Result` in `gpui-pre`; handle it instead of unwrapping.
+- `gpui-pre-platform` needs the `font-kit` feature or macOS falls back to `NoopTextSystem` and renders no text at all.
+- **Scroll bug in `gpui-pre 0.3.9`**: a scrollable element (`overflow_y_scroll`/`track_scroll`) fails to paint children that are *direct siblings*. Always wrap scroll content in a single child div (`flex_none().h_auto().min_h_full()`), the same structure `gpui-component`'s `Scrollable` uses. Repro: `examples/minimal_scroll.rs` (set `DIRECT=1` to see the bug).
 
 ## Cell editing
 
 - Code cells use `Entity<EditorState>` (`code_editors`, `.language("rust")`, line numbers off) rendered as `Editor`; Markdown/Raw cells use `Entity<TextareaState>` (`editors`, auto-grow 1–12 rows) rendered as `Textarea`. Both keyed by `CellId` and created lazily in `ensure_editors` during `render` (needs `&mut Window`).
 - `InputEvent::Change` subscriptions write edits back into `Notebook.cells[].source` via `apply_source_edit`; editing a code cell clears its outputs and execution count. `set_value` emits no `Change`, so there is no feedback loop.
 - `reset_editors` runs on New/Open so stale editor state never leaks across notebooks. Insert/delete/move/toggle keep editors because they are keyed by stable `CellId`; a type toggle lazily creates the other editor kind on next render.
+- Markdown cells have a preview toggle (Eye/EyeSlash icon) backed by `preview_cells: HashSet<CellId>`; `markdown_view::markdown_preview` renders headings, bold/italic/inline-code, and fenced code blocks via `StyledText` highlights. It is a lightweight preview, not full CommonMark.
 
 ## Current limitations (v3 scaffold)
 
-- Code cells have tree-sitter Rust syntax highlighting, auto-indent and bracket handling via `EditorState`; Markdown/Raw cells are plain textareas (no markdown preview).
+- Code cells have tree-sitter Rust syntax highlighting, auto-indent and bracket handling via `EditorState`; Markdown cells have an opt-in styled preview (headings, bold/italic/code spans, fenced blocks); Raw cells are plain textareas.
 - Outputs render as plain text; rich outputs (HTML, images, LaTeX, charts) show placeholders.
 - Cell add (code/markdown at end), insert-below, duplicate, delete, reorder (up/down), clear outputs, and Code↔Markdown/Raw toggle are implemented.
 - `dirty` tracks unsaved changes (set by edits and cell ops, cleared on save) and shows as `•` in the title bar.
