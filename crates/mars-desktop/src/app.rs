@@ -2,8 +2,8 @@ use crate::markdown_view::markdown_preview;
 use crate::output_text::output_lines;
 use crate::{
     DeleteCell, EditMode, InsertAbove, InsertBelow, NewNotebook, OpenNotebook, Quit, RestartKernel,
-    RunAllCells, RunCell, SaveNotebook, SelectNext, SelectPrev, ToCode, ToMarkdown,
-    ToggleCommandMode,
+    RunAllCells, RunCell, RunCellAdvance, RunInsertBelow, SaveNotebook, SelectNext, SelectPrev,
+    ToCode, ToMarkdown, ToggleCommandMode,
 };
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use gpui::prelude::FluentBuilder;
@@ -52,6 +52,7 @@ pub struct NotebookApp {
     running_cells: HashSet<usize>,
     command_mode: bool,
     selected_cell: usize,
+    scroll_anchors: HashMap<CellId, ScrollAnchor>,
 }
 
 impl NotebookApp {
@@ -83,6 +84,7 @@ impl NotebookApp {
             running_cells: HashSet::new(),
             command_mode: false,
             selected_cell: 0,
+            scroll_anchors: HashMap::new(),
         };
         if let Some(path) = path {
             this.open_path(PathBuf::from(path), cx);
@@ -111,6 +113,13 @@ impl NotebookApp {
     }
 
     fn ensure_editors(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        for cell in &self.notebook.cells {
+            self.scroll_anchors
+                .entry(cell.id.clone())
+                .or_insert_with(|| ScrollAnchor::for_handle(self.scroll_handle.clone()));
+        }
+        self.scroll_anchors
+            .retain(|id, _| self.notebook.cells.iter().any(|cell| &cell.id == id));
         let missing_text = self
             .notebook
             .cells
@@ -557,14 +566,23 @@ impl NotebookApp {
         }
     }
 
-    fn select_adjacent(&mut self, delta: isize, cx: &mut Context<Self>) {
+    fn select_adjacent(&mut self, delta: isize, window: &mut Window, cx: &mut Context<Self>) {
         let len = self.notebook.cells.len();
         if len == 0 {
             return;
         }
         let next = (self.selected_cell as isize + delta).clamp(0, len as isize - 1) as usize;
         self.selected_cell = next;
+        self.scroll_to_selected(window, cx);
         cx.notify();
+    }
+
+    fn scroll_to_selected(&self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(cell) = self.notebook.cells.get(self.selected_cell)
+            && let Some(anchor) = self.scroll_anchors.get(&cell.id)
+        {
+            anchor.scroll_to(window, cx);
+        }
     }
 
     fn set_cell_type(&mut self, index: usize, new_type: CellType, cx: &mut Context<Self>) {
@@ -622,12 +640,46 @@ impl NotebookApp {
         self.execute_cell(self.selected_cell, cx);
     }
 
-    fn command_select_prev(&mut self, _: &SelectPrev, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_adjacent(-1, cx);
+    fn command_run_advance(
+        &mut self,
+        _: &RunCellAdvance,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.execute_cell(self.selected_cell, cx);
+        if self.selected_cell + 1 < self.notebook.cells.len() {
+            self.selected_cell += 1;
+            self.scroll_to_selected(window, cx);
+        }
+        cx.notify();
     }
 
-    fn command_select_next(&mut self, _: &SelectNext, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_adjacent(1, cx);
+    fn command_run_insert(
+        &mut self,
+        _: &RunInsertBelow,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.execute_cell(self.selected_cell, cx);
+        let index = self.selected_cell;
+        let cell_type = self
+            .notebook
+            .cells
+            .get(index)
+            .map(|cell| cell.cell_type.clone())
+            .unwrap_or(CellType::Code);
+        self.insert_cell(index + 1, cell_type, cx);
+        self.selected_cell = index + 1;
+        self.scroll_to_selected(window, cx);
+        cx.notify();
+    }
+
+    fn command_select_prev(&mut self, _: &SelectPrev, window: &mut Window, cx: &mut Context<Self>) {
+        self.select_adjacent(-1, window, cx);
+    }
+
+    fn command_select_next(&mut self, _: &SelectNext, window: &mut Window, cx: &mut Context<Self>) {
+        self.select_adjacent(1, window, cx);
     }
 
     fn toggle_preview(&mut self, index: usize, cx: &mut Context<Self>) {
@@ -699,6 +751,12 @@ impl Render for NotebookApp {
         });
         let on_run = cx.listener(|this: &mut Self, action: &RunCell, window, cx| {
             this.command_run(action, window, cx)
+        });
+        let on_run_adv = cx.listener(|this: &mut Self, action: &RunCellAdvance, window, cx| {
+            this.command_run_advance(action, window, cx)
+        });
+        let on_run_ins = cx.listener(|this: &mut Self, action: &RunInsertBelow, window, cx| {
+            this.command_run_insert(action, window, cx)
         });
         let on_prev = cx.listener(|this: &mut Self, action: &SelectPrev, window, cx| {
             this.command_select_prev(action, window, cx)
@@ -773,6 +831,8 @@ impl Render for NotebookApp {
             .on_action(on_to_code)
             .on_action(on_delete)
             .on_action(on_run)
+            .on_action(on_run_adv)
+            .on_action(on_run_ins)
             .on_action(on_prev)
             .on_action(on_next)
             .size_full()
@@ -892,13 +952,32 @@ impl NotebookApp {
             .bg(rgb(PANEL))
             .child(
                 div()
-                    .text_xs()
-                    .text_color(if self.executing {
-                        rgb(ACCENT)
-                    } else {
-                        rgb(MUTED)
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .gap_2()
+                    .when(self.command_mode, |this| {
+                        this.child(
+                            div()
+                                .text_xs()
+                                .text_color(rgb(0x141414))
+                                .bg(rgb(ACCENT))
+                                .px_2()
+                                .py_0p5()
+                                .rounded_sm()
+                                .child("COMMAND"),
+                        )
                     })
-                    .child(self.status.clone()),
+                    .child(
+                        div()
+                            .text_xs()
+                            .text_color(if self.executing {
+                                rgb(ACCENT)
+                            } else {
+                                rgb(MUTED)
+                            })
+                            .child(self.status.clone()),
+                    ),
             )
             .child(
                 div()
@@ -1076,6 +1155,7 @@ impl NotebookApp {
             .on_click(move |_, _, cx| {
                 card_entity.update(cx, |this, cx| this.select_cell(index, cx));
             })
+            .anchor_scroll(self.scroll_anchors.get(&cell.id).cloned())
             .child(header)
             .child(body);
 
@@ -1178,6 +1258,19 @@ fn render_output(output: &Output) -> AnyElement {
                 output_text_block(&output_lines(output), output)
             }
         }
+        Output::Latex { latex } => div()
+            .mx_3()
+            .mb_2()
+            .px_3()
+            .py_2()
+            .rounded_md()
+            .bg(rgb(CODE_BG))
+            .text_sm()
+            .font_family("New York")
+            .text_color(rgb(TEXT))
+            .child(latex.clone())
+            .into_any_element(),
+        Output::Table { columns, rows } => render_table_output(columns, rows),
         Output::MimeBundle { data, .. } => {
             for (mime, value) in data {
                 if mime.starts_with("image/")
@@ -1190,6 +1283,64 @@ fn render_output(output: &Output) -> AnyElement {
         }
         _ => output_text_block(&output_lines(output), output),
     }
+}
+
+fn render_table_output(columns: &[String], rows: &[Vec<String>]) -> AnyElement {
+    const MAX_ROWS: usize = 200;
+    let mut table = div()
+        .mx_3()
+        .mb_2()
+        .flex()
+        .flex_col()
+        .rounded_md()
+        .border_1()
+        .border_color(rgb(BORDER))
+        .overflow_hidden();
+    let mut header = div().flex().bg(rgb(HEADER)).px_2().py_1().gap_2();
+    for column in columns {
+        header = header.child(
+            div()
+                .flex_1()
+                .min_w(px(80.))
+                .text_xs()
+                .font_weight(FontWeight::BOLD)
+                .text_color(rgb(TEXT))
+                .child(column.clone()),
+        );
+    }
+    table = table.child(header);
+    for row in rows.iter().take(MAX_ROWS) {
+        let mut line = div()
+            .flex()
+            .px_2()
+            .py_1()
+            .gap_2()
+            .border_t_1()
+            .border_color(rgb(BORDER));
+        for cell in row {
+            line = line.child(
+                div()
+                    .flex_1()
+                    .min_w(px(80.))
+                    .text_xs()
+                    .font_family("Menlo")
+                    .text_color(rgb(MUTED))
+                    .child(cell.clone()),
+            );
+        }
+        table = table.child(line);
+    }
+    if rows.len() > MAX_ROWS {
+        table = table.child(
+            div()
+                .px_2()
+                .py_1()
+                .text_xs()
+                .text_color(rgb(FAINT))
+                .child(format!("… {} more rows", rows.len() - MAX_ROWS)),
+        );
+    }
+    table.into_any_element()
 }
 
 fn output_text_block(lines: &[String], output: &Output) -> AnyElement {

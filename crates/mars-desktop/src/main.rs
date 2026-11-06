@@ -24,6 +24,8 @@ actions!(
         ToCode,
         DeleteCell,
         RunCell,
+        RunCellAdvance,
+        RunInsertBelow,
         SelectPrev,
         SelectNext
     ]
@@ -41,7 +43,9 @@ fn main() {
             KeyBinding::new("cmd-shift-enter", RunAllCells, None),
             KeyBinding::new("cmd-r", RestartKernel, None),
             KeyBinding::new("cmd-q", Quit, None),
-            KeyBinding::new("shift-enter", RunCell, None),
+            KeyBinding::new("shift-enter", RunCellAdvance, None),
+            KeyBinding::new("cmd-enter", RunCell, None),
+            KeyBinding::new("alt-enter", RunInsertBelow, None),
             KeyBinding::new("escape", ToggleCommandMode, None),
             KeyBinding::new("a", InsertAbove, Some("MarsCommand")),
             KeyBinding::new("b", InsertBelow, Some("MarsCommand")),
