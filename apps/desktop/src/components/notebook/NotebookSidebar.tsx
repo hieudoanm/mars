@@ -3,6 +3,7 @@ import { LuPencil } from 'react-icons/lu';
 import type { NotebookCell } from '../../types/types';
 import { fileNameFromPath } from '../../lib/filePath';
 import { Badge, IconButton, NavButton, SectionHeading, TextInput } from '../shared';
+import marsFileLogo from '../../assets/svg/mars-logo-file.svg';
 
 type NotebookSidebarProps = {
   cells: NotebookCell[];
@@ -57,7 +58,7 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
       <div className='mb-8 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 p-3'>
         <img
           className='h-7 w-7 shrink-0 rounded-md object-cover'
-          src='/branding/svg/mars-file-logo.svg'
+          src={marsFileLogo}
           alt=''
         />
         <div className='min-w-0 flex-1'>

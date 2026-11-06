@@ -1,84 +1,66 @@
 # Mars Notebooks for Zed
 
-This extension provides language support for `.mars` notebook files in the Zed editor, including syntax highlighting and integration with the Mars CLI for notebook execution.
+The Mars Zed extension provides `.mars` language recognition, Tree-sitter
+highlighting, and a Mars CLI-backed language-server command for Zed. It is a
+small Rust WebAssembly extension; it never evaluates notebook code in Zed's
+extension process.
 
 ## Features
 
-- **Language support**: Associate `.mars` files with the Mars language for syntax highlighting
-- **Tree-sitter grammar**: Syntax highlighting for Mars notebook JSON structure
-- **CLI integration**: Launches `mars kernel serve` as the language server for notebook execution
-- **Configuration**: Configurable Mars CLI path and execution settings
+- Associates `.mars` files with the Mars language.
+- Provides Tree-sitter parsing and highlighting for the Mars JSON notebook
+  format, with Mars notebook conventions for Markdown and Rust content.
+- Starts `mars kernel serve` after confirming that the Mars CLI is available in
+  the active worktree.
+- Gives an actionable error when the CLI is not installed or is absent from
+  `PATH`.
 
-## Installation
+## Install locally
 
-1. Install the Mars CLI:
+1. Build or install the Mars CLI:
 
    ```bash
    cargo install --path crates/mars-cli
    ```
 
-2. Add `~/.local/bin` to your PATH (or wherever the Mars CLI is installed):
+2. Ensure the CLI's installation directory is on `PATH`.
 
-   ```bash
-   export PATH="$HOME/.local/bin:$PATH"
-   ```
+3. In Zed, open **Settings → Extensions**, choose **Load Local Extension**, and
+   select `extensions/zed` from this repository.
 
-3. Load the extension in Zed:
+4. Open a `.mars` notebook. Zed recognizes it as Mars and starts the CLI-backed
+   language-server command when needed.
 
-   - Open Zed
-   - Go to Settings → Extensions
-   - Click "Load Local Extension"
-   - Select `extensions/zed`
+The extension currently launches the default CLI command `mars kernel serve`.
+Its language-server integration is intentionally thin while the Mars kernel
+protocol evolves.
 
 ## Development
 
-The extension is written in Rust and compiled to WebAssembly using the [`zed_extension_api`](https://crates.io/crates/zed_extension_api) crate.
+The extension is a `cdylib` compiled for `wasm32-wasip1`, using the pinned
+`zed_extension_api` version required by Zed's extension ABI.
+
+From the repository root, run:
 
 ```bash
-# From the repository root
-cargo build --target wasm32-wasip1 -p mars-zed
+cargo fmt --all --check
+cargo clippy -p mars-zed --all-targets -- -D warnings
 cargo test -p mars-zed
-cargo clippy -p mars-zed
+cargo build --target wasm32-wasip1 -p mars-zed
 ```
 
-## Project Structure
+## Project layout
 
-```
+```text
 extensions/zed/
-├── extension.toml          # Extension manifest
-├── Cargo.toml              # Rust project manifest
-├── src/
-│   └── lib.rs              # Extension implementation
-├── languages/
-│   └── mars/
-│       └── config.toml     # Mars language configuration
-├── grammars/
-│   └── tree-sitter-mars/
-│       ├── grammar.js      # Tree-sitter grammar source
-│       ├── highlights.scm  # Syntax highlighting queries
-│       └── package.json    # Grammar metadata
-├── tests/
-├── README.md
-└── .gitignore
+├── extension.toml                    Extension manifest and language-server registration
+├── src/lib.rs                        WebAssembly extension implementation
+├── languages/mars/config.toml        `.mars` language association and editor defaults
+└── grammars/tree-sitter-mars/        Grammar source and highlight queries
 ```
 
-## Usage
-
-1. Open any `.mars` file in Zed
-2. The file will be recognized as a Mars notebook
-3. Syntax highlighting is provided by the Tree-sitter grammar
-4. The Mars language server (`mars kernel serve`) handles notebook execution
-
-## Configuration
-
-Configure the Mars CLI path in Zed's `settings.json`:
-
-```json
-{
-  "mars": {
-    "cliPath": "mars",
-    "executionTimeout": 30000,
-    "runtime": "replay"
-  }
-}
-```
+When changing the grammar, update `grammar.js`, `highlights.scm`, and the
+language configuration together, then inspect a representative `.mars` file in
+Zed. Do not commit `target/`, generated WebAssembly files, or JavaScript
+dependency directories. See [AGENTS.md](AGENTS.md) for compatibility and
+contributor guidance.

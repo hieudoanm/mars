@@ -194,7 +194,10 @@ mod tests {
 
     #[test]
     fn renders_only_the_current_cell_with_automatic_output() {
-        let cells = vec!["let numbers = vec![1, 2, 3];".to_owned(), "numbers.len()".to_owned()];
+        let cells = vec![
+            "let numbers = vec![1, 2, 3];".to_owned(),
+            "numbers.len()".to_owned(),
+        ];
         let program = render_program(&cells);
 
         assert_eq!(program.matches("__MARS_RESULT__").count(), 1);

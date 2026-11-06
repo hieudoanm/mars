@@ -1,144 +1,97 @@
 # Mars Notebooks for VS Code
 
-![Mars](assets/mars-og.png)
-
-This companion extension provides a full-featured notebook editor for `.mars` files using VSCode's Notebook API, along with syntax recognition, Rust/Markdown embedded highlighting, CLI-backed HTML and Markdown export, and headless notebook execution.
+Mars Notebooks adds native `.mars` notebook support to Visual Studio Code. It
+uses VS Code's Notebook API for editing and delegates Rust execution, exports,
+and kernel lifecycle to the Mars CLI, so the extension does not implement a
+second runtime or notebook format.
 
 ## Features
 
-### Notebook Editor
+- Open `.mars` files in a notebook editor with Rust code and Markdown cells.
+- Preserve Mars cell IDs, metadata, execution counts, notebook metadata, Cargo
+  dependencies, lockfile data, and rich outputs on round trip.
+- Run selected cells or a whole notebook through `mars kernel serve` with a
+  persistent per-notebook kernel.
+- Restart a notebook kernel and configure CLI path, timeout, runtime, and
+  additional run arguments.
+- Export notebooks to standalone HTML or Markdown, preview an HTML export, and
+  navigate to a cell in text-editor mode.
+- Provide a `.mars` language contribution, JSON/embedded Rust/Markdown grammar,
+  language configuration, and Mars file icon theme.
 
-- **Interactive cell editing**: Edit Markdown and code cells in a true notebook interface
-- **Cell execution**: Run individual cells or entire notebooks
-- **Output rendering**: View execution results, errors, and rich outputs
-- **Cell management**: Add, delete, and reorder cells
-- **Keyboard shortcuts**: Standard notebook shortcuts (Shift+Enter to run, etc.)
-- **Persistent state**: Execution counts and outputs are preserved in the `.mars` file
+The default `replay` runtime is supplied by the Mars CLI. `evcxr` is optional
+and requires a CLI built with the `experimental-evcxr` feature.
 
-### Legacy Commands
+## Requirements
 
-The extension also provides CLI-backed commands for compatibility:
+- VS Code `1.145.2` or later.
+- Node.js and Corepack-managed pnpm for development.
+- The `mars` CLI on `PATH`, or an explicit `mars.cliPath`, to execute or export
+  notebooks.
 
-- **Mars: Export Notebook to HTML**: Export to HTML via Mars CLI
-- **Mars: Export Notebook to Markdown**: Export to Markdown via Mars CLI
-- **Mars: Preview Notebook**: Export and preview HTML
-- **Mars: Run Notebook**: Execute entire notebook via Mars CLI
-- **Mars: Go to Cell**: Navigate to a specific cell in text editor mode
-
-## Development
-
-The extension is the `@mars/vscode` package in the root pnpm workspace. The
-package-local npm commands remain supported for contributors who work only on
-the extension.
+From the repository root:
 
 ```bash
+corepack enable
 pnpm install
-pnpm run vscode:compile
-pnpm run vscode:package
+cargo install --path crates/mars-cli
 ```
 
-Equivalent package-local commands are:
+## Using the extension
 
-```bash
-cd extensions/vscode
-npm install
-npm run compile
-npm run package
-```
+1. Open a `.mars` file in VS Code; it opens with the **Mars Notebook** editor.
+2. Add Markdown or Rust code cells and use the standard notebook run controls.
+3. Run **Mars: Restart Kernel** if the execution state should be discarded.
+4. Run **Mars: Export Notebook to HTML** or **Mars: Export Notebook to
+   Markdown** from the Command Palette to create a portable export beside the
+   notebook.
 
-## Installation
+The extension starts the CLI with `mars kernel serve --notebook <file>`, so
+declared notebook dependencies and embedded Cargo lockfiles are available to
+the kernel.
 
-To install the extension together with the Mars CLI:
-
-```bash
-# From the repository root
-./scripts/install.sh --cli --vscode
-```
-
-To rebuild and reinstall only the extension (keeping an existing `mars` on
-`PATH`):
-
-```bash
-./scripts/install.sh --vscode
-```
-
-The script will:
-
-1. Build the Mars CLI from source (`--cli` or `--all` only)
-2. Install the Mars CLI to `~/.local/bin/mars`
-3. Build the VSCode extension from scratch (`out/` and `vsix/` are removed first)
-4. Install the extension in VSCode
-
-Make sure to add `~/.local/bin` to your PATH:
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-## Usage
-
-### Using the Notebook Editor
-
-1. Open any `.mars` file in VSCode
-2. The file will automatically open in the notebook editor
-3. Click the play button on a cell to execute it
-4. Use the "+" button to add new cells
-5. Cells can be code (Rust) or Markdown
-
-### Exporting
-
-Run **Mars: Export Notebook to HTML** or **Mars: Export Notebook to Markdown**
-from the Command Palette or the notebook toolbar. The export is written next to
-the notebook and opens automatically when `mars.previewAfterExport` is enabled.
-Markdown export preserves Markdown cells, fences Rust code, and converts tables,
-LaTeX, images, and offline charts into portable Markdown.
-
-### Runtime Selection
-
-Set `mars.runtime` to `evcxr` to run cells through the Evcxr backend. The
-default `replay` backend re-executes prior cells and now also converts
-`EVCXR_BEGIN_CONTENT` display markers (used by `plotters`) into
-`image/svg+xml` MIME bundles. Evcxr is experimental and requires a Mars CLI
-built with `--features experimental-evcxr`.
-
-The extension passes the open notebook to `mars kernel serve --notebook <file>`
-so the kernel loads that notebook's declared Cargo dependencies and lockfile,
-then restarts the kernel when you switch to a different notebook.
-
-### Images and rich output
-
-The built-in VS Code notebook renderer displays `image/svg+xml`, PNG, JPEG, and
-GIF output. SVG and HTML output are only rendered while the workspace is
-trusted; otherwise VS Code falls back to the `text/plain` alternative. Use
-**Workspaces: Manage Workspace Trust** to trust the folder if figures show as
-text.
-
-### Keyboard Shortcuts
-
-- `Shift+Enter`: Run cell and move to next
-- `Ctrl/Cmd+Enter`: Run cell
-- `Alt+Enter`: Run cell and insert new cell below
-- `Ctrl/Cmd+Shift+N`: Create new notebook (when not in notebook editor)
-
-### Configuration
-
-Configure the Mars CLI path and execution arguments:
+### Settings
 
 ```json
 {
   "mars.cliPath": "mars",
+  "mars.executionTimeout": 30000,
   "mars.runArguments": [],
   "mars.previewAfterExport": true,
-  "mars.executionTimeout": 30000
+  "mars.runtime": "replay"
 }
 ```
 
-### Cell Execution
+Set `mars.runtime` to `evcxr` only when using an appropriately feature-enabled
+CLI. For images and rich output, trust the workspace: VS Code intentionally
+falls back to text for potentially unsafe HTML or SVG in untrusted workspaces.
 
-The extension uses the Mars CLI's `kernel serve` command to execute Rust code cells with persistent state. The Mars CLI must be installed and available on your PATH. Use the installation script at the repository root (`./scripts/install.sh`) to build and install both the CLI and extension.
+## Commands and shortcuts
 
-The extension package includes the Mars project mark in
-[`assets/mars-logo.png`](assets/mars-logo.png) and the notebook-compatible
-file mark in [`assets/mars-file-logo.png`](assets/mars-file-logo.png).
-The package also includes the Open Graph artwork at
-[`assets/mars-og.png`](assets/mars-og.png) for project documentation.
+| Command                             | Purpose                                |
+| ----------------------------------- | -------------------------------------- |
+| `Mars: Create New Notebook`         | Create a new Mars notebook             |
+| `Mars: Run Notebook`                | Execute all executable cells           |
+| `Mars: Restart Kernel`              | Reset persistent execution state       |
+| `Mars: Export Notebook to HTML`     | Export a standalone HTML document      |
+| `Mars: Export Notebook to Markdown` | Export portable Markdown               |
+| `Mars: Preview Notebook`            | Export and open the HTML preview       |
+| `Mars: Go to Cell`                  | Navigate to a cell in text-editor mode |
+
+`Ctrl/Cmd+Shift+N` creates a notebook while a notebook editor is not focused.
+Standard VS Code notebook shortcuts such as `Shift+Enter`, `Ctrl/Cmd+Enter`,
+and `Alt+Enter` run cells.
+
+## Development and packaging
+
+```bash
+pnpm --filter mars-vscode check
+pnpm --filter mars-vscode lint
+pnpm --filter mars-vscode test
+pnpm --filter mars-vscode build
+pnpm --filter mars-vscode package
+```
+
+Compilation writes the extension to `out/`; packaging writes
+`vsix/mars-vscode.vsix`. These are generated artifacts and are not committed.
+See [AGENTS.md](AGENTS.md) for notebook conversion and extension-host rules.

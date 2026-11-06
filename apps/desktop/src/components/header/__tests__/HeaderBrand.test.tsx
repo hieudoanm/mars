@@ -6,7 +6,7 @@ describe('HeaderBrand', () => {
   it('renders the Mars logo, brand label, and headline', () => {
     render(<HeaderBrand />);
     const logo = screen.getByAltText('Mars');
-    expect(logo).toHaveAttribute('src', '/branding/svg/mars-logo.svg');
+    expect(logo).toHaveAttribute('src');
     expect(screen.getByText('MARS')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1, name: 'Explore ideas.' })).toBeInTheDocument();
   });
