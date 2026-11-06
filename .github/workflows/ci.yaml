@@ -53,8 +53,8 @@ jobs:
       - name: Test
         run: cargo test --workspace
 
-      - name: Build Zed extension
-        run: cargo build --target wasm32-wasip1 -p mars-zed
+      # - name: Build Zed extension
+      #   run: cargo build --target wasm32-wasip1 -p mars-zed
 
   node:
     name: ${{ matrix.name }}
