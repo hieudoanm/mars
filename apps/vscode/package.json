@@ -6,7 +6,7 @@
   "publisher": "mars-project",
   "icon": "assets/images/mars-logo.png",
   "license": "MIT",
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.18.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/hieudoanm/mars"
