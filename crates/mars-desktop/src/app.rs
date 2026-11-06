@@ -23,7 +23,7 @@ const ERROR_BORDER: u32 = 0xef4444;
 pub struct NotebookApp {
     notebook: Notebook,
     path: Option<PathBuf>,
-    kernel: Arc<Mutex<Kernel>>,
+    kernel: Option<Arc<Mutex<Kernel>>>,
     backend: RuntimeBackendKind,
     executing: bool,
     status: String,
@@ -34,18 +34,21 @@ pub struct NotebookApp {
 impl NotebookApp {
     pub fn new(window: &mut Window, cx: &mut Context<Self>, path: Option<String>) -> Self {
         let backend = RuntimeBackendKind::from_environment();
-        let kernel = Kernel::with_backend(Default::default(), backend, false)
-            .expect("failed to create Mars kernel");
+        let (kernel, kernel_error) = match Kernel::with_backend(Default::default(), backend, false)
+        {
+            Ok(kernel) => (Some(Arc::new(Mutex::new(kernel))), None),
+            Err(error) => (None, Some(format!("Kernel creation failed: {error}"))),
+        };
         let focus_handle = cx.focus_handle();
-        window.focus(&focus_handle);
+        window.focus(&focus_handle, cx);
 
         let mut this = Self {
             notebook: Notebook::new(),
             path: None,
-            kernel: Arc::new(Mutex::new(kernel)),
+            kernel,
             backend,
             executing: false,
-            status: "Ready".to_owned(),
+            status: kernel_error.unwrap_or_else(|| "Ready".to_owned()),
             kernel_status: ExecutionStatus::Idle,
             focus_handle,
         };
@@ -98,10 +101,13 @@ impl NotebookApp {
     fn configure_kernel(&mut self, notebook: &Notebook) {
         match Kernel::with_backend(notebook.metadata.dependencies.clone(), self.backend, false) {
             Ok(kernel) => {
-                self.kernel = Arc::new(Mutex::new(kernel));
+                self.kernel = Some(Arc::new(Mutex::new(kernel)));
                 self.kernel_status = ExecutionStatus::Idle;
             }
-            Err(error) => self.status = format!("Kernel configuration failed: {error}"),
+            Err(error) => {
+                self.kernel = None;
+                self.status = format!("Kernel configuration failed: {error}");
+            }
         }
     }
 
@@ -175,7 +181,12 @@ impl NotebookApp {
     }
 
     fn spawn_execution(&mut self, jobs: Vec<(usize, String)>, cx: &mut Context<Self>) {
-        let kernel = Arc::clone(&self.kernel);
+        let Some(kernel) = self.kernel.clone() else {
+            self.executing = false;
+            self.status = "Kernel unavailable".to_owned();
+            cx.notify();
+            return;
+        };
         let executor = cx.background_executor().clone();
         cx.spawn(async move |this: WeakEntity<Self>, cx: &mut AsyncApp| {
             let results = executor
@@ -243,7 +254,9 @@ impl NotebookApp {
     }
 
     fn restart_kernel(&mut self, cx: &mut Context<Self>) {
-        if let Ok(mut kernel) = self.kernel.lock() {
+        if let Some(kernel) = &self.kernel
+            && let Ok(mut kernel) = kernel.lock()
+        {
             match kernel
                 .handle(RequestEnvelope::new(KernelRequest::Reset))
                 .response
@@ -257,8 +270,74 @@ impl NotebookApp {
                 }
                 _ => {}
             }
+        } else {
+            self.status = "Kernel unavailable".to_owned();
         }
         cx.notify();
+    }
+
+    fn add_cell(&mut self, cell_type: CellType, cx: &mut Context<Self>) {
+        let index = self.notebook.cells.len();
+        self.insert_cell(index, cell_type, cx);
+    }
+
+    fn insert_cell(&mut self, index: usize, cell_type: CellType, cx: &mut Context<Self>) {
+        match self.notebook.insert_cell(index, Cell::new(cell_type, "")) {
+            Ok(()) => {
+                self.status = format!("Inserted cell at {}", index + 1);
+                cx.notify();
+            }
+            Err(error) => {
+                self.status = format!("Insert failed: {error}");
+                cx.notify();
+            }
+        }
+    }
+
+    fn delete_cell(&mut self, index: usize, cx: &mut Context<Self>) {
+        match self.notebook.remove_cell(index) {
+            Ok(_) => {
+                self.status = format!("Deleted cell {}", index + 1);
+                cx.notify();
+            }
+            Err(error) => {
+                self.status = format!("Delete failed: {error}");
+                cx.notify();
+            }
+        }
+    }
+
+    fn move_cell(&mut self, index: usize, delta: isize, cx: &mut Context<Self>) {
+        let to = index as isize + delta;
+        if to < 0 || to as usize >= self.notebook.cells.len() {
+            return;
+        }
+        match self.notebook.move_cell(index, to as usize) {
+            Ok(()) => cx.notify(),
+            Err(error) => self.status = format!("Move failed: {error}"),
+        }
+    }
+
+    fn toggle_cell_type(&mut self, index: usize, cx: &mut Context<Self>) {
+        let Some(cell) = self.notebook.cells.get(index) else {
+            return;
+        };
+        let new_type = match cell.cell_type {
+            CellType::Code => CellType::Markdown,
+            _ => CellType::Code,
+        };
+        let clears_outputs = matches!(new_type, CellType::Markdown);
+        match self.notebook.cell_mut(index) {
+            Ok(cell) => {
+                cell.cell_type = new_type;
+                if clears_outputs {
+                    cell.outputs.clear();
+                    cell.execution_count = None;
+                }
+                cx.notify();
+            }
+            Err(error) => self.status = format!("Type change failed: {error}"),
+        }
     }
 }
 
@@ -350,19 +429,50 @@ impl NotebookApp {
                     .flex_row()
                     .items_center()
                     .gap_2()
-                    .child(toolbar_button("New", "tb-new", entity, |this, cx| {
-                        this.new_notebook(cx)
-                    }))
-                    .child(toolbar_button("Open…", "tb-open", entity, |this, cx| {
-                        this.prompt_open(cx)
-                    }))
-                    .child(toolbar_button("Save", "tb-save", entity, |this, cx| {
-                        this.save(cx)
-                    }))
-                    .child(toolbar_button("Run all", "tb-run", entity, |this, cx| {
-                        this.run_all(cx)
-                    }))
                     .child(toolbar_button(
+                        PhosphorIcon::FilePlus,
+                        "New",
+                        "tb-new",
+                        entity,
+                        |this, cx| this.new_notebook(cx),
+                    ))
+                    .child(toolbar_button(
+                        PhosphorIcon::FolderOpen,
+                        "Open…",
+                        "tb-open",
+                        entity,
+                        |this, cx| this.prompt_open(cx),
+                    ))
+                    .child(toolbar_button(
+                        PhosphorIcon::FloppyDisk,
+                        "Save",
+                        "tb-save",
+                        entity,
+                        |this, cx| this.save(cx),
+                    ))
+                    .child(toolbar_button(
+                        PhosphorIcon::FileCode,
+                        "Code cell",
+                        "tb-add-code",
+                        entity,
+                        |this, cx| this.add_cell(CellType::Code, cx),
+                    ))
+                    .child(toolbar_button(
+                        PhosphorIcon::FileMd,
+                        "Markdown cell",
+                        "tb-add-md",
+                        entity,
+                        |this, cx| this.add_cell(CellType::Markdown, cx),
+                    ))
+                    .child(toolbar_button(
+                        PhosphorIcon::Play,
+                        "Run all",
+                        "tb-run",
+                        entity,
+                        |this, cx| this.run_all(cx),
+                    ))
+                    .child(toolbar_button(
+                        PhosphorIcon::ArrowCounterClockwise,
                         "Restart kernel",
                         "tb-restart",
                         entity,
@@ -433,9 +543,55 @@ impl NotebookApp {
                             .child(execution_label),
                     ),
             );
+        let type_icon = if is_code {
+            PhosphorIcon::FileCode
+        } else {
+            PhosphorIcon::FileMd
+        };
+
+        let mut controls = div()
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap_1()
+            .child(cell_icon_button(
+                type_icon,
+                format!("type-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.toggle_cell_type(index, cx),
+            ))
+            .child(cell_icon_button(
+                PhosphorIcon::ArrowUp,
+                format!("up-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.move_cell(index, -1, cx),
+            ))
+            .child(cell_icon_button(
+                PhosphorIcon::ArrowDown,
+                format!("down-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.move_cell(index, 1, cx),
+            ))
+            .child(cell_icon_button(
+                PhosphorIcon::Trash,
+                format!("del-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.delete_cell(index, cx),
+            ));
         if is_code {
-            header = header.child(cell_button(index, entity));
+            controls = controls.child(cell_icon_button_accent(
+                PhosphorIcon::Play,
+                format!("exec-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.execute_cell(index, cx),
+            ));
         }
+        header = header.child(controls);
 
         let mut card = div()
             .flex()
@@ -464,6 +620,7 @@ impl NotebookApp {
 }
 
 fn toolbar_button(
+    icon: PhosphorIcon,
     label: &'static str,
     id: &'static str,
     entity: &Entity<NotebookApp>,
@@ -483,25 +640,58 @@ fn toolbar_button(
         .on_click(move |_, _, cx| {
             entity.update(cx, |this, cx| action(this, cx));
         })
-        .child(label)
+        .child(
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap_2()
+                .child(icon)
+                .child(label),
+        )
 }
 
-fn cell_button(index: usize, entity: &Entity<NotebookApp>) -> Stateful<Div> {
+fn cell_icon_button(
+    icon: PhosphorIcon,
+    id: SharedString,
+    entity: &Entity<NotebookApp>,
+    index: usize,
+    action: impl Fn(&mut NotebookApp, usize, &mut Context<NotebookApp>) + 'static,
+) -> Stateful<Div> {
+    icon_button(icon, id, entity, index, action, rgb(MUTED))
+}
+
+fn cell_icon_button_accent(
+    icon: PhosphorIcon,
+    id: SharedString,
+    entity: &Entity<NotebookApp>,
+    index: usize,
+    action: impl Fn(&mut NotebookApp, usize, &mut Context<NotebookApp>) + 'static,
+) -> Stateful<Div> {
+    icon_button(icon, id, entity, index, action, rgb(ACCENT))
+}
+
+fn icon_button(
+    icon: PhosphorIcon,
+    id: SharedString,
+    entity: &Entity<NotebookApp>,
+    index: usize,
+    action: impl Fn(&mut NotebookApp, usize, &mut Context<NotebookApp>) + 'static,
+    color: Rgba,
+) -> Stateful<Div> {
     let entity = entity.clone();
     div()
-        .id(SharedString::from(format!("exec-{index}")))
-        .px_2()
-        .py_1()
+        .id(id)
+        .p_1()
         .rounded_md()
-        .bg(rgb(ACCENT))
         .text_xs()
-        .text_color(rgb(0x111111))
+        .text_color(color)
         .cursor_pointer()
-        .hover(|style| style.opacity(0.85))
+        .hover(|style| style.bg(rgb(0x333333)))
         .on_click(move |_, _, cx| {
-            entity.update(cx, |this, cx| this.execute_cell(index, cx));
+            entity.update(cx, |this, cx| action(this, index, cx));
         })
-        .child("Run")
+        .child(icon)
 }
 
 fn render_output(output: &Output) -> Div {

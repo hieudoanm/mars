@@ -3,6 +3,8 @@ mod output_text;
 
 use app::NotebookApp;
 use gpui::*;
+use gpui_kit_phosphor::PhosphorAssets;
+use gpui_platform::application;
 
 actions!(
     mars_desktop,
@@ -18,7 +20,7 @@ actions!(
 
 fn main() {
     mars_kernel::runtime_hook();
-    Application::new().run(|cx| {
+    application().with_assets(PhosphorAssets).run(|cx| {
         cx.bind_keys([
             KeyBinding::new("cmd-n", NewNotebook, None),
             KeyBinding::new("cmd-o", OpenNotebook, None),
@@ -29,14 +31,16 @@ fn main() {
         ]);
         let bounds = Bounds::centered(None, size(px(1120.), px(760.)), cx);
         let notebook_path = std::env::args().nth(1);
-        cx.open_window(
+        if let Err(error) = cx.open_window(
             WindowOptions {
                 window_bounds: Some(WindowBounds::Windowed(bounds)),
                 ..Default::default()
             },
             |window, cx| cx.new(|cx| NotebookApp::new(window, cx, notebook_path)),
-        )
-        .expect("failed to open Mars window");
+        ) {
+            eprintln!("failed to open Mars window: {error:?}");
+            std::process::exit(1);
+        }
         cx.activate(true);
     });
 }
