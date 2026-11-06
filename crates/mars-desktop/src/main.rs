@@ -21,6 +21,8 @@ actions!(
 fn main() {
     mars_kernel::runtime_hook();
     application().with_assets(PhosphorAssets).run(|cx| {
+        gpui_component::init(cx);
+        gpui_component::Theme::change(gpui_component::ThemeMode::Dark, None, cx);
         cx.bind_keys([
             KeyBinding::new("cmd-n", NewNotebook, None),
             KeyBinding::new("cmd-o", OpenNotebook, None),

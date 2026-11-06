@@ -178,13 +178,19 @@ Phase 7 — Desktop and rendering polish
   cleared when converting to a non-code type). Removed remaining `expect`s:
   kernel creation failure and window-open failure now surface as status
   messages/process exit instead of panicking.
+- Added real cell editing via `gpui-component 0.7.3` (the newest release
+  compatible with `gpui-pre 0.3.9`; 0.8+/0.9 require newer gpui-pre and
+  conflict with the phosphor pin). Each cell gets an auto-growing
+  `TextareaState` synced to `Notebook.cells[].source` through
+  `InputEvent::Change` subscriptions; edits to code cells clear stale
+  outputs/execution counts. gpui-component is initialized with a dark theme.
 
 ## Outstanding
 
-- `crates/mars-desktop` (GPUI) is still a scaffold: cells are read-only (no
-  editor yet) and outputs are plain text. Cell add/delete/reorder/type-toggle
-  and Phosphor icons are in place; markdown/LaTeX rendering, autosave, rich
-  outputs, and editing remain. Port remaining `apps/desktop` functionality
+- `crates/mars-desktop` (GPUI) cells are now editable plain textareas.
+  Remaining gaps: no syntax highlighting or markdown preview, plain-text
+  outputs only, no insert-between/duplicate, no autosave, no per-cell
+  keyboard shortcuts. Port remaining `apps/desktop` functionality
   incrementally.
 - Longer-lived compiler/runtime strategies remain a future optimization; the
   current replay model is benchmarked, documented, and retained as the

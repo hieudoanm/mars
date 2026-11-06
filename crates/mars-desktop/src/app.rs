@@ -1,10 +1,14 @@
 use crate::output_text::output_lines;
 use crate::{NewNotebook, OpenNotebook, Quit, RestartKernel, RunAllCells, SaveNotebook};
 use gpui::*;
-use mars_core::{CellType, ExecutionStatus, Output};
+use gpui_component::Sizable as _;
+use gpui_component::input::{InputEvent, Textarea, TextareaState};
+use gpui_kit_phosphor::PhosphorIcon;
+use mars_core::{CellId, CellType, ExecutionStatus, Output};
 use mars_document::{Cell, Notebook, load, save_atomic};
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, atomic::AtomicBool};
 
@@ -29,6 +33,8 @@ pub struct NotebookApp {
     status: String,
     kernel_status: ExecutionStatus,
     focus_handle: FocusHandle,
+    editors: HashMap<CellId, Entity<TextareaState>>,
+    subscriptions: Vec<Subscription>,
 }
 
 impl NotebookApp {
@@ -51,11 +57,54 @@ impl NotebookApp {
             status: kernel_error.unwrap_or_else(|| "Ready".to_owned()),
             kernel_status: ExecutionStatus::Idle,
             focus_handle,
+            editors: HashMap::new(),
+            subscriptions: Vec::new(),
         };
         if let Some(path) = path {
             this.open_path(PathBuf::from(path), cx);
         }
+        this.ensure_editors(window, cx);
         this
+    }
+
+    fn ensure_editors(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let missing = self
+            .notebook
+            .cells
+            .iter()
+            .filter(|cell| !self.editors.contains_key(&cell.id))
+            .map(|cell| (cell.id.clone(), cell.source.clone()))
+            .collect::<Vec<_>>();
+        for (id, source) in missing {
+            let state = cx.new(|cx| TextareaState::new(window, cx).auto_grow(1, 12));
+            state.update(cx, |state, cx| state.set_value(source, window, cx));
+            let edit_id = id.clone();
+            let subscription = cx.subscribe(&state, move |this, state, event: &InputEvent, cx| {
+                if matches!(event, InputEvent::Change) {
+                    let value = state.read(cx).value().to_string();
+                    this.apply_source_edit(edit_id.clone(), value);
+                }
+            });
+            self.subscriptions.push(subscription);
+            self.editors.insert(id, state);
+        }
+    }
+
+    fn apply_source_edit(&mut self, id: CellId, source: String) {
+        if let Some(cell) = self.notebook.cells.iter_mut().find(|cell| cell.id == id)
+            && cell.source != source
+        {
+            cell.source = source;
+            if cell.cell_type == CellType::Code {
+                cell.outputs.clear();
+                cell.execution_count = None;
+            }
+        }
+    }
+
+    fn reset_editors(&mut self) {
+        self.editors.clear();
+        self.subscriptions.clear();
     }
 
     fn new_notebook(&mut self, cx: &mut Context<Self>) {
@@ -64,6 +113,7 @@ impl NotebookApp {
         self.configure_kernel(&notebook);
         self.notebook = notebook;
         self.path = None;
+        self.reset_editors();
         self.status = "New notebook".to_owned();
         cx.notify();
     }
@@ -91,6 +141,7 @@ impl NotebookApp {
                 self.configure_kernel(&notebook);
                 self.notebook = notebook;
                 self.path = Some(path.clone());
+                self.reset_editors();
                 self.status = format!("Opened {}", path.display());
             }
             Err(error) => self.status = format!("Open failed: {error}"),
@@ -342,7 +393,8 @@ impl NotebookApp {
 }
 
 impl Render for NotebookApp {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        self.ensure_editors(window, cx);
         let on_new = cx.listener(|this: &mut Self, _: &NewNotebook, _, cx| this.new_notebook(cx));
         let on_open = cx.listener(|this: &mut Self, _: &OpenNotebook, _, cx| this.prompt_open(cx));
         let on_save = cx.listener(|this: &mut Self, _: &SaveNotebook, _, cx| this.save(cx));
@@ -593,6 +645,23 @@ impl NotebookApp {
         }
         header = header.child(controls);
 
+        let body = if let Some(state) = self.editors.get(&cell.id) {
+            div().px_3().py_2().child(
+                Textarea::new(state)
+                    .appearance(false)
+                    .bordered(false)
+                    .small(),
+            )
+        } else {
+            div()
+                .px_3()
+                .py_2()
+                .text_sm()
+                .font_family("Menlo")
+                .text_color(rgb(TEXT))
+                .child(cell.source.clone())
+        };
+
         let mut card = div()
             .flex()
             .flex_col()
@@ -602,15 +671,7 @@ impl NotebookApp {
             .bg(rgb(PANEL))
             .overflow_hidden()
             .child(header)
-            .child(
-                div()
-                    .px_3()
-                    .py_2()
-                    .text_sm()
-                    .font_family("Menlo")
-                    .text_color(rgb(TEXT))
-                    .child(cell.source.clone()),
-            );
+            .child(body);
 
         for output in &cell.outputs {
             card = card.child(render_output(output));
