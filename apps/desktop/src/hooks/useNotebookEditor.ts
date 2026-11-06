@@ -14,6 +14,20 @@ import {
 
 type CellType = 'markdown' | 'code';
 
+const MAX_HISTORY_ENTRIES = 100;
+const MAX_HISTORY_BYTES = 2_000_000;
+
+const trimHistory = (snapshots: string[]) => {
+  let size = snapshots.reduce((total, snapshot) => total + snapshot.length, 0);
+  while (
+    snapshots.length > 1 &&
+    (snapshots.length > MAX_HISTORY_ENTRIES || size > MAX_HISTORY_BYTES)
+  ) {
+    const removed = snapshots.shift();
+    size -= removed?.length ?? 0;
+  }
+};
+
 export const useNotebookEditor = (initialNotebook: Notebook) => {
   const [notebook, setNotebook] = useState(initialNotebook);
   const [selectedId, setSelectedId] = useState(
@@ -37,7 +51,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     if (history.past.at(-1) !== snapshot) {
       history.past.push(snapshot);
       history.future = [];
-      if (history.past.length > 100) history.past.shift();
+      trimHistory(history.past);
     }
   }, [notebook]);
 

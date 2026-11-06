@@ -13,6 +13,7 @@ import NotebookStatusBar from './components/notebook/NotebookStatusBar';
 import NotebookToolbar from './components/notebook/NotebookToolbar';
 import UnsavedChangesDialog from './components/dialogs/UnsavedChangesDialog';
 import Header from './components/header/Header';
+import FileExplorer from './components/explorer/FileExplorer';
 import 'katex/dist/katex.min.css';
 
 const initialNotebook: Notebook = {
@@ -86,7 +87,7 @@ const App: FC = () => {
   };
 
   return (
-    <main data-component='App' className='flex min-h-screen flex-col'>
+    <main data-component='App' className='flex h-screen flex-col overflow-hidden'>
       <Header
         status={ui.status}
         mode={editor.mode}
@@ -94,8 +95,71 @@ const App: FC = () => {
         onSave={() => void persistence.saveNotebook()}
         onExport={() => void persistence.exportMarkdown()}
         onRestart={() => void execution.restart()}
+        isExecuting={execution.isExecuting}
       />
-      <section className='flex flex-1'>
+      <section className='flex min-h-0 flex-1 overflow-hidden'>
+        <FileExplorer
+          currentFilePath={persistence.filePath}
+          onOpenNotebook={persistence.openNotebookAtPath}
+          onStatus={ui.setStatus}
+        />
+        <section className='min-w-0 flex-1 overflow-y-auto'>
+          <div className='mx-auto w-full max-w-5xl px-8 py-10 pb-20'>
+            <NotebookToolbar
+              fileName={fileName}
+              title={editor.notebook.metadata.title ?? 'Untitled notebook'}
+              isDirty={persistence.isDirty}
+              onRename={editor.renameNotebook}
+              isExecuting={execution.isExecuting}
+              executionTimeout={ui.executionTimeout}
+              fontSize={preferences.fontSize}
+              preferences={preferences.preferences}
+              onTimeoutChange={ui.setExecutionTimeout}
+              onFontSizeChange={preferences.updateFontSize}
+              onPreferencesChange={preferences.setPreferences}
+              onCancel={() => void execution.cancelExecution()}
+              onRunCurrent={commands.executeCurrent}
+              onRunAll={commands.executeAll}
+              onRunAbove={commands.executeAbove}
+              onRunBelow={commands.executeBelow}
+              onClearOutputs={clearAllOutputs}
+              canDeleteCell={editor.cells.length > 1}
+              onDeleteCell={editor.deleteSelected}
+              onAddMarkdown={() => editor.addCell('markdown')}
+              onAddCode={() => editor.addCell('code')}
+            />
+            <div className='flex flex-col gap-5'>
+              {editor.cells.map((cell) => (
+                <NotebookCellView
+                  key={cell.id}
+                  cell={cell}
+                  selected={cell.id === editor.selectedId}
+                  isExecuting={cell.id === execution.activeCellId}
+                  fontSize={preferences.fontSize}
+                  autocompleteEnabled={preferences.preferences.autocomplete}
+                  foldingEnabled={preferences.preferences.folding}
+                  canDelete={editor.cells.length > 1}
+                  onSelect={() => {
+                    editor.setSelectedId(cell.id);
+                    editor.setMode('command');
+                  }}
+                  onEdit={(source) => editor.updateCell(cell.id, source)}
+                  onFocus={() => {
+                    editor.setSelectedId(cell.id);
+                    editor.setMode('edit');
+                  }}
+                  onExecute={() => {
+                    editor.setSelectedId(cell.id);
+                    void execution.executeCell(cell);
+                  }}
+                  onClear={() => editor.clearOutputs(cell.id)}
+                  onDelete={() => editor.removeCell(cell.id)}
+                  onStatus={ui.setStatus}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
         <NotebookSidebar
           cells={editor.cells}
           selectedId={editor.selectedId}
@@ -104,60 +168,12 @@ const App: FC = () => {
           onSelect={(id) => {
             editor.setSelectedId(id);
             editor.setMode('command');
+            window.requestAnimationFrame(() => {
+              document.getElementById(`cell-${id}`)?.scrollIntoView({ block: 'center' });
+            });
           }}
           onRenameFile={persistence.renameFile}
         />
-        <section className='mx-auto w-full max-w-5xl flex-1 px-14 py-10 pb-20'>
-          <NotebookToolbar
-            fileName={fileName}
-            title={editor.notebook.metadata.title ?? 'Untitled notebook'}
-            isDirty={persistence.isDirty}
-            onRename={editor.renameNotebook}
-            isExecuting={execution.isExecuting}
-            executionTimeout={ui.executionTimeout}
-            fontSize={preferences.fontSize}
-            preferences={preferences.preferences}
-            onTimeoutChange={ui.setExecutionTimeout}
-            onFontSizeChange={preferences.updateFontSize}
-            onPreferencesChange={preferences.setPreferences}
-            onCancel={() => void execution.cancelExecution()}
-            onRunCurrent={commands.executeCurrent}
-            onRunAll={commands.executeAll}
-            onRunAbove={commands.executeAbove}
-            onRunBelow={commands.executeBelow}
-            onClearOutputs={clearAllOutputs}
-            canDeleteCell={editor.cells.length > 1}
-            onDeleteCell={editor.deleteSelected}
-            onAddMarkdown={() => editor.addCell('markdown')}
-            onAddCode={() => editor.addCell('code')}
-          />
-          <div className='flex flex-col gap-5'>
-            {editor.cells.map((cell) => (
-              <NotebookCellView
-                key={cell.id}
-                cell={cell}
-                selected={cell.id === editor.selectedId}
-                fontSize={preferences.fontSize}
-                autocompleteEnabled={preferences.preferences.autocomplete}
-                foldingEnabled={preferences.preferences.folding}
-                canDelete={editor.cells.length > 1}
-                onSelect={() => {
-                  editor.setSelectedId(cell.id);
-                  editor.setMode('command');
-                }}
-                onEdit={(source) => editor.updateCell(cell.id, source)}
-                onFocus={() => {
-                  editor.setSelectedId(cell.id);
-                  editor.setMode('edit');
-                }}
-                onExecute={() => void execution.executeCell(cell)}
-                onClear={() => editor.clearOutputs(cell.id)}
-                onDelete={() => editor.removeCell(cell.id)}
-                onStatus={ui.setStatus}
-              />
-            ))}
-          </div>
-        </section>
       </section>
       <NotebookStatusBar cellCount={editor.cells.length} isDirty={persistence.isDirty} />
       {(persistence.pendingOpenPath || persistence.closeRequested) && (

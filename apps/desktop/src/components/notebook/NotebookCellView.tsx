@@ -1,14 +1,17 @@
-import { type FC } from 'react';
+import { lazy, Suspense, type FC } from 'react';
 import { LuEraser, LuPlay, LuTrash2 } from 'react-icons/lu';
 import type { NotebookCell } from '../../types/types';
 import CodeEditor from '../editor/CodeEditor';
-import OutputView from '../output/OutputView';
 import { diagnosticsForCell } from '../../lib/diagnostics';
 import { IconButton } from '../shared';
+
+const OutputView = lazy(() => import('../output/OutputView'));
+const MarkdownPreview = lazy(() => import('../output/MarkdownPreview'));
 
 export type NotebookCellViewProps = {
   cell: NotebookCell;
   selected: boolean;
+  isExecuting: boolean;
   fontSize: number;
   autocompleteEnabled: boolean;
   foldingEnabled: boolean;
@@ -27,6 +30,7 @@ const iconClassName = 'h-4 w-4';
 const NotebookCellView: FC<NotebookCellViewProps> = ({
   cell,
   selected,
+  isExecuting,
   fontSize,
   autocompleteEnabled,
   foldingEnabled,
@@ -42,7 +46,9 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   return (
     <article
       data-component='NotebookCellView'
-      className={`flex rounded-xl border ${selected ? 'border-orange-800 ring-1 ring-orange-950' : 'border-transparent'} bg-neutral-900`}
+      id={`cell-${cell.id}`}
+      aria-busy={isExecuting || undefined}
+      className={`flex scroll-mt-6 rounded-xl border [contain-intrinsic-size:auto_14rem] [content-visibility:auto] ${isExecuting ? 'border-amber-400 ring-2 ring-amber-500/40' : selected ? 'border-orange-800 ring-1 ring-orange-950' : 'border-transparent'} bg-neutral-900`}
       onClick={onSelect}>
       <div className='w-24 p-2 pt-5 text-right text-xs text-neutral-500'>
         <span>{cell.cell_type === 'code' ? `In [${cell.execution_count ?? ' '}]` : ' '}</span>
@@ -92,15 +98,33 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
           value={cell.source}
           onChange={onEdit}
           onFocus={onFocus}
-          placeholder={cell.cell_type === 'markdown' ? 'Write Markdown...' : 'Write Rust code...'}
+          placeholder={
+            cell.cell_type === 'markdown'
+              ? 'Write Markdown...'
+              : cell.cell_type === 'raw'
+                ? 'Write raw content...'
+                : 'Write Rust code...'
+          }
           cellType={cell.cell_type}
           fontSize={fontSize}
           autocompleteEnabled={autocompleteEnabled}
           foldingEnabled={foldingEnabled}
           diagnostics={diagnosticsForCell(cell)}
         />
+        {cell.cell_type === 'raw' ? (
+          <p className='mt-2 text-xs text-neutral-500'>
+            Raw cells are preserved and never executed.
+          </p>
+        ) : null}
+        {cell.cell_type === 'markdown' ? (
+          <Suspense fallback={null}>
+            <MarkdownPreview source={cell.source} />
+          </Suspense>
+        ) : null}
         {cell.outputs.map((output, outputIndex) => (
-          <OutputView key={`${cell.id}-${outputIndex}`} output={output} />
+          <Suspense key={`${cell.id}-${outputIndex}`} fallback={null}>
+            <OutputView output={output} />
+          </Suspense>
         ))}
       </div>
     </article>

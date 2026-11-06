@@ -97,4 +97,15 @@ describe('useKeyboardShortcuts', () => {
     fireEvent.keyDown(window, { key: 'a' });
     expect(actions.insertCell).not.toHaveBeenCalled();
   });
+
+  it('does not interpret typing in ordinary form controls as notebook commands', () => {
+    const { actions } = setup();
+    const input = document.createElement('input');
+    document.body.append(input);
+    fireEvent.keyDown(input, { key: 'a', bubbles: true });
+    fireEvent.keyDown(input, { key: 'd', bubbles: true });
+    expect(actions.insertCell).not.toHaveBeenCalled();
+    expect(actions.deleteSelected).not.toHaveBeenCalled();
+    input.remove();
+  });
 });

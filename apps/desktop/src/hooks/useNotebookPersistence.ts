@@ -1,6 +1,6 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { open, save } from '@tauri-apps/plugin-dialog';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Notebook } from '../types/types';
 import {
   configureKernel,
@@ -29,9 +29,10 @@ export const useNotebookPersistence = ({
   const [savedSnapshot, setSavedSnapshot] = useState(() => serializeNotebook(notebook));
   const [pendingOpenPath, setPendingOpenPath] = useState<string | null>(null);
   const [closeRequested, setCloseRequested] = useState(false);
-  const autosaveInFlight = useRef(false);
+  const autosaveInFlight = useRef<Promise<void> | null>(null);
+  const autosaveQueuedSnapshot = useRef<string | null>(null);
   const allowClose = useRef(false);
-  const snapshot = serializeNotebook(notebook);
+  const snapshot = useMemo(() => serializeNotebook(notebook), [notebook]);
   const isDirty = snapshot !== savedSnapshot;
 
   const saveNotebook = async (): Promise<boolean> => {
@@ -121,25 +122,38 @@ export const useNotebookPersistence = ({
     }
   };
 
+  const openNotebookAtPath = (path: string) => {
+    if (isDirty) setPendingOpenPath(path);
+    else void loadNotebook(path);
+  };
+
+  const autosave = (nextSnapshot: string) => {
+    if (!filePath) return;
+    autosaveQueuedSnapshot.current = nextSnapshot;
+    if (autosaveInFlight.current) return;
+    autosaveInFlight.current = (async () => {
+      while (autosaveQueuedSnapshot.current) {
+        const snapshotToSave = autosaveQueuedSnapshot.current;
+        autosaveQueuedSnapshot.current = null;
+        try {
+          await saveNotebookFile(filePath, snapshotToSave);
+          setSavedSnapshot(snapshotToSave);
+          setStatus('Autosaved');
+        } catch (error) {
+          setStatus(error instanceof Error ? error.message : 'Autosave failed');
+        }
+      }
+      autosaveInFlight.current = null;
+    })();
+  };
+
   useEffect(() => {
     if (!filePath || !isDirty) return;
     const timer = window.setTimeout(() => {
-      if (autosaveInFlight.current) return;
-      autosaveInFlight.current = true;
-      void saveNotebookFile(filePath, snapshot)
-        .then(() => {
-          setSavedSnapshot(snapshot);
-          setStatus('Autosaved');
-        })
-        .catch((error: unknown) => {
-          setStatus(error instanceof Error ? error.message : 'Autosave failed');
-        })
-        .finally(() => {
-          autosaveInFlight.current = false;
-        });
+      autosave(snapshot);
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [filePath, isDirty, snapshot]);
+  }, [filePath, isDirty, snapshot, savedSnapshot]);
 
   useEffect(() => {
     if (!('__TAURI_INTERNALS__' in window)) return;
@@ -189,6 +203,7 @@ export const useNotebookPersistence = ({
     setPendingOpenPath,
     setCloseRequested,
     openNotebook,
+    openNotebookAtPath,
     saveNotebook,
     renameFile,
     exportMarkdown,

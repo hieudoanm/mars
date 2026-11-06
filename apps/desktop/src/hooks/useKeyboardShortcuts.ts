@@ -48,6 +48,15 @@ export const useKeyboardShortcuts = ({
         void saveNotebook();
         return;
       }
+      const target = event.target;
+      const isCodeEditor = target instanceof HTMLElement && target.closest('.cm-editor') !== null;
+      const isPlainTextInput =
+        target instanceof HTMLElement &&
+        !isCodeEditor &&
+        (target.matches('input, textarea, select') ||
+          target.isContentEditable ||
+          target.closest('[role="textbox"]') !== null);
+      if (isPlainTextInput) return;
       if (modifier && event.key.toLowerCase() === 'z') {
         event.preventDefault();
         if (event.shiftKey) redo();
@@ -88,9 +97,7 @@ export const useKeyboardShortcuts = ({
         executeAll();
         return;
       }
-      const target = event.target;
-      const isEditorEvent = target instanceof HTMLElement && target.closest('.cm-editor') !== null;
-      if (mode !== 'command' || modifier || isEditorEvent) return;
+      if (mode !== 'command' || modifier || isCodeEditor) return;
       switch (event.key.toLowerCase()) {
         case 'a':
           event.preventDefault();

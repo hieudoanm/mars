@@ -185,4 +185,33 @@ describe('useNotebookPersistence', () => {
     expect(setStatus).toHaveBeenLastCalledWith('Autosaved');
     vi.useRealTimers();
   });
+
+  it('queues the latest snapshot while an autosave is still running', async () => {
+    vi.useFakeTimers();
+    let finishFirstSave: (() => void) | undefined;
+    const { result, rerender } = setup();
+    saveDialog.mockResolvedValue('/books/autosave.mars');
+    await act(async () => result.current.saveNotebook());
+    saveFile.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finishFirstSave = resolve;
+        }),
+    );
+    rerender({ notebook: { ...initial, cells: [{ ...initial.cells[0], source: 'first' }] } });
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    rerender({ notebook: { ...initial, cells: [{ ...initial.cells[0], source: 'latest' }] } });
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    await act(async () => {
+      finishFirstSave?.();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(saveFile).toHaveBeenCalledTimes(3);
+    expect(saveFile).toHaveBeenLastCalledWith(
+      '/books/autosave.mars',
+      expect.stringContaining('latest'),
+    );
+    vi.useRealTimers();
+  });
 });

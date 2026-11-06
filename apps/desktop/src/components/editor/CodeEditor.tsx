@@ -118,7 +118,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
             'aria-label': placeholder,
             'data-placeholder': placeholder,
           }),
-          cellType === 'markdown' ? markdown() : rust(),
+          cellType === 'markdown' ? markdown() : cellType === 'code' ? rust() : [],
         ],
       }),
       parent: containerRef.current,

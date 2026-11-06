@@ -1,6 +1,13 @@
 import { invoke } from '@tauri-apps/api/core';
 import type { KernelResponse, Notebook, Output } from '../types/types';
 
+export type FileExplorerEntry = {
+  name: string;
+  path: string;
+  isDirectory: boolean;
+  children: FileExplorerEntry[];
+};
+
 export const executeSource = async (
   source: string,
   timeoutMillis: number | null,
@@ -47,6 +54,10 @@ export const renameNotebookFile = async (oldPath: string, newPath: string): Prom
 
 export const exportMarkdownFile = async (path: string, content: string): Promise<void> => {
   await invoke('export_notebook_markdown', { path, content });
+};
+
+export const listNotebookFiles = async (path: string): Promise<FileExplorerEntry[]> => {
+  return invoke<FileExplorerEntry[]>('list_notebook_files', { path });
 };
 
 export const hasInterruptedOutput = (outputs: Output[]): boolean => {

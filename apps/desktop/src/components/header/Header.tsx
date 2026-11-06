@@ -4,7 +4,15 @@ import HeaderBrand from './HeaderBrand';
 
 export type HeaderProps = HeaderActionsProps;
 
-const Header: FC<HeaderProps> = ({ status, mode, onOpen, onSave, onExport, onRestart }) => {
+const Header: FC<HeaderProps> = ({
+  status,
+  mode,
+  onOpen,
+  onSave,
+  onExport,
+  onRestart,
+  isExecuting,
+}) => {
   return (
     <header
       data-component='Header'
@@ -17,6 +25,7 @@ const Header: FC<HeaderProps> = ({ status, mode, onOpen, onSave, onExport, onRes
         onSave={onSave}
         onExport={onExport}
         onRestart={onRestart}
+        isExecuting={isExecuting}
       />
     </header>
   );

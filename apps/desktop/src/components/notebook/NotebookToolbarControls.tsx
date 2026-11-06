@@ -92,21 +92,25 @@ const NotebookToolbarControls: FC<NotebookToolbarControlsProps> = ({
         )}
         <IconButton
           label='Run current cell'
+          disabled={isExecuting}
           icon={<LuPlay aria-hidden='true' className={iconClassName} />}
           onClick={onRunCurrent}
         />
         <IconButton
           label='Run all (F6)'
+          disabled={isExecuting}
           icon={<LuListChecks aria-hidden='true' className={iconClassName} />}
           onClick={onRunAll}
         />
         <IconButton
           label='Run above'
+          disabled={isExecuting}
           icon={<LuArrowUpToLine aria-hidden='true' className={iconClassName} />}
           onClick={onRunAbove}
         />
         <IconButton
           label='Run below'
+          disabled={isExecuting}
           icon={<LuArrowDownToLine aria-hidden='true' className={iconClassName} />}
           onClick={onRunBelow}
         />

@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from 'react';
+import { useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import type { Notebook, NotebookCell } from '../types/types';
 import {
   hasInterruptedOutput,
@@ -16,10 +16,18 @@ type ExecutionOptions = {
 
 export const useKernelExecution = ({ setNotebook, timeout, setStatus }: ExecutionOptions) => {
   const [isExecuting, setIsExecuting] = useState(false);
+  const [activeCellId, setActiveCellId] = useState<string | null>(null);
+  const executionInFlight = useRef(false);
 
   const executeCell = async (cell: NotebookCell, manageExecutionState = true): Promise<boolean> => {
     if (cell.cell_type !== 'code') return true;
+    if (manageExecutionState && executionInFlight.current) {
+      setStatus('Execution already in progress');
+      return false;
+    }
+    if (manageExecutionState) executionInFlight.current = true;
     setStatus('Running');
+    setActiveCellId(cell.id);
     if (manageExecutionState) setIsExecuting(true);
     try {
       const parsed = parseExecutionTimeout(timeout);
@@ -47,11 +55,20 @@ export const useKernelExecution = ({ setNotebook, timeout, setStatus }: Executio
       setStatus(error instanceof Error ? error.message : 'Execution failed');
       return false;
     } finally {
-      if (manageExecutionState) setIsExecuting(false);
+      if (manageExecutionState) {
+        executionInFlight.current = false;
+        setActiveCellId(null);
+        setIsExecuting(false);
+      }
     }
   };
 
   const executeCells = async (cells: NotebookCell[]) => {
+    if (executionInFlight.current) {
+      setStatus('Execution already in progress');
+      return;
+    }
+    executionInFlight.current = true;
     setStatus('Running');
     setIsExecuting(true);
     try {
@@ -60,11 +77,17 @@ export const useKernelExecution = ({ setNotebook, timeout, setStatus }: Executio
       }
       setStatus(`Executed ${cells.filter((cell) => cell.cell_type === 'code').length} code cells`);
     } finally {
+      executionInFlight.current = false;
+      setActiveCellId(null);
       setIsExecuting(false);
     }
   };
 
   const restart = async () => {
+    if (executionInFlight.current) {
+      setStatus('Stop execution before restarting the runtime');
+      return;
+    }
     await resetKernel();
     setNotebook((current) => ({
       ...current,
@@ -82,5 +105,5 @@ export const useKernelExecution = ({ setNotebook, timeout, setStatus }: Executio
     }
   };
 
-  return { isExecuting, executeCell, executeCells, restart, cancelExecution };
+  return { isExecuting, activeCellId, executeCell, executeCells, restart, cancelExecution };
 };

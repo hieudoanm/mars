@@ -2,6 +2,7 @@ use mars_document::{from_json, load, save_atomic, to_json_pretty};
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
 use mars_renderer::render_markdown_notebook;
+mod notebook_files;
 use std::sync::{
     Arc, Mutex,
     atomic::{AtomicBool, Ordering},
@@ -115,15 +116,12 @@ fn save_notebook(path: String, content: String) -> Result<(), String> {
 
 #[tauri::command]
 fn rename_notebook_file(old_path: String, new_path: String) -> Result<(), String> {
-    if old_path == new_path {
-        return Ok(());
-    }
-    let destination = std::path::Path::new(&new_path);
-    let same_file_ignoring_case = old_path.to_lowercase() == new_path.to_lowercase();
-    if destination.exists() && !same_file_ignoring_case {
-        return Err("A file with that name already exists".to_owned());
-    }
-    std::fs::rename(&old_path, &new_path).map_err(|error| error.to_string())
+    notebook_files::rename_notebook_file(&old_path, &new_path)
+}
+
+#[tauri::command]
+fn list_notebook_files(path: String) -> Result<Vec<notebook_files::FileExplorerEntry>, String> {
+    notebook_files::list_notebook_files(std::path::Path::new(&path))
 }
 
 #[tauri::command]
@@ -154,6 +152,7 @@ pub fn run() -> tauri::Result<()> {
             open_notebook,
             save_notebook,
             rename_notebook_file,
+            list_notebook_files,
             export_notebook_markdown
         ])
         .run(tauri::generate_context!())

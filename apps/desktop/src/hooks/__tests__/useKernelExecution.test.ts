@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import type { Dispatch, SetStateAction } from 'react';
 import type { Notebook, NotebookCell } from '../../types/types';
 
@@ -143,5 +143,32 @@ describe('useKernelExecution', () => {
       await result.current.cancelExecution();
     });
     expect(setStatus).toHaveBeenCalledWith('no');
+  });
+
+  it('prevents overlapping executions', async () => {
+    let resolveExecution:
+      ((value: Awaited<ReturnType<typeof ks.executeSource>>) => void) | undefined;
+    vi.mocked(ks.executeSource).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveExecution = resolve;
+        }),
+    );
+    const { result } = renderHook(() =>
+      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+    );
+    const first = result.current.executeCell(cell());
+    await waitFor(() => expect(result.current.isExecuting).toBe(true));
+    await expect(result.current.executeCell(cell())).resolves.toBe(false);
+    expect(ks.executeSource).toHaveBeenCalledOnce();
+    await act(async () => {
+      resolveExecution?.({
+        type: 'execution',
+        outputs: [],
+        execution_count: 1,
+        duration_millis: 1,
+      });
+      await first;
+    });
   });
 });

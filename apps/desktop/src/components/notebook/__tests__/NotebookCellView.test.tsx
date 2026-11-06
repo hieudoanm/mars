@@ -43,12 +43,17 @@ const errorCell: NotebookCell = {
 
 const renderCell = (
   cell: NotebookCell,
-  { selected = false, canDelete = true }: { selected?: boolean; canDelete?: boolean } = {},
+  {
+    selected = false,
+    isExecuting = false,
+    canDelete = true,
+  }: { selected?: boolean; isExecuting?: boolean; canDelete?: boolean } = {},
 ) =>
   render(
     <NotebookCellView
       cell={cell}
       selected={selected}
+      isExecuting={isExecuting}
       fontSize={14}
       autocompleteEnabled={true}
       foldingEnabled={true}
@@ -81,17 +86,17 @@ describe('NotebookCellView', () => {
     expect(screen.getByRole('button', { name: 'Delete cell (D, D)' })).toBeInTheDocument();
   });
 
-  it('renders code cell with run button and outputs', () => {
+  it('renders code cell with run button and outputs', async () => {
     renderCell(codeCell);
     expect(screen.getByText('code')).toBeInTheDocument();
     expect(screen.getByText('In [1]')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Run cell/ })).toBeInTheDocument();
-    expect(screen.getByText('hello world')).toBeInTheDocument();
+    expect(await screen.findByText('hello world')).toBeInTheDocument();
   });
 
-  it('renders error cell output', () => {
+  it('renders error cell output', async () => {
     renderCell(errorCell);
-    expect(screen.getByText(/PanicError/)).toBeInTheDocument();
+    expect(await screen.findByText(/PanicError/)).toBeInTheDocument();
     expect(screen.getByText(/panic occurred/)).toBeInTheDocument();
   });
 
@@ -99,6 +104,13 @@ describe('NotebookCellView', () => {
     const { container } = renderCell(markdownCell, { selected: true });
     const article = container.querySelector('article');
     expect(article?.className).toContain('border-orange-800');
+  });
+
+  it('marks the running cell with a distinct border', () => {
+    const { container } = renderCell(codeCell, { isExecuting: true });
+    const article = container.querySelector('article');
+    expect(article).toHaveAttribute('aria-busy', 'true');
+    expect(article?.className).toContain('border-amber-400');
   });
 
   it('renders icon-only cell actions with accessible labels', () => {

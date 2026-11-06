@@ -76,7 +76,7 @@ describe('NotebookSidebar', () => {
 
   it('renders cell navigation buttons', () => {
     renderSidebar();
-    expect(screen.getByText('Cells')).toBeInTheDocument();
+    expect(screen.getByText('Cell navigation')).toBeInTheDocument();
     expect(screen.getByText(/markdown/)).toBeInTheDocument();
     expect(screen.getByText(/code/)).toBeInTheDocument();
     expect(screen.getByText(/raw/)).toBeInTheDocument();

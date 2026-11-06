@@ -22,6 +22,7 @@ vi.mock('../lib/kernelService', () => ({
   loadNotebookFile: vi.fn(),
   saveNotebookFile: saveFile,
   renameNotebookFile: renameFile,
+  listNotebookFiles: vi.fn(),
   executeSource,
   hasInterruptedOutput: () => false,
   resetKernel,

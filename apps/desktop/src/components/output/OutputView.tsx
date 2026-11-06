@@ -1,4 +1,4 @@
-import { type FC, useEffect, useRef } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 import katex from 'katex';
 import vegaEmbed from 'vega-embed';
 import type { Output } from '../../types/types';
@@ -144,16 +144,21 @@ ChartSpec.displayName = 'ChartSpec';
 
 const ChartOutput: FC<{ spec: Record<string, unknown> }> = ({ spec }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     let finalized = false;
     let view: { finalize: () => void } | undefined;
+    setError(null);
     if (containerRef.current) {
       void vegaEmbed(containerRef.current, spec, { actions: false, renderer: 'canvas' })
         .then((result) => {
           if (finalized) result.view.finalize();
           else view = result.view;
         })
-        .catch(() => undefined);
+        .catch((reason: unknown) => {
+          if (!finalized)
+            setError(reason instanceof Error ? reason.message : 'Unable to render chart');
+        });
     }
     return () => {
       finalized = true;
@@ -161,11 +166,14 @@ const ChartOutput: FC<{ spec: Record<string, unknown> }> = ({ spec }) => {
     };
   }, [spec]);
   return (
-    <div
-      data-component='ChartOutput'
-      className='mt-3 overflow-auto rounded-lg border border-neutral-700 bg-neutral-950 p-3'
-      ref={containerRef}
-    />
+    <div className='mt-3'>
+      {error ? <CodeBlock tone='danger'>Chart rendering failed: {error}</CodeBlock> : null}
+      <div
+        data-component='ChartOutput'
+        className='overflow-auto rounded-lg border border-neutral-700 bg-neutral-950 p-3'
+        ref={containerRef}
+      />
+    </div>
   );
 };
 ChartOutput.displayName = 'ChartOutput';

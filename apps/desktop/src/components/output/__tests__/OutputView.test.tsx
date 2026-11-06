@@ -62,6 +62,14 @@ describe('OutputView', () => {
     expect(screen.getByText('{invalid')).toBeInTheDocument();
   });
 
+  it('shows chart renderer failures to the user', async () => {
+    embed.mockRejectedValueOnce(new Error('Invalid Vega specification'));
+    render(<OutputView output={{ type: 'chart', spec: { mark: 'unknown' } }} />);
+    expect(
+      await screen.findByText(/Chart rendering failed: Invalid Vega specification/),
+    ).toBeInTheDocument();
+  });
+
   it('chooses rich MIME outputs and falls back to readable data', () => {
     const cases: Output[] = [
       { type: 'mime_bundle', data: {} },

@@ -182,7 +182,7 @@ fn render_cell_with_output(source: &str, output: ExpressionOutput) -> String {
             ExpressionOutput::Display => {
                 format!("{prefix}println!(\"__MARS_RESULT__={{}}\", ({expression}));")
             }
-            ExpressionOutput::Discard => format!("{prefix}let _ = ({expression});"),
+            ExpressionOutput::Discard => source.to_owned(),
         };
     }
     source.to_owned()

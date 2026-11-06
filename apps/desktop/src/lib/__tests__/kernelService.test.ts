@@ -7,6 +7,7 @@ import {
   executeSource,
   exportMarkdownFile,
   hasInterruptedOutput,
+  listNotebookFiles,
   loadNotebookFile,
   renameNotebookFile,
   resetKernel,
@@ -48,6 +49,7 @@ describe('kernelService', () => {
     await saveNotebookFile('/book.mars', '{}');
     await renameNotebookFile('/book.mars', '/renamed.mars');
     await exportMarkdownFile('/book.md', '{}');
+    await listNotebookFiles('/books');
     expect(invoke.mock.calls).toEqual([
       ['cancel_execution'],
       ['reset_kernel'],
@@ -55,6 +57,7 @@ describe('kernelService', () => {
       ['save_notebook', { path: '/book.mars', content: '{}' }],
       ['rename_notebook_file', { oldPath: '/book.mars', newPath: '/renamed.mars' }],
       ['export_notebook_markdown', { path: '/book.md', content: '{}' }],
+      ['list_notebook_files', { path: '/books' }],
     ]);
   });
 

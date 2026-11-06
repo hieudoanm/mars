@@ -11,6 +11,7 @@ export type HeaderActionsProps = {
   onSave: () => void;
   onExport: () => void;
   onRestart: () => void;
+  isExecuting?: boolean;
 };
 
 const iconClassName = 'h-4 w-4';
@@ -22,6 +23,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
   onSave,
   onExport,
   onRestart,
+  isExecuting = false,
 }) => {
   return (
     <div data-component='HeaderActions' className='flex items-center gap-3'>
@@ -48,6 +50,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
       <span aria-hidden='true' className='h-6 w-px bg-neutral-800' />
       <IconButton
         label='Restart runtime'
+        disabled={isExecuting}
         icon={<LuRotateCcw aria-hidden='true' className={iconClassName} />}
         onClick={onRestart}
       />

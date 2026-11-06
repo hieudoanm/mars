@@ -53,14 +53,10 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
   return (
     <aside
       data-component='NotebookSidebar'
-      className='w-56 border-r border-neutral-800 bg-neutral-900 px-3 py-6'>
+      className='flex w-56 shrink-0 flex-col border-l border-neutral-800 bg-neutral-900 px-3 py-5'>
       <SectionHeading>Notebook</SectionHeading>
       <div className='mb-8 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 p-3'>
-        <img
-          className='h-7 w-7 shrink-0 rounded-md object-cover'
-          src={marsFileLogo}
-          alt=''
-        />
+        <img className='h-7 w-7 shrink-0 rounded-md object-cover' src={marsFileLogo} alt='' />
         <div className='min-w-0 flex-1'>
           {isRenamingFile ? (
             <TextInput
@@ -103,16 +99,18 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
           </Badge>
         </div>
       </div>
-      <SectionHeading>Cells</SectionHeading>
-      {cells.map((cell, index) => (
-        <NavButton
-          key={cell.id}
-          active={cell.id === selectedId}
-          index={String(index + 1).padStart(2, '0')}
-          onClick={() => onSelect(cell.id)}>
-          {cell.cell_type}
-        </NavButton>
-      ))}
+      <SectionHeading>Cell navigation</SectionHeading>
+      <nav className='min-h-0 flex-1 overflow-y-auto' aria-label='Cell navigation'>
+        {cells.map((cell, index) => (
+          <NavButton
+            key={cell.id}
+            active={cell.id === selectedId}
+            index={String(index + 1).padStart(2, '0')}
+            onClick={() => onSelect(cell.id)}>
+            {cell.cell_type}
+          </NavButton>
+        ))}
+      </nav>
     </aside>
   );
 };
