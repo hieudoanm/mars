@@ -35,6 +35,7 @@ pub struct NotebookApp {
     focus_handle: FocusHandle,
     editors: HashMap<CellId, Entity<TextareaState>>,
     subscriptions: Vec<Subscription>,
+    dirty: bool,
 }
 
 impl NotebookApp {
@@ -59,6 +60,7 @@ impl NotebookApp {
             focus_handle,
             editors: HashMap::new(),
             subscriptions: Vec::new(),
+            dirty: false,
         };
         if let Some(path) = path {
             this.open_path(PathBuf::from(path), cx);
@@ -95,6 +97,7 @@ impl NotebookApp {
             && cell.source != source
         {
             cell.source = source;
+            self.dirty = true;
             if cell.cell_type == CellType::Code {
                 cell.outputs.clear();
                 cell.execution_count = None;
@@ -188,7 +191,10 @@ impl NotebookApp {
 
     fn write_to(&mut self, path: &Path, cx: &mut Context<Self>) {
         match save_atomic(&self.notebook, path) {
-            Ok(()) => self.status = format!("Saved {}", path.display()),
+            Ok(()) => {
+                self.dirty = false;
+                self.status = format!("Saved {}", path.display());
+            }
             Err(error) => self.status = format!("Save failed: {error}"),
         }
         cx.notify();
@@ -335,6 +341,7 @@ impl NotebookApp {
     fn insert_cell(&mut self, index: usize, cell_type: CellType, cx: &mut Context<Self>) {
         match self.notebook.insert_cell(index, Cell::new(cell_type, "")) {
             Ok(()) => {
+                self.dirty = true;
                 self.status = format!("Inserted cell at {}", index + 1);
                 cx.notify();
             }
@@ -348,6 +355,7 @@ impl NotebookApp {
     fn delete_cell(&mut self, index: usize, cx: &mut Context<Self>) {
         match self.notebook.remove_cell(index) {
             Ok(_) => {
+                self.dirty = true;
                 self.status = format!("Deleted cell {}", index + 1);
                 cx.notify();
             }
@@ -364,9 +372,47 @@ impl NotebookApp {
             return;
         }
         match self.notebook.move_cell(index, to as usize) {
-            Ok(()) => cx.notify(),
+            Ok(()) => {
+                self.dirty = true;
+                cx.notify();
+            }
             Err(error) => self.status = format!("Move failed: {error}"),
         }
+    }
+
+    fn add_cell_below(&mut self, index: usize, cx: &mut Context<Self>) {
+        let cell_type = self
+            .notebook
+            .cells
+            .get(index)
+            .map(|cell| cell.cell_type.clone())
+            .unwrap_or(CellType::Code);
+        self.insert_cell(index + 1, cell_type, cx);
+    }
+
+    fn duplicate_cell(&mut self, index: usize, cx: &mut Context<Self>) {
+        let Some(cell) = self.notebook.cells.get(index) else {
+            return;
+        };
+        let mut copy = Cell::new(cell.cell_type.clone(), cell.source.clone());
+        copy.metadata = cell.metadata.clone();
+        match self.notebook.insert_cell(index + 1, copy) {
+            Ok(()) => {
+                self.dirty = true;
+                self.status = format!("Duplicated cell {}", index + 1);
+                cx.notify();
+            }
+            Err(error) => self.status = format!("Duplicate failed: {error}"),
+        }
+    }
+
+    fn clear_outputs(&mut self, index: usize, cx: &mut Context<Self>) {
+        if let Ok(cell) = self.notebook.cell_mut(index) {
+            cell.outputs.clear();
+            cell.execution_count = None;
+            self.dirty = true;
+        }
+        cx.notify();
     }
 
     fn toggle_cell_type(&mut self, index: usize, cx: &mut Context<Self>) {
@@ -385,6 +431,7 @@ impl NotebookApp {
                     cell.outputs.clear();
                     cell.execution_count = None;
                 }
+                self.dirty = true;
                 cx.notify();
             }
             Err(error) => self.status = format!("Type change failed: {error}"),
@@ -451,6 +498,11 @@ impl NotebookApp {
             .and_then(|path| path.file_name())
             .map(|name| name.to_string_lossy().into_owned())
             .unwrap_or_else(|| "Untitled".to_owned());
+        let title = if self.dirty {
+            format!("• {title}")
+        } else {
+            title
+        };
 
         div()
             .flex()
@@ -621,6 +673,20 @@ impl NotebookApp {
                 |this, index, cx| this.move_cell(index, -1, cx),
             ))
             .child(cell_icon_button(
+                PhosphorIcon::Plus,
+                format!("add-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.add_cell_below(index, cx),
+            ))
+            .child(cell_icon_button(
+                PhosphorIcon::Copy,
+                format!("dup-{index}").into(),
+                entity,
+                index,
+                |this, index, cx| this.duplicate_cell(index, cx),
+            ))
+            .child(cell_icon_button(
                 PhosphorIcon::ArrowDown,
                 format!("down-{index}").into(),
                 entity,
@@ -635,13 +701,21 @@ impl NotebookApp {
                 |this, index, cx| this.delete_cell(index, cx),
             ));
         if is_code {
-            controls = controls.child(cell_icon_button_accent(
-                PhosphorIcon::Play,
-                format!("exec-{index}").into(),
-                entity,
-                index,
-                |this, index, cx| this.execute_cell(index, cx),
-            ));
+            controls = controls
+                .child(cell_icon_button(
+                    PhosphorIcon::Eraser,
+                    format!("clear-{index}").into(),
+                    entity,
+                    index,
+                    |this, index, cx| this.clear_outputs(index, cx),
+                ))
+                .child(cell_icon_button_accent(
+                    PhosphorIcon::Play,
+                    format!("exec-{index}").into(),
+                    entity,
+                    index,
+                    |this, index, cx| this.execute_cell(index, cx),
+                ));
         }
         header = header.child(controls);
 

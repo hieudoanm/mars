@@ -45,7 +45,8 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 
 - All cells share the same plain `Textarea` — no syntax highlighting yet (`gpui_component::input::Editor`/`EditorState` with a Rust `LanguageProvider` is the upgrade path), no markdown preview.
 - Outputs render as plain text; rich outputs (HTML, images, LaTeX, charts) show placeholders.
-- Cell add (code/markdown), delete, reorder (up/down), and Code↔Markdown/Raw toggle are implemented; there is no insert-between or duplicate.
+- Cell add (code/markdown at end), insert-below, duplicate, delete, reorder (up/down), clear outputs, and Code↔Markdown/Raw toggle are implemented.
+- `dirty` tracks unsaved changes (set by edits and cell ops, cleared on save) and shows as `•` in the title bar.
 - No autosave, no per-cell keyboard shortcuts beyond the toolbar/global bindings.
 
 ## Testing
