@@ -79,8 +79,8 @@ Validate the host from the repository root:
 
 ```bash
 cargo fmt --all --check
-cargo clippy -p mars-desktop --all-targets -- -D warnings
-cargo test -p mars-desktop
+cargo clippy -p mars-tauri --all-targets -- -D warnings
+cargo test -p mars-tauri
 ```
 
 Create a platform bundle with:

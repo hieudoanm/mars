@@ -66,8 +66,8 @@ pnpm --filter @mars/desktop lint
 pnpm --filter @mars/desktop test
 pnpm --filter @mars/desktop build
 cargo fmt --all --check
-cargo clippy -p mars-desktop --all-targets -- -D warnings
-cargo test -p mars-desktop
+cargo clippy -p mars-tauri --all-targets -- -D warnings
+cargo test -p mars-tauri
 ```
 
 Run `pnpm --filter @mars/desktop test:e2e` for changed end-user notebook flows

@@ -91,7 +91,7 @@ mod tests {
             .map(|duration| duration.as_nanos())
             .unwrap_or_default();
         let sequence = TEMPORARY_DIRECTORY_SEQUENCE.fetch_add(1, Ordering::Relaxed);
-        let path = std::env::temp_dir().join(format!("mars-desktop-{nonce}-{sequence}"));
+        let path = std::env::temp_dir().join(format!("mars-tauri-{nonce}-{sequence}"));
         std::fs::create_dir_all(&path).expect("creates temporary directory");
         path
     }

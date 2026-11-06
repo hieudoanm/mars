@@ -158,9 +158,24 @@ Phase 7 — Desktop and rendering polish
 - Added `mars kernel serve --notebook <file.mars>` so the VS Code extension
   loads notebook Cargo dependencies and restarts the kernel when the active
   notebook changes.
+- Renamed the Tauri host package from `mars-desktop` to `mars-tauri` and updated
+  all references (`main.rs` lib call, docs, test temp-dir prefix).
+- Started `crates/mars-desktop`, a pure-Rust GPUI (`gpui = "=0.2.2"`) desktop
+  client as an alternative to the Tauri/React app: window shell, dark Mars
+  theme, toolbar (New/Open/Save/Run all/Restart kernel), scrollable read-only
+  cell list, per-cell Run buttons, plain-text output rendering, kernel status
+  bar, native file dialogs, and `cmd-n/o/s`, `cmd-shift-enter`, `cmd-r`,
+  `cmd-q` shortcuts. Kernel execution runs on the GPUI background executor via
+  `mars-kernel`. Verified with `cargo check`, `cargo clippy -D warnings`,
+  `cargo fmt --check`, and a 15s GUI smoke run. GPUI requires the macOS Metal
+  Toolchain (`xcodebuild -downloadComponent MetalToolchain`).
 
 ## Outstanding
 
+- `crates/mars-desktop` (GPUI) is a scaffold: cells are read-only (no editor
+  yet), outputs are plain text, and there is no cell add/delete/reorder,
+  markdown/LaTeX rendering, autosave, or rich-output widgets. Port remaining
+  `apps/desktop` functionality incrementally.
 - Longer-lived compiler/runtime strategies remain a future optimization; the
   current replay model is benchmarked, documented, and retained as the
   validated isolation boundary.

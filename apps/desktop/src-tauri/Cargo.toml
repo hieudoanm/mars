@@ -1,12 +1,12 @@
 [package]
-name = "mars-desktop"
+name = "mars-tauri"
 version = "0.0.1"
 description = "Mars interactive notebook"
 authors = ["Mars contributors"]
 edition = "2024"
 
 [lib]
-name = "mars_desktop_lib"
+name = "mars_tauri_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

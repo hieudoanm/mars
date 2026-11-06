@@ -1,0 +1,18 @@
+[package]
+name = "mars-desktop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "mars-desktop"
+path = "src/main.rs"
+
+[dependencies]
+gpui.workspace = true
+mars-core = { path = "../mars-core" }
+mars-document = { path = "../mars-document" }
+mars-kernel = { path = "../mars-kernel" }
+mars-protocol = { path = "../mars-protocol" }
+serde_json.workspace = true
