@@ -1,11 +1,12 @@
 import { type FC } from 'react';
+import marsLogo from '../../assets/svg/mars-logo.svg';
 
 const HeaderBrand: FC = () => (
   <div data-component='HeaderBrand' className='flex min-w-0 items-center gap-3'>
     <span className='grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-orange-900/70 bg-orange-950/40 shadow-sm'>
       <img
         className='h-7 w-7 rounded-md object-cover'
-        src='/branding/svg/mars-logo.svg'
+        src={marsLogo}
         alt='Mars'
       />
     </span>

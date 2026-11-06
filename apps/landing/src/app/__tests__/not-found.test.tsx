@@ -4,7 +4,7 @@ import NotFound from '../not-found';
 describe('NotFound', () => {
   it('renders page not found heading', () => {
     render(<NotFound />);
-    expect(screen.getByText(/page not found/i)).toBeInTheDocument();
+    expect(screen.getByText(/lost in space/i)).toBeInTheDocument();
   });
 
   it('renders back to docs link', () => {

@@ -17,9 +17,9 @@ describe('Error', () => {
 
   it('renders back to docs link', () => {
     render(<ErrorComponent error={new Error('Something broke')} reset={vi.fn()} />);
-    expect(screen.getByRole('link', { name: /back to docs/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /back home/i })).toHaveAttribute(
       'href',
-      '/docs',
+      '/',
     );
   });
 });
