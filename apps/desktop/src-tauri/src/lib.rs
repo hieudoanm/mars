@@ -114,6 +114,19 @@ fn save_notebook(path: String, content: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn rename_notebook_file(old_path: String, new_path: String) -> Result<(), String> {
+    if old_path == new_path {
+        return Ok(());
+    }
+    let destination = std::path::Path::new(&new_path);
+    let same_file_ignoring_case = old_path.to_lowercase() == new_path.to_lowercase();
+    if destination.exists() && !same_file_ignoring_case {
+        return Err("A file with that name already exists".to_owned());
+    }
+    std::fs::rename(&old_path, &new_path).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
 fn export_notebook_markdown(path: String, content: String) -> Result<(), String> {
     let notebook = from_json(&content).map_err(|error| error.to_string())?;
     let markdown = render_markdown_notebook(&notebook);
@@ -140,6 +153,7 @@ pub fn run() -> tauri::Result<()> {
             configure_kernel,
             open_notebook,
             save_notebook,
+            rename_notebook_file,
             export_notebook_markdown
         ])
         .run(tauri::generate_context!())

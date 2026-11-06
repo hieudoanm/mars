@@ -1,4 +1,4 @@
-import type { NotebookCell } from '../lib/types';
+import type { NotebookCell } from '../types/types';
 
 type ExecutionCommandsOptions = {
   cells: NotebookCell[];
@@ -6,12 +6,16 @@ type ExecutionCommandsOptions = {
   executeCells: (cells: NotebookCell[]) => Promise<void>;
 };
 
-export function useNotebookExecutionCommands({
+export const useNotebookExecutionCommands = ({
   cells,
   selectedIndex,
   executeCells,
-}: ExecutionCommandsOptions) {
+}: ExecutionCommandsOptions) => {
   const executeAll = () => void executeCells(cells);
+  const executeCurrent = () => {
+    const cell = cells[selectedIndex];
+    if (cell?.cell_type === 'code') void executeCells([cell]);
+  };
   const executeAbove = () => {
     if (selectedIndex >= 0) void executeCells(cells.slice(0, selectedIndex));
   };
@@ -19,5 +23,5 @@ export function useNotebookExecutionCommands({
     if (selectedIndex >= 0) void executeCells(cells.slice(selectedIndex + 1));
   };
 
-  return { executeAll, executeAbove, executeBelow };
-}
+  return { executeAll, executeCurrent, executeAbove, executeBelow };
+};

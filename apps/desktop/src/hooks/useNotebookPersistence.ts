@@ -1,13 +1,15 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { useEffect, useRef, useState } from 'react';
-import type { Notebook } from '../lib/types';
+import type { Notebook } from '../types/types';
 import {
   configureKernel,
   exportMarkdownFile,
   loadNotebookFile,
+  renameNotebookFile,
   saveNotebookFile,
 } from '../lib/kernelService';
+import { renamedNotebookPath } from '../lib/filePath';
 import { serializeNotebook } from '../lib/notebookOperations';
 
 type PersistenceOptions = {
@@ -17,12 +19,12 @@ type PersistenceOptions = {
   resetHistory: (notebook: Notebook) => void;
 };
 
-export function useNotebookPersistence({
+export const useNotebookPersistence = ({
   notebook,
   setNotebook,
   setStatus,
   resetHistory,
-}: PersistenceOptions) {
+}: PersistenceOptions) => {
   const [filePath, setFilePath] = useState<string | null>(null);
   const [savedSnapshot, setSavedSnapshot] = useState(() => serializeNotebook(notebook));
   const [pendingOpenPath, setPendingOpenPath] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export function useNotebookPersistence({
         filePath ??
         (await save({
           defaultPath: 'Untitled.mars',
-          filters: [{ name: 'Mars notebook', extensions: ['mars'] }],
+          filters: [{ name: 'Mars', extensions: ['mars'] }],
         }));
       if (!path) return false;
       await saveNotebookFile(path, snapshot);
@@ -48,6 +50,28 @@ export function useNotebookPersistence({
       return true;
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Save failed');
+      return false;
+    }
+  };
+
+  const renameFile = async (fileName: string): Promise<boolean> => {
+    if (!filePath) {
+      setStatus('Save the notebook before renaming the file');
+      return false;
+    }
+    const nextPath = renamedNotebookPath(filePath, fileName);
+    if (!nextPath) {
+      setStatus('Invalid file name');
+      return false;
+    }
+    if (nextPath === filePath) return true;
+    try {
+      await renameNotebookFile(filePath, nextPath);
+      setFilePath(nextPath);
+      setStatus('Renamed');
+      return true;
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Rename failed');
       return false;
     }
   };
@@ -87,7 +111,7 @@ export function useNotebookPersistence({
     try {
       const path = await open({
         multiple: false,
-        filters: [{ name: 'Mars notebook', extensions: ['mars'] }],
+        filters: [{ name: 'Mars', extensions: ['mars'] }],
       });
       if (!path || Array.isArray(path)) return;
       if (isDirty) setPendingOpenPath(path);
@@ -166,10 +190,11 @@ export function useNotebookPersistence({
     setCloseRequested,
     openNotebook,
     saveNotebook,
+    renameFile,
     exportMarkdown,
     discardAndOpen,
     saveAndOpen,
     discardAndClose,
     saveAndClose,
   };
-}
+};

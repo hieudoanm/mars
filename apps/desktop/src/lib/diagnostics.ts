@@ -1,13 +1,13 @@
 import type { Diagnostic } from '@codemirror/lint';
-import type { NotebookCell } from './types';
+import type { NotebookCell } from '../types/types';
 
-export function diagnosticsForCell(cell: NotebookCell): Diagnostic[] {
+export const diagnosticsForCell = (cell: NotebookCell): Diagnostic[] => {
   return cell.outputs.flatMap((output) =>
     output.type === 'error' ? parseDiagnostics(cell.source, output.message) : [],
   );
-}
+};
 
-function parseDiagnostics(source: string, message: string): Diagnostic[] {
+const parseDiagnostics = (source: string, message: string): Diagnostic[] => {
   const lines = source.split('\n');
   const diagnostics: Diagnostic[] = [];
   for (const diagnosticLine of message.split('\n')) {
@@ -43,23 +43,25 @@ function parseDiagnostics(source: string, message: string): Diagnostic[] {
       message,
     },
   ];
-}
+};
 
-function sourceOffset(lines: string[], line: number, column: number): number {
+const sourceOffset = (lines: string[], line: number, column: number): number => {
   const lineIndex = Math.max(0, Math.min(lines.length - 1, line - 1));
   const lineStart = lines.slice(0, lineIndex).reduce((total, value) => total + value.length + 1, 0);
   const content = lines[lineIndex] ?? '';
   const scalarColumn = Math.max(0, Math.min(column - 1, [...content].length));
   return lineStart + [...content].slice(0, scalarColumn).join('').length;
-}
+};
 
-export function parseExecutionTimeout(value: string): {
+export const parseExecutionTimeout = (
+  value: string,
+): {
   value: number | null;
   error: string | null;
-} {
+} => {
   if (value.trim() === '') return { value: null, error: null };
   const timeout = Number(value);
   return Number.isSafeInteger(timeout) && timeout > 0
     ? { value: timeout, error: null }
     : { value: null, error: 'Execution limit must be a positive whole number' };
-}
+};

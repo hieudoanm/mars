@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
-import type { Notebook, NotebookCell } from '../lib/types';
+import type { Notebook, NotebookCell } from '../types/types';
 import {
   hasInterruptedOutput,
   executeSource,
@@ -14,7 +14,7 @@ type ExecutionOptions = {
   setStatus: (status: string) => void;
 };
 
-export function useKernelExecution({ setNotebook, timeout, setStatus }: ExecutionOptions) {
+export const useKernelExecution = ({ setNotebook, timeout, setStatus }: ExecutionOptions) => {
   const [isExecuting, setIsExecuting] = useState(false);
 
   const executeCell = async (cell: NotebookCell, manageExecutionState = true): Promise<boolean> => {
@@ -83,4 +83,4 @@ export function useKernelExecution({ setNotebook, timeout, setStatus }: Executio
   };
 
   return { isExecuting, executeCell, executeCells, restart, cancelExecution };
-}
+};

@@ -6,6 +6,7 @@ const {
   configure,
   exportFile,
   loadFile,
+  renameFile,
   saveFile,
   closeWindow,
   closeListener,
@@ -15,6 +16,7 @@ const {
   configure: vi.fn(),
   exportFile: vi.fn(),
   loadFile: vi.fn(),
+  renameFile: vi.fn(),
   saveFile: vi.fn(),
   closeWindow: vi.fn(),
   closeListener: vi.fn(),
@@ -31,11 +33,12 @@ vi.mock('../../lib/kernelService', () => ({
   configureKernel: configure,
   exportMarkdownFile: exportFile,
   loadNotebookFile: loadFile,
+  renameNotebookFile: renameFile,
   saveNotebookFile: saveFile,
 }));
 
 import { useNotebookPersistence } from '../useNotebookPersistence';
-import type { Notebook } from '../../lib/types';
+import type { Notebook } from '../../types/types';
 
 const initial: Notebook = {
   format_version: 1,
@@ -46,7 +49,7 @@ const initial: Notebook = {
 };
 const loaded: Notebook = { ...initial, metadata: { language: 'rust', title: 'Loaded' } };
 
-function setup(data = initial) {
+const setup = (data = initial) => {
   const setNotebook = vi.fn();
   const setStatus = vi.fn();
   const resetHistory = vi.fn();
@@ -61,7 +64,7 @@ function setup(data = initial) {
     { initialProps: { notebook: data } },
   );
   return { ...hook, setNotebook, setStatus, resetHistory };
-}
+};
 
 describe('useNotebookPersistence', () => {
   beforeEach(() => {
@@ -72,10 +75,12 @@ describe('useNotebookPersistence', () => {
     configure.mockReset();
     exportFile.mockReset();
     loadFile.mockReset();
+    renameFile.mockReset();
     saveFile.mockReset();
     closeWindow.mockReset();
     closeListener.mockReset();
     saveFile.mockResolvedValue(undefined);
+    renameFile.mockResolvedValue(undefined);
     configure.mockResolvedValue(undefined);
     exportFile.mockResolvedValue(undefined);
   });
@@ -90,6 +95,32 @@ describe('useNotebookPersistence', () => {
     expect(setStatus).toHaveBeenCalledWith('Saved');
     await act(async () => expect(await result.current.exportMarkdown()).toBe(true));
     expect(exportFile).toHaveBeenCalledWith('/books/test.md', JSON.stringify(initial));
+  });
+
+  it('renames the saved notebook file and validates names', async () => {
+    saveDialog.mockResolvedValue('/books/test.mars');
+    const { result, setStatus } = setup();
+    await act(async () => result.current.saveNotebook());
+
+    await act(async () => expect(await result.current.renameFile('analysis')).toBe(true));
+    expect(renameFile).toHaveBeenCalledWith('/books/test.mars', '/books/analysis.mars');
+    expect(result.current.filePath).toBe('/books/analysis.mars');
+    expect(setStatus).toHaveBeenCalledWith('Renamed');
+
+    await act(async () => expect(await result.current.renameFile('../escape')).toBe(false));
+    expect(setStatus).toHaveBeenCalledWith('Invalid file name');
+    expect(renameFile).toHaveBeenCalledTimes(1);
+
+    renameFile.mockRejectedValueOnce(new Error('permission denied'));
+    await act(async () => expect(await result.current.renameFile('denied')).toBe(false));
+    expect(setStatus).toHaveBeenCalledWith('permission denied');
+  });
+
+  it('requires a saved file before renaming', async () => {
+    const { result, setStatus } = setup();
+    await act(async () => expect(await result.current.renameFile('analysis')).toBe(false));
+    expect(renameFile).not.toHaveBeenCalled();
+    expect(setStatus).toHaveBeenCalledWith('Save the notebook before renaming the file');
   });
 
   it('handles canceled dialogs and save/export failures', async () => {

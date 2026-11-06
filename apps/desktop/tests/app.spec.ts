@@ -4,19 +4,21 @@ test('opens the notebook editor and exposes core workflows', async ({ page }) =>
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Explore ideas.' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Run all' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '+ Code' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '+ Markdown' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Run current cell' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Run all (F6)' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Code' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add Markdown' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Delete selected cell (D, D)' })).toBeVisible();
   await expect(page.getByText('Hello from Mars!')).toBeVisible();
 });
 
 test('adds a code cell and marks the notebook dirty', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('button', { name: '+ Code' }).click();
+  await page.getByRole('button', { name: 'Add Code' }).click();
 
   await expect(page.locator('footer').getByText('Unsaved changes')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Run all' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Run all (F6)' })).toBeVisible();
 });
 
 test('persists editor preferences and supports undo/redo shortcuts', async ({ page }) => {

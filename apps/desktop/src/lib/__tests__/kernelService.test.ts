@@ -8,10 +8,11 @@ import {
   exportMarkdownFile,
   hasInterruptedOutput,
   loadNotebookFile,
+  renameNotebookFile,
   resetKernel,
   saveNotebookFile,
 } from '../kernelService';
-import type { KernelResponse, Notebook } from '../types';
+import type { KernelResponse, Notebook } from '../../types/types';
 
 const notebook: Notebook = { format_version: 1, metadata: { language: 'rust' }, cells: [] };
 
@@ -45,12 +46,14 @@ describe('kernelService', () => {
     await resetKernel();
     await configureKernel('cargo content');
     await saveNotebookFile('/book.mars', '{}');
+    await renameNotebookFile('/book.mars', '/renamed.mars');
     await exportMarkdownFile('/book.md', '{}');
     expect(invoke.mock.calls).toEqual([
       ['cancel_execution'],
       ['reset_kernel'],
       ['configure_kernel', { content: 'cargo content' }],
       ['save_notebook', { path: '/book.mars', content: '{}' }],
+      ['rename_notebook_file', { oldPath: '/book.mars', newPath: '/renamed.mars' }],
       ['export_notebook_markdown', { path: '/book.md', content: '{}' }],
     ]);
   });

@@ -1,0 +1,60 @@
+import { type FC } from 'react';
+import { LuDownload, LuFolderOpen, LuRotateCcw, LuSave } from 'react-icons/lu';
+import { Badge, IconButton } from '../shared';
+
+export type HeaderMode = 'command' | 'edit';
+
+export type HeaderActionsProps = {
+  status: string;
+  mode: HeaderMode;
+  onOpen: () => void;
+  onSave: () => void;
+  onExport: () => void;
+  onRestart: () => void;
+};
+
+const iconClassName = 'h-4 w-4';
+
+const HeaderActions: FC<HeaderActionsProps> = ({
+  status,
+  mode,
+  onOpen,
+  onSave,
+  onExport,
+  onRestart,
+}) => {
+  return (
+    <div data-component='HeaderActions' className='flex items-center gap-3'>
+      <Badge dot dotTone='success' dotClassName='shadow-sm'>
+        {status} · {mode === 'command' ? 'Command mode' : 'Edit mode'}
+      </Badge>
+      <div className='flex items-center gap-2'>
+        <IconButton
+          label='Open'
+          icon={<LuFolderOpen aria-hidden='true' className={iconClassName} />}
+          onClick={onOpen}
+        />
+        <IconButton
+          label='Save'
+          icon={<LuSave aria-hidden='true' className={iconClassName} />}
+          onClick={onSave}
+        />
+        <IconButton
+          label='Export Markdown'
+          icon={<LuDownload aria-hidden='true' className={iconClassName} />}
+          onClick={onExport}
+        />
+      </div>
+      <span aria-hidden='true' className='h-6 w-px bg-neutral-800' />
+      <IconButton
+        label='Restart runtime'
+        icon={<LuRotateCcw aria-hidden='true' className={iconClassName} />}
+        onClick={onRestart}
+      />
+    </div>
+  );
+};
+
+HeaderActions.displayName = 'HeaderActions';
+
+export default HeaderActions;

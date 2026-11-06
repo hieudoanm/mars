@@ -13,6 +13,7 @@ pub struct ExecutionResult {
 pub enum ExpressionOutput {
     Debug,
     Display,
+    Discard,
 }
 
 #[derive(Clone, Debug)]

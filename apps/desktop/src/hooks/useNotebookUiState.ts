@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function useNotebookUiState() {
+export const useNotebookUiState = () => {
   const [status, setStatus] = useState('Idle');
   const [lastCommand, setLastCommand] = useState('');
   const [executionTimeout, setExecutionTimeout] = useState('');
@@ -13,4 +13,4 @@ export function useNotebookUiState() {
     executionTimeout,
     setExecutionTimeout,
   };
-}
+};

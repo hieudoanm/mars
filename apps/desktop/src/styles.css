@@ -1,350 +1,39 @@
-:root {
-  color: #e8e7e5;
-  background: #141414;
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    sans-serif;
-  font-synthesis: none;
-}
+@import 'tailwindcss';
 
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  min-width: 960px;
-  background: #141414;
-}
-button,
-textarea {
-  font: inherit;
-}
-button {
-  cursor: pointer;
-}
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.titlebar {
-  min-height: 76px;
-  padding: 18px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #2c2c2c;
-  background: #1a1a1a;
-}
-.eyebrow,
-.cell-type,
-.breadcrumb,
-.sidebar-heading {
-  color: #a3a09b;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-h1,
-h2 {
-  margin: 3px 0 0;
-  font-weight: 550;
-  letter-spacing: -0.03em;
-}
-h1 {
-  font-size: 22px;
-}
-h2 {
-  font-size: 18px;
-}
-.titlebar-actions,
-.toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.timeout-control {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #a3a09b;
-  font-size: 11px;
-}
-.timeout-control input {
-  width: 88px;
-  padding: 7px 8px;
-  color: #e8e7e5;
-  border: 1px solid #383838;
-  border-radius: 7px;
-  background: #242424;
-}
-.timeout-control input:focus {
-  outline: 1px solid #f97316;
-  border-color: #f97316;
-}
-.titlebar-actions > span:nth-child(2) {
-  color: #a8a29e;
-  font-size: 12px;
-}
-button {
-  color: #c9c6c1;
-  background: #242424;
-  border: 1px solid #383838;
-  border-radius: 7px;
-  padding: 8px 11px;
-}
-button:hover {
-  border-color: #f97316;
-  color: #fff;
-}
-button.primary {
-  color: #fff;
-  background: #c2410c;
-  border-color: #ea580c;
-}
-button.danger {
-  color: #fecaca;
-  border-color: #7f1d1d;
-  background: #451a1a;
-}
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #4ade80;
-  box-shadow: 0 0 10px #4ade80;
-}
-.workspace {
-  flex: 1;
-  display: flex;
-}
-.sidebar {
-  width: 230px;
-  padding: 24px 14px;
-  border-right: 1px solid #2c2c2c;
-  background: #191919;
-}
-.sidebar-heading {
-  margin: 5px 10px 12px;
-}
-.file-card {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 12px 10px;
-  border: 1px solid #333;
-  border-radius: 9px;
-  background: #222;
-}
-.brand-mark {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-.file-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  object-fit: cover;
-  flex: 0 0 auto;
-}
-.file-card strong,
-.file-card small {
-  display: block;
-}
-.file-card small {
-  margin-top: 3px;
-  color: #85827e;
-  font-size: 11px;
-}
-.file-card strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.cell-nav {
-  display: flex;
-  width: 100%;
-  gap: 12px;
-  margin: 3px 0;
-  padding: 9px 10px;
-  border: 0;
-  text-align: left;
-  background: transparent;
-  color: #999;
-}
-.cell-nav span {
-  color: #5e5b57;
-  font-variant-numeric: tabular-nums;
-}
-.cell-nav.selected {
-  color: #fff;
-  background: #2a2521;
-}
-.notebook {
-  flex: 1;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 38px 55px 80px;
-  width: 100%;
-}
-.notebook-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  margin-bottom: 38px;
-}
-.breadcrumb {
-  letter-spacing: 0.03em;
-  text-transform: none;
-}
-.cell-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.notebook-cell {
-  display: flex;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  background: #1b1b1b;
-}
-.notebook-cell.active {
-  border-color: #75401f;
-  box-shadow: 0 0 0 1px #3b2518;
-}
-.cell-gutter {
-  width: 92px;
-  padding: 22px 10px;
-  text-align: right;
-  color: #77736e;
-  font-size: 11px;
-}
-.cell-content {
-  flex: 1;
-  padding: 18px 20px 20px 0;
-}
-.cell-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.cell-actions {
-  display: flex;
-  gap: 6px;
-}
-.cell-heading button {
-  padding: 5px 8px;
-  font-size: 12px;
-}
-kbd {
-  color: #888;
-  font-size: 10px;
-}
-.code-editor {
-  display: block;
-  width: 100%;
-}
-.output {
-  margin: 12px 0 0;
-  padding: 13px;
-  overflow: auto;
-  border-radius: 7px;
-  background: #111;
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-.text-output {
-  color: #d6d3d1;
-}
-.error-output {
-  color: #fecaca;
-  border-left: 3px solid #ef4444;
-}
-.error-output strong {
-  color: #f87171;
-}
-.math-output {
-  color: #fbbf24;
-  font-family: Georgia, serif;
-  font-size: 1.15rem;
-}
-.chart-output {
-  border: 1px solid #404040;
-}
-.image-output {
-  display: flex;
-  justify-content: center;
-  padding: 12px;
-  background: #fff;
-}
-.image-output img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-.html-output svg {
-  max-width: 100%;
-  height: auto;
-}
-.table-output table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.table-output th,
-.table-output td {
-  padding: 7px 9px;
-  border: 1px solid #3f3f3f;
-  text-align: left;
-}
-.table-output th {
-  color: #f4f4f5;
-  background: #242424;
-}
-.table-output td {
-  color: #d6d3d1;
-  background: #1b1b1b;
-}
-.statusbar {
-  display: flex;
-  gap: 20px;
-  padding: 8px 15px;
-  color: #888;
-  border-top: 1px solid #2c2c2c;
-  background: #1a1a1a;
-  font-size: 11px;
-}
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgb(0 0 0 / 65%);
-}
-.confirm-modal {
-  width: min(460px, calc(100vw - 40px));
-  padding: 24px;
-  border: 1px solid #4a3324;
-  border-radius: 12px;
-  background: #202020;
-  box-shadow: 0 20px 70px rgb(0 0 0 / 45%);
-}
-.confirm-modal h2 {
-  margin-top: 8px;
-}
-.confirm-modal p {
-  color: #aaa6a0;
-  line-height: 1.5;
-}
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 24px;
+@layer base {
+  :root {
+    color: #e8e7e5;
+    background: #141414;
+    font-family:
+      Inter,
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-synthesis: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-width: 960px;
+    background: #141414;
+  }
+
+  button,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  h1,
+  h2 {
+    margin: 0;
+  }
 }

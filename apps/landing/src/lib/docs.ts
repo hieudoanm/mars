@@ -10,13 +10,15 @@ export type Doc = {
   content: string;
 };
 
-const docsDirectory = path.join(process.cwd(), 'docs');
+const docsDirectory = path.join(process.cwd(), 'md', 'docs');
 const docFilePattern = /^[a-z0-9-]+\.md$/i;
 
-function parseFrontmatter(raw: string): {
+const parseFrontmatter = (
+  raw: string,
+): {
   data: Record<string, string>;
   body: string;
-} {
+} => {
   if (!raw.startsWith('---')) {
     return { data: {}, body: raw };
   }
@@ -38,9 +40,9 @@ function parseFrontmatter(raw: string): {
     data[key] = value;
   }
   return { data, body };
-}
+};
 
-function readDoc(fileName: string): Doc {
+const readDoc = (fileName: string): Doc => {
   const slug = fileName.replace(/\.md$/i, '');
   const raw = fs.readFileSync(path.join(docsDirectory, fileName), 'utf8');
   const { data, body } = parseFrontmatter(raw);
@@ -63,9 +65,9 @@ function readDoc(fileName: string): Doc {
     order: Number.isNaN(order as number) ? undefined : order,
     content: body,
   };
-}
+};
 
-export function getDocs(): Doc[] {
+export const getDocs = (): Doc[] => {
   return fs
     .readdirSync(docsDirectory)
     .filter((fileName) => docFilePattern.test(fileName) && fileName.toLowerCase() !== 'index.md')
@@ -78,11 +80,11 @@ export function getDocs(): Doc[] {
       if (right.order !== undefined) return 1;
       return left.title.localeCompare(right.title, undefined, { numeric: true });
     });
-}
+};
 
-export function getDoc(slug: string): Doc | undefined {
+export const getDoc = (slug: string): Doc | undefined => {
   if (!/^[a-z0-9-]+$/i.test(slug)) return undefined;
   const fileName = `${slug}.md`;
   if (!fs.existsSync(path.join(docsDirectory, fileName))) return undefined;
   return readDoc(fileName);
-}
+};

@@ -75,8 +75,6 @@ mars/
 │
 ├── examples/
 │   ├── getting-started.mars
-│   ├── linear-regression.mars
-│   └── data-analysis.mars
 │
 ├── tests/
 │

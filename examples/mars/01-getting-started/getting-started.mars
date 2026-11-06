@@ -6,32 +6,554 @@
   },
   "cells": [
     {
-      "id": "welcome",
+      "id": "intro",
       "cell_type": "markdown",
-      "source": "# Welcome to Mars",
+      "source": "# Getting started with Mars\n\n**Mars** is a Rust-first interactive notebook. A `.mars` notebook is a JSON\ndocument made of **markdown**, **code**, and **raw** cells. Code cells are\nwritten in Rust and share state as they run from top to bottom.\n\nThis notebook is a tour of the basics. It covers:\n\n- notebook cells, Markdown, and outputs\n- variables, types, operators, and strings\n- mutability, shadowing, constants, and statics\n- control flow, loops, functions, and closures\n- tuples, arrays, slices, vectors, iterators, and hash maps\n- structs, enums, traits, `Option`, and `Result`\n- modules, macros, attributes, references, lifetimes, generics, and type aliases\n- summary statistics and a least-squares regression\n\nRun the cells in order. Each code cell can use every binding created before it.\n",
       "metadata": {},
       "outputs": []
     },
     {
-      "id": "numbers",
+      "id": "how-notebooks-work",
+      "cell_type": "markdown",
+      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Rust source that is compiled and executed |\n| `raw` | Text that is preserved without Markdown or Rust processing |\n\nWhen a code cell runs:\n\n1. Mars replays all earlier successful code cells, so their bindings are available.\n2. The current cell is compiled and executed.\n3. Its final expression is displayed automatically.\n4. Standard output and errors are captured.\n5. The execution count and outputs are stored in the `.mars` file.\n\nBecause earlier cells are replayed, side effects such as printing, file writes,\nor random numbers can happen again. Keep side-effecting cells idempotent, or\nrun them once and store the result.\n\n> Tip: the final expression of a code cell is shown without a `println!`.\n> End a cell with a semicolon when you do not want output.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "markdown-essentials",
+      "cell_type": "markdown",
+      "source": "### Markdown essentials\n\nMarkdown cells support **bold**, *italic*, ~~strikethrough~~, `inline code`,\n[links](https://github.com/hieudoanm/mars), lists, tables, block quotes, and\nfenced code blocks.\n\n- unordered list item\n- another item\n  - nested item\n\n1. ordered item\n2. another item\n\n```bash\nmars run getting-started.mars --report\n```\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "raw-cell",
+      "cell_type": "raw",
+      "source": "A raw cell is stored and exported verbatim.\nIt is useful for generated text or content that should not be parsed.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "first-code-cell",
+      "cell_type": "markdown",
+      "source": "## Your first code cell\n\nThe next cell sets up a tiny `Report` helper. It wraps formatted text and\nimplements `Debug`, so multi-line output prints exactly as written instead of\nbeing wrapped in quotes.\n\nThe helper is defined once and stays available to every later cell.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "setup-report",
       "cell_type": "code",
-      "source": "let numbers = vec![1, 2, 3, 4, 5];",
+      "source": "use std::fmt;\n\nstruct Report(String);\n\nimpl fmt::Debug for Report {\n    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {\n        formatter.write_str(&self.0)\n    }\n}\n\nfn report(text: impl Into<String>) -> Report {\n    Report(text.into())\n}",
       "metadata": {},
       "execution_count": 1,
       "outputs": []
     },
     {
-      "id": "display-numbers",
+      "id": "variables-types",
+      "cell_type": "markdown",
+      "source": "## Variables and types\n\nRust infers types, but you can annotate them. Names use `snake_case`, and\nbindings are immutable unless declared with `mut`.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "variables",
       "cell_type": "code",
-      "source": "numbers",
+      "source": "let language = \"Rust\";\nlet year: u32 = 2024;\nlet pi = 3.141_592_653_589_793;\nlet is_fun = true;\nlet initial = 'M';\n\nreport(format!(\n    \"language = {language}\\nyear = {year}\\npi = {pi}\\nis_fun = {is_fun}\\ninitial = {initial}\"\n))",
       "metadata": {},
       "execution_count": 2,
       "outputs": [
         {
           "type": "text",
-          "text": "[1, 2, 3, 4, 5]\n"
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n"
         }
       ]
+    },
+    {
+      "id": "arithmetic",
+      "cell_type": "markdown",
+      "source": "## Arithmetic and operators\n\nRust distinguishes integer division (`/`) from floating-point division and uses\n`%` for the remainder.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "arithmetic-demo",
+      "cell_type": "code",
+      "source": "let sum = 7 + 5;\nlet difference = 7 - 5;\nlet product = 7 * 5;\nlet quotient = 7 / 5;\nlet remainder = 7 % 5;\nlet float_quotient = 7.0 / 5.0;\nlet power = 2_i32.pow(10);\n\n(sum, difference, product, quotient, remainder, float_quotient, power)",
+      "metadata": {},
+      "execution_count": 3,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\n"
+        }
+      ]
+    },
+    {
+      "id": "mutability",
+      "cell_type": "markdown",
+      "source": "## Mutability and shadowing\n\nUse `mut` when a binding changes. Shadowing creates a new binding with the same\nname, which is handy for changing a value's type.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "mutability-demo",
+      "cell_type": "code",
+      "source": "let mut counter = 0;\ncounter += 1;\ncounter *= 10;\ncounter -= 5;\n\nlet answer = 21;\nlet answer = answer * 2;\nlet answer: f64 = answer as f64 + 0.5;\n\nreport(format!(\"counter = {counter}\\nanswer = {answer}\"))",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\n"
+        }
+      ]
+    },
+    {
+      "id": "strings",
+      "cell_type": "markdown",
+      "source": "## Strings\n\n`&str` is a borrowed string slice, while `String` owns its contents. Both can\nbe formatted with `format!`, and many string methods return new values.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "strings-demo",
+      "cell_type": "code",
+      "source": "let name = String::from(\"Mars\");\nlet greeting = format!(\"Hello, {name}!\");\nlet shout = greeting.to_uppercase();\nlet words: Vec<&str> = greeting.split(' ').collect();\nlet character_count = greeting.chars().count();\nlet replaced = greeting.replace(\"Mars\", \"notebooks\");\n\nreport(format!(\n    \"greeting = {greeting}\\nshout = {shout}\\nwords = {words:?}\\ncharacters = {character_count}\\nreplaced = {replaced}\"\n))",
+      "metadata": {},
+      "execution_count": 5,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n"
+        }
+      ]
+    },
+    {
+      "id": "control-flow",
+      "cell_type": "markdown",
+      "source": "## Control flow\n\n`if` is an expression, so it can produce a value. `match` compares patterns and\ncan bind parts of the value.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "control-flow-demo",
+      "cell_type": "code",
+      "source": "let temperature = 21;\n\nlet advice = if temperature > 25 {\n    \"Wear something light\"\n} else if temperature >= 15 {\n    \"A jacket is enough\"\n} else {\n    \"Bring a coat\"\n};\n\nlet description = match temperature {\n    value if value < 0 => \"freezing\",\n    0..=14 => \"cold\",\n    15..=24 => \"mild\",\n    _ => \"warm\",\n};\n\nreport(format!(\"{temperature} C is {description}: {advice}\"))",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\n"
+        }
+      ]
+    },
+    {
+      "id": "loops",
+      "cell_type": "markdown",
+      "source": "## Loops\n\n`for` walks an iterator, `while` repeats while a condition holds, `while let`\nrepeats while a pattern matches, and `loop` repeats until `break`.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "loops-demo",
+      "cell_type": "code",
+      "source": "let mut countdown = Vec::new();\nfor number in (1..=5).rev() {\n    countdown.push(number);\n}\n\nlet mut doubled = 0;\nwhile doubled < 10 {\n    doubled += 2;\n}\n\nlet mut stack = vec![1, 2, 3];\nlet mut popped = Vec::new();\nwhile let Some(value) = stack.pop() {\n    popped.push(value);\n}\n\nlet mut loop_count = 0;\nloop {\n    loop_count += 1;\n    if loop_count == 3 {\n        break;\n    }\n}\n\nreport(format!(\n    \"countdown = {countdown:?}\\ndoubled = {doubled}\\npopped = {popped:?}\\nloop_count = {loop_count}\"\n))",
+      "metadata": {},
+      "execution_count": 7,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\n"
+        }
+      ]
+    },
+    {
+      "id": "functions",
+      "cell_type": "markdown",
+      "source": "## Functions\n\nFunctions declare their parameter and return types. A function's final\nexpression is its return value when there is no semicolon.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "functions-demo",
+      "cell_type": "code",
+      "source": "fn square(value: i32) -> i32 {\n    value * value\n}\n\nfn average(values: &[f64]) -> f64 {\n    values.iter().sum::<f64>() / values.len() as f64\n}\n\nreport(format!(\n    \"square(9) = {}\\naverage([2, 4, 6, 8]) = {}\",\n    square(9),\n    average(&[2.0, 4.0, 6.0, 8.0])\n))",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\n"
+        }
+      ]
+    },
+    {
+      "id": "tuples-arrays-slices",
+      "cell_type": "markdown",
+      "source": "## Tuples, arrays, and slices\n\nTuples group values of different types. Arrays have a fixed length. Slices\nborrow a contiguous range from an array or vector.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "tuples-arrays-slices-demo",
+      "cell_type": "code",
+      "source": "let point = (3, 4);\nlet (x, y) = point;\nlet array = [10, 20, 30, 40];\nlet slice = &array[1..3];\nlet array_total: i32 = array.iter().sum();\n\nreport(format!(\n    \"point = {point:?}\\nx = {x}, y = {y}\\narray = {array:?}\\nslice = {slice:?}\\ntotal = {array_total}\"\n))",
+      "metadata": {},
+      "execution_count": 9,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\n"
+        }
+      ]
+    },
+    {
+      "id": "vectors",
+      "cell_type": "markdown",
+      "source": "## Vectors\n\n`Vec<T>` is a growable list. You can push values, read them by index, borrow a\nrange, and inspect the first or last item safely with `Option`.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "vectors-demo",
+      "cell_type": "code",
+      "source": "let mut primes = vec![2, 3, 5, 7, 11];\nprimes.push(13);\n\nlet first = primes.first().copied();\nlet last = primes.last().copied();\nlet middle = &primes[1..4];\n\nreport(format!(\n    \"primes = {primes:?}\\nfirst = {first:?}\\nlast = {last:?}\\nmiddle = {middle:?}\"\n))",
+      "metadata": {},
+      "execution_count": 10,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\n"
+        }
+      ]
+    },
+    {
+      "id": "iterators",
+      "cell_type": "markdown",
+      "source": "## Iterators\n\nIterator chains are the idiomatic way to transform collections. Methods such\nas `map`, `filter`, `sum`, `product`, `max`, and `collect` consume or build\niterators without writing manual loops.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "iterators-demo",
+      "cell_type": "code",
+      "source": "let numbers = vec![1, 2, 3, 4, 5, 6];\n\nlet squares: Vec<i32> = numbers.iter().map(|value| value * value).collect();\nlet evens: Vec<i32> = numbers\n    .iter()\n    .copied()\n    .filter(|value| *value % 2 == 0)\n    .collect();\nlet total: i32 = numbers.iter().sum();\nlet product: i32 = numbers.iter().product();\nlet maximum = numbers.iter().max();\n\nreport(format!(\n    \"numbers = {numbers:?}\\nsquares = {squares:?}\\nevens = {evens:?}\\nsum = {total}\\nproduct = {product}\\nmax = {maximum:?}\"\n))",
+      "metadata": {},
+      "execution_count": 11,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n"
+        }
+      ]
+    },
+    {
+      "id": "hash-maps",
+      "cell_type": "markdown",
+      "source": "## Hash maps\n\n`HashMap` stores key-value pairs and provides fast lookup. The `entry` API\ninserts a default value and returns a mutable reference, which makes counting\nsimple.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "hash-maps-demo",
+      "cell_type": "code",
+      "source": "use std::collections::HashMap;\n\nlet text = \"to be or not to be\";\nlet mut word_counts = HashMap::new();\n\nfor word in text.split_whitespace() {\n    *word_counts.entry(word).or_insert(0) += 1;\n}\n\nlet mut counts: Vec<(&str, i32)> = word_counts.into_iter().collect();\ncounts.sort();\n\nreport(format!(\"{counts:?}\"))",
+      "metadata": {},
+      "execution_count": 12,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\n"
+        }
+      ]
+    },
+    {
+      "id": "structs",
+      "cell_type": "markdown",
+      "source": "## Structs and methods\n\nA `struct` groups related fields. An `impl` block adds methods, and `&self`\nborrows the value without taking ownership.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "structs-demo",
+      "cell_type": "code",
+      "source": "#[derive(Debug)]\nstruct Rectangle {\n    width: f64,\n    height: f64,\n}\n\nimpl Rectangle {\n    fn area(&self) -> f64 {\n        self.width * self.height\n    }\n\n    fn perimeter(&self) -> f64 {\n        2.0 * (self.width + self.height)\n    }\n}\n\nlet rectangle = Rectangle {\n    width: 3.0,\n    height: 4.0,\n};\n\nreport(format!(\n    \"rectangle = {rectangle:?}\\narea = {}\\nperimeter = {}\",\n    rectangle.area(),\n    rectangle.perimeter()\n))",
+      "metadata": {},
+      "execution_count": 13,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\n"
+        }
+      ]
+    },
+    {
+      "id": "enums",
+      "cell_type": "markdown",
+      "source": "## Enums and pattern matching\n\nAn `enum` represents one of several variants. Variants can carry data, and\n`match` handles every case explicitly.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "enums-demo",
+      "cell_type": "code",
+      "source": "enum Shape {\n    Circle { radius: f64 },\n    Rectangle { width: f64, height: f64 },\n}\n\nimpl Shape {\n    fn name(&self) -> &str {\n        match self {\n            Shape::Circle { .. } => \"circle\",\n            Shape::Rectangle { .. } => \"rectangle\",\n        }\n    }\n\n    fn area(&self) -> f64 {\n        match self {\n            Shape::Circle { radius } => std::f64::consts::PI * radius * radius,\n            Shape::Rectangle { width, height } => width * height,\n        }\n    }\n}\n\nlet shapes = vec![\n    Shape::Circle { radius: 2.0 },\n    Shape::Rectangle { width: 3.0, height: 4.0 },\n];\n\nlet summary: Vec<String> = shapes\n    .iter()\n    .map(|shape| format!(\"{} = {:.2}\", shape.name(), shape.area()))\n    .collect();\n\nreport(summary.join(\"\\n\"))",
+      "metadata": {},
+      "execution_count": 14,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\n"
+        }
+      ]
+    },
+    {
+      "id": "option-result",
+      "cell_type": "markdown",
+      "source": "## Option and Result\n\n`Option<T>` models a value that may be missing. `Result<T, E>` models an\noperation that may fail. Both can be inspected with `match`, `if let`, `?`, or\ncombinators such as `map` and `unwrap_or`.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "option-result-demo",
+      "cell_type": "code",
+      "source": "fn parse_score(text: &str) -> Result<i32, String> {\n    text.parse::<i32>()\n        .map_err(|_| format!(\"`{text}` is not a number\"))\n}\n\nlet good = parse_score(\"42\");\nlet bad = parse_score(\"forty-two\");\nlet first_even = (1..10).find(|value| value % 2 == 0);\nlet fallback = bad.clone().unwrap_or(-1);\n\nlet parsed = if let Ok(score) = &good {\n    format!(\"parsed {score}\")\n} else {\n    \"invalid\".to_owned()\n};\n\nlet category = match &good {\n    Ok(score) if *score >= 40 => \"pass\",\n    Ok(_) => \"retry\",\n    Err(_) => \"invalid\",\n};\n\nreport(format!(\n    \"good = {good:?}\\nbad = {bad:?}\\nfirst_even = {first_even:?}\\nfallback = {fallback}\\nparsed = {parsed}\\ncategory = {category}\"\n))",
+      "metadata": {},
+      "execution_count": 15,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\n"
+        }
+      ]
+    },
+    {
+      "id": "closures",
+      "cell_type": "markdown",
+      "source": "## Closures\n\nClosures are anonymous functions that can capture values from their\nenvironment. They are commonly passed to iterator methods.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "closures-demo",
+      "cell_type": "code",
+      "source": "let offset = 10;\nlet add_offset = |value: i32| value + offset;\nlet values = vec![1, 2, 3, 4];\nlet adjusted: Vec<i32> = values.iter().map(|value| add_offset(*value)).collect();\n\nreport(format!(\n    \"offset = {offset}\\nvalues = {values:?}\\nadjusted = {adjusted:?}\"\n))",
+      "metadata": {},
+      "execution_count": 16,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\n"
+        }
+      ]
+    },
+    {
+      "id": "constants",
+      "cell_type": "markdown",
+      "source": "## Constants and statics\n\n`const` values are inlined at compile time, evaluated each time they are\nused, and cannot be mutated. `static` items live for the entire program and\nmay be shared across threads. Both require an explicit type annotation.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "constants-demo",
+      "cell_type": "code",
+      "source": "const MAX_POINTS: u32 = 100;\nstatic NEXT_ID: u32 = 1;\nlet constant = MAX_POINTS;\nlet static_ref: &'static u32 = &NEXT_ID;\n\nreport(format!(\"MAX_POINTS = {MAX_POINTS}\\nNEXT_ID = {NEXT_ID}\\nstatic_ref = {static_ref}\"))",
+      "metadata": {},
+      "execution_count": 17,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\n"
+        }
+      ]
+    },
+    {
+      "id": "references",
+      "cell_type": "markdown",
+      "source": "## References and borrowing\n\nA reference (`&T`) borrows a value without taking ownership. `&mut T` grants\nexclusive, mutable borrow access. Rust's borrow checker prevents a mutable\nreference from coexisting with any other reference to the same data.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "references-demo",
+      "cell_type": "code",
+      "source": "let total = 100;\nlet reference = &total;\nlet mut counter = 5;\nlet mut_ref = &mut counter;\n*mut_ref += 1;\n\nreport(format!(\"total = {total}\\nreference = {reference}\\ncounter = {counter}\"))",
+      "metadata": {},
+      "execution_count": 18,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\n"
+        }
+      ]
+    },
+    {
+      "id": "modules",
+      "cell_type": "markdown",
+      "source": "## Modules\n\nA `mod` groups related items and can be nested. `pub` makes items visible\noutside the module, and `use` brings names into the current scope.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "modules-demo",
+      "cell_type": "code",
+      "source": "mod math {\n    pub fn double(value: i32) -> i32 {\n        value * 2\n    }\n}\n\nreport(format!(\"math::double(21) = {}\", math::double(21)))",
+      "metadata": {},
+      "execution_count": 19,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\n"
+        }
+      ]
+    },
+    {
+      "id": "macros",
+      "cell_type": "markdown",
+      "source": "## Macros\n\nDeclarative macros (`macro_rules!`) expand at compile time using pattern\nmatching. They generate code from code, which is why their output can look\nvery different from the invocation.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "macros-demo",
+      "cell_type": "code",
+      "source": "macro_rules! greet {\n    ($name:expr) => {\n        format!(\"hello, {name}\")\n    };\n}\n\nreport(greet!(\"Mars\"))",
+      "metadata": {},
+      "execution_count": 20,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\n"
+        }
+      ]
+    },
+    {
+      "id": "attributes",
+      "cell_type": "markdown",
+      "source": "## Attributes\n\nAttributes like `#[derive(...)]` attach metadata to items. The compiler uses\nthem to generate code, enforce rules, or control warnings.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "attributes-demo",
+      "cell_type": "code",
+      "source": "#[derive(Debug, PartialEq)]\nstruct Point2D {\n    x: i32,\n    y: i32,\n}\n\nlet origin = Point2D { x: 0, y: 0 };\nlet other = Point2D { x: 0, y: 0 };\n\nreport(format!(\"origin = {origin:?}\\norigin == other: {}\", origin == other))",
+      "metadata": {},
+      "execution_count": 21,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\norigin = Point2D { x: 0, y: 0 }\norigin == other: true\n"
+        }
+      ]
+    },
+    {
+      "id": "generics",
+      "cell_type": "markdown",
+      "source": "## Lifetimes, generics, and type aliases\n\nGenerics let you write functions and types that work for many types.\nLifetimes are a special kind of generic that describe how references relate\nto each other. `type` aliases give a fresh name to an existing type.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "generics-demo",
+      "cell_type": "code",
+      "source": "type Meters = f64;\nfn pick_first<'a>(items: &'a [i32]) -> &'a i32 {\n    &items[0]\n}\nfn identity<T>(value: T) -> T {\n    value\n}\n\nlet distance: Meters = 12.5;\nlet numbers = vec![7, 14, 21];\n\nreport(format!(\n    \"distance = {distance} m\\nidentity(3) = {}\\nfirst = {}\",\n    identity(3),\n    pick_first(&numbers)\n))",
+      "metadata": {},
+      "execution_count": 22,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\norigin = Point2D { x: 0, y: 0 }\norigin == other: true\ndistance = 12.5 m\nidentity(3) = 3\nfirst = 7\n"
+        }
+      ]
+    },
+    {
+      "id": "traits",
+      "cell_type": "markdown",
+      "source": "## Traits\n\nA `trait` defines shared behavior that many types can implement. Trait\nobjects (`&dyn Trait`) let you work with several different types through one\ncommon interface.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "traits-demo",
+      "cell_type": "code",
+      "source": "trait Describe {\n    fn describe(&self) -> String;\n}\n\nimpl Describe for i32 {\n    fn describe(&self) -> String {\n        format!(\"integer {self}\")\n    }\n}\n\nlet number = 42;\n\nreport(number.describe())",
+      "metadata": {},
+      "execution_count": 23,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\norigin = Point2D { x: 0, y: 0 }\norigin == other: true\ndistance = 12.5 m\nidentity(3) = 3\nfirst = 7\ninteger 42\n"
+        }
+      ]
+    },
+    {
+      "id": "statistics",
+      "cell_type": "markdown",
+      "source": "## Summary statistics\n\nThe next cell computes count, total, mean, minimum, maximum, and median for a\nsmall list of integers. This is the data-analysis example merged into the tour.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "statistics-demo",
+      "cell_type": "code",
+      "source": "let values = vec![3_i32, 7, 4, 9, 12, 6];\nlet total: i32 = values.iter().sum();\nlet mean = total as f64 / values.len() as f64;\nlet minimum = values.iter().min().copied();\nlet maximum = values.iter().max().copied();\n\nlet mut sorted = values.clone();\nsorted.sort();\nlet median = if sorted.len() % 2 == 0 {\n    let middle = sorted.len() / 2;\n    (sorted[middle - 1] + sorted[middle]) as f64 / 2.0\n} else {\n    sorted[sorted.len() / 2] as f64\n};\n\nreport(format!(\n    \"values = {values:?}\\ncount = {}\\ntotal = {total}\\nmean = {mean}\\nmin = {minimum:?}\\nmax = {maximum:?}\\nmedian = {median}\",\n    values.len()\n))",
+      "metadata": {},
+      "execution_count": 24,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\norigin = Point2D { x: 0, y: 0 }\norigin == other: true\ndistance = 12.5 m\nidentity(3) = 3\nfirst = 7\ninteger 42\nvalues = [3, 7, 4, 9, 12, 6]\ncount = 6\ntotal = 41\nmean = 6.833333333333333\nmin = Some(3)\nmax = Some(12)\nmedian = 6.5\n"
+        }
+      ]
+    },
+    {
+      "id": "regression",
+      "cell_type": "markdown",
+      "source": "## Least-squares regression\n\nA simple linear regression finds the line `y = slope * x + intercept` that\nminimizes squared error. The slope is the covariance of `x` and `y` divided by\nthe variance of `x`. This is the linear-regression example merged into the tour.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "regression-demo",
+      "cell_type": "code",
+      "source": "let x = vec![1.0_f64, 2.0, 3.0, 4.0];\nlet y = vec![2.0_f64, 4.1, 5.9, 8.2];\n\nlet x_mean = x.iter().sum::<f64>() / x.len() as f64;\nlet y_mean = y.iter().sum::<f64>() / y.len() as f64;\n\nlet covariance = x\n    .iter()\n    .zip(&y)\n    .map(|(x, y)| (x - x_mean) * (y - y_mean))\n    .sum::<f64>();\nlet variance = x.iter().map(|x| (x - x_mean).powi(2)).sum::<f64>();\n\nlet slope = covariance / variance;\nlet intercept = y_mean - slope * x_mean;\n\nreport(format!(\n    \"x mean = {x_mean}\\ny mean = {y_mean}\\nslope = {slope}\\nintercept = {intercept}\\nprediction at x = 5: {:.2}\",\n    slope * 5.0 + intercept\n))",
+      "metadata": {},
+      "execution_count": 25,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\norigin = Point2D { x: 0, y: 0 }\norigin == other: true\ndistance = 12.5 m\nidentity(3) = 3\nfirst = 7\ninteger 42\nvalues = [3, 7, 4, 9, 12, 6]\ncount = 6\ntotal = 41\nmean = 6.833333333333333\nmin = Some(3)\nmax = Some(12)\nmedian = 6.5\nx mean = 2.5\ny mean = 5.05\nslope = 2.04\nintercept = -0.04999999999999982\nprediction at x = 5: 10.15\n"
+        }
+      ]
+    },
+    {
+      "id": "recap",
+      "cell_type": "markdown",
+      "source": "## Recap\n\nThe final code cell collects the topics from this tour into an aligned summary.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "recap-demo",
+      "cell_type": "code",
+      "source": "let topics = vec![\n    (\"cells\", \"markdown, code, raw\"),\n    (\"basics\", \"variables, types, operators\"),\n    (\"flow\", \"if, match, loops, functions\"),\n    (\"collections\", \"tuples, arrays, vectors, iterators, maps\"),\n    (\"abstractions\", \"structs, enums, traits, closures\"),\n    (\"modules\", \"mod, use, pub\"),\n    (\"macros\", \"macro_rules!, attributes\"),\n    (\"generics\", \"lifetimes, generics, type aliases\"),\n    (\"results\", \"Option and Result\"),\n    (\"analysis\", \"statistics and regression\"),\n];\n\nlet width = topics.iter().map(|(name, _)| name.len()).max().unwrap_or(0);\nlet summary: Vec<String> = topics\n    .iter()\n    .map(|(name, detail)| format!(\"{name:width$}  {detail}\"))\n    .collect();\n\nreport(summary.join(\"\\n\"))",
+      "metadata": {},
+      "execution_count": 26,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "language = Rust\nyear = 2024\npi = 3.141592653589793\nis_fun = true\ninitial = M\n(12, 2, 35, 1, 2, 1.4, 1024)\ncounter = 5\nanswer = 42.5\ngreeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n21 C is mild: A jacket is enough\ncountdown = [5, 4, 3, 2, 1]\ndoubled = 10\npopped = [3, 2, 1]\nloop_count = 3\nsquare(9) = 81\naverage([2, 4, 6, 8]) = 5\npoint = (3, 4)\nx = 3, y = 4\narray = [10, 20, 30, 40]\nslice = [20, 30]\ntotal = 100\nprimes = [2, 3, 5, 7, 11, 13]\nfirst = Some(2)\nlast = Some(13)\nmiddle = [3, 5, 7]\nnumbers = [1, 2, 3, 4, 5, 6]\nsquares = [1, 4, 9, 16, 25, 36]\nevens = [2, 4, 6]\nsum = 21\nproduct = 720\nmax = Some(6)\n[(\"be\", 2), (\"not\", 1), (\"or\", 1), (\"to\", 2)]\nrectangle = Rectangle { width: 3.0, height: 4.0 }\narea = 12\nperimeter = 14\ncircle = 12.57\nrectangle = 12.00\ngood = Ok(42)\nbad = Err(\"`forty-two` is not a number\")\nfirst_even = Some(2)\nfallback = -1\nparsed = parsed 42\ncategory = pass\noffset = 10\nvalues = [1, 2, 3, 4]\nadjusted = [11, 12, 13, 14]\nMAX_POINTS = 100\nNEXT_ID = 1\nstatic_ref = 1\ntotal = 100\nreference = 100\ncounter = 6\nmath::double(21) = 42\nhello, Mars\norigin = Point2D { x: 0, y: 0 }\norigin == other: true\ndistance = 12.5 m\nidentity(3) = 3\nfirst = 7\ninteger 42\nvalues = [3, 7, 4, 9, 12, 6]\ncount = 6\ntotal = 41\nmean = 6.833333333333333\nmin = Some(3)\nmax = Some(12)\nmedian = 6.5\nx mean = 2.5\ny mean = 5.05\nslope = 2.04\nintercept = -0.04999999999999982\nprediction at x = 5: 10.15\ncells         markdown, code, raw\nbasics        variables, types, operators\nflow          if, match, loops, functions\ncollections   tuples, arrays, vectors, iterators, maps\nabstractions  structs, enums, traits, closures\nmodules       mod, use, pub\nmacros        macro_rules!, attributes\ngenerics      lifetimes, generics, type aliases\nresults       Option and Result\nanalysis      statistics and regression\n"
+        }
+      ]
+    },
+    {
+      "id": "next-steps",
+      "cell_type": "markdown",
+      "source": "## What comes next\n\nYou have now seen the core of a Mars notebook: Markdown and raw cells, Rust\ncode cells, persisted bindings, automatic output, and stored results.\n\nThis tour also maps onto a Rust syllabus. It covers basic syntax\n(statements, expressions, variables, mutability, constants, modules,\nmacros, and attributes), control flow (`if`, `if let`, `match`, loops),\nfunctions and closures, the type system (primitives, arrays, `Vec`,\n`&str`/`String`, tuples, structs, enums, `Option`, `Result`), and traits and\ngenerics (lifetimes, type aliasing, traits, generics). Two topics are\nintentionally left out of this tour: procedural macros, which need a separate\n`proc-macro` crate, and the Cargo toolchain (`cargo build`, `cargo test`,\n`cargo doc`, crates.io), which you run from a terminal rather than a notebook.\n\nContinue with:\n\n| Example | What it adds |\n| ------- | ------------ |\n| `04-machine-learning/machine-learning.mars` | A longer workflow with data generation, evaluation, and a plotters chart |\n| `05-plotting/plotting.mars` | Vector figures rendered as SVG output |\n\nUseful commands:\n\n```bash\nmars run getting-started.mars --report   # execute and save outputs\nmars run getting-started.mars --no-save  # check without writing\nmars export getting-started.mars md      # Markdown export\nmars export getting-started.mars html    # HTML export\nmars export getting-started.mars pdf     # PDF export\n```\n",
+      "metadata": {},
+      "outputs": []
     }
   ]
 }

@@ -1,22 +1,37 @@
+import type { NextPage } from 'next';
 import Link from 'next/link';
+import { HiArrowLeft, HiHome } from 'react-icons/hi';
+import marsLogo from '@/assets/svg/mars-logo.svg';
 
-export default function NotFound() {
+const NotFound: NextPage = () => {
   return (
-    <div className='bg-bg text-ink flex min-h-screen flex-col items-center justify-center py-20'>
-      <div className='max-w-[480px] text-center'>
-        <img className='mx-auto mb-6 h-[48px] w-[48px]' src='/mars-logo.svg' alt='' />
-        <h1 className='mb-2 text-[clamp(38px,7vw,62px)] leading-[1.02] font-[650] tracking-[-.075em]'>
-          Page not found
-        </h1>
-        <p className='text-muted mx-auto mb-8 max-w-[320px]'>
-          The documentation page you are looking for does not exist.
+    <div className='bg-bg text-ink flex min-h-screen flex-col items-center justify-center px-6 py-20'>
+      <div className='max-w-120 text-center'>
+        <img className='mx-auto mb-6 h-12 w-12' src={marsLogo.src} alt='' />
+        <p className='text-orange-2 text-xs-plus font-bold-plus tracking-caps-xl mb-2 uppercase'>
+          404
         </p>
-        <Link
-          className='border-orange bg-orange inline-flex items-center gap-2 rounded-lg border px-[18px] py-[13px] text-xs font-[650] text-[#fff7ed] hover:bg-[#ff7955]'
-          href='/docs'>
-          Back to docs <span aria-hidden='true'>→</span>
-        </Link>
+        <h1 className='text-page font-bold-plus tracking-tightest mb-2 leading-tight'>
+          Lost in space
+        </h1>
+        <p className='text-muted mx-auto mb-8 max-w-80'>
+          The page you are looking for does not exist or has been moved.
+        </p>
+        <div className='flex flex-wrap items-center justify-center gap-3'>
+          <Link
+            className='border-orange bg-orange font-bold-plus text-ink-4 inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs transition-transform duration-200 hover:-translate-y-0.5'
+            href='/'>
+            <HiHome className='h-4 w-4' /> Go home
+          </Link>
+          <Link
+            className='border-line-2 text-ink font-bold-plus inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs transition-transform duration-200 hover:-translate-y-0.5'
+            href='/docs'>
+            <HiArrowLeft className='h-4 w-4' /> Back to docs
+          </Link>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default NotFound;

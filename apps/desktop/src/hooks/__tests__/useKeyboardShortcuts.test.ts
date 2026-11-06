@@ -1,13 +1,13 @@
 import { fireEvent, renderHook } from '@testing-library/react';
 import { useKeyboardShortcuts } from '../useKeyboardShortcuts';
-import type { NotebookCell } from '../../lib/types';
+import type { NotebookCell } from '../../types/types';
 
 const cells: NotebookCell[] = [
   { id: 'a', cell_type: 'code', source: 'a', execution_count: null, outputs: [], metadata: {} },
   { id: 'b', cell_type: 'markdown', source: 'b', execution_count: null, outputs: [], metadata: {} },
 ];
 
-function setup(overrides: Partial<Parameters<typeof useKeyboardShortcuts>[0]> = {}) {
+const setup = (overrides: Partial<Parameters<typeof useKeyboardShortcuts>[0]> = {}) => {
   const actions = {
     setMode: vi.fn(),
     setSelectedId: vi.fn(),
@@ -33,7 +33,7 @@ function setup(overrides: Partial<Parameters<typeof useKeyboardShortcuts>[0]> = 
   };
   const hook = renderHook(() => useKeyboardShortcuts(options));
   return { ...hook, actions };
-}
+};
 
 describe('useKeyboardShortcuts', () => {
   it('handles save, undo, redo, and escape shortcuts', () => {

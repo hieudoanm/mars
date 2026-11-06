@@ -1,34 +1,40 @@
 'use client';
 
+import type { FC } from 'react';
 import Link from 'next/link';
+import { HiExclamationCircle, HiRefresh } from 'react-icons/hi';
 
-export default function Error({
-  error,
-  reset,
-}: Readonly<{
-  error: Error;
+type ErrorProps = Readonly<{
+  error: Error & { digest?: string };
   reset: () => void;
-}>) {
+}>;
+
+const ErrorBoundary: FC<ErrorProps> = ({ error, reset }) => {
   return (
-    <div className='bg-bg text-ink flex min-h-screen flex-col items-center justify-center py-20'>
-      <div className='max-w-[480px] text-center'>
-        <h1 className='mb-2 text-[clamp(38px,7vw,62px)] leading-[1.02] font-[650] tracking-[-.075em]'>
+    <div className='bg-bg text-ink flex min-h-screen flex-col items-center justify-center px-6 py-20'>
+      <div className='max-w-120 text-center'>
+        <div className='bg-orange/10 text-orange-2 mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full'>
+          <HiExclamationCircle className='h-8 w-8' />
+        </div>
+        <h1 className='mb-2 text-page leading-tight font-bold-plus tracking-tightest'>
           Something went wrong
         </h1>
-        <p className='text-muted mb-6'>{error.message}</p>
+        <p className='text-muted mx-auto mb-8 max-w-80'>{error.message}</p>
         <div className='flex flex-col items-center gap-3 sm:flex-row'>
           <button
-            className='border-orange bg-orange rounded-lg border px-[18px] py-[13px] text-xs font-[650] text-[#fff7ed] hover:bg-[#ff7955]'
+            className='border-orange bg-orange inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs font-bold-plus text-ink-4 transition-transform duration-200 hover:-translate-y-0.5'
             onClick={() => reset()}>
-            Try again
+            <HiRefresh className='h-4 w-4' /> Try again
           </button>
           <Link
-            className='border-line bg-panel text-muted hover:bg-panel-2 hover:text-ink inline-flex items-center gap-2 rounded-lg border px-[18px] py-[13px] text-xs font-[650]'
-            href='/docs'>
-            Back to docs
+            className='border-line-2 text-ink inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs font-bold-plus transition-transform duration-200 hover:-translate-y-0.5'
+            href='/'>
+            Back home
           </Link>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ErrorBoundary;

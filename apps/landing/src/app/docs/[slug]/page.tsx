@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Markdown from "@/components/Markdown";
+import Markdown from "@/components/shared/Markdown";
 import { getDoc, getDocs } from "@/lib/docs";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
+export const generateStaticParams = () => {
   return getDocs().map((doc) => ({ slug: doc.slug }));
-}
+};
 
-export async function generateMetadata({
+export const generateMetadata = async ({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+}): Promise<Metadata> => {
   const { slug } = await params;
   const doc = getDoc(slug);
   return doc ? { title: `${doc.title} | Mars` } : {};
-}
+};
 
-export default async function DocPage({
-  params,
-}: {
+type DocPageProps = Readonly<{
   params: Promise<{ slug: string }>;
-}) {
+}>;
+
+const DocPage = async ({ params }: DocPageProps) => {
   const { slug } = await params;
   const doc = getDoc(slug);
   if (!doc) notFound();
@@ -69,4 +69,6 @@ export default async function DocPage({
       </nav>
     </div>
   );
-}
+};
+
+export default DocPage;

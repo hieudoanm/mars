@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Notebook } from '../lib/types';
+import type { Notebook } from '../types/types';
 import {
   clearCellOutputs,
   convertCell,
@@ -14,7 +14,7 @@ import {
 
 type CellType = 'markdown' | 'code';
 
-export function useNotebookEditor(initialNotebook: Notebook) {
+export const useNotebookEditor = (initialNotebook: Notebook) => {
   const [notebook, setNotebook] = useState(initialNotebook);
   const [selectedId, setSelectedId] = useState(
     initialNotebook.cells[1]?.id ?? initialNotebook.cells[0]?.id ?? '',
@@ -57,6 +57,10 @@ export function useNotebookEditor(initialNotebook: Notebook) {
     setNotebook((current) => updateCellSource(current, id, source));
   };
 
+  const renameNotebook = (title: string) => {
+    setNotebook((current) => ({ ...current, metadata: { ...current.metadata, title } }));
+  };
+
   const addCell = (cellType: CellType) => {
     const cell = createCell(cellType);
     setNotebook((current) => ({ ...current, cells: [...current.cells, cell] }));
@@ -78,13 +82,15 @@ export function useNotebookEditor(initialNotebook: Notebook) {
     setSelectedId(result.cell.id);
   };
 
-  const deleteSelected = () => {
-    if (selectedIndex < 0 || notebook.cells.length <= 1) return;
-    const result = deleteCell(notebook, selectedId);
+  const removeCell = (id: string) => {
+    if (notebook.cells.length <= 1) return;
+    const result = deleteCell(notebook, id);
     if (!result) return;
     setNotebook(result.notebook);
-    setSelectedId(result.nextId);
+    if (id === selectedId) setSelectedId(result.nextId);
   };
+
+  const deleteSelected = () => removeCell(selectedId);
 
   const moveSelected = (offset: number) => {
     if (selectedIndex < 0) return;
@@ -129,9 +135,11 @@ export function useNotebookEditor(initialNotebook: Notebook) {
     mode,
     setMode,
     updateCell,
+    renameNotebook,
     addCell,
     insertCell,
     duplicateSelected,
+    removeCell,
     deleteSelected,
     moveSelected,
     convertSelected,
@@ -140,4 +148,4 @@ export function useNotebookEditor(initialNotebook: Notebook) {
     redo,
     resetHistory,
   };
-}
+};

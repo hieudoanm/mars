@@ -9,12 +9,18 @@ pub(crate) fn render_program_with_last_output(
     output: ExpressionOutput,
 ) -> String {
     let mut program = String::from("fn main() {\n");
+    let last_index = cells.len().saturating_sub(1);
     for (index, cell) in cells.iter().enumerate() {
         program.push_str(&format!("    // Mars cell {index}\n"));
-        let cell_output = if index + 1 == cells.len() {
+        // Only the current cell should auto-display its final expression.
+        // Replayed cells keep their own stored outputs, so printing them again
+        // would duplicate earlier results in every later execution. Their final
+        // expressions are discarded, which also keeps the generated program
+        // syntactically valid when a cell ends without a semicolon.
+        let cell_output = if index == last_index {
             output
         } else {
-            ExpressionOutput::Debug
+            ExpressionOutput::Discard
         };
         let rendered_cell = render_cell_with_output(cell, cell_output);
         for line in rendered_cell.lines() {
@@ -169,11 +175,43 @@ fn strip_trailing_line_comments(source: &str) -> String {
 fn render_cell_with_output(source: &str, output: ExpressionOutput) -> String {
     let stripped = strip_trailing_line_comments(source);
     if let Some((prefix, expression)) = split_final_expression(&stripped) {
-        let formatter = match output {
-            ExpressionOutput::Debug => "{:?}",
-            ExpressionOutput::Display => "{}",
+        return match output {
+            ExpressionOutput::Debug => {
+                format!("{prefix}println!(\"__MARS_RESULT__={{:?}}\", ({expression}));")
+            }
+            ExpressionOutput::Display => {
+                format!("{prefix}println!(\"__MARS_RESULT__={{}}\", ({expression}));")
+            }
+            ExpressionOutput::Discard => format!("{prefix}let _ = ({expression});"),
         };
-        return format!("{prefix}println!(\"__MARS_RESULT__={formatter}\", ({expression}));");
     }
     source.to_owned()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn renders_only_the_current_cell_with_automatic_output() {
+        let cells = vec!["let numbers = vec![1, 2, 3];".to_owned(), "numbers.len()".to_owned()];
+        let program = render_program(&cells);
+
+        assert_eq!(program.matches("__MARS_RESULT__").count(), 1);
+        assert!(program.contains("println!(\"__MARS_RESULT__={:?}\", (numbers.len()));"));
+    }
+
+    #[test]
+    fn does_not_wrap_replayed_final_expressions() {
+        let cells = vec!["1 + 1".to_owned(), "2 + 2".to_owned()];
+        let program = render_program(&cells);
+
+        assert!(program.contains("    // Mars cell 0\n    1 + 1\n"));
+        assert!(program.contains("println!(\"__MARS_RESULT__={:?}\", (2 + 2));"));
+    }
+
+    #[test]
+    fn renders_empty_cells_without_panicking() {
+        assert_eq!(render_program(&[]), "fn main() {\n}\n");
+    }
 }

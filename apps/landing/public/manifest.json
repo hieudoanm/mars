@@ -1,19 +1,93 @@
 {
   "id": "/",
-  "name": "Mars — Explore ideas. Execute code.",
+  "name": "Mars — Rust-powered interactive notebooks",
   "short_name": "Mars",
   "description": "A Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.",
+  "lang": "en-US",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
   "background_color": "#111113",
   "theme_color": "#111113",
+  "categories": ["developer", "education", "productivity", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/images/png/mars-file-logo.png",
+      "src": "/icons/mars-logo-file.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/mars-logo-file.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icons/mars-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/mars-orbit.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Documentation",
+      "short_name": "Docs",
+      "description": "Read Mars documentation and guides.",
+      "url": "/docs/",
+      "icons": [
+        {
+          "src": "/icons/mars-logo-file.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Downloads",
+      "short_name": "Download",
+      "description": "Download Mars for macOS, Windows, and Linux.",
+      "url": "/downloads/",
+      "icons": [
+        {
+          "src": "/icons/mars-logo-file.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Blog",
+      "short_name": "Blog",
+      "description": "Read essays on Rust, notebooks, and Mars.",
+      "url": "/blog/",
+      "icons": [
+        {
+          "src": "/icons/mars-logo-file.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/mars-og.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Mars landing page"
     }
   ]
 }

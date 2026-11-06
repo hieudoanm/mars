@@ -24,7 +24,7 @@ describe('docs index page', () => {
 
   it('uses Next not-found handling when the index document is missing', () => {
     getDocMock.mockReturnValue(undefined);
-    expect(() => DocsIndexPage()).toThrow('NEXT_NOT_FOUND');
-    expect(notFoundMock).toHaveBeenCalledOnce();
+    expect(() => render(<DocsIndexPage />)).toThrow('NEXT_NOT_FOUND');
+    expect(notFoundMock).toHaveBeenCalled();
   });
 });

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import type { ReactNode } from 'react';
-import DocsSearch from '../../components/DocsSearch';
+import type { FC, ReactNode } from 'react';
+import DocsSearch from '../../components/docs/DocsSearch';
+import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
 import { getDocs } from '@/lib/docs';
-import { repositoryUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Documentation',
@@ -11,64 +11,35 @@ export const metadata: Metadata = {
     'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
 };
 
-const sectionShell =
-  'mx-auto w-[min(calc(100%_-_48px),1160px)] max-[520px]:w-[min(calc(100%_-_32px),1160px)]';
+const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 
-export default function DocsLayout({ children }: Readonly<{ children: ReactNode }>) {
+type DocsLayoutProps = Readonly<{ children: ReactNode }>;
+
+const DocsLayout: FC<DocsLayoutProps> = ({ children }) => {
   const docs = getDocs();
 
   return (
     <div className='flex min-h-screen flex-col'>
-      <header className='relative z-[2] mx-auto flex w-[min(calc(100%_-_48px),1240px)] items-center justify-between py-7 max-[520px]:w-[min(calc(100%_-_32px),1240px)] max-[520px]:py-5'>
-        <Link
-          className='inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-[-.03em]'
-          href='/'
-          aria-label='Mars home'>
-          <img className='h-[30px] w-[30px] rounded-lg' src='/images/svg/mars-logo.svg' alt='' />
-          <span>Mars</span>
-        </Link>
-        <nav
-          className='text-muted flex gap-[30px] text-[13px] max-[850px]:hidden'
-          aria-label='Primary navigation'>
-          <Link className='hover:text-ink' href='/'>
-            Home
-          </Link>
-          <Link className='hover:text-ink' href='/#why-mars'>
-            Why Mars
-          </Link>
-          <Link className='hover:text-ink' href='/#workflow'>
-            Workflow
-          </Link>
-          <Link className='hover:text-ink' href='/docs'>
-            Docs
-          </Link>
-        </nav>
-        <a
-          className='text-orange-2 hover:text-ink text-[13px] font-semibold max-[520px]:text-[11px]'
-          href={repositoryUrl}>
-          GitHub <span aria-hidden='true'>↗</span>
-        </a>
-      </header>
+      <Navbar
+        className='max-w-header max-sm-nav:px-4 max-sm-nav:py-5 relative z-20 mx-auto flex w-full items-center justify-between px-6 py-7'
+        showHome
+      />
 
       <main
-        className={`${sectionShell} grid flex-1 grid-cols-[230px_minmax(0,1fr)] items-start gap-12 py-14 pb-[90px] max-[900px]:grid-cols-1 max-[900px]:gap-[22px] max-[900px]:py-[34px] max-[900px]:pb-[70px]`}>
-        <DocsSearch docs={docs} />
-        <div className='border-line bg-panel/80 min-w-0 rounded-[22px] border px-12 py-[42px] max-[900px]:px-[22px] max-[900px]:py-7'>
+        className={`${sectionShell} max-lg-nav:gap-5.5 max-lg-nav:py-8 max-lg-nav:pb-18 lg-nav:grid-cols-12 grid flex-1 grid-cols-1 items-start gap-12 py-14 pb-22`}>
+        <div className='lg-nav:col-span-3'>
+          <DocsSearch docs={docs} />
+        </div>
+        <div className='border-line bg-panel/80 rounded-2.5xl max-lg-nav:px-5.5 max-lg-nav:py-7 lg-nav:col-span-9 min-w-0 border px-12 py-10'>
           {children}
         </div>
       </main>
 
-      <footer
-        className={`${sectionShell} flex items-center justify-between gap-5 py-[30px] pb-[46px] text-[11px] text-[#6d7a8a] max-[520px]:flex-col max-[520px]:items-start`}>
-        <Link
-          className='inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-[-.03em] text-[#d8dde5]'
-          href='/'>
-          <img className='h-6 w-6 rounded-lg' src='/images/svg/mars-logo.svg' alt='' />
-          <span>Mars</span>
-        </Link>
-        <span>Explore ideas. Execute code. Discover possibilities.</span>
-        <span>MIT licensed · Built with Rust</span>
-      </footer>
+      <Footer
+        className={`${sectionShell} text-xs-plus text-faint-2 max-sm-nav:flex-col max-sm-nav:items-start flex items-center justify-between gap-5 py-7.5 pb-11`}
+      />
     </div>
   );
-}
+};
+
+export default DocsLayout;

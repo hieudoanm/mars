@@ -1,89 +1,70 @@
+import type { FC } from 'react';
+import type { NextPage } from 'next';
+import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
 import { repositoryUrl } from '@/lib/site';
 
-const sectionShell =
-  'mx-auto w-[min(calc(100%_-_48px),1160px)] max-[520px]:w-[min(calc(100%_-_32px),1160px)]';
+const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
+
+import { FaApple, FaWindows, FaLinux } from 'react-icons/fa';
 
 const downloads = [
   {
     platform: 'macOS',
-    icon: '',
+    icon: FaApple,
     description: 'Universal build for Apple Silicon and Intel',
     links: [{ label: 'Download .dmg', href: `${repositoryUrl}/releases` }],
   },
   {
     platform: 'Windows',
-    icon: '⊞',
+    icon: FaWindows,
     description: 'x64 installer',
     links: [{ label: 'Download .msi', href: `${repositoryUrl}/releases` }],
   },
   {
     platform: 'Linux',
-    icon: '🐧',
+    icon: FaLinux,
     description: 'AppImage and .deb packages',
     links: [{ label: 'Download', href: `${repositoryUrl}/releases` }],
   },
 ];
 
-export default function DownloadsPage() {
+const DownloadsPage: FC & NextPage = () => {
   return (
-    <div className='min-h-screen bg-[#0b1118] text-[#e6ebf2]'>
-      <header className='mx-auto flex w-[min(calc(100%_-_48px),1160px)] items-center justify-between py-7 max-[520px]:w-[min(calc(100%_-_32px),1160px)]'>
-        <a
-          className='inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-[-.03em]'
-          href='/'
-          aria-label='Mars home'>
-          <img className='h-[30px] w-[30px] rounded-lg' src='/images/svg/mars-logo.svg' alt='' />
-          <span>Mars</span>
-        </a>
-        <nav className='flex gap-[30px] text-[13px] text-[#8b96a6] max-[850px]:hidden'>
-          <a className='hover:text-[#e6ebf2]' href='/#why-mars'>
-            Why Mars
-          </a>
-          <a className='hover:text-[#e6ebf2]' href='/docs'>
-            Docs
-          </a>
-          <a className='hover:text-[#e6ebf2]' href='/downloads'>
-            Downloads
-          </a>
-          <a className='hover:text-[#e6ebf2]' href='/#get-started'>
-            Get started
-          </a>
-        </nav>
-        <a
-          className='text-[13px] font-semibold text-[#ff8c5a] hover:text-[#e6ebf2]'
-          href={repositoryUrl}>
-          GitHub <span aria-hidden='true'>↗</span>
-        </a>
-      </header>
+    <div className='bg-bg-alt text-ink-2 min-h-screen'>
+      <Navbar
+        className='max-w-shell max-sm-nav:px-4 mx-auto flex w-full items-center justify-between px-6 py-7'
+        showHome
+      />
 
       <main>
-        <section className={`${sectionShell} py-[80px] max-[520px]:py-[60px]`}>
-          <div className='mb-[60px] max-w-[600px]'>
-            <div className='flex items-center gap-[9px] text-[11px] font-bold tracking-[.18em] text-[#ff8c5a] uppercase'>
-              <span className='h-[7px] w-[7px] rounded-full bg-[#f06b4d] shadow-[0_0_15px_#f06b4d]' />
+        <section className={`${sectionShell} max-sm-nav:py-15 py-20`}>
+          <div className='max-w-prose-xl mb-15'>
+            <div className='text-xs-plus tracking-caps-xl text-orange-4 flex items-center gap-2.5 font-bold uppercase'>
+              <span className='bg-orange shadow-glow-orange h-2 w-2 rounded-full' />
               Download
             </div>
-            <h1 className='mt-5 mb-[18px] text-[clamp(38px,5vw,62px)] leading-[1.02] font-[620] tracking-[-.065em]'>
+            <h1 className='text-display font-semibold-plus tracking-tighter-plus mt-5 mb-4.5 leading-tight'>
               Get Mars for your platform
             </h1>
-            <p className='text-[18px] text-[#8b96a6]'>
+            <p className='text-muted-2 text-lg'>
               Download the desktop app or use the CLI from source.
             </p>
           </div>
 
-          <div className='grid grid-cols-3 gap-4 max-[850px]:grid-cols-1'>
+          <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
             {downloads.map((item) => (
               <article
                 key={item.platform}
-                className='rounded-[13px] border border-[#1e2b38] bg-[linear-gradient(145deg,#151f2b,#101720)] p-7'>
-                <div className='mb-6 text-3xl'>{item.icon}</div>
-                <h2 className='mb-2 text-xl tracking-[-.04em]'>{item.platform}</h2>
-                <p className='mb-6 text-[13px] text-[#8b96a6]'>{item.description}</p>
+                className='border-line-2 bg-feature-card rounded-xl border p-7'>
+                <div className='mb-6 text-3xl'><item.icon /></div>
+                <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
+                <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
                 <div className='flex flex-col gap-2'>
                   {item.links.map((link) => (
                     <a
                       key={link.label}
-                      className='inline-flex items-center gap-[14px] rounded-lg border border-[#f06b4d] bg-[#f06b4d] px-[18px] py-[13px] text-[13px] font-[650] text-[#fff7ed] shadow-[0_10px_30px_#f06b4d25] transition-[transform] duration-200 hover:-translate-y-0.5'
+                      className='border-orange bg-orange text-sm-plus font-bold-plus text-ink-4 shadow-btn-orange inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
                       href={link.href}>
                       {link.label} <span aria-hidden='true'>↗</span>
                     </a>
@@ -93,27 +74,21 @@ export default function DownloadsPage() {
             ))}
           </div>
 
-          <div className='mt-12 rounded-[13px] border border-[#1e2b38] bg-[#111a25] p-7'>
+          <div className='border-line-2 bg-panel-3 mt-12 rounded-xl border p-7'>
             <h3 className='mb-2 text-lg'>Install via Cargo</h3>
-            <p className='mb-4 text-[13px] text-[#8b96a6]'>Build and install the CLI from source</p>
-            <code className='block rounded-lg border border-[#1e2b38] bg-[#0b1118] px-4 py-3 font-mono text-sm'>
+            <p className='text-sm-plus text-muted-2 mb-4'>Build and install the CLI from source</p>
+            <code className='border-line-2 bg-bg-alt block rounded-lg border px-4 py-3 font-mono text-sm'>
               cargo install --git https://github.com/hieudoanm/mars mars-cli
             </code>
           </div>
         </section>
       </main>
 
-      <footer
-        className={`${sectionShell} flex items-center justify-between gap-5 py-[30px] text-[11px] text-[#6d7a8a] max-[520px]:flex-col max-[520px]:items-start`}>
-        <a
-          className='inline-flex items-center gap-2.5 text-[19px] font-[650] tracking-[-.03em] text-[#d8dde5]'
-          href='/'>
-          <img className='h-6 w-6 rounded-lg' src='/images/svg/mars-logo.svg' alt='' />
-          <span>Mars</span>
-        </a>
-        <span>Explore ideas. Execute code. Discover possibilities.</span>
-        <span>MIT licensed · Built with Rust</span>
-      </footer>
+      <Footer
+        className={`${sectionShell} text-xs-plus text-faint-2 max-sm-nav:flex-col max-sm-nav:items-start flex items-center justify-between gap-5 py-7.5`}
+      />
     </div>
   );
-}
+};
+
+export default DownloadsPage;

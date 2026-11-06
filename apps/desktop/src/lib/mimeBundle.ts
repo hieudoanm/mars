@@ -16,7 +16,7 @@ const CHART_MIME_TYPES = [
   'application/vnd.vega-lite+json',
 ];
 
-export function mimeValueToString(value: unknown): string | null {
+export const mimeValueToString = (value: unknown): string | null => {
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) {
     const parts: string[] = [];
@@ -27,13 +27,13 @@ export function mimeValueToString(value: unknown): string | null {
     return parts.join('');
   }
   return null;
-}
+};
 
-export function isImageMime(mimeType: string): boolean {
+export const isImageMime = (mimeType: string): boolean => {
   return IMAGE_MIME_TYPES.includes(mimeType);
-}
+};
 
-export function selectMime(data: MimeBundleData): SelectedMime | null {
+export const selectMime = (data: MimeBundleData): SelectedMime | null => {
   for (const mimeType of IMAGE_MIME_TYPES) {
     const value = mimeValueToString(data[mimeType]);
     if (value !== null) return { kind: 'image', mimeType, value };
@@ -62,9 +62,9 @@ export function selectMime(data: MimeBundleData): SelectedMime | null {
   if (text !== null) return { kind: 'text', value: text };
 
   return null;
-}
+};
 
-export function imageDataUri(mimeType: string, value: string): string {
+export const imageDataUri = (mimeType: string, value: string): string => {
   const data = value.trim();
   if (data.startsWith('data:')) return data;
 
@@ -74,11 +74,11 @@ export function imageDataUri(mimeType: string, value: string): string {
   }
 
   return `data:${mimeType};base64,${data}`;
-}
+};
 
-function utf8ToBase64(value: string): string {
+const utf8ToBase64 = (value: string): string => {
   const bytes = new TextEncoder().encode(value);
   let binary = '';
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary);
-}
+};

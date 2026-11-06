@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import type { NotebookCell } from '../lib/types';
+import type { NotebookCell } from '../types/types';
 
 type KeyboardShortcutsOptions = {
   cells: NotebookCell[];
@@ -21,7 +21,7 @@ type KeyboardShortcutsOptions = {
   duplicateSelected: () => void;
 };
 
-export function useKeyboardShortcuts({
+export const useKeyboardShortcuts = ({
   cells,
   selectedIndex,
   mode,
@@ -39,7 +39,7 @@ export function useKeyboardShortcuts({
   convertSelected,
   moveSelected,
   duplicateSelected,
-}: KeyboardShortcutsOptions): void {
+}: KeyboardShortcutsOptions): void => {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const modifier = event.metaKey || event.ctrlKey;
@@ -150,4 +150,4 @@ export function useKeyboardShortcuts({
     moveSelected,
     duplicateSelected,
   ]);
-}
+};

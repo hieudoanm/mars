@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
 
 concurrency:
@@ -199,3 +199,29 @@ jobs:
 
       - name: Build
         run: cargo build --target wasm32-wasip1 -p mars-zed
+
+  deploy-landing:
+    name: Deploy Landing
+    needs: landing
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: pnpm/action-setup@v6.1.1
+        with:
+          version: "12.18.0"
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: "26.13.0"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm run landing:build
+      - uses: actions/configure-pages@v6.0.0
+      - uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: apps/landing/out
+      - id: deployment
+        uses: actions/deploy-pages@v5.0.0

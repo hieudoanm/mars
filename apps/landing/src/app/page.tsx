@@ -1,18 +1,20 @@
-import Navbar from '../components/Navbar';
-import Hero from '../components/Hero';
-import Bands from '../components/Bands';
-import WhyMars from '../components/WhyMars';
-import Workflow from '../components/Workflow';
-import BuiltDifferent from '../components/BuiltDifferent';
-import Tools from '../components/Tools';
-import GetStarted from '../components/GetStarted';
-import Footer from '../components/Footer';
+import type { FC } from 'react';
+import type { NextPage } from 'next';
+import Navbar from '../components/layout/Navbar';
+import Hero from '../components/home/Hero';
+import Bands from '../components/home/Bands';
+import WhyMars from '../components/home/WhyMars';
+import Workflow from '../components/home/Workflow';
+import BuiltDifferent from '../components/home/BuiltDifferent';
+import Tools from '../components/home/Tools';
+import GetStarted from '../components/home/GetStarted';
+import Footer from '../components/layout/Footer';
 
-export default function Page() {
+const Page: FC & NextPage = () => {
   return (
     <div className='relative overflow-hidden'>
-      <div className='pointer-events-none absolute top-20 right-[2%] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle,#d9554420_0,transparent_68%)] blur-[1px]' />
-      <div className='pointer-events-none absolute top-[600px] left-[-250px] h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle,#28405d30_0,transparent_70%)] blur-[1px]' />
+      <div className='animate-drift pointer-events-none absolute top-20 right-1/12 h-130 w-130 rounded-full bg-hero-glow-1 blur-xs' />
+      <div className='animate-drift-reverse pointer-events-none absolute top-150 -left-62 h-138 w-138 rounded-full bg-hero-glow-2 blur-xs' />
       <Navbar />
       <main>
         <Hero />
@@ -26,4 +28,6 @@ export default function Page() {
       <Footer />
     </div>
   );
-}
+};
+
+export default Page;

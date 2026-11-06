@@ -10,7 +10,7 @@ import {
   serializeNotebook,
   updateCellSource,
 } from '../notebookOperations';
-import type { Notebook } from '../types';
+import type { Notebook } from '../../types/types';
 
 const baseNotebook: Notebook = {
   format_version: 2,

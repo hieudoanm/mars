@@ -11,13 +11,13 @@ const DEFAULT_PREFERENCES: EditorPreferences = {
   folding: true,
 };
 
-function readFontSize() {
+const readFontSize = () => {
   const stored = window.localStorage.getItem('mars.editor.fontSize');
   const value = stored ? Number(stored) : DEFAULT_FONT_SIZE;
   return Number.isFinite(value) && value >= 10 && value <= 28 ? value : DEFAULT_FONT_SIZE;
-}
+};
 
-function readPreferences(): EditorPreferences {
+const readPreferences = (): EditorPreferences => {
   try {
     const stored = JSON.parse(
       window.localStorage.getItem('mars.editor.preferences') ?? '{}',
@@ -29,9 +29,9 @@ function readPreferences(): EditorPreferences {
   } catch {
     return DEFAULT_PREFERENCES;
   }
-}
+};
 
-export function useEditorPreferences() {
+export const useEditorPreferences = () => {
   const [fontSize, setFontSize] = useState(readFontSize);
   const [preferences, setPreferences] = useState(readPreferences);
 
@@ -53,4 +53,4 @@ export function useEditorPreferences() {
     preferences,
     setPreferences,
   };
-}
+};

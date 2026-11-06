@@ -13,7 +13,10 @@ describe('useEditorPreferences', () => {
 
   it('reads stored', () => {
     localStorage.setItem('mars.editor.fontSize', '20');
-    localStorage.setItem('mars.editor.preferences', JSON.stringify({ autocomplete: false, folding: true }));
+    localStorage.setItem(
+      'mars.editor.preferences',
+      JSON.stringify({ autocomplete: false, folding: true }),
+    );
     const { result } = renderHook(() => useEditorPreferences());
     expect(result.current.fontSize).toBe(20);
     expect(result.current.preferences.autocomplete).toBe(false);
@@ -38,6 +41,9 @@ describe('useEditorPreferences', () => {
   it('setPreferences persists', () => {
     const { result } = renderHook(() => useEditorPreferences());
     act(() => result.current.setPreferences({ autocomplete: false, folding: false }));
-    expect(JSON.parse(localStorage.getItem('mars.editor.preferences')!)).toEqual({ autocomplete: false, folding: false });
+    expect(JSON.parse(localStorage.getItem('mars.editor.preferences')!)).toEqual({
+      autocomplete: false,
+      folding: false,
+    });
   });
 });
