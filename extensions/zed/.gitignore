@@ -1,0 +1,5 @@
+target/
+*.wasm
+*.rlib
+grammars/tree-sitter-mars/node_modules/
+grammars/tree-sitter-mars/build/

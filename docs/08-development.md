@@ -35,11 +35,11 @@ make benchmark CELLS=16
 
 The workspace package names are:
 
-| Package | Directory | Main commands |
-| --- | --- | --- |
-| `@mars/desktop` | `apps/desktop` | `dev`, `build`, `check`, `test:e2e`, `tauri` |
-| `@mars/vscode` | `apps/vscode` | `check`, `build`, `compile`, `package` |
-| `@mars/landing` | `apps/landing` | `dev`, `build`, `check`, `serve` |
+| Package         | Directory           | Main commands                                |
+| --------------- | ------------------- | -------------------------------------------- |
+| `@mars/desktop` | `apps/desktop`      | `dev`, `build`, `check`, `test:e2e`, `tauri` |
+| `@mars/vscode`  | `extensions/vscode` | `check`, `build`, `compile`, `package`       |
+| `@mars/landing` | `apps/landing`      | `dev`, `build`, `check`, `serve`             |
 
 Use Turbo filters when working on one package:
 

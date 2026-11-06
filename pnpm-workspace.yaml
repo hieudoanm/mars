@@ -1,6 +1,6 @@
 packages:
   - apps/desktop
-  - apps/vscode
+  - extensions/vscode
   - apps/landing
 
 onlyBuiltDependencies:

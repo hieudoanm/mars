@@ -1,0 +1,6 @@
+name = "Mars"
+grammar = "mars"
+path_suffixes = ["mars"]
+line_comments = ["//"]
+tab_size = 2
+hard_tabs = false

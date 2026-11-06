@@ -1,0 +1,21 @@
+{
+  "name": "tree-sitter-mars",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for Mars notebooks (.mars)",
+  "main": "build/parser.js",
+  "scripts": {
+    "build": "tree-sitter build --wasm"
+  },
+  "keywords": [
+    "tree-sitter",
+    "mars",
+    "notebook"
+  ],
+  "tree-sitter": [
+    {
+      "scope": "source.mars",
+      "file-types": ["mars"]
+    }
+  ],
+  "license": "MIT"
+}

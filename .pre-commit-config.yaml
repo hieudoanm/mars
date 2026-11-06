@@ -1,7 +1,7 @@
 default_language_version:
   python: python3
 
-exclude: ^(target/|apps/(desktop|vscode)/node_modules/|apps/desktop/dist/|apps/vscode/.*\.vsix$)
+exclude: ^(target/|apps/desktop/node_modules/|extensions/vscode/node_modules/|apps/desktop/dist/|extensions/vscode/.*\.vsix$)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -51,7 +51,7 @@ repos:
         name: VS Code extension package
         entry: npm run package
         language: system
-        files: ^apps/vscode/(src/|syntaxes/|assets/|package(-lock)?\.json|tsconfig\.json)
+        files: ^extensions/vscode/(src/|syntaxes/|assets/|package(-lock)?\.json|tsconfig\.json)
         pass_filenames: false
         require_serial: true
 

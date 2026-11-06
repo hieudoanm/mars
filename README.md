@@ -147,7 +147,7 @@ npm run test:e2e
 
 ## VS Code extension
 
-- Optional companion extension under [`apps/vscode`](apps/vscode).
+- Optional companion extension under [`extensions/vscode`](extensions/vscode).
 - Provides `.mars` syntax highlighting, cell navigation, and CLI-backed HTML export.
 - Tauri desktop app remains canonical notebook experience.
 - Extension reuses Mars CLI rather than duplicating runtime or persistence layer.

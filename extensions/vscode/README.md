@@ -40,7 +40,7 @@ pnpm run vscode:package
 Equivalent package-local commands are:
 
 ```bash
-cd apps/vscode
+cd extensions/vscode
 npm install
 npm run compile
 npm run package

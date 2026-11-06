@@ -17,7 +17,7 @@ Assets:
 PNG exports are available under [`assets/images/`](../assets/images/) at the
 same dimensions. The desktop app uses copies under
 `apps/desktop/public/branding/`, and the VS Code package includes copies under
-`apps/vscode/assets/`.
+`extensions/vscode/assets/`.
 
 All SVGs are self-contained with no external fonts, images, or network
 dependencies. Keep the square marks on dark or transparent surfaces; use the

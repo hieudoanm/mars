@@ -1,0 +1,17 @@
+id = "mars"
+name = "Mars Notebooks"
+description = "Language support and notebook execution for .mars files."
+version = "0.1.0"
+schema_version = 1
+authors = ["mars-project"]
+repository = "https://github.com/hieudoanm/mars"
+
+[[languages]]
+path = "languages/mars"
+
+[grammars.mars]
+repository = "file://./grammars/tree-sitter-mars"
+
+[language_servers.mars-lsp]
+name = "Mars Language Server"
+languages = ["mars"]

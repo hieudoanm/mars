@@ -72,7 +72,7 @@ placing business logic in the Tauri command handlers.
   owns Tauri kernel/file calls, `useKeyboardShortcuts.ts` owns command-mode
   shortcuts, `diagnostics.ts` translates compiler locations for CodeMirror,
   and `OutputView.tsx` owns rich output rendering.
-- The optional `apps/vscode` extension is a thin editor adapter. It provides
+- The optional `extensions/vscode` extension is a thin editor adapter. It provides
   syntax recognition, cell navigation, and CLI-backed preview/export while
   keeping execution and persistence in Mars itself.
 

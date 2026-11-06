@@ -38,3 +38,6 @@ pnpm-store/
 # Python virtualenvs
 examples/*/.venv/
 .venv/
+
+# WASM Test
+wasm-test/
