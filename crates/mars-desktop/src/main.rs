@@ -15,7 +15,17 @@ actions!(
         SaveNotebook,
         RunAllCells,
         RestartKernel,
-        Quit
+        Quit,
+        ToggleCommandMode,
+        EditMode,
+        InsertAbove,
+        InsertBelow,
+        ToMarkdown,
+        ToCode,
+        DeleteCell,
+        RunCell,
+        SelectPrev,
+        SelectNext
     ]
 );
 
@@ -31,6 +41,18 @@ fn main() {
             KeyBinding::new("cmd-shift-enter", RunAllCells, None),
             KeyBinding::new("cmd-r", RestartKernel, None),
             KeyBinding::new("cmd-q", Quit, None),
+            KeyBinding::new("shift-enter", RunCell, None),
+            KeyBinding::new("escape", ToggleCommandMode, None),
+            KeyBinding::new("a", InsertAbove, Some("MarsCommand")),
+            KeyBinding::new("b", InsertBelow, Some("MarsCommand")),
+            KeyBinding::new("m", ToMarkdown, Some("MarsCommand")),
+            KeyBinding::new("y", ToCode, Some("MarsCommand")),
+            KeyBinding::new("d d", DeleteCell, Some("MarsCommand")),
+            KeyBinding::new("r", RunCell, Some("MarsCommand")),
+            KeyBinding::new("s", SaveNotebook, Some("MarsCommand")),
+            KeyBinding::new("enter", EditMode, Some("MarsCommand")),
+            KeyBinding::new("up", SelectPrev, Some("MarsCommand")),
+            KeyBinding::new("down", SelectNext, Some("MarsCommand")),
         ]);
         let bounds = Bounds::centered(None, size(px(1120.), px(760.)), cx);
         let notebook_path = std::env::args().nth(1);

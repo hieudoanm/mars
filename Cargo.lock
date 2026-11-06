@@ -4688,6 +4688,7 @@ dependencies = [
 name = "mars-desktop"
 version = "0.0.1"
 dependencies = [
+ "base64 0.23.1",
  "gpui-component",
  "gpui-kit-phosphor",
  "gpui-pre",
@@ -4696,6 +4697,7 @@ dependencies = [
  "mars-document",
  "mars-kernel",
  "mars-protocol",
+ "mars-renderer",
  "serde_json",
 ]
 

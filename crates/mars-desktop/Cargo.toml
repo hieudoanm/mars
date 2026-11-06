@@ -17,6 +17,8 @@ gpui-platform = { package = "gpui-pre-platform", version = "=0.3.9", features = 
 ] }
 gpui-component = { version = "=0.7.3", features = ["tree-sitter-rust"] }
 gpui-kit-phosphor = "=0.1.0"
+base64.workspace = true
+mars-renderer = { path = "../mars-renderer" }
 mars-core = { path = "../mars-core" }
 mars-document = { path = "../mars-document" }
 mars-kernel = { path = "../mars-kernel" }

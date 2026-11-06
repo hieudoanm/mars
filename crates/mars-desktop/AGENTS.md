@@ -47,10 +47,11 @@ This crate replaces the earlier Tauri+React approach. The Tauri app still lives 
 ## Current limitations (v3 scaffold)
 
 - Code cells have tree-sitter Rust syntax highlighting, auto-indent and bracket handling via `EditorState`; Markdown cells have an opt-in styled preview (headings, bold/italic/code spans, fenced blocks); Raw cells are plain textareas.
-- Outputs render as plain text; rich outputs (HTML, images, LaTeX, charts) show placeholders.
-- Cell add (code/markdown at end), insert-below, duplicate, delete, reorder (up/down), clear outputs, and Code↔Markdown/Raw toggle are implemented.
+- Outputs: text/errors styled blocks; `Output::Image` renders via `img()` (raster) or `svg().data()` (SVG); `Output::Chart` renders through `mars_renderer::chart::render_chart_svg` + `svg().data()`; `MimeBundle` prefers embedded `image/*` entries. `Html`/`Latex`/`Table` still render as text placeholders (no webview/KaTeX in GPUI).
+- Cell add (code/markdown at end), insert-below/above, duplicate, delete, reorder (up/down), clear outputs, Code↔Markdown/Raw toggle, per-cell markdown preview, and per-cell "running…" indicator are implemented. Execution results stream per-cell over an mpsc channel so `run_all` updates progress incrementally.
 - `dirty` tracks unsaved changes (set by edits and cell ops, cleared on save) and shows as `•` in the title bar.
-- No autosave, no per-cell keyboard shortcuts beyond the toolbar/global bindings.
+- Autosave: a detached task polls every 2s and silently `save_atomic`s when `dirty` and a path exists.
+- Keyboard: Jupyter-style command mode. `escape` toggles command mode (root focus + `key_context("MarsCommand")`); in command mode `a`/`b` insert above/below, `m`/`y` convert, `d d` delete, `r` run, `s` save, `enter` return to edit, `up`/`down` move selection. `shift-enter` runs the selected cell from anywhere. Cell cards are stateful (`cell-card-{id}`) and click-selects; the selected card gets an accent border in command mode. Command-mode keybindings are scoped to the `MarsCommand` context so they can never hijack typing in editors.
 
 ## Testing
 

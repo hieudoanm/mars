@@ -1,6 +1,12 @@
 use crate::markdown_view::markdown_preview;
 use crate::output_text::output_lines;
-use crate::{NewNotebook, OpenNotebook, Quit, RestartKernel, RunAllCells, SaveNotebook};
+use crate::{
+    DeleteCell, EditMode, InsertAbove, InsertBelow, NewNotebook, OpenNotebook, Quit, RestartKernel,
+    RunAllCells, RunCell, SaveNotebook, SelectNext, SelectPrev, ToCode, ToMarkdown,
+    ToggleCommandMode,
+};
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use gpui::prelude::FluentBuilder;
 use gpui::*;
 use gpui_component::Sizable as _;
 use gpui_component::input::{Editor, EditorState, InputEvent, Textarea, TextareaState};
@@ -10,8 +16,11 @@ use mars_document::{Cell, Notebook, load, save_atomic};
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
 use std::collections::{HashMap, HashSet};
+use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
+use std::sync::mpsc::{self, TryRecvError};
 use std::sync::{Arc, Mutex, atomic::AtomicBool};
+use std::time::Duration;
 
 pub(crate) const BG: u32 = 0x141414;
 pub(crate) const PANEL: u32 = 0x1c1c1c;
@@ -40,6 +49,9 @@ pub struct NotebookApp {
     dirty: bool,
     scroll_handle: ScrollHandle,
     preview_cells: HashSet<CellId>,
+    running_cells: HashSet<usize>,
+    command_mode: bool,
+    selected_cell: usize,
 }
 
 impl NotebookApp {
@@ -68,11 +80,33 @@ impl NotebookApp {
             dirty: false,
             scroll_handle: ScrollHandle::new(),
             preview_cells: HashSet::new(),
+            running_cells: HashSet::new(),
+            command_mode: false,
+            selected_cell: 0,
         };
         if let Some(path) = path {
             this.open_path(PathBuf::from(path), cx);
         }
         this.ensure_editors(window, cx);
+
+        let autosave_executor = cx.background_executor().clone();
+        cx.spawn(async move |this: WeakEntity<Self>, cx: &mut AsyncApp| {
+            loop {
+                autosave_executor.timer(Duration::from_secs(2)).await;
+                if this
+                    .update(cx, |this, cx| {
+                        if this.dirty {
+                            this.autosave(cx);
+                        }
+                    })
+                    .is_err()
+                {
+                    break;
+                }
+            }
+        })
+        .detach();
+
         this
     }
 
@@ -224,6 +258,17 @@ impl NotebookApp {
         .detach();
     }
 
+    fn autosave(&mut self, cx: &mut Context<Self>) {
+        let Some(path) = self.path.clone() else {
+            return;
+        };
+        match save_atomic(&self.notebook, &path) {
+            Ok(()) => self.dirty = false,
+            Err(error) => self.status = format!("Autosave failed: {error}"),
+        }
+        cx.notify();
+    }
+
     fn write_to(&mut self, path: &Path, cx: &mut Context<Self>) {
         match save_atomic(&self.notebook, path) {
             Ok(()) => {
@@ -247,6 +292,7 @@ impl NotebookApp {
         }
         let source = self.notebook.cells[index].source.clone();
         self.executing = true;
+        self.running_cells.insert(index);
         self.status = format!("Running cell {}", index + 1);
         cx.notify();
         self.spawn_execution(vec![(index, source)], cx);
@@ -267,6 +313,9 @@ impl NotebookApp {
             return;
         }
         self.executing = true;
+        for (index, _) in &jobs {
+            self.running_cells.insert(*index);
+        }
         self.status = format!("Running {} code cells", jobs.len());
         cx.notify();
         self.spawn_execution(jobs, cx);
@@ -280,31 +329,45 @@ impl NotebookApp {
             return;
         };
         let executor = cx.background_executor().clone();
+        let (tx, rx) = mpsc::channel::<(usize, KernelResponse)>();
+        executor
+            .spawn(async move {
+                let Ok(mut kernel) = kernel.lock() else {
+                    return;
+                };
+                for (index, source) in jobs {
+                    let response = kernel.handle_with_cancellation(
+                        RequestEnvelope::new(KernelRequest::Execute {
+                            source,
+                            timeout_millis: None,
+                        }),
+                        Arc::new(AtomicBool::new(false)),
+                    );
+                    if tx.send((index, response.response)).is_err() {
+                        return;
+                    }
+                }
+            })
+            .detach();
+        let timer_executor = executor.clone();
         cx.spawn(async move |this: WeakEntity<Self>, cx: &mut AsyncApp| {
-            let results = executor
-                .spawn(async move {
-                    let Ok(mut kernel) = kernel.lock() else {
-                        return Vec::new();
-                    };
-                    jobs.into_iter()
-                        .map(|(index, source)| {
-                            let response = kernel.handle_with_cancellation(
-                                RequestEnvelope::new(KernelRequest::Execute {
-                                    source,
-                                    timeout_millis: None,
-                                }),
-                                Arc::new(AtomicBool::new(false)),
-                            );
-                            (index, response.response)
-                        })
-                        .collect::<Vec<_>>()
-                })
-                .await;
+            loop {
+                match rx.try_recv() {
+                    Ok((index, response)) => {
+                        let _ = this.update(cx, |this, cx| {
+                            this.running_cells.remove(&index);
+                            this.apply_execution(index, response);
+                            cx.notify();
+                        });
+                    }
+                    Err(TryRecvError::Empty) => {}
+                    Err(TryRecvError::Disconnected) => break,
+                }
+                timer_executor.timer(Duration::from_millis(20)).await;
+            }
             let _ = this.update(cx, |this, cx| {
                 this.executing = false;
-                for (index, response) in results {
-                    this.apply_execution(index, response);
-                }
+                this.running_cells.clear();
                 cx.notify();
             });
         })
@@ -450,6 +513,123 @@ impl NotebookApp {
         cx.notify();
     }
 
+    fn select_cell(&mut self, index: usize, cx: &mut Context<Self>) {
+        self.selected_cell = index.min(self.notebook.cells.len().saturating_sub(1));
+        cx.notify();
+    }
+
+    fn toggle_command_mode(
+        &mut self,
+        _: &ToggleCommandMode,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.command_mode = !self.command_mode;
+        if self.command_mode {
+            window.focus(&self.focus_handle, cx);
+        } else {
+            self.focus_selected_editor(window, cx);
+        }
+        cx.notify();
+    }
+
+    fn edit_mode(&mut self, _: &EditMode, window: &mut Window, cx: &mut Context<Self>) {
+        self.command_mode = false;
+        self.focus_selected_editor(window, cx);
+        cx.notify();
+    }
+
+    fn focus_selected_editor(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(cell) = self.notebook.cells.get(self.selected_cell) else {
+            return;
+        };
+        let handle = if cell.cell_type == CellType::Code {
+            self.code_editors
+                .get(&cell.id)
+                .map(|state| state.read(cx).focus_handle(cx))
+        } else {
+            self.editors
+                .get(&cell.id)
+                .map(|state| state.read(cx).focus_handle(cx))
+        };
+        if let Some(handle) = handle {
+            window.focus(&handle, cx);
+        }
+    }
+
+    fn select_adjacent(&mut self, delta: isize, cx: &mut Context<Self>) {
+        let len = self.notebook.cells.len();
+        if len == 0 {
+            return;
+        }
+        let next = (self.selected_cell as isize + delta).clamp(0, len as isize - 1) as usize;
+        self.selected_cell = next;
+        cx.notify();
+    }
+
+    fn set_cell_type(&mut self, index: usize, new_type: CellType, cx: &mut Context<Self>) {
+        let clears_outputs = matches!(new_type, CellType::Markdown);
+        match self.notebook.cell_mut(index) {
+            Ok(cell) => {
+                cell.cell_type = new_type.clone();
+                if clears_outputs {
+                    cell.outputs.clear();
+                    cell.execution_count = None;
+                }
+                self.dirty = true;
+                self.status = format!("Cell {} set to {:?}", index + 1, new_type);
+                cx.notify();
+            }
+            Err(error) => self.status = format!("Type change failed: {error}"),
+        }
+    }
+
+    fn command_insert_above(&mut self, _: &InsertAbove, _: &mut Window, cx: &mut Context<Self>) {
+        let index = self.selected_cell;
+        self.insert_cell(index, CellType::Code, cx);
+        self.selected_cell = index;
+    }
+
+    fn command_insert_below(&mut self, _: &InsertBelow, _: &mut Window, cx: &mut Context<Self>) {
+        let index = self.selected_cell;
+        let cell_type = self
+            .notebook
+            .cells
+            .get(index)
+            .map(|cell| cell.cell_type.clone())
+            .unwrap_or(CellType::Code);
+        self.insert_cell(index + 1, cell_type, cx);
+        self.selected_cell = index + 1;
+    }
+
+    fn command_to_markdown(&mut self, _: &ToMarkdown, _: &mut Window, cx: &mut Context<Self>) {
+        self.set_cell_type(self.selected_cell, CellType::Markdown, cx);
+    }
+
+    fn command_to_code(&mut self, _: &ToCode, _: &mut Window, cx: &mut Context<Self>) {
+        self.set_cell_type(self.selected_cell, CellType::Code, cx);
+    }
+
+    fn command_delete(&mut self, _: &DeleteCell, _: &mut Window, cx: &mut Context<Self>) {
+        let index = self
+            .selected_cell
+            .min(self.notebook.cells.len().saturating_sub(1));
+        self.delete_cell(index, cx);
+        self.selected_cell = index.min(self.notebook.cells.len().saturating_sub(1));
+    }
+
+    fn command_run(&mut self, _: &RunCell, _: &mut Window, cx: &mut Context<Self>) {
+        self.execute_cell(self.selected_cell, cx);
+    }
+
+    fn command_select_prev(&mut self, _: &SelectPrev, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_adjacent(-1, cx);
+    }
+
+    fn command_select_next(&mut self, _: &SelectNext, _: &mut Window, cx: &mut Context<Self>) {
+        self.select_adjacent(1, cx);
+    }
+
     fn toggle_preview(&mut self, index: usize, cx: &mut Context<Self>) {
         if let Some(cell) = self.notebook.cells.get(index) {
             if self.preview_cells.contains(&cell.id) {
@@ -495,6 +675,37 @@ impl Render for NotebookApp {
         let on_restart =
             cx.listener(|this: &mut Self, _: &RestartKernel, _, cx| this.restart_kernel(cx));
         let on_quit = cx.listener(|_: &mut Self, _: &Quit, _, cx| cx.quit());
+        let on_toggle_cmd =
+            cx.listener(|this: &mut Self, action: &ToggleCommandMode, window, cx| {
+                this.toggle_command_mode(action, window, cx)
+            });
+        let on_edit_mode = cx.listener(|this: &mut Self, action: &EditMode, window, cx| {
+            this.edit_mode(action, window, cx)
+        });
+        let on_insert_above = cx.listener(|this: &mut Self, action: &InsertAbove, window, cx| {
+            this.command_insert_above(action, window, cx)
+        });
+        let on_insert_below = cx.listener(|this: &mut Self, action: &InsertBelow, window, cx| {
+            this.command_insert_below(action, window, cx)
+        });
+        let on_to_md = cx.listener(|this: &mut Self, action: &ToMarkdown, window, cx| {
+            this.command_to_markdown(action, window, cx)
+        });
+        let on_to_code = cx.listener(|this: &mut Self, action: &ToCode, window, cx| {
+            this.command_to_code(action, window, cx)
+        });
+        let on_delete = cx.listener(|this: &mut Self, action: &DeleteCell, window, cx| {
+            this.command_delete(action, window, cx)
+        });
+        let on_run = cx.listener(|this: &mut Self, action: &RunCell, window, cx| {
+            this.command_run(action, window, cx)
+        });
+        let on_prev = cx.listener(|this: &mut Self, action: &SelectPrev, window, cx| {
+            this.command_select_prev(action, window, cx)
+        });
+        let on_next = cx.listener(|this: &mut Self, action: &SelectNext, window, cx| {
+            this.command_select_next(action, window, cx)
+        });
 
         let entity = cx.entity();
         let cells = self
@@ -543,12 +754,27 @@ impl Render for NotebookApp {
         div()
             .id("root")
             .track_focus(&self.focus_handle)
+            .key_context(if self.command_mode {
+                "MarsCommand"
+            } else {
+                "MarsNotebook"
+            })
             .on_action(on_new)
             .on_action(on_open)
             .on_action(on_save)
             .on_action(on_run_all)
             .on_action(on_restart)
             .on_action(on_quit)
+            .on_action(on_toggle_cmd)
+            .on_action(on_edit_mode)
+            .on_action(on_insert_above)
+            .on_action(on_insert_below)
+            .on_action(on_to_md)
+            .on_action(on_to_code)
+            .on_action(on_delete)
+            .on_action(on_run)
+            .on_action(on_prev)
+            .on_action(on_next)
             .size_full()
             .flex()
             .flex_col()
@@ -682,7 +908,7 @@ impl NotebookApp {
             )
     }
 
-    fn render_cell(&self, index: usize, cell: &Cell, entity: &Entity<Self>) -> Div {
+    fn render_cell(&self, index: usize, cell: &Cell, entity: &Entity<Self>) -> AnyElement {
         let is_code = cell.cell_type == CellType::Code;
         let type_label = match cell.cell_type {
             CellType::Markdown => "Markdown",
@@ -695,6 +921,7 @@ impl NotebookApp {
             .map(|count| format!("[{count}]"))
             .unwrap_or_default();
 
+        let is_running = self.running_cells.contains(&index);
         let mut header = div()
             .flex()
             .flex_row()
@@ -715,7 +942,10 @@ impl NotebookApp {
                             .text_xs()
                             .text_color(rgb(MUTED))
                             .child(execution_label),
-                    ),
+                    )
+                    .when(is_running, |this| {
+                        this.child(div().text_xs().text_color(rgb(ACCENT)).child("running…"))
+                    }),
             );
         let type_icon = if is_code {
             PhosphorIcon::FileCode
@@ -831,21 +1061,28 @@ impl NotebookApp {
                 .child(cell.source.clone())
         };
 
+        let is_selected = self.command_mode && index == self.selected_cell;
+        let card_entity = entity.clone();
         let mut card = div()
+            .id(SharedString::from(format!("cell-card-{}", cell.id)))
             .flex()
             .flex_col()
             .rounded_lg()
             .border_1()
-            .border_color(rgb(BORDER))
+            .border_color(rgb(if is_selected { ACCENT } else { BORDER }))
             .bg(rgb(PANEL))
             .overflow_hidden()
+            .cursor_pointer()
+            .on_click(move |_, _, cx| {
+                card_entity.update(cx, |this, cx| this.select_cell(index, cx));
+            })
             .child(header)
             .child(body);
 
         for output in &cell.outputs {
             card = card.child(render_output(output));
         }
-        card
+        card.into_any_element()
     }
 }
 
@@ -924,8 +1161,38 @@ fn icon_button(
         .child(icon)
 }
 
-fn render_output(output: &Output) -> Div {
-    let lines = output_lines(output);
+fn render_output(output: &Output) -> AnyElement {
+    match output {
+        Output::Image { mime_type, data } => render_image_output(mime_type, data),
+        Output::Chart { spec } => {
+            let chart_svg = mars_renderer::chart::render_chart_svg(spec);
+            if chart_svg.trim_start().starts_with("<svg") {
+                div()
+                    .mx_3()
+                    .mb_2()
+                    .px_3()
+                    .py_2()
+                    .child(svg().data(chart_svg.as_bytes()).w_full().max_h(px(320.)))
+                    .into_any_element()
+            } else {
+                output_text_block(&output_lines(output), output)
+            }
+        }
+        Output::MimeBundle { data, .. } => {
+            for (mime, value) in data {
+                if mime.starts_with("image/")
+                    && let Some(encoded) = value.as_str()
+                {
+                    return render_image_output(mime, encoded);
+                }
+            }
+            output_text_block(&output_lines(output), output)
+        }
+        _ => output_text_block(&output_lines(output), output),
+    }
+}
+
+fn output_text_block(lines: &[String], output: &Output) -> AnyElement {
     let (bg, border, color) = match output {
         Output::Error { .. } => (ERROR_BG, Some(ERROR_BORDER), 0xfecaca),
         Output::Text { .. } => (CODE_BG, None, 0xd1d5db),
@@ -945,5 +1212,69 @@ fn render_output(output: &Output) -> Div {
     if let Some(border) = border {
         block = block.border_1().border_color(rgb(border));
     }
-    block
+    block.into_any_element()
+}
+
+fn placeholder_block(text: String) -> AnyElement {
+    div()
+        .mx_3()
+        .mb_2()
+        .px_3()
+        .py_2()
+        .rounded_md()
+        .bg(rgb(CODE_BG))
+        .text_xs()
+        .font_family("Menlo")
+        .text_color(rgb(MUTED))
+        .child(text)
+        .into_any_element()
+}
+
+fn render_image_output(mime_type: &str, data: &str) -> AnyElement {
+    let Ok(bytes) = BASE64.decode(data) else {
+        return placeholder_block(format!("[image: {mime_type}]"));
+    };
+    if mime_type == "image/svg+xml" {
+        return div()
+            .mx_3()
+            .mb_2()
+            .px_3()
+            .py_2()
+            .child(svg().data(&bytes).w_full().max_h(px(360.)))
+            .into_any_element();
+    }
+    let Some(format) = image_format(mime_type) else {
+        return placeholder_block(format!("[image: {mime_type}]"));
+    };
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    mime_type.hash(&mut hasher);
+    data.hash(&mut hasher);
+    let image = Image {
+        format,
+        bytes,
+        id: hasher.finish(),
+    };
+    div()
+        .mx_3()
+        .mb_2()
+        .child(
+            img(ImageSource::Image(Arc::new(image)))
+                .max_w_full()
+                .max_h(px(360.))
+                .object_fit(ObjectFit::Contain),
+        )
+        .into_any_element()
+}
+
+fn image_format(mime_type: &str) -> Option<ImageFormat> {
+    match mime_type {
+        "image/png" => Some(ImageFormat::Png),
+        "image/jpeg" => Some(ImageFormat::Jpeg),
+        "image/gif" => Some(ImageFormat::Gif),
+        "image/webp" => Some(ImageFormat::Webp),
+        "image/bmp" => Some(ImageFormat::Bmp),
+        "image/tiff" => Some(ImageFormat::Tiff),
+        "image/x-icon" | "image/vnd.microsoft.icon" => Some(ImageFormat::Ico),
+        _ => None,
+    }
 }
