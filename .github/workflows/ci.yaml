@@ -94,8 +94,8 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            packages/desktop/src-tauri/target
-          key: ${{ runner.os }}-cargo-desktop-${{ hashFiles('Cargo.lock', 'packages/desktop/src-tauri/Cargo.lock') }}
+            target
+          key: ${{ runner.os }}-cargo-desktop-${{ hashFiles('Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-desktop-
 
       - name: Install Linux dependencies
@@ -116,7 +116,7 @@ jobs:
 
       - name: Zip macOS app bundle
         if: runner.os == 'macOS'
-        working-directory: packages/desktop/src-tauri/target/release/bundle/macos
+        working-directory: target/release/bundle/macos
         run: zip -r Mars.app.zip Mars.app
 
       - name: Build Linux bundles
@@ -135,8 +135,8 @@ jobs:
         with:
           name: mars-desktop-macos
           path: |
-            packages/desktop/src-tauri/target/release/bundle/dmg/*.dmg
-            packages/desktop/src-tauri/target/release/bundle/macos/Mars.app.zip
+            target/release/bundle/dmg/*.dmg
+            target/release/bundle/macos/Mars.app.zip
           if-no-files-found: error
 
       - name: Upload Linux artifacts
@@ -145,9 +145,9 @@ jobs:
         with:
           name: mars-desktop-linux
           path: |
-            packages/desktop/src-tauri/target/release/bundle/deb/*.deb
-            packages/desktop/src-tauri/target/release/bundle/rpm/*.rpm
-            packages/desktop/src-tauri/target/release/bundle/appimage/*.AppImage
+            target/release/bundle/deb/*.deb
+            target/release/bundle/rpm/*.rpm
+            target/release/bundle/appimage/*.AppImage
           if-no-files-found: error
 
       - name: Upload Windows artifacts
@@ -156,8 +156,8 @@ jobs:
         with:
           name: mars-desktop-windows
           path: |
-            packages/desktop/src-tauri/target/release/bundle/msi/*.msi
-            packages/desktop/src-tauri/target/release/bundle/nsis/*.exe
+            target/release/bundle/msi/*.msi
+            target/release/bundle/nsis/*.exe
           if-no-files-found: error
 
   landing-build:
