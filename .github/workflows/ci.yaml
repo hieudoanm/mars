@@ -46,7 +46,7 @@ jobs:
         run: cargo build --release -p mars --locked
 
       - name: Upload CLI binary
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-cli-${{ matrix.os }}
           path: |
@@ -122,7 +122,7 @@ jobs:
 
       - name: Upload macOS artifacts
         if: runner.os == 'macOS'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-desktop-macos
           path: |
@@ -132,7 +132,7 @@ jobs:
 
       - name: Upload Linux artifacts
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-desktop-linux
           path: |
@@ -143,7 +143,7 @@ jobs:
 
       - name: Upload Windows artifacts
         if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-desktop-windows
           path: |
@@ -240,7 +240,7 @@ jobs:
         run: pnpm --filter mars-vscode run package
 
       - name: Upload VSIX artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-vscode-vsix
           path: extensions/vscode/vsix/*.vsix
@@ -281,7 +281,7 @@ jobs:
         run: cargo build --release --target wasm32-wasip1 -p mars-zed
 
       - name: Upload WASM artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-zed-wasm
           path: target/wasm32-wasip1/release/mars_zed.wasm
@@ -294,7 +294,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v5.7.0
         with:
           distribution: temurin
           java-version: "21"
@@ -313,7 +313,7 @@ jobs:
         run: ./gradlew buildPlugin --no-daemon --console=plain
 
       - name: Upload plugin artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: mars-jetbrains-plugin
           path: extensions/jetbrains/build/distributions/*.zip
@@ -328,39 +328,39 @@ jobs:
       contents: write
     steps:
       - name: Download CLI artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: mars-cli-*
           path: dist
           merge-multiple: true
 
       - name: Download desktop artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           pattern: mars-desktop-*
           path: dist
           merge-multiple: true
 
       - name: Download VS Code extension artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: mars-vscode-vsix
           path: dist
 
       - name: Download Zed extension artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: mars-zed-wasm
           path: dist
 
       - name: Download JetBrains extension artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v8.0.2
         with:
           name: mars-jetbrains-plugin
           path: dist
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.6.2
         with:
           tag_name: v0.0.1-${{ github.run_number }}
           name: Mars ${{ github.ref_name }} (${{ github.run_number }})
