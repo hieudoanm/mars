@@ -25,7 +25,7 @@ dependencies {
         bundledModule("com.intellij.modules.json")
         instrumentationTools()
     }
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.15.0")
 }
 
 intellijPlatform {
