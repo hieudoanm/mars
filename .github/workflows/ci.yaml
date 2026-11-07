@@ -45,13 +45,22 @@ jobs:
       - name: Build release binary
         run: cargo build --release -p mars --locked
 
+      # Rename to the Rust target triple so the three OS artifacts don't
+      # collide when merged into the release assets.
+      - name: Rename binary for release
+        shell: bash
+        run: |
+          case "${{ matrix.os }}" in
+            ubuntu-latest) mv target/release/mars mars-x86_64-unknown-linux-gnu ;;
+            macos-latest) mv target/release/mars mars-aarch64-apple-darwin ;;
+            windows-latest) mv target/release/mars.exe mars-x86_64-pc-windows-msvc.exe ;;
+          esac
+
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7
         with:
           name: mars-cli-${{ matrix.os }}
-          path: |
-            target/release/mars
-            target/release/mars.exe
+          path: mars-*
           if-no-files-found: error
 
   desktop-build:
@@ -256,7 +265,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
-          targets: wasm32-wasip1
 
       - name: Cache Cargo dependencies and build outputs
         uses: actions/cache@v6.1.0
@@ -276,6 +284,11 @@ jobs:
 
       - name: Test
         run: cargo test -p mars-zed
+
+      # rust-toolchain.toml pins the toolchain, so the dtolnay `targets` input
+      # above installs the target for `stable`, not for the pinned channel.
+      - name: Install WASM target
+        run: rustup target add wasm32-wasip1
 
       - name: Build WASM extension
         run: cargo build --release --target wasm32-wasip1 -p mars-zed
