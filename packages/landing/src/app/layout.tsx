@@ -15,10 +15,10 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/icons/mars-logo-file.svg', type: 'image/svg+xml' },
-      { url: '/icons/mars-logo-file.png', type: 'image/png', sizes: '512x512' },
+      { url: '/icons/mars-logo.svg', type: 'image/svg+xml' },
+      { url: '/icons/mars-logo.png', type: 'image/png', sizes: '512x512' },
     ],
-    apple: [{ url: '/icons/mars-logo-file.png', sizes: '512x512' }],
+    apple: [{ url: '/icons/mars-logo.png', sizes: '512x512' }],
   },
   openGraph: {
     title: 'Mars - Explore ideas. Execute code.',

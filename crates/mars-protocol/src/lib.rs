@@ -61,7 +61,7 @@ pub enum KernelResponse {
     Execution {
         outputs: Vec<Output>,
         execution_count: u64,
-        duration_millis: u128,
+        duration_millis: u64,
     },
     Status {
         status: ExecutionStatus,
@@ -150,40 +150,4 @@ pub enum KernelStreamEvent {
 pub struct EventEnvelope {
     pub id: String,
     pub event: KernelStreamEvent,
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn request_round_trips_as_json() {
-        let envelope = RequestEnvelope {
-            id: "request-1".to_owned(),
-            request: KernelRequest::Execute {
-                source: "println!(\"hello\");".to_owned(),
-                timeout_millis: None,
-                language: None,
-            },
-        };
-        let json = serde_json::to_string(&envelope).expect("serializes");
-        let restored: RequestEnvelope = serde_json::from_str(&json).expect("deserializes");
-        assert_eq!(envelope, restored);
-    }
-
-    #[test]
-    fn older_execute_requests_default_to_no_timeout() {
-        let json =
-            r#"{"id":"request-1","request":{"type":"execute","source":"println!(\"hello\");"}}"#;
-        let restored: RequestEnvelope = serde_json::from_str(json).expect("deserializes");
-
-        assert_eq!(
-            restored.request,
-            KernelRequest::Execute {
-                source: "println!(\"hello\");".to_owned(),
-                timeout_millis: None,
-                language: None,
-            }
-        );
-    }
 }

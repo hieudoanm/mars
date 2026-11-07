@@ -271,7 +271,7 @@ impl Kernel {
                 KernelResponse::Execution {
                     outputs: result.outputs,
                     execution_count: result.execution_count,
-                    duration_millis: result.duration.as_millis(),
+                    duration_millis: u64::try_from(result.duration.as_millis()).unwrap_or(u64::MAX),
                 }
             }
             Err(error) => {

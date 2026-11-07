@@ -176,7 +176,8 @@ fn mars_chart(spec_json: &str) {
 /// Stable hash of a cell's source, embedded in the generated `// Mars cell`
 /// marker so runtime diagnostics can be mapped back to notebook cells even
 /// when cells execute out of order.
-pub(crate) fn cell_source_hash(source: &str) -> u32 {
+#[doc(hidden)]
+pub fn cell_source_hash(source: &str) -> u32 {
     let mut hash: u32 = 5381;
     for byte in source.bytes() {
         hash = hash.wrapping_mul(33).wrapping_add(u32::from(byte));
@@ -370,37 +371,4 @@ pub(crate) fn render_cell_with_output(source: &str, output: ExpressionOutput) ->
         };
     }
     source.to_owned()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn renders_only_the_current_cell_with_automatic_output() {
-        let cells = vec![
-            "let numbers = vec![1, 2, 3];".to_owned(),
-            "numbers.len()".to_owned(),
-        ];
-        let program = render_program(&cells);
-
-        assert_eq!(program.matches("__MARS_RESULT__").count(), 1);
-        assert!(program.contains("println!(\"__MARS_RESULT__={:?}\", (numbers.len()));"));
-    }
-
-    #[test]
-    fn evaluates_replayed_final_expressions_without_displaying() {
-        let cells = vec!["1 + 1".to_owned(), "2 + 2".to_owned()];
-        let program = render_program(&cells);
-
-        let hash = cell_source_hash("1 + 1");
-        assert!(program.contains(&format!("    // Mars cell 0 {hash}\n    (1 + 1);\n")));
-        assert!(program.contains("println!(\"__MARS_RESULT__={:?}\", (2 + 2));"));
-        assert_eq!(program.matches("__MARS_RESULT__").count(), 1);
-    }
-
-    #[test]
-    fn renders_empty_cells_without_panicking() {
-        assert!(render_program(&[]).ends_with("fn main() {\n}\n"));
-    }
 }

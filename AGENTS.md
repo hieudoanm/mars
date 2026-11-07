@@ -280,6 +280,9 @@ Mars should be independent but interoperable. Implement `.ipynb` import and expo
 
 Testing is mandatory. Implement unit tests, integration tests, and end-to-end tests.
 
+- For crates under `crates/`, keep all Rust tests in crate-level `tests/` directories alongside `src/`; do not add inline `#[cfg(test)]` modules or `#[test]` functions inside `src/`.
+- Rust crates under `crates/` must maintain at least 80% line and function coverage; verify with `make coverage`, which fails below those thresholds.
+
 ## 11. Documentation
 
 Create comprehensive documentation including README.md, CONTRIBUTING.md, architecture docs, notebook format spec, runtime architecture, installation instructions, CLI reference, and known limitations.

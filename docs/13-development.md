@@ -17,9 +17,14 @@ pnpm install
 cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
+make coverage
 pnpm exec turbo run check
 pnpm exec turbo run build
 ```
+
+Rust crates under `crates/` must maintain at least **80% line and function
+coverage**. `make coverage` runs `cargo llvm-cov` with `--fail-under-lines 80`
+and `--fail-under-functions 80`, and is the CI coverage gate.
 
 The root `Makefile` provides short aliases for the Rust and desktop workflows:
 

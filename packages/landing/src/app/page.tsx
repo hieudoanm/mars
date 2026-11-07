@@ -4,6 +4,7 @@ import Navbar from '../components/layout/Navbar';
 import Hero from '../components/home/Hero';
 import Bands from '../components/home/Bands';
 import WhyMars from '../components/home/WhyMars';
+import Demo from '../components/home/Demo';
 import Workflow from '../components/home/Workflow';
 import BuiltDifferent from '../components/home/BuiltDifferent';
 import Tools from '../components/home/Tools';
@@ -20,6 +21,7 @@ const Page: FC & NextPage = () => {
         <Hero />
         <Bands />
         <WhyMars />
+        <Demo />
         <Workflow />
         <BuiltDifferent />
         <Tools />

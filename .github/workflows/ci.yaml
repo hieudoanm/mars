@@ -334,7 +334,14 @@ jobs:
 
   releases:
     name: Release
-    needs: [cli-build, desktop-build, extension-vscode, extension-zed, extension-jetbrains]
+    needs:
+      [
+        cli-build,
+        desktop-build,
+        extension-vscode,
+        extension-zed,
+        extension-jetbrains,
+      ]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:

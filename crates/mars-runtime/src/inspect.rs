@@ -39,7 +39,8 @@ pub struct CellDiagnostic {
 /// Extracts simple `let name` bindings from cell sources. Destructuring
 /// patterns and `let` inside strings are approximated away; this is a
 /// best-effort list used to instrument the replayed program.
-fn let_bindings(cells: &[String]) -> Vec<String> {
+#[doc(hidden)]
+pub fn let_bindings(cells: &[String]) -> Vec<String> {
     let mut names = Vec::new();
     for cell in cells {
         let bytes = cell.as_bytes();
@@ -76,7 +77,8 @@ fn let_bindings(cells: &[String]) -> Vec<String> {
     names
 }
 
-fn render_inspect_program(cells: &[String], names: &[String], with_values: bool) -> String {
+#[doc(hidden)]
+pub fn render_inspect_program(cells: &[String], names: &[String], with_values: bool) -> String {
     let mut program = String::from("fn main() {\n");
     for (index, cell) in cells.iter().enumerate() {
         program.push_str(&format!("    // Mars cell {index}\n"));
@@ -404,25 +406,4 @@ fn map_diagnostics(
         }
     }
     diagnostics
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn extracts_simple_let_bindings() {
-        let cells = vec![
-            "let numbers = vec![1, 2, 3];\nlet mut count = 0;".to_owned(),
-            "let (a, b) = (1, 2);\nlet name: String = \"x\".into();".to_owned(),
-        ];
-        assert_eq!(let_bindings(&cells), vec!["numbers", "count", "name"]);
-    }
-
-    #[test]
-    fn renders_type_only_inspect_lines() {
-        let program = render_inspect_program(&["let x = 1;".to_owned()], &["x".to_owned()], false);
-        assert!(program.contains("std::any::type_name_of_val(&x)"));
-        assert!(program.contains("__MARS_VAR__"));
-    }
 }

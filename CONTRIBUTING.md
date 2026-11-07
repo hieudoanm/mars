@@ -46,6 +46,12 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 ```
 
+Rust crates under `crates/` must maintain at least **80% line and function
+coverage**. `make coverage` runs `cargo llvm-cov` over those crates with
+`--fail-under-lines 80` and `--fail-under-functions 80`, so it exits non-zero
+when coverage drops below either threshold. CI runs the same `make coverage`
+gate; install `cargo-llvm-cov` before running it locally.
+
 ## Running applications
 
 Run the desktop frontend in a browser:

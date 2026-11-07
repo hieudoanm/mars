@@ -300,27 +300,6 @@ pub fn interrupted_result(
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::annotate_source_locations;
-
-    #[test]
-    fn annotates_panic_locations_with_cell_hashes() {
-        let program = "fn main() {\n    // Mars cell 0 111\n    let a = 1;\n    // Mars cell 1 222\n    panic!(\"boom\");\n}\n";
-        let stderr = "thread 'main' panicked at src/main.rs:5:5:\nboom\n";
-        let annotated = annotate_source_locations(stderr, program);
-        // Line 5 is inside cell 1's region (marker at line 4, content starts line 5).
-        assert!(annotated.contains("[mars:cell=222,line=1]"));
-    }
-
-    #[test]
-    fn leaves_unmapped_locations_untouched() {
-        let program = "fn main() {\n    // Mars cell 0 111\n    let a = 1;\n}\n";
-        let stderr = "note: run with RUST_BACKTRACE=1\n";
-        assert_eq!(annotate_source_locations(stderr, program), stderr);
-    }
-}
-
 const TABLE_MARKER: &str = "__MARS_TABLE__=";
 const HTML_MARKER: &str = "__MARS_HTML__";
 const LATEX_MARKER: &str = "__MARS_LATEX__";
@@ -403,49 +382,4 @@ fn parse_table_json(json: &str) -> Option<Output> {
         })
         .collect::<Option<Vec<_>>>()?;
     Some(Output::Table { columns, rows })
-}
-
-#[cfg(test)]
-mod table_tests {
-    use super::execution_outputs;
-    use crate::output::Output;
-
-    #[test]
-    fn extracts_table_marker_lines() {
-        let stdout = b"before\n__MARS_TABLE__={\"columns\":[\"a\",\"b\"],\"rows\":[[\"1\",\"2\"],[\"3\",\"4\"]]}\nafter\n";
-        let outputs = execution_outputs(stdout, b"", "RuntimeError");
-        assert_eq!(outputs.len(), 2);
-        match &outputs[1] {
-            Output::Table { columns, rows } => {
-                assert_eq!(columns, &vec!["a".to_owned(), "b".to_owned()]);
-                assert_eq!(rows.len(), 2);
-            }
-            other => panic!("expected table, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn extracts_display_marker_lines() {
-        let stdout = concat!(
-            "__MARS_HTML__\"<b>hi</b>\"\n",
-            "__MARS_LATEX__\"x^2\"\n",
-            "__MARS_IMAGE__={\"mime_type\":\"image/png\",\"data\":\"AQID\"}\n",
-            "__MARS_CHART__{\"mark\":\"bar\"}\n"
-        );
-        let outputs = execution_outputs(stdout.as_bytes(), b"", "RuntimeError");
-        assert_eq!(outputs.len(), 4);
-        assert!(matches!(&outputs[0], Output::Html { html } if html == "<b>hi</b>"));
-        assert!(matches!(&outputs[1], Output::Latex { latex } if latex == "x^2"));
-        assert!(
-            matches!(&outputs[2], Output::Image { mime_type, data } if mime_type == "image/png" && data == "AQID")
-        );
-        assert!(matches!(&outputs[3], Output::Chart { spec } if spec["mark"] == "bar"));
-    }
-
-    #[test]
-    fn ignores_malformed_table_marker() {
-        let stdout = b"__MARS_TABLE__={not json}\n";
-        let outputs = execution_outputs(stdout, b"", "RuntimeError");
-        assert!(matches!(outputs[0], Output::Text { .. }));
-    }
 }

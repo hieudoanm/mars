@@ -67,7 +67,8 @@ fn execution_failed(outputs: &[Output]) -> bool {
         .any(|output| matches!(output, Output::Error { .. }))
 }
 
-fn status_for(response: &KernelResponse) -> ExecutionStatus {
+#[doc(hidden)]
+pub fn status_for(response: &KernelResponse) -> ExecutionStatus {
     match response {
         KernelResponse::Execution { outputs, .. } => {
             if execution_failed(outputs) {
@@ -81,7 +82,8 @@ fn status_for(response: &KernelResponse) -> ExecutionStatus {
     }
 }
 
-fn apply_execution(cell: &mut Cell, response: &KernelResponse) -> ExecutionStatus {
+#[doc(hidden)]
+pub fn apply_execution(cell: &mut Cell, response: &KernelResponse) -> ExecutionStatus {
     let status = status_for(response);
     if let KernelResponse::Execution { outputs, .. } = response {
         cell.outputs = outputs.clone();
@@ -309,39 +311,4 @@ fn kernel_variables(session: &mut MarsSession, args: KernelArgs) -> Result<Value
         .handle(RequestEnvelope::new(KernelRequest::Variables))
         .response;
     Ok(json!({ "response": response_json(&response) }))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn apply_execution_records_outputs_and_count() {
-        let mut cell = Cell::new(CellType::Code, "1 + 1");
-        let response = KernelResponse::Execution {
-            outputs: vec![Output::Text {
-                text: "2".to_owned(),
-            }],
-            execution_count: 1,
-            duration_millis: 1,
-        };
-        let status = apply_execution(&mut cell, &response);
-        assert_eq!(status, ExecutionStatus::Succeeded);
-        assert_eq!(cell.execution_count, Some(1));
-        assert_eq!(cell.outputs.len(), 1);
-    }
-
-    #[test]
-    fn error_outputs_mark_failed() {
-        let response = KernelResponse::Execution {
-            outputs: vec![Output::Error {
-                name: "E".to_owned(),
-                message: "bad".to_owned(),
-                traceback: Vec::new(),
-            }],
-            execution_count: 1,
-            duration_millis: 1,
-        };
-        assert_eq!(status_for(&response), ExecutionStatus::Failed);
-    }
 }

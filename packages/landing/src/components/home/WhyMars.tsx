@@ -12,11 +12,11 @@ const heading =
 
 const features = [
   {
-    large: true,
     icon: '✦',
     iconClass: '',
     title: 'Explore without context switching',
     body: 'Mix Rust, Markdown, mathematics, tables, charts, and rich output in one document that stays readable as the idea grows.',
+    footnote: 'Rich multi-media output',
   },
   {
     icon: '◈',
@@ -36,9 +36,9 @@ const features = [
 
 const FeatureCard: FC<{ feature: (typeof features)[number]; index: number }> = ({ feature, index }) => {
   return (
-    <Reveal className={feature.large ? 'md-nav:row-span-1' : ''} delay={0.08 + index * 0.08}>
+    <Reveal delay={0.08 + index * 0.08}>
       <article
-        className={`border-line relative min-h-80 overflow-hidden rounded-xl border bg-feature-card p-7 transition-transform duration-300 hover:-translate-y-1 ${feature.large ? 'max-md-nav:min-h-95' : ''}`}
+        className='border-line relative min-h-80 overflow-hidden rounded-xl border bg-feature-card p-7 transition-transform duration-300 hover:-translate-y-1'
         key={feature.title}>
         <div
           className={`mb-9 grid h-10 w-10 place-items-center rounded-xl bg-orange/30 text-xl text-white ${feature.iconClass}`}>
@@ -46,29 +46,9 @@ const FeatureCard: FC<{ feature: (typeof features)[number]; index: number }> = (
         </div>
         <h3 className='m-0 mb-3 text-xl tracking-tight-plus'>{feature.title}</h3>
         <p className='m-0 text-sm-plus'>{feature.body}</p>
-        {feature.title === 'Explore without context switching' ? (
-          <div className='absolute right-5.5 -bottom-0.5 left-5.5 rounded-t-lg border border-b-0 border-line-5 bg-surface-6 px-4.5 pt-4 pb-3 font-mono text-xs-plus leading-loose'>
-            <div className='mb-1.5 whitespace-nowrap text-sand-2'>
-              # Analyze the signal
-            </div>
-            <div className='whitespace-nowrap'>
-              <span className='inline-block w-6 text-faint-4'>01</span>
-              <span className='text-violet-1'>let</span> signal ={' '}
-              <span className='text-orange-6'>load</span>();
-            </div>
-            <div className='whitespace-nowrap'>
-              <span className='inline-block w-6 text-faint-4'>02</span>signal.
-              <span className='text-blue-1'>plot</span>();
-            </div>
-            <div className='mt-1.5 border-t border-line-9 pt-1.5 text-mint-3'>
-              ↳ chart rendered in 12ms
-            </div>
-          </div>
-        ) : (
-          <div className='absolute bottom-6 flex items-center gap-2 text-xs-plus text-muted-7'>
-            <span className='bg-mint h-1.5 w-1.5 rounded-full' /> {feature.footnote}
-          </div>
-        )}
+        <div className='absolute bottom-6 flex items-center gap-2 text-xs-plus text-muted-7'>
+          <span className='bg-mint h-1.5 w-1.5 rounded-full' /> {feature.footnote}
+        </div>
       </article>
     </Reveal>
   );

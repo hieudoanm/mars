@@ -31,9 +31,9 @@ const tools = [
     '◇',
     'bg-tool-2 text-2xl text-tool-4',
     'COMPANION',
-    'VS Code',
-    'Syntax support, cell navigation, preview, export, and CLI-backed notebook execution.',
-    'See the extension',
+    'Code Editor',
+    'Extensions for VS Code, Zed, and JetBrains with syntax support, execution, and rich output.',
+    'Download extensions',
   ],
 ];
 
@@ -60,7 +60,7 @@ const ToolCard: FC<{
         </div>
         <h3 className='m-0 text-xl'>{title}</h3>
         <p className='min-h-19 text-sm-plus'>{body}</p>
-        <a className='text-orange-2 text-xs font-bold-plus' href='#get-started'>
+        <a className='text-orange-2 text-xs font-bold-plus' href='/downloads'>
           {link} <span className='ml-2'>→</span>
         </a>
       </article>

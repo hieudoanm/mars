@@ -7,8 +7,9 @@ import { repositoryUrl } from '@/lib/site';
 const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 
 import { FaApple, FaWindows, FaLinux } from 'react-icons/fa';
+import { FaCode, FaTerminal, FaTools } from 'react-icons/fa';
 
-const downloads = [
+const desktopDownloads = [
   {
     platform: 'macOS',
     icon: FaApple,
@@ -26,6 +27,36 @@ const downloads = [
     icon: FaLinux,
     description: 'AppImage and .deb packages',
     links: [{ label: 'Download', href: `${repositoryUrl}/releases` }],
+  },
+];
+
+const extensionDownloads = [
+  {
+    platform: 'VS Code',
+    icon: FaCode,
+    description: 'Full notebook editor with execution and rich output',
+    links: [
+      { label: 'VS Code Marketplace', href: 'https://marketplace.visualstudio.com/items?itemName=mars.mars' },
+      { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/vscode` },
+    ],
+  },
+  {
+    platform: 'Zed',
+    icon: FaTerminal,
+    description: 'Syntax highlighting, grammar support, and MCP integration',
+    links: [
+      { label: 'Extension Marketplace', href: 'https://zed.dev/extensions' },
+      { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/zed` },
+    ],
+  },
+  {
+    platform: 'JetBrains',
+    icon: FaTools,
+    description: 'File type, cell execution, and kernel tool window',
+    links: [
+      { label: 'Marketplace', href: 'https://plugins.jetbrains.com' },
+      { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/jetbrains` },
+    ],
   },
 ];
 
@@ -48,12 +79,14 @@ const DownloadsPage: FC & NextPage = () => {
               Get Mars for your platform
             </h1>
             <p className='text-muted-2 text-lg'>
-              Download the desktop app or use the CLI from source.
+              Download the desktop app, install extensions, or use the CLI from source.
             </p>
           </div>
 
-          <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
-            {downloads.map((item) => (
+          <div className='mb-12'>
+            <h2 className='mb-6 text-xl font-semibold-plus tracking-tight-plus'>Desktop Application</h2>
+            <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
+              {desktopDownloads.map((item) => (
               <article
                 key={item.platform}
                 className='border-line-2 bg-feature-card rounded-xl border p-7'>
@@ -72,6 +105,34 @@ const DownloadsPage: FC & NextPage = () => {
                 </div>
               </article>
             ))}
+            </div>
+          </div>
+
+          <div className='mb-12'>
+            <h2 className='mb-6 text-xl font-semibold-plus tracking-tight-plus'>Editor Extensions</h2>
+            <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
+              {extensionDownloads.map((item) => (
+                <article
+                  key={item.platform}
+                  className='border-line-2 bg-feature-card rounded-xl border p-7'
+                >
+                  <div className='mb-6 text-3xl'><item.icon /></div>
+                  <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
+                  <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
+                  <div className='flex flex-col gap-2'>
+                    {item.links.map((link) => (
+                      <a
+                        key={link.label}
+                        className='border-line-2 bg-bg-alt text-sm-plus font-bold-plus text-ink-2 inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
+                        href={link.href}
+                      >
+                        {link.label} <span aria-hidden='true'>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
 
           <div className='border-line-2 bg-panel-3 mt-12 rounded-xl border p-7'>

@@ -173,26 +173,3 @@ fn parse_backend(value: &str) -> Result<RuntimeBackendKind, String> {
         _ => Err(format!("unsupported runtime backend: {value}")),
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn args(list: &[&str]) -> Vec<String> {
-        list.iter().map(|s| s.to_string()).collect()
-    }
-
-    #[test]
-    fn serve_tcp_options_parse() {
-        let options =
-            parse_serve_options(&args(&["--tcp", "9000", "--tcp-host", "0.0.0.0"])).expect("parse");
-        assert_eq!(options.tcp, Some(9000));
-        assert_eq!(options.tcp_host.as_deref(), Some("0.0.0.0"));
-    }
-
-    #[test]
-    fn serve_tcp_requires_port() {
-        assert!(parse_serve_options(&args(&["--tcp"])).is_err());
-        assert!(parse_serve_options(&args(&["--tcp", "abc"])).is_err());
-    }
-}

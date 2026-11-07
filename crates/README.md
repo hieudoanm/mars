@@ -143,6 +143,19 @@ cargo build --workspace
 cargo test --workspace
 ```
 
+### Coverage Gate
+
+Crates under `crates/` must maintain at least **80% line and function
+coverage**. From the repository root, run:
+
+```bash
+make coverage
+```
+
+This runs `cargo llvm-cov` with `--fail-under-lines 80` and
+`--fail-under-functions 80`, and fails when coverage drops below either
+threshold.
+
 ### Linting All Crates
 
 ```bash

@@ -5,7 +5,7 @@ use serde_json::Value;
 use std::path::Path;
 
 pub fn serve_mcp(args: &[String]) -> Result<(), String> {
-    let options = crate::options::parse_mcp_options(args)?;
+    let options = mars::options::parse_mcp_options(args)?;
     let mut server = MarsMcpServer::new(options.backend, options.offline, options.language);
     if let Some(notebook) = &options.notebook {
         server

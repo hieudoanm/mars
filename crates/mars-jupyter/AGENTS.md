@@ -21,4 +21,4 @@ Bidirectional conversion between Mars notebooks and Jupyter nbformat 4. Depends 
 cargo test -p mars-jupyter
 cargo clippy -p mars-jupyter --all-targets -- -D warnings
 ```
-Fixtures live in `tests/fixtures/` at the workspace root.
+Fixtures live in `tests/fixtures/` inside this crate.

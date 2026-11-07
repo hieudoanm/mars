@@ -112,7 +112,7 @@ format-4 markdown, code, and raw cells; execution counts; stream output;
 errors and tracebacks; display metadata; HTML, LaTeX, table, chart, and image
 MIME values; PNG/JPEG/SVG image variants; widget view/state data; and unknown
 MIME bundles. The representative fixture is
-`tests/fixtures/jupyter-compatibility.ipynb`.
+`crates/mars-jupyter/tests/fixtures/jupyter-compatibility.ipynb`.
 
 When a Jupyter output contains multiple MIME representations or display
 metadata, Mars retains the complete `MimeBundle` so unsupported widget and

@@ -64,7 +64,8 @@ fn parse<T: for<'de> Deserialize<'de>>(args: &Value) -> Result<T, String> {
     serde_json::from_value(args.clone()).map_err(|error| format!("invalid arguments: {error}"))
 }
 
-fn parse_cell_type(value: &str) -> Result<CellType, String> {
+#[doc(hidden)]
+pub fn parse_cell_type(value: &str) -> Result<CellType, String> {
     match value {
         "code" => Ok(CellType::Code),
         "markdown" => Ok(CellType::Markdown),
@@ -257,25 +258,4 @@ fn move_cell(session: &mut MarsSession, args: MoveArgs) -> Result<Value, String>
     let count = notebook.cells.len();
     session.save_notebook(&path)?;
     Ok(json!({ "path": path, "cell_count": count }))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::tools;
-
-    #[test]
-    fn parses_cell_type() {
-        assert_eq!(parse_cell_type("code").expect("code"), CellType::Code);
-        assert!(parse_cell_type("bogus").is_err());
-    }
-
-    #[test]
-    fn tools_registered() {
-        assert!(
-            tools::definitions()
-                .iter()
-                .any(|t| t.name == "mars_cell_add")
-        );
-    }
 }

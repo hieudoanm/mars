@@ -1,5 +1,5 @@
-use crate::options::RunOptions;
 use crate::output::print_execution_result;
+use mars::options::RunOptions;
 use mars_core::{CellType, Output};
 use mars_document::{Cell, Notebook, load, save_atomic};
 use mars_jupyter::{export_ipynb, import_ipynb};
@@ -56,7 +56,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
                 Ok(())
             }
             Some("serve") => {
-                let options = crate::options::parse_serve_options(&args[2..])?;
+                let options = mars::options::parse_serve_options(&args[2..])?;
                 if let Some(port) = options.tcp {
                     crate::kernel::serve_kernel_tcp(
                         port,
@@ -80,7 +80,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
         "tools" => crate::mcp::run_tools(&args[1..]),
         "run" => {
             let path = args.get(1).ok_or_else(crate::util::usage)?;
-            let options = crate::options::parse_run_options(&args[2..])?;
+            let options = mars::options::parse_run_options(&args[2..])?;
             run_notebook(path, &options)
         }
         "import" => {
