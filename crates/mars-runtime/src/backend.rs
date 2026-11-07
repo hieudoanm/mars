@@ -1,5 +1,27 @@
+use crate::error::RuntimeError;
 use crate::output::{ExecutionResult, StreamEvent};
 use std::sync::{Arc, atomic::AtomicBool};
+
+/// `None` signals end-of-file on the input channel (e.g. piped stdin closed).
+pub type StdinWriterFn = Arc<dyn Fn(Option<&str>) -> Result<(), RuntimeError> + Send + Sync>;
+
+/// Cloneable handle that writes a line to the running cell's stdin without
+/// borrowing the backend. Unlike [`RuntimeBackend::write_stdin`], this can be
+/// invoked while `execute_*` holds `&mut self`, which is required for
+/// interactive prompts (`input()`, `mars_prompt`).
+#[derive(Clone)]
+pub struct StdinWriter(pub StdinWriterFn);
+
+impl StdinWriter {
+    pub fn write(&self, text: &str) -> Result<(), RuntimeError> {
+        (self.0)(Some(text))
+    }
+
+    /// Signals end-of-file on the input channel.
+    pub fn write_eof(&self) -> Result<(), RuntimeError> {
+        (self.0)(None)
+    }
+}
 
 pub trait RuntimeBackend: Send {
     fn execute_with_control(
@@ -46,5 +68,11 @@ pub trait RuntimeBackend: Send {
         Err(crate::error::RuntimeError::Backend(
             "kernel input is not supported by this backend".to_owned(),
         ))
+    }
+
+    /// Returns a handle for writing stdin while a cell executes, when the
+    /// backend can provide one without borrowing `self`.
+    fn stdin_writer(&self) -> Option<StdinWriter> {
+        None
     }
 }

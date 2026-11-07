@@ -97,14 +97,37 @@ pub fn metadata_string(metadata: &Map<String, Value>, key: &str) -> Option<Strin
     metadata.get(key).and_then(Value::as_str).map(str::to_owned)
 }
 
+/// Normalizes a Jupyter language/kernel name to a Mars language id.
+fn normalize_language(name: &str) -> &str {
+    match name {
+        "python" | "python3" | "python2" => "python",
+        "rust" => "rust",
+        "julia" => "julia",
+        "r" | "R" => "r",
+        "javascript" | "js" | "nodejs" => "javascript",
+        "typescript" | "ts" => "typescript",
+        other => other,
+    }
+}
+
 pub fn language_from_metadata(metadata: &Map<String, Value>) -> String {
-    metadata
+    if let Some(name) = metadata
         .get("language_info")
         .and_then(Value::as_object)
         .and_then(|language_info| language_info.get("name"))
         .and_then(Value::as_str)
-        .unwrap_or("rust")
-        .to_owned()
+    {
+        return normalize_language(name).to_owned();
+    }
+    if let Some(spec) = metadata.get("kernelspec").and_then(Value::as_object) {
+        if let Some(language) = spec.get("language").and_then(Value::as_str) {
+            return normalize_language(language).to_owned();
+        }
+        if let Some(name) = spec.get("name").and_then(Value::as_str) {
+            return normalize_language(name).to_owned();
+        }
+    }
+    "rust".to_owned()
 }
 
 pub fn import_ipynb(input: &str) -> Result<Notebook, JupyterError> {
@@ -127,6 +150,7 @@ pub fn import_ipynb(input: &str) -> Result<Notebook, JupyterError> {
         .extra
         .insert("jupyter".to_owned(), Value::Object(notebook.metadata));
 
+    let language = metadata.language.clone();
     let cells = notebook
         .cells
         .into_iter()
@@ -141,6 +165,20 @@ pub fn import_ipynb(input: &str) -> Result<Notebook, JupyterError> {
             };
             let mut mars_cell = Cell::new(cell_type, cell.source.into_string());
             mars_cell.metadata = cell.metadata;
+            // Stamp the notebook language on code cells so per-cell language
+            // resolution works without notebook context (desktop, CLI).
+            if mars_cell.cell_type == CellType::Code
+                && language != "rust"
+                && mars_cell
+                    .metadata
+                    .get("language")
+                    .and_then(Value::as_str)
+                    .is_none()
+            {
+                mars_cell
+                    .metadata
+                    .insert("language".to_owned(), Value::String(language.clone()));
+            }
             mars_cell.execution_count = cell.execution_count;
             mars_cell.outputs = cell
                 .outputs

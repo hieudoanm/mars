@@ -8,6 +8,10 @@
   Explore ideas. Execute code. Discover possibilities.
 </p>
 
+<p align="center">
+  <img src="assets/images/mars-og.png" alt="Mars — a Rust-powered interactive notebook platform" width="720">
+</p>
+
 - Rust-first interactive notebook platform.
 - Supports executable code, Markdown, mathematics, and rich output.
 - Uses an independent `.mars` document format.
@@ -15,15 +19,19 @@
 
 ## Status
 
-- Early execution development.
+- Multi-language notebook platform supporting Rust, Python, R, Julia, and C++.
 - Typed notebook documents, validation, and atomic persistence.
-- Cell operations and isolated replay-based Rust execution.
-- Cargo-backed notebook dependencies.
+- Isolated execution with per-language persistent sessions.
+- Rust: replay-based and experimental Evcxr backends with Cargo dependencies.
+- Python: persistent driver with matplotlib and top-level await.
+- R: persistent driver with plot capture and `.GlobalEnv` binding.
+- Julia: persistent driver with MIME bundles and interactive input.
+- C++: replay-based compilation with Conan/vcpkg dependencies.
 - Jupyter conversion with common rich MIME outputs.
-- Sanitized HTML rendering.
-- Functional Tauri desktop editor.
-- Next.js landing page with Markdown documentation and an optional VS Code
-  companion in a pnpm/Turborepo workspace.
+- Sanitized HTML rendering with KaTeX math and Vega-Lite charts.
+- Model Context Protocol (MCP) server for AI assistant integration.
+- Functional Tauri desktop editor with multi-notebook workspace, LSP integration, and rich UI.
+- Next.js landing site with comprehensive documentation and VS Code/Zed/JetBrains extensions.
 
 ## Quick start
 
@@ -72,7 +80,7 @@ mars new analysis.mars
 - Run:
 
 ```bash
-cd apps/desktop
+cd packages/desktop
 npm install
 npm run tauri dev
 ```
@@ -123,7 +131,7 @@ npm run tauri build
 - Mars creates a temporary Cargo project for those notebooks.
 - Dependency resolution uses Cargo's configured cache and registry and may require network access.
 
-- Desktop shell under `apps/desktop`.
+- Desktop shell under `packages/desktop`.
 - Run `npm install` there for package-local workflow, or install root pnpm workspace as above.
 - Run `npm run tauri dev` to launch Tauri application.
 - Editor keeps notebook cells in frontend and delegates Rust execution, reset, and status to typed Tauri commands backed by `mars-kernel`.
@@ -139,7 +147,7 @@ npm run tauri build
 - Desktop browser smoke tests use Playwright and cover editor shell and basic cell workflows:
 
 ```bash
-cd apps/desktop
+cd packages/desktop
 npm run test:e2e
 ```
 
@@ -148,9 +156,11 @@ npm run test:e2e
 ## Screenshots
 
 - Desktop application uses a dark, notebook-oriented editor with CodeMirror cells, execution controls, rich output panels, and native open/save dialogs.
-- ![Mars desktop notebook overview](docs/screenshots/desktop-overview.png)
-- Release screenshots belong in [`docs/screenshots/`](docs/screenshots/README.md).
-- Capture checklist and naming convention documented there.
+- Social/Open Graph preview image: [`assets/images/mars-og.png`](assets/images/mars-og.png) (1280x640).
+- ![Mars desktop notebook overview](assets/screenshots/desktop-overview.png)
+- ![Mars welcome screen](assets/screenshots/desktop-welcome.png)
+- Release screenshots live in [`assets/screenshots/`](assets/screenshots/).
+- Regenerate them with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which captures the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright.
 
 ## VS Code extension
 
@@ -161,13 +171,34 @@ npm run test:e2e
 
 ## Documentation map
 
-| Document | Purpose |
-| --- | --- |
-| [`docs/04-architecture.md`](docs/04-architecture.md) | Crate boundaries, application boundaries, and data flow |
-| [`docs/03-notebook-format.md`](docs/03-notebook-format.md) | `.mars` schema, validation, migrations, and Jupyter mapping |
-| [`docs/06-runtime.md`](docs/06-runtime.md) | Replay execution, dependencies, output extraction, diagnostics, and cancellation |
-| [`docs/07-cli.md`](docs/07-cli.md) | CLI commands, options, exit behavior, and examples |
-| [`docs/05-protocol.md`](docs/05-protocol.md) | Typed kernel messages and JSONL transport |
-| [`docs/08-development.md`](docs/08-development.md) | Toolchains, local development, tests, and architecture rules |
-| [`docs/09-release.md`](docs/09-release.md) | Native artifacts, verification, signing, and release CI |
-| [`docs/02-branding.md`](docs/02-branding.md) | Canonical logo and social-preview assets |
+| Document                                                     | Purpose                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [`docs/04-architecture.md`](docs/04-architecture.md)         | Crate boundaries, application boundaries, and data flow      |
+| [`docs/03-notebook-format.md`](docs/03-notebook-format.md)   | `.mars` schema, validation, migrations, and Jupyter mapping  |
+| [`docs/06-runtime.md`](docs/06-runtime.md)                   | Runtime architecture overview                                |
+| [`docs/07-rust-runtime.md`](docs/07-rust-runtime.md)         | Rust replay and Evcxr backends                               |
+| [`docs/08-python-runtime.md`](docs/08-python-runtime.md)     | Python persistent driver                                     |
+| [`docs/09-r-runtime.md`](docs/09-r-runtime.md)               | R .GlobalEnv persistence                                     |
+| [`docs/10-julia-runtime.md`](docs/10-julia-runtime.md)       | Julia MarsKernel module                                      |
+| [`docs/11-cpp-runtime.md`](docs/11-cpp-runtime.md)           | C++ replay compilation                                       |
+| [`docs/12-cli.md`](docs/12-cli.md)                           | CLI commands, options, exit behavior, and examples           |
+| [`docs/05-protocol.md`](docs/05-protocol.md)                 | Typed kernel messages and JSONL transport                    |
+| [`docs/17-kernel-protocol.md`](docs/17-kernel-protocol.md)   | Detailed kernel protocol and transport options               |
+| [`docs/16-runtime-helpers.md`](docs/16-runtime-helpers.md)   | Runtime helpers (mars_table, mars_csv, mars_display_*)       |
+| [`docs/13-development.md`](docs/13-development.md)           | Toolchains, local development, tests, and architecture rules |
+| [`docs/14-release.md`](docs/14-release.md)                   | Native artifacts, verification, signing, and release CI      |
+| [`docs/15-evcxr-experiment.md`](docs/15-evcxr-experiment.md) | Evcxr backend experiment analysis                            |
+| [`docs/18-mcp.md`](docs/18-mcp.md)                           | Model Context Protocol integration                           |
+| [`docs/02-branding.md`](docs/02-branding.md)                 | Canonical logo and social-preview assets                     |
+
+## Landing site
+
+The Next.js landing site (`packages/landing`) provides:
+
+- Getting started guide and CLI reference
+- Runtime documentation for all five languages
+- MCP integration documentation
+- Extension guides for VS Code, Zed, and JetBrains
+- Blog posts on language choices and ecosystem comparisons
+
+Visit the documentation at [`packages/landing/md/docs/`](packages/landing/md/docs/).

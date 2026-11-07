@@ -138,6 +138,41 @@ mod tests {
     }
 
     #[test]
+    fn imports_kernelspec_language_and_stamps_code_cells() {
+        let input = r##"{
+          "cells": [
+            {"cell_type": "code", "execution_count": null, "metadata": {}, "source": "x = 1", "outputs": []},
+            {"cell_type": "code", "execution_count": null, "metadata": {"language": "rust"}, "source": "let y = 1;", "outputs": []}
+          ],
+          "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}},
+          "nbformat": 4,
+          "nbformat_minor": 5
+        }"##;
+        let notebook = import_ipynb(input).expect("imports");
+        assert_eq!(notebook.metadata.language, "python");
+        assert_eq!(notebook.cells[0].metadata["language"], "python");
+        // Explicit per-cell language is preserved.
+        assert_eq!(notebook.cells[1].metadata["language"], "rust");
+    }
+
+    #[test]
+    fn exports_kernelspec_for_python_notebooks() {
+        let input = r##"{
+          "cells": [
+            {"cell_type": "code", "execution_count": null, "metadata": {"language": "python"}, "source": "x = 1", "outputs": []}
+          ],
+          "metadata": {"language_info": {"name": "python"}},
+          "nbformat": 4,
+          "nbformat_minor": 5
+        }"##;
+        let notebook = import_ipynb(input).expect("imports");
+        let exported = export_ipynb(&notebook).expect("exports");
+        let value: Value = serde_json::from_str(&exported).expect("valid JSON");
+        assert_eq!(value["metadata"]["kernelspec"]["name"], "python3");
+        assert_eq!(value["metadata"]["language_info"]["name"], "python");
+    }
+
+    #[test]
     fn retains_single_mime_display_metadata() {
         let input = r##"{
           "cells": [{

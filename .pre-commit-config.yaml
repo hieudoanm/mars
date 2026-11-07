@@ -1,7 +1,7 @@
 default_language_version:
   python: python3
 
-exclude: ^(target/|apps/desktop/node_modules/|extensions/vscode/node_modules/|apps/desktop/dist/|extensions/vscode/.*\.vsix$)
+exclude: ^(target/|packages/desktop/node_modules/|extensions/vscode/node_modules/|packages/desktop/dist/|extensions/vscode/.*\.vsix$)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -43,7 +43,7 @@ repos:
         name: desktop TypeScript build
         entry: npm run build
         language: system
-        files: ^apps/desktop/(src/|index\.html|package(-lock)?\.json|vite\.config\.ts)
+        files: ^packages/desktop/(src/|index\.html|package(-lock)?\.json|vite\.config\.ts)
         pass_filenames: false
         require_serial: true
 
@@ -58,7 +58,7 @@ repos:
       - id: landing-page-assets
         name: landing page asset check
         entry: >-
-          python3 -c "from pathlib import Path; root=Path('apps/landing');
+          python3 -c "from pathlib import Path; root=Path('packages/landing');
           required=['package.json','next.config.ts','app/page.tsx','app/layout.tsx',
           'app/globals.css','app/LandingPage.tsx','docs/index.md',
           'public/mars-logo.svg','public/mars-file-logo.svg','public/mars-og.svg',
@@ -66,5 +66,5 @@ repos:
           missing=[str(root/p) for p in required if not (root/p).is_file()];
           assert not missing, 'Missing landing page assets: ' + ', '.join(missing)"
         language: system
-        files: ^apps/landing/
+        files: ^packages/landing/
         pass_filenames: false

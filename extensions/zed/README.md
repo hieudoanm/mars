@@ -1,19 +1,40 @@
 # Mars Notebooks for Zed
 
 The Mars Zed extension provides `.mars` language recognition, Tree-sitter
-highlighting, and a Mars CLI-backed language-server command for Zed. It is a
-small Rust WebAssembly extension; it never evaluates notebook code in Zed's
-extension process.
+highlighting, and an MCP context server for the Mars CLI. It is a small Rust
+WebAssembly extension; it never evaluates notebook code in Zed's extension
+process.
 
 ## Features
 
 - Associates `.mars` files with the Mars language.
-- Provides Tree-sitter parsing and highlighting for the Mars JSON notebook
-  format, with Mars notebook conventions for Markdown and Rust content.
-- Starts `mars kernel serve` after confirming that the Mars CLI is available in
-  the active worktree.
-- Gives an actionable error when the CLI is not installed or is absent from
-  `PATH`.
+- Provides Tree-sitter parsing and highlighting for the Mars notebook format,
+  including embedded Rust and Markdown conventions.
+- Registers `mars` as a Zed **context server** (`context_server_command`),
+  launching `mars mcp serve` so Zed's Agent Panel gets notebook, cell, and
+  kernel tools. Requires the `mars` CLI on `PATH`.
+
+## Limitations
+
+Zed has no notebook editor UI, and `mars kernel serve` speaks the Mars kernel
+protocol rather than LSP, so this extension does not provide cell execution,
+completions, or diagnostics. To run a notebook from Zed, use the Mars CLI or a
+Zed task, for example a `.zed/tasks.json` entry:
+
+```json
+{
+  "tasks": {
+    "run notebook": {
+      "command": "mars",
+      "args": ["run", "${ZED_FILE}"],
+      "use_new_terminal": true
+    }
+  }
+}
+```
+
+For full notebook editing and execution, use the Mars desktop app or the VS
+Code extension.
 
 ## Install locally
 
@@ -23,17 +44,10 @@ extension process.
    cargo install --path crates/mars-cli
    ```
 
-2. Ensure the CLI's installation directory is on `PATH`.
-
-3. In Zed, open **Settings → Extensions**, choose **Load Local Extension**, and
+2. In Zed, open **Settings → Extensions**, choose **Load Local Extension**, and
    select `extensions/zed` from this repository.
 
-4. Open a `.mars` notebook. Zed recognizes it as Mars and starts the CLI-backed
-   language-server command when needed.
-
-The extension currently launches the default CLI command `mars kernel serve`.
-Its language-server integration is intentionally thin while the Mars kernel
-protocol evolves.
+3. Open a `.mars` notebook to get Mars highlighting.
 
 ## Development
 
@@ -53,7 +67,7 @@ cargo build --target wasm32-wasip1 -p mars-zed
 
 ```text
 extensions/zed/
-├── extension.toml                    Extension manifest and language-server registration
+├── extension.toml                    Extension manifest and grammar registration
 ├── src/lib.rs                        WebAssembly extension implementation
 ├── languages/mars/config.toml        `.mars` language association and editor defaults
 └── grammars/tree-sitter-mars/        Grammar source and highlight queries

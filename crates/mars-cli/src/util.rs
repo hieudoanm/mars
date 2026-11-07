@@ -1,7 +1,7 @@
 use std::process::Command;
 
 pub fn usage() -> String {
-    "usage: mars new <file.mars> | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html|md|pdf] [--page-size=<a4|letter|legal|...>] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr] [--notebook <file.mars>]]".to_owned()
+    "usage: mars new <file.mars> [language] | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html|md|pdf] [--page-size=<a4|letter|legal|...>] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr] [--notebook <file.mars>] [--language <lang>]] | mars mcp serve [--runtime replay|evcxr] [--offline] [--notebook <file.mars>] [--language <lang>] | mars tools [list|call <name> [json] [--server <cmd>]]".to_owned()
 }
 
 pub fn open_with_system(path: &str) -> Result<(), String> {

@@ -1,0 +1,31 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "C++ Introduction",
+    "language": "cpp"
+  },
+  "cells": [
+    {
+      "id": "welcome",
+      "cell_type": "markdown",
+      "source": "# C++ in Mars\n\nThis notebook demonstrates C++ execution in Mars.",
+      "metadata": {}
+    },
+    {
+      "id": "variables",
+      "cell_type": "code",
+      "source": "#include <iostream>\n#include <vector>\n\nstd::vector<int> numbers = {1, 2, 3, 4, 5};",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "sum",
+      "cell_type": "code",
+      "source": "int sum = 0;\nfor (int n : numbers) {\n    sum += n;\n}\nstd::cout << \"Sum: \" << sum << std::endl;",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}

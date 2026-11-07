@@ -41,15 +41,48 @@ pub enum ExportedOutput {
     },
 }
 
+/// Maps a Mars language id to a Jupyter kernelspec object, when a
+/// conventional kernel name exists.
+fn kernelspec_for_language(language: &str) -> Option<Value> {
+    let (name, display_name) = match language {
+        "python" => ("python3", "Python 3"),
+        "r" => ("ir", "R"),
+        "rust" => ("rust", "Rust"),
+        "julia" => ("julia-1.10", "Julia 1.10"),
+        _ => return None,
+    };
+    let mut spec = Map::new();
+    spec.insert(
+        "display_name".to_owned(),
+        Value::String(display_name.to_owned()),
+    );
+    spec.insert("language".to_owned(), Value::String(language.to_owned()));
+    spec.insert("name".to_owned(), Value::String(name.to_owned()));
+    Some(Value::Object(spec))
+}
+
 pub fn export_ipynb(notebook: &Notebook) -> Result<String, JupyterError> {
     mars_document::validate(notebook).map_err(JupyterError::Document)?;
-    let metadata = notebook
+    let mut metadata = notebook
         .metadata
         .extra
         .get("jupyter")
         .and_then(Value::as_object)
         .cloned()
         .unwrap_or_default();
+    if !metadata.contains_key("kernelspec") {
+        if let Some(spec) = kernelspec_for_language(&notebook.metadata.language) {
+            metadata.insert("kernelspec".to_owned(), spec);
+        }
+    }
+    if !metadata.contains_key("language_info") {
+        let mut language_info = Map::new();
+        language_info.insert(
+            "name".to_owned(),
+            Value::String(notebook.metadata.language.clone()),
+        );
+        metadata.insert("language_info".to_owned(), Value::Object(language_info));
+    }
     let cells = notebook
         .cells
         .iter()

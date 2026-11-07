@@ -7,9 +7,9 @@ vsix/
 
 # Frontend / build outputs
 coverage/
-apps/*/dist/
-apps/*/out/
-apps/*/.next/
+packages/*/dist/
+packages/*/out/
+packages/*/.next/
 
 # Logs & env
 *.log

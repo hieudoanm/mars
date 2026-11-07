@@ -72,3 +72,31 @@ make this permanent, add the following to your shell profile (`~/.zshrc` or
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 ```
+
+## screenshot.sh
+
+Captures the desktop UI screenshots used in the README into
+[`assets/screenshots/`](../assets/screenshots/):
+
+```bash
+./scripts/sh/screenshot.sh
+```
+
+The script starts the Vite dev server for `packages/desktop`, then delegates
+the capture to [`scripts/js/screenshot.mjs`](js/screenshot.mjs), which drives
+the page with Playwright (already a dev dependency of the desktop package) and
+writes:
+
+- `desktop-welcome.png` — the welcome screen (New/Open notebook, Open folder)
+- `desktop-overview.png` — the notebook editor with the "Getting started with
+  Mars" notebook
+
+Screenshots are captured at a **1280x640 ratio** (viewport 1280x640 CSS pixels
+at 2x device scale, producing 2560x1280 PNGs). The dev server is started on
+demand and shut down when the script exits; override the port with
+`MARS_SHOT_PORT` if 4173 is taken.
+
+Requires Node.js and the desktop dependencies installed (`pnpm install` at the
+repository root, or `npm install` inside `packages/desktop`). No Tauri build or
+Rust toolchain is needed — the UI runs in the browser against the Vite dev
+server.

@@ -6,11 +6,28 @@ carry a caller-provided correlation ID.
 
 The current request types are:
 
-- `execute` — compile and run one Rust cell in the persistent session. It
-  accepts an optional `timeout_millis`; omitted values preserve unlimited
-  runtime execution.
+- `execute` — compile and run one cell in the persistent session. It
+  accepts an optional `timeout_millis` (omitted values preserve unlimited
+  runtime execution) and an optional `language` selecting the runtime for
+  multi-language `mars kernel serve` sessions; single-runtime kernels
+  ignore it.
 - `reset` — clear the runtime state.
 - `status` — query execution status and count.
+- `cancel` — request cancellation of the in-flight execution. The
+  `mars kernel serve` loop reads requests concurrently with a running
+  `execute`, so cancellation is honoured while a cell is still compiling or
+  running; the server acknowledges immediately with a `cancelled` response.
+- `input` — write a line to the running cell's stdin (`input()` /
+  `mars_prompt` prompts). `mars kernel serve` answers these through each
+  backend's stdin-writer fast path so they are not blocked behind the
+  in-flight `execute`.
+- `variables` — inspect live session bindings (name, type, value preview).
+  Replay runtimes re-execute committed cells to inspect them, so cell side
+  effects run again; this is a documented runtime limitation.
+- `diagnose` — compile-check a candidate cell source without committing it and
+  return typed diagnostics (`cell_index`, line/column spans, severity, code,
+  message).
+- `input` — write one line to the stdin of the currently running cell program.
 
 An execute response carries the execution status, execution count, duration,
 and zero or more typed outputs. Errors are represented as outputs rather than
@@ -39,7 +56,10 @@ mars kernel serve [--runtime replay|evcxr] [--notebook <file.mars>]
 
 It reads one `RequestEnvelope` per line and writes one `ResponseEnvelope` per
 line, allowing integrations to keep a kernel session alive without coupling
-the runtime to the desktop process. `--notebook` supplies the notebook metadata
+the runtime to the desktop process. Request reading runs on a separate thread
+from execution so `cancel` (and queued `reset`/`status`) requests are processed
+while an `execute` is blocked; `EventEnvelope` stream lines may interleave
+before the matching response. `--notebook` supplies the notebook metadata
 (Cargo dependency declarations and an optional lockfile) used to configure the
 session; the VS Code extension passes the active notebook path for this reason.
 

@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-mars",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Tree-sitter grammar for Mars notebooks (.mars)",
   "main": "build/parser.js",
   "scripts": {

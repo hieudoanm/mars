@@ -21,8 +21,8 @@ describe('extension activation', () => {
       'mars-notebook',
       'Mars Kernel',
     );
-    expect(vscode.commands.registerCommand).toHaveBeenCalledTimes(7);
-    expect(context.subscriptions).toHaveLength(9);
+    expect(vscode.commands.registerCommand).toHaveBeenCalledTimes(14);
+    expect(context.subscriptions).toHaveLength(20);
     expect(MarsNotebookController.instance).toBeInstanceOf(MarsNotebookController);
   });
 

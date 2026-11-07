@@ -27,11 +27,17 @@ describe('VS Code commands', () => {
   });
 
   it('creates a new Mars notebook in the notebook editor', async () => {
+    vi.mocked(vscode.workspace.openTextDocument).mockResolvedValue({
+      uri: { scheme: 'untitled' },
+    } as never);
     await createNotebook();
     expect(vscode.commands.executeCommand).toHaveBeenCalledWith(
       'vscode.openWith',
       expect.objectContaining({ scheme: 'untitled' }),
       'mars-notebook',
+    );
+    expect(vscode.workspace.openTextDocument).toHaveBeenCalledWith(
+      expect.objectContaining({ language: 'mars' }),
     );
   });
 

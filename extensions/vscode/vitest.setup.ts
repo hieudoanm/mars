@@ -35,6 +35,45 @@ vi.mock('vscode', () => {
       public end: unknown,
     ) {}
   }
+  class Diagnostic {
+    constructor(
+      public range: unknown,
+      public message: string,
+      public severity?: unknown,
+    ) {}
+    source?: string;
+    code?: unknown;
+  }
+  class TreeItem {
+    constructor(
+      public label: string,
+      public collapsibleState?: unknown,
+    ) {}
+    description?: string;
+    tooltip?: unknown;
+    contextValue?: string;
+    iconPath?: unknown;
+  }
+  class EventEmitter {
+    event = vi.fn();
+    fire = vi.fn();
+    dispose = vi.fn();
+  }
+  class ThemeIcon {
+    constructor(public id: string) {}
+  }
+  class CompletionItem {
+    constructor(
+      public label: string,
+      public kind?: unknown,
+    ) {}
+    detail?: string;
+    documentation?: unknown;
+    sortText?: string;
+  }
+  class MarkdownString {
+    constructor(public value: string) {}
+  }
   const controller = {
     supportedLanguages: [],
     supportsExecutionOrder: false,
@@ -71,10 +110,25 @@ vi.mock('vscode', () => {
     })),
     activeNotebookEditor: undefined,
     activeTextEditor: undefined,
+    registerTreeDataProvider: vi.fn(),
+    showQuickPick: vi.fn(),
+    withProgress: vi.fn((_options: unknown, task: () => Promise<unknown>) => task()),
+  };
+  const languages = {
+    createDiagnosticCollection: vi.fn(() => ({
+      set: vi.fn(),
+      delete: vi.fn(),
+      dispose: vi.fn(),
+    })),
+    registerCompletionItemProvider: vi.fn(() => ({ dispose: vi.fn() })),
   };
   return {
     window,
-    workspace,
+    workspace: {
+      ...workspace,
+      openTextDocument: vi.fn(),
+    },
+    languages,
     commands,
     notebooks: { createNotebookController: vi.fn(() => controller) },
     Uri: {
@@ -89,5 +143,15 @@ vi.mock('vscode', () => {
     NotebookData,
     NotebookCellOutputItem,
     NotebookCellOutput,
+    Diagnostic,
+    DiagnosticSeverity: { Error: 0, Warning: 1, Information: 2, Hint: 3 },
+    TreeItem,
+    TreeItemCollapsibleState: { None: 0, Collapsed: 1, Expanded: 2 },
+    EventEmitter,
+    ThemeIcon,
+    CompletionItem,
+    CompletionItemKind: { Method: 0, Variable: 4, Keyword: 13 },
+    MarkdownString,
+    ProgressLocation: { Notification: 15, Window: 10, SourceControl: 1 },
   };
 });

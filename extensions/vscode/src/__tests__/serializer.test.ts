@@ -98,6 +98,34 @@ describe('MarsNotebookSerializer', () => {
     expect(result.metadata as Record<string, unknown>).not.toHaveProperty('marsFormatVersion');
   });
 
+  it('round-trips raw cell types and execution counts', async () => {
+    const input = {
+      format_version: 2,
+      metadata: { language: 'rust' },
+      cells: [
+        {
+          id: 'code-1',
+          cell_type: 'code',
+          source: '21 * 2',
+          metadata: {},
+          execution_count: 3,
+          outputs: [{ type: 'text', text: '42' }],
+        },
+        { id: 'raw-1', cell_type: 'raw', source: 'plain text', metadata: {} },
+      ],
+    };
+    const notebook = await serializer.deserializeNotebook(
+      new TextEncoder().encode(JSON.stringify(input)),
+      token,
+    );
+    const result = decode(await serializer.serializeNotebook(notebook, token));
+    const cells = result.cells as Array<Record<string, unknown>>;
+    expect(cells[0]).toMatchObject({ id: 'code-1', cell_type: 'code', execution_count: 3 });
+    expect(cells[1]).toMatchObject({ id: 'raw-1', cell_type: 'raw' });
+    expect(cells[0].metadata as Record<string, unknown>).not.toHaveProperty('marsCellType');
+    expect(cells[0].metadata as Record<string, unknown>).not.toHaveProperty('marsExecutionCount');
+  });
+
   it('fills in missing notebook version and language defaults and generates cell IDs', async () => {
     const input = {
       cells: [{ kind: vscode.NotebookCellKind.Code, value: '1', metadata: {} }],

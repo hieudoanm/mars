@@ -1,0 +1,14 @@
+[package]
+name = "mars-mcp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+mars-core = { path = "../mars-core" }
+mars-document = { path = "../mars-document" }
+mars-kernel = { path = "../mars-kernel" }
+mars-protocol = { path = "../mars-protocol" }
+serde.workspace = true
+serde_json.workspace = true

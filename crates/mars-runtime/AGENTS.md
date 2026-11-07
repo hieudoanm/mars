@@ -11,7 +11,8 @@ Two execution backends implement `RuntimeBackend` (`backend.rs`):
 
 ## Key modules
 
-- `session.rs` — `RustSession` workdir under `temp_dir()/mars-runtime-<uuid>`; `Drop` removes it. Stores `cells`, `execution_count`, `dependencies`, `cargo_lock`, `offline`, `locked`.
+- `session.rs` — `RustSession` workdir under `temp_dir()/mars-runtime-<uuid>`; `Drop` removes it. Stores `cells`, `execution_count`, `dependencies`, `cargo_lock`, `offline`, `locked`, and `stdin`/`stdin_slot` handles for `mars_prompt`.
+- `backend.rs` — `RuntimeBackend` trait plus `StdinWriter`, a cloneable `Fn(Option<&str>)` handle letting callers answer prompts while `execute_*` holds `&mut self` (used by the Tauri `input_writers` map and `mars kernel serve`'s `Input` fast path). `None` signals EOF.
 - `session_execution.rs` — `execute_with_control`: builds candidate cell list, compiles, falls back to `ExpressionOutput::Display` if the trailing expression fails, then runs the binary with timeout/cancellation polling.
 - `expression.rs` — wraps cells in `fn main()`, strips trailing `;`, detects final expressions (`split_final_expression`), emits `__MARS_RESULT__=` marker for display output. Only the *last* cell auto-displays — replayed cells discard final expressions to avoid duplicate output.
 - `compilation.rs` — `compile_command` picks rustc vs cargo; writes `Cargo.toml`/`Cargo.lock` for dependency builds.

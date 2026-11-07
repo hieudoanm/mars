@@ -1,0 +1,15 @@
+[package]
+name = "mars-runtime-cpp"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+mars-core = { path = "../mars-core" }
+mars-runtime = { path = "../mars-runtime" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
+which = "6"
+uuid = { version = "1", features = ["v4"] }
+thiserror = "2"
+libc = "0.2"

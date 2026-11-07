@@ -1,0 +1,374 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Getting started with Mars (Python)",
+    "language": "python"
+  },
+  "cells": [
+    {
+      "id": "intro",
+      "cell_type": "markdown",
+      "source": "# Getting started with Mars (Python)\n\n**Mars** is an interactive notebook where code cells share a persistent\nPython session. A `.mars` notebook is a JSON document made of **markdown**,\n**code**, and **raw** cells. Code cells run from top to bottom, and bindings\ncreated in one cell are available in every later cell — like a Jupyter\nnotebook, but with Mars's own document format and kernel.\n\nThis notebook is a tour of the Python basics: variables, built-in types,\ncollections, control flow, functions, exceptions, classes, modules, and a\nfew standard-library tools. It uses only the standard library, so it runs\nanywhere `python3` is installed.\n\n> Tip: the last expression of a cell is displayed automatically. Use\n> `print()` for multi-line output.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "how-notebooks-work",
+      "cell_type": "markdown",
+      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Python source executed in a shared interpreter session |\n| `raw` | Text preserved verbatim, without rendering or execution |\n\nWhen a code cell runs:\n\n1. Mars sends the source to the Python driver.\n2. The driver parses it, runs every statement in order, and evaluates the\n   trailing expression.\n3. `print()` output streams as **stdout**, warnings go to **stderr** (shown\n   but not fatal), and the trailing value is displayed with its `repr()`.\n4. Errors are reported as cell errors and do not stop later cells — fix the\n   cell and re-run it.\n\nVariables live in one shared namespace for the whole notebook, so order\nmatters: run cells top to bottom.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "markdown-essentials",
+      "cell_type": "markdown",
+      "source": "### Markdown essentials\n\nMarkdown cells support **bold**, *italic*, ~~strikethrough~~, `inline code`,\n[links](https://github.com/hieudoanm/mars), lists, tables, block quotes, and\nfenced code blocks.\n\n- unordered list item\n- another item\n  - nested item\n\n1. ordered item\n2. another item\n\n```python\nnumbers = [1, 2, 3]\nprint(sum(numbers))\n```\n\n> Block quotes are great for callouts.\n\n| Feature | Supported |\n| ------- | --------- |\n| Headings | yes |\n| Tables | yes |\n| LaTeX | `$E = mc^2$` |",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "raw-cell",
+      "cell_type": "raw",
+      "source": "A raw cell is stored and exported verbatim.\nIt is useful for generated text or content that should not be parsed.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "first-code-cell",
+      "cell_type": "markdown",
+      "source": "## Your first code cell\n\nThe next cell defines a tiny `report()` helper that prints labelled output.\nIt stays available to every later cell, just like a function defined at the\ntop of a script.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "setup-report",
+      "cell_type": "code",
+      "source": "def report(title, *lines):\n    print(title)\n    for line in lines:\n        print(\"  \" + str(line))\n\nreport(\"Mars Python kernel is alive\", \"python\", \"shared session\")",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "Mars Python kernel is alive\n  python\n  shared session\n"
+        }
+      ]
+    },
+    {
+      "id": "variables-types",
+      "cell_type": "markdown",
+      "source": "## Variables and types\n\nPython is dynamically typed: names bind to objects, and types are inferred.\nThe built-in scalar types are `int`, `float`, `str`, `bool`, and `None`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "variables",
+      "cell_type": "code",
+      "source": "language = \"Python\"\nyear = 2026\npi = 3.141592653589793\nis_fun = True\nnothing = None\n\nreport(\n    \"variables\",\n    f\"language = {language} ({type(language).__name__})\",\n    f\"year = {year} ({type(year).__name__})\",\n    f\"pi = {pi} ({type(pi).__name__})\",\n    f\"is_fun = {is_fun} ({type(is_fun).__name__})\",\n    f\"nothing = {nothing} ({type(nothing).__name__})\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "variables\n  language = Python (str)\n  year = 2026 (int)\n  pi = 3.141592653589793 (float)\n  is_fun = True (bool)\n  nothing = None (NoneType)\n"
+        }
+      ]
+    },
+    {
+      "id": "arithmetic",
+      "cell_type": "markdown",
+      "source": "## Operators and arithmetic\n\nPython has the usual arithmetic operators plus `//` (floor division), `%`\n(modulo), `**` (power), and `@` (matrix multiply for libraries like NumPy).\nComparisons return `bool`, and `and`/`or`/`not` work on truthiness.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "arithmetic-demo",
+      "cell_type": "code",
+      "source": "a = 17\nb = 5\n\nreport(\n    \"arithmetic\",\n    f\"{a} + {b} = {a + b}\",\n    f\"{a} - {b} = {a - b}\",\n    f\"{a} * {b} = {a * b}\",\n    f\"{a} / {b} = {a / b}  (true division -> float)\",\n    f\"{a} // {b} = {a // b}  (floor division)\",\n    f\"{a} % {b} = {a % b}  (remainder)\",\n    f\"{a} ** {b} = {a ** b}  (power)\",\n    f\"{a} > {b} and {b} > 0 -> {a > b and b > 0}\",\n    f\"not is_fun -> {not is_fun}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "arithmetic\n  17 + 5 = 22\n  17 - 5 = 12\n  17 * 5 = 85\n  17 / 5 = 3.4  (true division -> float)\n  17 // 5 = 3  (floor division)\n  17 % 5 = 2  (remainder)\n  17 ** 5 = 1419857  (power)\n  17 > 5 and 5 > 0 -> True\n  not is_fun -> False\n"
+        }
+      ]
+    },
+    {
+      "id": "strings",
+      "cell_type": "markdown",
+      "source": "## Strings\n\nStrings are immutable sequences of characters. f-strings (`f\"...\"`) are the\nidiomatic way to interpolate values, and strings have a rich set of methods\nfor searching, splitting, replacing, and formatting.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "strings-demo",
+      "cell_type": "code",
+      "source": "name = \"mars\"\nshout = name.upper()\nslug = shout.lower().replace(\" \", \"-\")\nwords = \"interactive notebooks are fun\".split()\njoined = \" | \".join(words)\n\nreport(\n    \"strings\",\n    f\"name = {name!r}\",\n    f\"shout = {shout!r}\",\n    f\"slug = {slug!r}\",\n    f\"words = {words}\",\n    f\"joined = {joined!r}\",\n    f\"count of 'o' in joined: {joined.count('o')}\",\n    f\"first 10 chars: {joined[:10]!r}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "strings\n  name = 'mars'\n  shout = 'MARS'\n  slug = 'mars'\n  words = ['interactive', 'notebooks', 'are', 'fun']\n  joined = 'interactive | notebooks | are | fun'\n  count of 'o' in joined: 3\n  first 10 chars: 'interactiv'\n"
+        }
+      ]
+    },
+    {
+      "id": "lists",
+      "cell_type": "markdown",
+      "source": "## Lists\n\n`list` is Python's workhorse mutable sequence. Lists are ordered,\nheterogeneous, and support indexing, slicing, `append`, `extend`, `insert`,\n`pop`, `remove`, and `sort`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "lists-demo",
+      "cell_type": "code",
+      "source": "numbers = [1, 2, 3, 4, 5]\nnumbers.append(6)\nnumbers.extend([7, 8])\nevens = [n for n in numbers if n % 2 == 0]\nsquared = [n * n for n in numbers]\nfirst_three = numbers[:3]\nlast = numbers.pop()\n\nreport(\n    \"lists\",\n    f\"numbers = {numbers}\",\n    f\"len = {len(numbers)}\",\n    f\"sum = {sum(numbers)}\",\n    f\"evens = {evens}\",\n    f\"squared = {squared}\",\n    f\"first_three = {first_three}\",\n    f\"popped = {last}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "lists\n  numbers = [1, 2, 3, 4, 5, 6, 7]\n  len = 7\n  sum = 28\n  evens = [2, 4, 6, 8]\n  squared = [1, 4, 9, 16, 25, 36, 49, 64]\n  first_three = [1, 2, 3]\n  popped = 8\n"
+        }
+      ]
+    },
+    {
+      "id": "tuples-dicts-sets",
+      "cell_type": "markdown",
+      "source": "## Tuples, dicts, and sets\n\n- `tuple` — immutable ordered sequence, often used for fixed records.\n- `dict` — hash map from keys to values; preserves insertion order.\n- `set` — unordered collection of unique hashable items.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "collections-demo",
+      "cell_type": "code",
+      "source": "point = (3, 4)\nconfig = {\"language\": \"python\", \"version\": 3, \"kernel\": \"mars\"}\nunique = {1, 2, 2, 3, 3, 3}\nlookup = dict(alpha=1, beta=2)\nlookup[\"gamma\"] = 3\n\nreport(\n    \"collections\",\n    f\"point = {point}, unpacked x,y = {point[0]},{point[1]}\",\n    f\"config['kernel'] = {config['kernel']!r}\",\n    f\"config.get('missing', 'fallback') = {config.get('missing', 'fallback')!r}\",\n    f\"unique = {sorted(unique)}\",\n    f\"lookup keys = {sorted(lookup)}\",\n    f\"lookup['beta'] = {lookup['beta']}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 6,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "collections\n  point = (3, 4), unpacked x,y = 3,4\n  config['kernel'] = 'mars'\n  config.get('missing', 'fallback') = 'fallback'\n  unique = [1, 2, 3]\n  lookup keys = ['alpha', 'beta', 'gamma']\n  lookup['beta'] = 2\n"
+        }
+      ]
+    },
+    {
+      "id": "control-flow",
+      "cell_type": "markdown",
+      "source": "## Control flow\n\n`if`/`elif`/`else`, `for`, `while`, and the conditional expression\n`x if cond else y` cover branching and iteration. There is no `switch`;\nuse `if`/`elif` chains or dict dispatch.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "control-flow-demo",
+      "cell_type": "code",
+      "source": "score = 87\n\ndef grade(s):\n    if s >= 90:\n        return \"A\"\n    elif s >= 80:\n        return \"B\"\n    elif s >= 70:\n        return \"C\"\n    else:\n        return \"F\"\n\ncount = 0\nwhile count < 3:\n    count += 1\n\nlabel = \"pass\" if score >= 60 else \"fail\"\n\nreport(\n    \"control flow\",\n    f\"grade({score}) = {grade(score)}\",\n    f\"while loop ran {count} times\",\n    f\"label = {label!r}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "control flow\n  grade(87) = B\n  while loop ran 3 times\n  label = 'pass'\n"
+        }
+      ]
+    },
+    {
+      "id": "functions",
+      "cell_type": "markdown",
+      "source": "## Functions\n\n`def` creates functions with positional, keyword, default, `*args`, and\n`**kwargs` parameters. Functions are first-class objects: they can be\npassed, returned, stored, and decorated. Docstrings document them.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "functions-demo",
+      "cell_type": "code",
+      "source": "def greet(name, greeting=\"Hello\", punctuation=\"!\", **extra):\n    '''Return a greeting; extra kwargs are ignored for now.'''\n    return f\"{greeting}, {name}{punctuation}\"\n\ndef apply_twice(fn, value):\n    return fn(fn(value))\n\ndef shout(text):\n    return text.upper()\n\nreport(\n    \"functions\",\n    greet(\"Mars\"),\n    greet(\"Mars\", greeting=\"Hi\", punctuation=\"?\"),\n    f\"apply_twice(shout, 'hey') = {apply_twice(shout, 'hey')!r}\",\n    f\"greet.__doc__ = {greet.__doc__!r}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "functions\n  Hello, Mars!\n  Hi, Mars?\n  apply_twice(shout, 'hey') = 'HEY'\n  greet.__doc__ = 'Return a greeting; extra kwargs are ignored for now.'\n"
+        }
+      ]
+    },
+    {
+      "id": "lambdas-comprehensions",
+      "cell_type": "markdown",
+      "source": "## Lambdas and comprehensions\n\n`lambda` makes small anonymous functions. Comprehensions build collections\nin one expression: `[expr for x in it if cond]`, plus dict and set\nvariants.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "comprehensions-demo",
+      "cell_type": "code",
+      "source": "words = [\"alpha\", \"beta\", \"gamma\", \"delta\"]\nlengths = {w: len(w) for w in words}\nlong_words = {w for w in words if len(w) > 4}\nsquare = lambda x: x * x\nnested = [(x, y) for x in range(3) for y in range(3) if x != y]\n\nreport(\n    \"comprehensions\",\n    f\"lengths = {lengths}\",\n    f\"long_words = {sorted(long_words)}\",\n    f\"square(9) = {square(9)}\",\n    f\"pairs = {nested}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "comprehensions\n  lengths = {'alpha': 5, 'beta': 4, 'gamma': 5, 'delta': 5}\n  long_words = ['alpha', 'delta', 'gamma']\n  square(9) = 81\n  pairs = [(0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1)]\n"
+        }
+      ]
+    },
+    {
+      "id": "exceptions",
+      "cell_type": "markdown",
+      "source": "## Exceptions\n\nErrors raise exceptions. `try`/`except`/`else`/`finally` handles them;\n`raise` re-raises or creates new ones. Catch specific exceptions, not bare\n`except`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "exceptions-demo",
+      "cell_type": "code",
+      "source": "def parse_int(text):\n    try:\n        return int(text)\n    except ValueError as exc:\n        return f\"not a number: {exc}\"\n\nresults = []\nfor value in [\"42\", \"3.14\", \"mars\", \"\"]:\n    results.append(f\"{value!r} -> {parse_int(value)!r}\")\n\ntry:\n    risky = 1 / 0\nexcept ZeroDivisionError as exc:\n    report(\n        \"exceptions\",\n        *results,\n        f\"1/0 raised {type(exc).__name__}: {exc}\",\n    )",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "exceptions\n  '42' -> 42\n  '3.14' -> \"not a number: invalid literal for int() with base 10: '3.14'\"\n  'mars' -> \"not a number: invalid literal for int() with base 10: 'mars'\"\n  '' -> \"not a number: invalid literal for int() with base 10: ''\"\n  1/0 raised ZeroDivisionError: division by zero\n"
+        }
+      ]
+    },
+    {
+      "id": "classes",
+      "cell_type": "markdown",
+      "source": "## Classes\n\n`class` defines types with `__init__`, methods, and attributes. Python uses\nduck typing and convention-based \"dunder\" methods (`__repr__`, `__len__`,\n`__eq__`, ...) for nice behaviour.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "classes-demo",
+      "cell_type": "code",
+      "source": "class Notebook:\n    def __init__(self, title, cells=None):\n        self.title = title\n        self.cells = cells if cells is not None else []\n\n    def add(self, source):\n        self.cells.append(source)\n        return len(self.cells)\n\n    def __len__(self):\n        return len(self.cells)\n\n    def __repr__(self):\n        return f\"Notebook({self.title!r}, {len(self)} cells)\"\n\nnb = Notebook(\"Demo\")\nnb.add(\"x = 1\")\nnb.add(\"x + 1\")\n\nreport(\n    \"classes\",\n    repr(nb),\n    f\"len(nb) = {len(nb)}\",\n    f\"nb.cells = {nb.cells}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "classes\n  Notebook('Demo', 2 cells)\n  len(nb) = 2\n  nb.cells = ['x = 1', 'x + 1']\n"
+        }
+      ]
+    },
+    {
+      "id": "modules-imports",
+      "cell_type": "markdown",
+      "source": "## Modules and imports\n\nThe standard library is large. `import module` binds the module;\n`from module import name` binds names directly. Common modules: `math`,\n`json`, `collections`, `itertools`, `functools`, `datetime`, `pathlib`,\n`re`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "modules-demo",
+      "cell_type": "code",
+      "source": "import math\nimport json\nfrom collections import Counter, defaultdict\nfrom itertools import islice, chain\nfrom functools import reduce\nfrom datetime import date\n\ncounter = Counter(\"mississippi\")\ngroups = defaultdict(list)\nfor word in [\"a\", \"bb\", \"ccc\", \"dd\"]:\n    groups[len(word)].append(word)\nfirst_five_primes = list(islice((n for n in range(2, 100) if all(n % p for p in range(2, int(n**0.5) + 1))), 5))\ntotal = reduce(lambda acc, n: acc + n, [1, 2, 3, 4, 5], 0)\n\nreport(\n    \"modules\",\n    f\"math.factorial(6) = {math.factorial(6)}\",\n    f\"math.gcd(48, 36) = {math.gcd(48, 36)}\",\n    f\"Counter('mississippi') = {dict(counter)}\",\n    f\"groups = {dict(groups)}\",\n    f\"first five primes = {first_five_primes}\",\n    f\"reduce sum = {total}\",\n    f\"json.dumps({{'a': 1}}) = {json.dumps({'a': 1})}\",\n    f\"today = {date.today()}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "modules\n  math.factorial(6) = 720\n  math.gcd(48, 36) = 12\n  Counter('mississippi') = {'m': 1, 'i': 4, 's': 4, 'p': 2}\n  groups = {1: ['a'], 2: ['bb', 'dd'], 3: ['ccc']}\n  first five primes = [2, 3, 5, 7, 11]\n  reduce sum = 15\n  json.dumps({'a': 1}) = {\"a\": 1}\n  today = 2026-11-07\n"
+        }
+      ]
+    },
+    {
+      "id": "iterators-generators",
+      "cell_type": "markdown",
+      "source": "## Iterators and generators\n\nIterables can be consumed lazily. `iter()`/`next()` drive an iterator, and\na function containing `yield` is a generator — memory-efficient pipelines.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "generators-demo",
+      "cell_type": "code",
+      "source": "def countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\ndef running_total(values):\n    total = 0\n    for v in values:\n        total += v\n        yield total\n\nit = iter([10, 20, 30])\nfirst_two = list(islice(countdown(5), 2))\ntotals = list(running_total([1, 2, 3, 4]))\n\nreport(\n    \"generators\",\n    f\"next(it) x3 = {[next(it) for _ in range(3)]}\",\n    f\"countdown(5) first two = {first_two}\",\n    f\"running totals = {totals}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "generators\n  next(it) x3 = [10, 20, 30]\n  countdown(5) first two = [5, 4]\n  running totals = [1, 3, 6, 10]\n"
+        }
+      ]
+    },
+    {
+      "id": "stdlib-tour",
+      "cell_type": "markdown",
+      "source": "## Standard-library tour\n\nA few more everyday tools: `pathlib` for paths, `re` for regular\nexpressions, `statistics` for quick stats, `random` for randomness, and\n`textwrap`/`string` for text.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "stdlib-demo",
+      "cell_type": "code",
+      "source": "import random\nimport re\nimport statistics\nimport string\nfrom pathlib import Path\n\nrandom.seed(42)\nwords = re.findall(r\"[a-z]+\", \"Mars notebooks are fun, really!\")\npath = Path(\"/tmp/mars-demo\") / \"notebook.mars\"\nletters = \"\".join(random.choices(string.ascii_lowercase, k=8))\nvalues = [random.randint(1, 100) for _ in range(20)]\n\nreport(\n    \"stdlib\",\n    f\"re.findall -> {words}\",\n    f\"path.name = {path.name!r}, suffix = {path.suffix!r}\",\n    f\"random letters = {letters!r}\",\n    f\"statistics.mean(values) = {statistics.mean(values):.2f}\",\n    f\"statistics.stdev(values) = {statistics.stdev(values):.2f}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "stdlib\n  re.findall -> ['ars', 'notebooks', 'are', 'fun', 'really']\n  path.name = 'notebook.mars', suffix = '.mars'\n  random letters = 'qahftrxc'\n  statistics.mean(values) = 48.40\n  statistics.stdev(values) = 29.86\n"
+        }
+      ]
+    },
+    {
+      "id": "recap",
+      "cell_type": "markdown",
+      "source": "## Recap\n\nYou have seen the core of Python:\n\n- dynamic typing with `int`, `float`, `str`, `bool`, `None`\n- `list`, `tuple`, `dict`, `set`\n- `if`/`for`/`while`, functions, lambdas, comprehensions\n- exceptions, classes, modules, generators\n- everyday standard-library tools\n\nEverything ran in one persistent session — variables defined early are\nstill here.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "recap-demo",
+      "cell_type": "code",
+      "source": "# Everything still works: language, numbers, squared, and the notebook helper.\nsample = [n * n for n in range(1, 6)]\nreport(\n    \"recap\",\n    f\"language = {language}\",\n    f\"sum(numbers) = {sum(numbers)}\",\n    f\"sample squares = {sample}\",\n    f\"config = {config}\",\n)",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "type": "text",
+          "text": "recap\n  language = Python\n  sum(numbers) = 28\n  sample squares = [1, 4, 9, 16, 25]\n  config = {'language': 'python', 'version': 3, 'kernel': 'mars'}\n"
+        }
+      ]
+    },
+    {
+      "id": "next-steps",
+      "cell_type": "markdown",
+      "source": "## Next steps\n\n- **Rich output**: `display(obj)` publishes MIME bundles — objects that\n  define `_repr_html_`, `_repr_png_`, `_repr_jpeg_`, or `_repr_svg_` render\n  richly, with `text/plain` `repr()` as fallback.\n- **Dependencies**: `%pip install numpy pandas` installs into the active\n  interpreter; `import numpy as np` then works in later cells.\n- **Shell escapes**: lines starting with `!` run shell commands;\n  `%pip`/`%pip3` run pip.\n- **Interactive input**: `input(\"prompt\")` asks the kernel for a line of\n  input.\n- **Jupyter interop**: `mars import notebook.ipynb` and\n  `mars export notebook.mars ipynb` convert between formats.\n- Try the [R](../r/r-intro.mars) and [Julia](../julia/julia-intro.mars)\n  introductions, or the Rust tour in `../rust/01-getting-started/`.",
+      "metadata": {},
+      "outputs": []
+    }
+  ]
+}

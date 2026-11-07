@@ -18,6 +18,9 @@ pub struct RustSession {
     pub locked: bool,
     /// stdin handle of the currently running cell program, for `mars_prompt`.
     pub stdin: Option<Arc<Mutex<ChildStdin>>>,
+    /// Shared slot mirroring `stdin`, usable through `StdinWriter` while
+    /// `execute_*` holds `&mut self`.
+    pub stdin_slot: Arc<Mutex<Option<Arc<Mutex<ChildStdin>>>>>,
 }
 
 impl RustSession {
@@ -50,6 +53,7 @@ impl RustSession {
             offline,
             locked,
             stdin: None,
+            stdin_slot: Arc::new(Mutex::new(None)),
         })
     }
 

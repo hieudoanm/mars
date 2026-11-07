@@ -62,7 +62,7 @@ mars-runtime ---> isolated rustc/Cargo child process ---> captured outputs
 The CLI bypasses the desktop transport but uses the same document, runtime,
 Jupyter, and renderer crates. The desktop uses Tauri as an adapter rather than
 placing business logic in the Tauri command handlers.
-- `apps/desktop` provides the Tauri/React editor. Its UI orchestration is
+- `packages/desktop` provides the Tauri/React editor. Its UI orchestration is
   separated from domain operations: `useNotebookEditor.ts` owns notebook state,
   selection, history, and mutations; `useNotebookPersistence.ts` owns file
   state, autosave, and close/open flows; `useKernelExecution.ts` owns runtime

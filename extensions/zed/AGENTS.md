@@ -9,14 +9,13 @@ these instructions apply to the Zed WebAssembly extension and its grammar.
   runtime surface minimal: `src/lib.rs` implements `zed_extension_api::Extension`
   and launches the external Mars CLI rather than evaluating notebooks itself.
 - `extension.toml` is part of the published integration contract. Keep its
-  extension ID, language path, grammar registration, and language-server name
-  aligned with `languages/mars/config.toml` and the Rust implementation.
+  extension ID, language path, and grammar registration aligned with
+  `languages/mars/config.toml` and the Rust implementation.
 - The pinned `zed_extension_api` version exists for Zed ABI compatibility. Do
   not update it casually or use APIs unavailable at that version.
-- The language server command must use an argument vector, validate that the CLI
-  can be found in the current worktree, and return an actionable error when it
-  cannot. Never assume a shell, PATH mutation, or host-specific installation
-  path.
+- Do not register `mars kernel serve` as a Zed language server: it speaks the
+  Mars kernel protocol, not LSP. Zed support is intentionally limited to
+  grammar and language configuration until a real LSP frontend exists.
 - Keep production Rust files at or below 200 lines where practical (220 is the
   absolute sensible exception). Extract command construction or configuration
   parsing into focused modules if the extension grows.

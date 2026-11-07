@@ -4,7 +4,10 @@ use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope, ResponseEnve
 use mars_runtime::{ExecutionResult, RuntimeBackend, RuntimeError, StreamEvent};
 use std::{
     collections::BTreeMap,
-    sync::{Arc, atomic::AtomicBool},
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
     time::Duration,
 };
 
@@ -43,11 +46,7 @@ impl Kernel {
         backend: RuntimeBackendKind,
         offline: bool,
     ) -> Result<Self, KernelError> {
-        Ok(Self {
-            runtime: crate::runtime::create_runtime(backend, dependencies, None, offline, false)
-                .map_err(KernelError::Runtime)?,
-            status: ExecutionStatus::Idle,
-        })
+        Self::for_language_with_configuration("rust", dependencies, None, offline, false, backend)
     }
 
     pub fn with_configuration(
@@ -57,8 +56,43 @@ impl Kernel {
         locked: bool,
         backend: RuntimeBackendKind,
     ) -> Result<Self, KernelError> {
+        Self::for_language_with_configuration(
+            "rust",
+            dependencies,
+            cargo_lock,
+            offline,
+            locked,
+            backend,
+        )
+    }
+
+    /// Builds a kernel for a specific notebook language (e.g. `"rust"`,
+    /// `"python"`) with default execution options.
+    pub fn for_language(language: &str, backend: RuntimeBackendKind) -> Result<Self, KernelError> {
+        Self::for_language_with_configuration(
+            language,
+            BTreeMap::new(),
+            None,
+            false,
+            false,
+            backend,
+        )
+    }
+
+    /// Builds a kernel for a specific notebook language. Rust-specific
+    /// options (`dependencies`, `cargo_lock`, `offline`, `locked`) are only
+    /// applied by the Rust backend.
+    pub fn for_language_with_configuration(
+        language: &str,
+        dependencies: BTreeMap<String, String>,
+        cargo_lock: Option<String>,
+        offline: bool,
+        locked: bool,
+        backend: RuntimeBackendKind,
+    ) -> Result<Self, KernelError> {
         Ok(Self {
             runtime: crate::runtime::create_runtime(
+                language,
                 backend,
                 dependencies,
                 cargo_lock,
@@ -89,6 +123,12 @@ impl Kernel {
         self.runtime.write_stdin(text)
     }
 
+    /// Returns a handle for answering interactive prompts while a cell is
+    /// executing, without holding a mutable borrow on the kernel.
+    pub fn stdin_writer(&self) -> Option<mars_runtime::StdinWriter> {
+        self.runtime.stdin_writer()
+    }
+
     pub fn execute_source(
         &mut self,
         source: &str,
@@ -112,6 +152,7 @@ impl Kernel {
             KernelRequest::Execute {
                 source,
                 timeout_millis,
+                language: _,
             } => self.execute(
                 &source,
                 timeout_millis.map(Duration::from_millis),
@@ -135,6 +176,51 @@ impl Kernel {
             KernelRequest::Status => KernelResponse::Status {
                 status: self.status.clone(),
                 execution_count: self.runtime.execution_count(),
+            },
+            KernelRequest::Cancel => {
+                cancellation.store(true, Ordering::Relaxed);
+                KernelResponse::Cancelled
+            }
+            KernelRequest::Variables => match self.runtime.inspect_variables() {
+                Ok(variables) => KernelResponse::Variables {
+                    variables: variables
+                        .into_iter()
+                        .map(|variable| mars_protocol::VariableInfo {
+                            name: variable.name,
+                            type_name: variable.type_name,
+                            value: variable.value,
+                        })
+                        .collect(),
+                },
+                Err(error) => KernelResponse::Error {
+                    message: error.to_string(),
+                },
+            },
+            KernelRequest::Diagnose { source } => match self.runtime.diagnose(&source) {
+                Ok(diagnostics) => KernelResponse::Diagnostics {
+                    diagnostics: diagnostics
+                        .into_iter()
+                        .map(|diagnostic| mars_protocol::CellDiagnostic {
+                            cell_index: diagnostic.cell_index,
+                            line: diagnostic.line,
+                            column: diagnostic.column,
+                            end_line: diagnostic.end_line,
+                            end_column: diagnostic.end_column,
+                            severity: diagnostic.severity,
+                            code: diagnostic.code,
+                            message: diagnostic.message,
+                        })
+                        .collect(),
+                },
+                Err(error) => KernelResponse::Error {
+                    message: error.to_string(),
+                },
+            },
+            KernelRequest::Input { text } => match self.runtime.write_stdin(&text) {
+                Ok(()) => KernelResponse::Input,
+                Err(error) => KernelResponse::Error {
+                    message: error.to_string(),
+                },
             },
         };
         ResponseEnvelope {

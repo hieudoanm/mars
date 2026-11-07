@@ -1,0 +1,333 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Getting started with Mars (Julia)",
+    "language": "julia"
+  },
+  "cells": [
+    {
+      "id": "intro",
+      "cell_type": "markdown",
+      "source": "# Getting started with Mars (Julia)\n\n**Mars** is an interactive notebook where code cells share a persistent\nJulia session. A `.mars` notebook is a JSON document made of **markdown**,\n**code**, and **raw** cells. Code cells run from top to bottom in a shared\nmodule, so bindings created in one cell are available in every later cell —\nlike IJulia, but with Mars's own document format and kernel.\n\nThis notebook is a tour of the Julia basics: values and types, arrays and\nbroadcasting, dictionaries and sets, control flow, functions and multiple\ndispatch, structs, exceptions, and a few standard-library tools. It uses\nonly Julia Base, so it runs anywhere `julia` is installed.\n\n> Tip: the last visible expression of a cell is displayed automatically —\n> assignments and definitions are silent. Use `println()` for plain output.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "how-notebooks-work",
+      "cell_type": "markdown",
+      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Julia source executed in a shared module session |\n| `raw` | Text preserved verbatim, without rendering or execution |\n\nWhen a code cell runs:\n\n1. Mars sends the source to the Julia driver.\n2. The driver parses it with `Meta.parseall` and evaluates each top-level\n   expression in order inside the `MarsKernel` module.\n3. `stdout`/`stderr` stream live; the trailing non-silent expression is\n   displayed via its MIME reprs, and `display(x)` publishes mime bundles.\n4. Errors are reported as cell errors and do not stop later cells — fix the\n   cell and re-run it.\n\n`ans` holds the last displayed value and `ans_prev` the one before it.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "markdown-essentials",
+      "cell_type": "markdown",
+      "source": "### Markdown essentials\n\nMarkdown cells support **bold**, *italic*, ~~strikethrough~~, `inline code`,\n[links](https://github.com/hieudoanm/mars), lists, tables, block quotes, and\nfenced code blocks.\n\n- unordered list item\n- another item\n  - nested item\n\n1. ordered item\n2. another item\n\n```julia\nnumbers = [1, 2, 3]\nsum(numbers)\n```\n\n> Block quotes are great for callouts.\n\n| Feature | Supported |\n| ------- | --------- |\n| Headings | yes |\n| Tables | yes |\n| LaTeX | `$E = mc^2$` |",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "raw-cell",
+      "cell_type": "raw",
+      "source": "A raw cell is stored and exported verbatim.\nIt is useful for generated text or content that should not be parsed.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "first-code-cell",
+      "cell_type": "markdown",
+      "source": "## Your first code cell\n\nThe next cell defines a tiny `report()` helper that prints labelled output.\nIt stays available to every later cell, just like a function defined at the\ntop of a script.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "setup-report",
+      "cell_type": "code",
+      "source": "function report(title, lines...)\n    println(title)\n    for line in lines\n        println(\"  \", line)\n    end\nend\n\nreport(\"Mars Julia kernel is alive\", \"julia\", \"shared session\")",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "values-types",
+      "cell_type": "markdown",
+      "source": "## Values and types\n\nJulia values carry concrete types: `Int64`, `Float64`, `String`, `Bool`,\nand `Nothing` (`nothing`). Types are inferred; annotate with `::` when you\nwant to be explicit.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "values",
+      "cell_type": "code",
+      "source": "language = \"Julia\"\nyear = 2026\npi = 3.141592653589793\nis_fun = true\nnothing_val = nothing\n\nreport(\n    \"values\",\n    string(\"language = \", language, \" (\", typeof(language), \")\"),\n    string(\"year = \", year, \" (\", typeof(year), \")\"),\n    string(\"pi = \", pi, \" (\", typeof(pi), \")\"),\n    string(\"is_fun = \", is_fun, \" (\", typeof(is_fun), \")\"),\n    string(\"nothing_val = \", nothing_val, \" (\", typeof(nothing_val), \")\"),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "arithmetic",
+      "cell_type": "markdown",
+      "source": "## Operators and arithmetic\n\nJulia has the usual arithmetic operators plus `÷` (division), `\\` (integer\ndivision), `%` (remainder), `^` (power), and rational/irrational literals\nlike `1//3` and `sqrt(2)`. Integer overflow wraps; use `BigInt` for\narbitrary precision.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "arithmetic-demo",
+      "cell_type": "code",
+      "source": "a = 17\nb = 5\n\nreport(\n    \"arithmetic\",\n    string(\"a + b = \", a + b),\n    string(\"a - b = \", a - b),\n    string(\"a * b = \", a * b),\n    string(\"a / b = \", a / b, \"  (true division -> float)\"),\n    string(\"div(a, b) = \", div(a, b), \"  (integer division)\"),\n    string(\"a % b = \", a % b, \"  (remainder)\"),\n    string(\"a ^ b = \", a ^ b, \"  (power)\"),\n    string(\"1 // 3 = \", 1 // 3, \"  (rational)\"),\n    string(\"a > b && b > 0 -> \", a > b && b > 0),\n    string(\"!is_fun -> \", !is_fun),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "strings",
+      "cell_type": "markdown",
+      "source": "## Strings\n\nStrings are immutable UTF-8 sequences. Interpolation with `$name` and\n`$(expr)` is the idiomatic way to build text; `repr` shows the quoted form.\n",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "strings-demo",
+      "cell_type": "code",
+      "source": "name = \"mars\"\nshout = uppercase(name)\nslug = replace(lowercase(shout), \" \" => \"-\")\nwords = split(\"interactive notebooks are fun\")\njoined = join(words, \" | \")\n\nreport(\n    \"strings\",\n    string(\"name = \", repr(name)),\n    string(\"shout = \", shout),\n    string(\"slug = \", slug),\n    string(\"words = \", words),\n    string(\"joined = \", repr(joined)),\n    string(\"count of 'o' in joined = \", count(==('o'), joined)),\n    string(\"first 10 chars = \", first(joined, 10)),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "arrays",
+      "cell_type": "markdown",
+      "source": "## Arrays\n\n`Vector` is Julia's 1-D array; `Matrix` is 2-D; `Array{T,N}` is N-D.\nIndexing is 1-based: `v[1]` is the first element. Arrays are mutable and\ncan hold any type, but homogeneous arrays are faster.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "arrays-demo",
+      "cell_type": "code",
+      "source": "numbers = [1, 2, 3, 4, 5]\npush!(numbers, 6)\nappend!(numbers, [7, 8])\nevens = [n for n in numbers if iseven(n)]\nsquares = [n^2 for n in numbers]\nfirst_three = numbers[1:3]\nlast = pop!(numbers)\n\nreport(\n    \"arrays\",\n    string(\"numbers = \", numbers),\n    string(\"length = \", length(numbers)),\n    string(\"sum = \", sum(numbers)),\n    string(\"evens = \", evens),\n    string(\"squares = \", squares),\n    string(\"first_three = \", first_three),\n    string(\"popped = \", last),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "broadcasting",
+      "cell_type": "markdown",
+      "source": "## Broadcasting\n\nJulia's killer feature: `f.(x)` applies `f` elementwise, and arithmetic\noperators broadcast too — `xs .+ ys`, `xs .* 2`. No explicit loops needed\nfor elementwise math.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "broadcasting-demo",
+      "cell_type": "code",
+      "source": "xs = [1.0, 2.0, 3.0, 4.0]\nys = [10.0, 20.0, 30.0, 40.0]\n\ntwice = xs .* 2\nsums = xs .+ ys\nproducts = xs .* ys\nsines = sin.(xs)\n\nreport(\n    \"broadcasting\",\n    string(\"xs = \", xs),\n    string(\"xs .* 2 = \", twice),\n    string(\"xs .+ ys = \", sums),\n    string(\"xs .* ys = \", products),\n    string(\"sin.(xs) = \", round.(sines; digits=4)),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "ranges-tuples",
+      "cell_type": "markdown",
+      "source": "## Ranges and tuples\n\n`a:b` and `a:b:c` are lazy `UnitRange`/`StepRange` values — memory-free\nsequences. Tuples `(1, 2)` are immutable fixed-size collections; named\ntuples `(x=1, y=2)` add field access.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "ranges-tuples-demo",
+      "cell_type": "code",
+      "source": "r = 1:5\nstep = 0:2:10\npoint = (3, 4)\npair = (x = 3, y = 4)\nmaterialized = collect(r)\n\nreport(\n    \"ranges and tuples\",\n    string(\"1:5 = \", r, \" (\", typeof(r), \")\"),\n    string(\"0:2:10 = \", step),\n    string(\"collect(1:5) = \", materialized),\n    string(\"point = \", point, \", sum = \", sum(point)),\n    string(\"pair.y = \", pair.y, \", pair[2] = \", pair[2]),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "dicts-sets",
+      "cell_type": "markdown",
+      "source": "## Dictionaries and sets\n\n`Dict` maps keys to values; `Set` stores unique items. Both are unordered\nhash collections with fast lookup.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "dicts-sets-demo",
+      "cell_type": "code",
+      "source": "config = Dict(\"language\" => \"julia\", \"version\" => 1, \"kernel\" => \"mars\")\nlookup = Dict(:alpha => 1, :beta => 2)\nlookup[:gamma] = 3\nunique = Set([1, 2, 2, 3, 3, 3])\n\nreport(\n    \"dicts and sets\",\n    string(\"config[\"kernel\"] = \", config[\"kernel\"]),\n    string(\"get(config, \"missing\", \"fallback\") = \", get(config, \"missing\", \"fallback\")),\n    string(\"lookup[:beta] = \", lookup[:beta]),\n    string(\"unique = \", sort!(collect(unique))),\n    string(\"haskey(config, \"language\") = \", haskey(config, \"language\")),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "control-flow",
+      "cell_type": "markdown",
+      "source": "## Control flow\n\n`if`/`elseif`/`else`, `for`, `while`, and the ternary `cond ? a : b` cover\nbranching and iteration. `for` works over any iterable, including ranges\nand generators.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "control-flow-demo",
+      "cell_type": "code",
+      "source": "function grade(s)\n    if s >= 90\n        return \"A\"\n    elseif s >= 80\n        return \"B\"\n    elseif s >= 70\n        return \"C\"\n    else\n        return \"F\"\n    end\nend\n\nscore = 87\ncount = 0\nwhile count < 3\n    count += 1\nend\nlabel = score >= 60 ? \"pass\" : \"fail\"\n\nreport(\n    \"control flow\",\n    string(\"grade(\", score, \") = \", grade(score)),\n    string(\"while loop ran \", count, \" times\"),\n    string(\"label = \", label),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "functions",
+      "cell_type": "markdown",
+      "source": "## Functions\n\n`function name(args) ... end` or the short form `f(x) = expr` defines\nfunctions. Keyword arguments use `;`, defaults use `=`, and `...` splats.\nJulia's multiple dispatch picks the method by argument *types*.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "functions-demo",
+      "cell_type": "code",
+      "source": "function greet(name; greeting=\"Hello\", punctuation=\"!\")\n    return greeting * \", \" * name * punctuation\nend\n\nsquare(x) = x^2\napply_twice(f, x) = f(f(x))\n\nreport(\n    \"functions\",\n    greet(\"Mars\"),\n    greet(\"Mars\"; greeting=\"Hi\", punctuation=\"?\"),\n    string(\"apply_twice(square, 3) = \", apply_twice(square, 3)),\n    string(\"typeof(square) = \", typeof(square)),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "multiple-dispatch",
+      "cell_type": "markdown",
+      "source": "## Multiple dispatch\n\nJulia picks methods by the types of *all* arguments — no classes needed.\nDefine the same function name for different signatures and Julia chooses\nat call time.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "dispatch-demo",
+      "cell_type": "code",
+      "source": "describe(x::Number) = \"a number: \" * string(x)\ndescribe(x::AbstractString) = \"a string: \" * x\ndescribe(x) = \"something else: \" * sprint(show, x)\n\nreport(\n    \"multiple dispatch\",\n    describe(42),\n    describe(\"hello\"),\n    describe([1, 2]),\n    describe(3.14),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "anonymous-functions",
+      "cell_type": "markdown",
+      "source": "## Anonymous functions and do-blocks\n\n`x -> x^2` is an anonymous function. `do` syntax passes a function as the\nlast argument — common with `open`, `foreach`, and friends.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "anonymous-demo",
+      "cell_type": "code",
+      "source": "square = x -> x^2\nmap_twice = f -> x -> f(f(x))\n\nforeach(println, [\"a\", \"b\", \"c\"])\n\nreport(\n    \"anonymous functions\",\n    string(\"square(9) = \", square(9)),\n    string(\"map_twice(square)(2) = \", map_twice(square)(2)),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "structs",
+      "cell_type": "markdown",
+      "source": "## Structs\n\n`struct` defines composite types with typed fields. `mutable struct` allows\nfield assignment. Constructors are just functions; add outer constructors\nfor validation.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "structs-demo",
+      "cell_type": "code",
+      "source": "struct Point\n    x::Float64\n    y::Float64\nend\n\nmutable struct Counter\n    value::Int\nend\n\nfunction Point(x::Real, y::Real)\n    return Point(Float64(x), Float64(y))\nend\n\np = Point(3, 4)\nc = Counter(0)\nc.value += 1\n\nreport(\n    \"structs\",\n    string(\"p = \", p, \" typeof = \", typeof(p)),\n    string(\"p.x + p.y = \", p.x + p.y),\n    string(\"c.value = \", c.value),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "exceptions",
+      "cell_type": "markdown",
+      "source": "## Exceptions\n\nErrors raise exceptions. `try`/`catch`/`finally` handles them; `catch e`\nbinds the exception. `error(\"msg\")` raises an `ErrorException`.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "exceptions-demo",
+      "cell_type": "code",
+      "source": "function parse_int(text)\n    try\n        return parse(Int, text)\n    catch e\n        return \"not a number: \" * sprint(showerror, e)\n    end\nend\n\nresults = String[]\nfor value in [\"42\", \"3.14\", \"mars\", \"\"]\n    push!(results, repr(value) * \" -> \" * repr(parse_int(value)))\nend\n\ntry\n    error(\"boom\")\ncatch e\n    report(\n        \"exceptions\",\n        results...,\n        string(\"error(\"boom\") raised \", typeof(e), \": \", sprint(showerror, e)),\n    )\nend",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "iterators",
+      "cell_type": "markdown",
+      "source": "## Iterators\n\nJulia separates iteration from collection: `1:10`, generators, and custom\niterators all work with `for`, `collect`, `map`, `sum`, and friends.\n`Iterators` stdlib adds `flatten`, `partition`, `take`, and more.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "iterators-demo",
+      "cell_type": "code",
+      "source": "using Iterators\n\nfunction countdown(n)\n    return (i for i in n:-1:1)\nend\n\nfunction running_total(values)\n    total = 0\n    return (total += v for v in values)\nend\n\nit = iterate([10, 20, 30])\nfirst_two = Iterators.take(countdown(5), 2) |> collect\ntotals = collect(running_total([1, 2, 3, 4]))\n\nreport(\n    \"iterators\",\n    string(\"iterate([10,20,30]) = \", it),\n    string(\"countdown(5) first two = \", first_two),\n    string(\"running totals = \", totals),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "stdlib-tour",
+      "cell_type": "markdown",
+      "source": "## Standard-library tour\n\nJulia Base plus bundled stdlibs cover a lot: `Printf` for formatted\noutput, `Dates` for dates, `Statistics` for mean/stdev, `Random` for\nrandomness, `Printf`/`Markdown` for rich display, and `LinearAlgebra` for\nvectors and matrices.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "stdlib-demo",
+      "cell_type": "code",
+      "source": "using Printf, Dates, Statistics, Random, LinearAlgebra\n\nRandom.seed!(42)\nvalues = rand(1:100, 20)\nv = [1.0, 2.0, 3.0]\n\nreport(\n    \"stdlib\",\n    @sprintf(\"mean = %.2f, stdev = %.2f\", mean(values), stdev(values)),\n    string(\"det([1 2; 3 4]) = \", det([1 2; 3 4])),\n    string(\"v' * v = \", v' * v),\n    string(\"today = \", today()),\n    string(\"rand string-ish = \", join(rand('a':'z', 8))),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "recap",
+      "cell_type": "markdown",
+      "source": "## Recap\n\nYou have seen the core of Julia:\n\n- concrete types: `Int`, `Float64`, `String`, `Bool`, `Nothing`\n- `Vector`/`Matrix`/`Array`, ranges, tuples, named tuples\n- broadcasting with `.` and comprehensions\n- `Dict`, `Set`\n- `if`/`for`/`while`, functions, anonymous functions, multiple dispatch\n- `struct`, exceptions, iterators, and stdlib tools\n\nEverything ran in one persistent session — variables defined early are\nstill here.",
+      "metadata": {},
+      "outputs": []
+    },
+    {
+      "id": "recap-demo",
+      "cell_type": "code",
+      "source": "sample = [n^2 for n in 1:5]\nreport(\n    \"recap\",\n    string(\"language = \", language),\n    string(\"sum(numbers) = \", sum(numbers)),\n    string(\"sample squares = \", sample),\n    string(\"config[\"kernel\"] = \", config[\"kernel\"]),\n)",
+      "metadata": {
+        "language": "julia"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "id": "next-steps",
+      "cell_type": "markdown",
+      "source": "## Next steps\n\n- **Rich output**: `display(x)` publishes MIME bundles — `Markdown` and\n  `LaTeX` objects render richly, and plotting packages like Plots.jl produce\n  PNG/SVG outputs.\n- **Packages**: `using Pkg; Pkg.add(\"DataFrames\")` installs packages into\n  the default Julia environment.\n- **Interactive input**: `readline(\"prompt\")` asks the kernel for a line.\n- **Jupyter interop**: `mars import notebook.ipynb` and\n  `mars export notebook.mars ipynb` convert between formats.\n- Try the [Python](../python/01-getting-started/getting-started.mars) and\n  [R](../r/r-intro.mars) introductions, or the Rust tour in\n  `../rust/01-getting-started/`.",
+      "metadata": {},
+      "outputs": []
+    }
+  ]
+}

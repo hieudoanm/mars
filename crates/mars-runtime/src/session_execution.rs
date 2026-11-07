@@ -11,6 +11,7 @@ use crate::output::{
     ExpressionOutput, StreamEvent, StreamPhase, execution_outputs, interrupted_result,
 };
 use mars_core::Output;
+use std::io::Write;
 use std::process::Stdio;
 use std::sync::{
     Arc, Mutex,
@@ -147,6 +148,10 @@ impl RustSession {
             .stdin
             .take()
             .map(|stdin| Arc::new(Mutex::new(stdin)));
+        *self
+            .stdin_slot
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner()) = self.stdin.clone();
         if let Some(sink) = events.as_deref_mut() {
             sink(StreamEvent::Phase {
                 phase: StreamPhase::Running,
@@ -159,6 +164,10 @@ impl RustSession {
             events,
         )?;
         self.stdin = None;
+        *self
+            .stdin_slot
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner()) = None;
         if run.interrupted {
             return Ok(interrupted_result(
                 started.elapsed(),
@@ -242,5 +251,30 @@ impl RuntimeBackend for RustSession {
 
     fn write_stdin(&mut self, text: &str) -> Result<(), crate::error::RuntimeError> {
         RustSession::write_stdin(self, text)
+    }
+
+    fn stdin_writer(&self) -> Option<crate::backend::StdinWriter> {
+        let slot = Arc::clone(&self.stdin_slot);
+        Some(crate::backend::StdinWriter(Arc::new(
+            move |text: Option<&str>| {
+                let Some(text) = text else {
+                    // Child stdin is a pipe; EOF cannot be signalled without
+                    // closing it, which would break subsequent reads.
+                    return Ok(());
+                };
+                let guard = slot
+                    .lock()
+                    .map_err(|_| RuntimeError::Backend("kernel input lock poisoned".to_owned()))?;
+                let stdin = guard
+                    .as_ref()
+                    .ok_or_else(|| RuntimeError::Backend("no active execution".to_owned()))?;
+                let mut child = stdin
+                    .lock()
+                    .map_err(|_| RuntimeError::Backend("kernel input lock poisoned".to_owned()))?;
+                writeln!(child, "{text}")
+                    .and_then(|()| child.flush())
+                    .map_err(|_| RuntimeError::Backend("stdin closed".to_owned()))
+            },
+        )))
     }
 }

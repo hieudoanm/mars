@@ -24,9 +24,29 @@ pub enum KernelRequest {
         source: String,
         #[serde(default)]
         timeout_millis: Option<u64>,
+        /// Optional language override (e.g. `"python"`). When served by
+        /// `mars kernel serve`, selects which language runtime executes the
+        /// cell; single-runtime kernels ignore it.
+        #[serde(default)]
+        language: Option<String>,
     },
     Reset,
     Status,
+    /// Request cancellation of the in-flight execution. Processed by the
+    /// server loop concurrently with a running `Execute`; acknowledged with
+    /// `KernelResponse::Cancelled`.
+    Cancel,
+    /// Inspect live bindings in the session. Replay runtimes re-execute cell
+    /// side effects; see `mars-runtime` documentation for limitations.
+    Variables,
+    /// Compile-check `source` as a candidate next cell without committing it.
+    Diagnose {
+        source: String,
+    },
+    /// Write a line to the stdin of the currently running cell program.
+    Input {
+        text: String,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -50,9 +70,41 @@ pub enum KernelResponse {
     Reset {
         status: ExecutionStatus,
     },
+    Cancelled,
+    Variables {
+        variables: Vec<VariableInfo>,
+    },
+    Diagnostics {
+        diagnostics: Vec<CellDiagnostic>,
+    },
+    Input,
     Error {
         message: String,
     },
+}
+
+/// Wire form of a session variable reported by `KernelResponse::Variables`.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VariableInfo {
+    pub name: String,
+    pub type_name: Option<String>,
+    pub value: Option<String>,
+}
+
+/// Wire form of a compile diagnostic reported by `KernelResponse::Diagnostics`.
+/// `cell_index` refers to the candidate cell list inside the runtime session.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CellDiagnostic {
+    pub cell_index: Option<usize>,
+    pub line: u32,
+    pub column: u32,
+    pub end_line: u32,
+    pub end_column: u32,
+    pub severity: String,
+    pub code: Option<String>,
+    pub message: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -111,6 +163,7 @@ mod tests {
             request: KernelRequest::Execute {
                 source: "println!(\"hello\");".to_owned(),
                 timeout_millis: None,
+                language: None,
             },
         };
         let json = serde_json::to_string(&envelope).expect("serializes");
@@ -129,6 +182,7 @@ mod tests {
             KernelRequest::Execute {
                 source: "println!(\"hello\");".to_owned(),
                 timeout_millis: None,
+                language: None,
             }
         );
     }

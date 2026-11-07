@@ -1,9 +1,9 @@
 packages:
-  - apps/desktop
   - extensions/vscode
-  - apps/landing
+  - packages/desktop
+  - packages/landing
 
 onlyBuiltDependencies:
-  - "@vscode/vsce-sign"
+  - '@vscode/vsce-sign'
 
 minimumReleaseAge: 0

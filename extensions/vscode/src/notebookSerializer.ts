@@ -41,12 +41,33 @@ export class MarsNotebookSerializer implements vscode.NotebookSerializer {
         marsCell.cell_type === 'code'
           ? vscode.NotebookCellKind.Code
           : vscode.NotebookCellKind.Markup;
+      const notebookLanguage =
+        typeof notebook.metadata.language === 'string' && notebook.metadata.language
+          ? notebook.metadata.language
+          : 'rust';
+      const cellLanguage =
+        marsCell.cell_type === 'code' &&
+        typeof marsCell.metadata?.language === 'string' &&
+        marsCell.metadata.language
+          ? marsCell.metadata.language
+          : notebookLanguage;
       const cell = new vscode.NotebookCellData(
         kind,
         marsCell.source,
-        marsCell.cell_type === 'code' ? 'rust' : 'markdown',
+        marsCell.cell_type === 'code'
+          ? cellLanguage
+          : marsCell.cell_type === 'raw'
+            ? 'mars'
+            : 'markdown',
       );
-      cell.metadata = { ...marsCell.metadata, marsId: marsCell.id };
+      cell.metadata = {
+        ...marsCell.metadata,
+        marsId: marsCell.id,
+        marsCellType: marsCell.cell_type,
+      };
+      if (marsCell.cell_type === 'code' && typeof marsCell.execution_count === 'number') {
+        cell.metadata = { ...cell.metadata, marsExecutionCount: marsCell.execution_count };
+      }
       if (marsCell.outputs?.length) {
         cell.outputs = marsCell.outputs.map(marsOutputToNotebookOutput);
       }
@@ -72,12 +93,23 @@ export class MarsNotebookSerializer implements vscode.NotebookSerializer {
           ? metadata.marsId
           : this.generateId();
       delete metadata.marsId;
+      const stashedType = metadata.marsCellType;
+      delete metadata.marsCellType;
+      const stashedCount = metadata.marsExecutionCount;
+      delete metadata.marsExecutionCount;
+      const cellType =
+        cell.kind === vscode.NotebookCellKind.Code
+          ? 'code'
+          : stashedType === 'raw'
+            ? 'raw'
+            : 'markdown';
       const marsCell: MarsCell = {
         id,
-        cell_type: cell.kind === vscode.NotebookCellKind.Code ? 'code' : 'markdown',
+        cell_type: cellType,
         source: cell.value,
         metadata,
-        execution_count: null,
+        execution_count:
+          cellType === 'code' && typeof stashedCount === 'number' ? stashedCount : null,
       };
       if (cell.outputs?.length) {
         marsCell.outputs = cell.outputs.map(notebookOutputToMarsOutput);

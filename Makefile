@@ -25,10 +25,10 @@ build:
 	cargo build --workspace
 
 desktop-build:
-	cd apps/desktop && npm run build
+	cd packages/desktop && npm run build
 
 e2e:
-	cd apps/desktop && npm run test:e2e
+	cd packages/desktop && npm run test:e2e
 
 benchmark:
 	cargo run -p mars-runtime --release --bin runtime_benchmark -- $${CELLS:-8}

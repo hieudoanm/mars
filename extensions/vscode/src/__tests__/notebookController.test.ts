@@ -55,7 +55,7 @@ describe('Mars notebook execution controller', () => {
     const cell = createCell('println!("hi");');
     await handler([cell], {} as vscode.NotebookDocument, {} as vscode.NotebookController);
     const api = vi.mocked(vscode.notebooks.createNotebookController).mock.results.at(-1)?.value;
-    expect(api.supportedLanguages).toEqual(['rust']);
+    expect(api.supportedLanguages).toEqual(['rust', 'python', 'r', 'julia', 'cpp']);
     expect(api.supportsExecutionOrder).toBe(true);
     const execution = api.createNotebookCellExecution.mock.results[0].value;
     expect(execution.appendOutput).toHaveBeenCalledOnce();
@@ -78,8 +78,8 @@ describe('Mars notebook execution controller', () => {
       {} as vscode.NotebookController,
     );
     expect(KernelService).toHaveBeenCalledWith('/bin/mars');
-    expect(kernel.execute).toHaveBeenNthCalledWith(1, 'first', 5000, '/book.mars');
-    expect(kernel.execute).toHaveBeenNthCalledWith(2, 'second', 5000, '/book.mars');
+    expect(kernel.execute).toHaveBeenNthCalledWith(1, 'first', 5000, '/book.mars', 'rust');
+    expect(kernel.execute).toHaveBeenNthCalledWith(2, 'second', 5000, '/book.mars', 'rust');
     const api = vi.mocked(vscode.notebooks.createNotebookController).mock.results.at(-1)?.value;
     expect(api.createNotebookCellExecution.mock.results[1].value.end).toHaveBeenCalledWith(
       true,

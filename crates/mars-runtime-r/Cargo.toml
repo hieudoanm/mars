@@ -1,0 +1,12 @@
+[package]
+name = "mars-runtime-r"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+mars-core = { path = "../mars-core" }
+mars-runtime = { path = "../mars-runtime" }
+serde_json.workspace = true
+uuid.workspace = true

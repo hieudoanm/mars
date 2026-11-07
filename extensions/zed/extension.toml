@@ -1,7 +1,7 @@
 id = "mars"
 name = "Mars Notebooks"
 description = "Language support and notebook execution for .mars files."
-version = "0.1.0"
+version = "0.0.1"
 schema_version = 1
 authors = ["mars-project"]
 repository = "https://github.com/hieudoanm/mars"
@@ -12,6 +12,6 @@ path = "languages/mars"
 [grammars.mars]
 repository = "file://./grammars/tree-sitter-mars"
 
-[language_servers.mars-lsp]
-name = "Mars Language Server"
-languages = ["mars"]
+[context_servers.mars]
+# Exposes `mars mcp serve` to Zed's Agent Panel: notebook/cell/kernel tools
+# for .mars files. Requires the `mars` CLI on PATH.

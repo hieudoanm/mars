@@ -57,7 +57,7 @@ pnpm --filter @mars/desktop dev
 Run the native Tauri application:
 
 ```bash
-cd apps/desktop
+cd packages/desktop
 npm run tauri dev
 ```
 
