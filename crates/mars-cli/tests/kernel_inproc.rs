@@ -189,3 +189,112 @@ fn language_override_selects_runtime_per_request() {
     let kind = finals[0]["response"]["type"].as_str().unwrap_or("");
     assert!(kind == "execution" || kind == "error");
 }
+
+/// Interactive test: an `Input` request must reach a live Python `input()`
+/// prompt through the stdin-writer fast path while `Execute` is blocked.
+#[test]
+fn input_request_answers_live_python_prompt() {
+    if std::process::Command::new("python3")
+        .arg("--version")
+        .output()
+        .is_err()
+    {
+        return;
+    }
+    use std::io::{BufRead, Write};
+    use std::sync::mpsc;
+
+    let (req_read, req_write) = std::io::pipe().expect("request pipe");
+    let (resp_read, resp_write) = std::io::pipe().expect("response pipe");
+
+    std::thread::spawn(move || {
+        let _ = serve_connection(
+            BufReader::new(req_read),
+            BufWriter::new(resp_write),
+            RuntimeBackendKind::Replay,
+            None,
+            Some("python".to_owned()),
+        );
+    });
+
+    // Collect response lines on a channel so the test can wait with a
+    // timeout instead of blocking on the pipe.
+    let (line_tx, line_rx) = mpsc::channel::<String>();
+    std::thread::spawn(move || {
+        let mut reader = BufReader::new(resp_read);
+        let mut line = String::new();
+        loop {
+            line.clear();
+            match reader.read_line(&mut line) {
+                Ok(0) | Err(_) => break,
+                Ok(_) => {
+                    if line_tx.send(line.trim_end().to_owned()).is_err() {
+                        break;
+                    }
+                }
+            }
+        }
+    });
+
+    let mut requests = BufWriter::new(req_write);
+    writeln!(
+        requests,
+        "{}",
+        serde_json::json!({
+            "id": "e",
+            "request": {
+                "type": "execute",
+                "source": "name = input('Name? ')\nprint('hi ' + name)",
+                "timeout_millis": 30000,
+                "language": "python"
+            }
+        })
+    )
+    .expect("write execute");
+    requests.flush().expect("flush");
+
+    // Retry Input until the Python driver has spawned and registered its
+    // stdin writer; earlier attempts get "no active execution" errors.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    let mut answered = false;
+    while std::time::Instant::now() < deadline && !answered {
+        writeln!(
+            requests,
+            "{}",
+            serde_json::json!({"id": "inp", "request": {"type": "input", "text": "Bob"}})
+        )
+        .expect("write input");
+        requests.flush().expect("flush");
+        let wait = std::time::Instant::now() + std::time::Duration::from_millis(400);
+        while std::time::Instant::now() < wait {
+            if let Ok(line) = line_rx.recv_timeout(std::time::Duration::from_millis(50)) {
+                let value: Value = serde_json::from_str(&line).expect("json");
+                if value["id"] == "inp" && value["response"]["type"] == "input" {
+                    answered = true;
+                    break;
+                }
+            }
+        }
+        std::thread::sleep(std::time::Duration::from_millis(200));
+    }
+    assert!(answered, "input request was never accepted");
+
+    // Wait for the final execution response and check the echoed input.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    let mut saw_hi_bob = false;
+    while std::time::Instant::now() < deadline && !saw_hi_bob {
+        if let Ok(line) = line_rx.recv_timeout(std::time::Duration::from_millis(200)) {
+            let value: Value = serde_json::from_str(&line).expect("json");
+            if value["id"] == "e"
+                && serde_json::to_string(&value)
+                    .expect("json")
+                    .contains("hi Bob")
+            {
+                saw_hi_bob = true;
+            }
+        }
+    }
+    assert!(saw_hi_bob, "execution did not echo the prompted input");
+
+    drop(requests);
+}

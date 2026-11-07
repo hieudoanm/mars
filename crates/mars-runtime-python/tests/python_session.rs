@@ -226,3 +226,162 @@ fn shell_escape_runs_commands() {
         result.outputs
     );
 }
+
+#[test]
+fn top_level_await_is_supported() {
+    let mut session = session();
+    let result = execute(
+        &mut session,
+        "import asyncio\nawait asyncio.sleep(0.01)\n'async-done'",
+    );
+    assert_eq!(text_outputs(&result), vec!["'async-done'"]);
+    assert!(error_outputs(&result).is_empty());
+}
+
+#[test]
+fn unsupported_magic_reports_error() {
+    let mut session = session();
+    let result = execute(&mut session, "%matplotlib inline");
+    assert!(error_outputs(&result).iter().any(|output| matches!(
+        output,
+        Output::Error { name, message, .. }
+            if name == "RuntimeError" && message.contains("unsupported IPython magic")
+    )));
+}
+
+#[test]
+fn shell_failure_reports_shell_error() {
+    let mut session = session();
+    let result = execute(&mut session, "!false");
+    assert!(error_outputs(&result).iter().any(|output| matches!(
+        output,
+        Output::Error { name, .. } if name == "ShellError"
+    )));
+}
+
+#[test]
+fn display_raw_dict_and_filters() {
+    let mut session = session();
+    let result = execute(
+        &mut session,
+        "display({'text/html': '<i>raw</i>', 'text/plain': 'raw'}, raw=True)",
+    );
+    assert!(result.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, .. }
+            if data.get("text/html").and_then(|v| v.as_str()) == Some("<i>raw</i>")
+    )));
+
+    let filtered = execute(
+        &mut session,
+        "class Two:\n    def _repr_html_(self): return '<b>two</b>'\n    def __repr__(self): return 'Two()'\ndisplay(Two(), include=['text/html'])",
+    );
+    assert!(filtered.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, .. }
+            if data.contains_key("text/html") && !data.contains_key("text/plain")
+    )));
+
+    let excluded = execute(&mut session, "display(Two(), exclude=['text/html'])");
+    assert!(excluded.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, .. }
+            if !data.contains_key("text/html") && data.contains_key("text/plain")
+    )));
+}
+
+#[test]
+fn display_mimebundle_method_and_png_bytes() {
+    let mut session = session();
+    let result = execute(
+        &mut session,
+        "class Rich:\n    def _repr_mimebundle_(self):\n        return {'application/x-custom': 'yes', 'text/plain': 'Rich()'}, {'meta': 1}\ndisplay(Rich())",
+    );
+    assert!(result.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, metadata, .. }
+            if data.get("application/x-custom").and_then(|v| v.as_str()) == Some("yes")
+                && metadata.get("meta").and_then(|v| v.as_i64()) == Some(1)
+    )));
+
+    let png = execute(
+        &mut session,
+        "class Png:\n    def _repr_png_(self): return b'\\x89PNG fake'\n    def __repr__(self): return 'Png()'\ndisplay(Png())",
+    );
+    assert!(png.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, .. }
+            if data.contains_key("image/png")
+    )));
+}
+
+#[test]
+fn input_eof_raises_eoferror() {
+    let mut session = session();
+    session.inspect_variables().expect("spawn driver");
+    let writer = session.stdin_writer().expect("stdin writer");
+    let (prompt_tx, prompt_rx) = std::sync::mpsc::channel::<String>();
+    let (result, prompts) = std::thread::scope(|scope| {
+        let handle = scope.spawn(|| {
+            let mut prompts = Vec::new();
+            let result = session
+                .execute_with_events(
+                    "value = input('Name? ')",
+                    Some(Duration::from_secs(15)),
+                    Arc::new(AtomicBool::new(false)),
+                    &mut |event| {
+                        if let mars_runtime::StreamEvent::Prompt { message } = event {
+                            prompts.push(message.clone());
+                            let _ = prompt_tx.send(message);
+                        }
+                    },
+                )
+                .expect("execute");
+            (result, prompts)
+        });
+        prompt_rx
+            .recv_timeout(Duration::from_secs(10))
+            .expect("prompt event");
+        // EOF on the input channel surfaces as EOFError inside the cell.
+        writer.write_eof().expect("write eof");
+        handle.join().expect("join")
+    });
+    assert_eq!(prompts, vec!["Name? ".to_owned()]);
+    assert!(error_outputs(&result).iter().any(|output| matches!(
+        output,
+        Output::Error { name, .. } if name == "EOFError"
+    )));
+}
+
+#[test]
+fn matplotlib_figures_emit_png_when_available() {
+    let mut session = session();
+    let probe = execute(&mut session, "import matplotlib\nmatplotlib.__version__");
+    if !error_outputs(&probe).is_empty() {
+        eprintln!("matplotlib unavailable; skipping");
+        return;
+    }
+    let result = execute(
+        &mut session,
+        "import matplotlib.pyplot as plt\nplt.plot([1, 2, 3])\nplt.show()",
+    );
+    assert!(result.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, .. } if data.contains_key("image/png")
+    )));
+}
+
+#[test]
+fn trait_surface_covers_lock_stdin_and_reset() {
+    let mut session = PythonSession::new().expect("python session");
+    assert!(session.cargo_lock().expect("cargo lock").is_none());
+
+    // Spawn the driver, then exercise write_stdin / stdin_writer directly.
+    session.inspect_variables().expect("spawn driver");
+    session.write_stdin("ignored").expect("write stdin");
+    let writer = session.stdin_writer().expect("stdin writer");
+    assert!(writer.write_eof().is_ok());
+
+    session.reset().expect("reset");
+    assert_eq!(session.execution_count(), 0);
+}

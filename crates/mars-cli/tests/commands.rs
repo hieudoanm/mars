@@ -398,3 +398,86 @@ fn import_preserves_execution_outputs() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn run_mixed_language_notebook_uses_per_cell_language() {
+    if std::process::Command::new("python3")
+        .arg("--version")
+        .output()
+        .is_err()
+    {
+        return;
+    }
+    let dir = temp_dir("run-mixed");
+    let path = dir.join("mixed.mars");
+    let mut notebook = Notebook::new();
+    notebook.metadata.language = "rust".to_owned();
+
+    // Rust cell (default language) — exercises the Rust replay session.
+    let mut rust_cell = Cell::new(CellType::Code, "let mixed_rust = 1;");
+    rust_cell.metadata.clear();
+    notebook.add_cell(rust_cell).expect("rust cell");
+
+    // Python cell via per-cell language metadata — exercises the second
+    // entry in the per-language session map.
+    let mut python_cell = Cell::new(CellType::Code, "mixed_py = 6 * 7\nmixed_py");
+    python_cell
+        .metadata
+        .insert("language".to_owned(), json!("python"));
+    notebook.add_cell(python_cell).expect("python cell");
+
+    // Another Rust cell reuses the first session.
+    notebook
+        .add_cell(Cell::new(CellType::Code, "let _ = mixed_rust;"))
+        .expect("rust cell 2");
+    write_notebook(&path, &notebook);
+
+    run_cli(args(&[
+        "run",
+        &path.to_string_lossy(),
+        "--no-save",
+        "--report",
+        "--timeout-ms",
+        "120000",
+    ]))
+    .expect("run mixed-language notebook");
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn command_error_paths() {
+    let dir = temp_dir("cmd-errors");
+
+    // `new` rejects an empty language before writing.
+    assert!(run_cli(args(&["new", &dir.join("x.mars").to_string_lossy(), ""])).is_err());
+
+    // `kernel serve` surfaces option-parse errors without blocking.
+    assert!(run_cli(args(&["kernel", "serve", "--definitely-bogus"])).is_err());
+
+    // `run` on a missing notebook errors cleanly.
+    assert!(run_cli(args(&["run", &dir.join("missing.mars").to_string_lossy()])).is_err());
+
+    // `import` rejects non-ipynb content.
+    let bad_ipynb = dir.join("bad.ipynb");
+    std::fs::write(&bad_ipynb, b"not json at all").expect("write");
+    assert!(
+        run_cli(args(&[
+            "import",
+            &bad_ipynb.to_string_lossy(),
+            &dir.join("out.mars").to_string_lossy(),
+        ]))
+        .is_err()
+    );
+
+    // `inspect` on a missing file errors.
+    assert!(
+        run_cli(args(&[
+            "inspect",
+            &dir.join("missing.mars").to_string_lossy()
+        ]))
+        .is_err()
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
+}

@@ -94,3 +94,68 @@ fn compile_program_builds_and_runs_rustc_output() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn compile_command_reports_io_errors_for_cargo_projects() {
+    let dir = std::env::temp_dir().join(format!("mars-compile-err-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+
+    // Workdir that is an existing file: create_dir_all must fail.
+    let file_path = dir.with_extension("not-a-dir");
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    std::fs::write(&file_path, b"occupied").expect("marker file");
+    let mut dependencies = BTreeMap::new();
+    dependencies.insert("serde".to_owned(), "1".to_owned());
+    let result = compile_command(
+        &file_path,
+        Path::new("session.rs"),
+        Path::new("session-bin"),
+        &dependencies,
+        None,
+        false,
+        false,
+    );
+    assert!(result.is_err());
+
+    // Missing source file: manifest writes succeed, fs::copy must fail.
+    let missing_source = dir.join("does-not-exist.rs");
+    let result = compile_command(
+        &dir,
+        &missing_source,
+        Path::new("session-bin"),
+        &dependencies,
+        Some("# lock\n"),
+        true,
+        false,
+    );
+    assert!(result.is_err());
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn compile_program_reports_unwritable_source_path() {
+    let dir = std::env::temp_dir().join(format!("mars-compile-prog-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let cancellation = AtomicBool::new(false);
+    let options = CompileOptions {
+        dependencies: &BTreeMap::new(),
+        cargo_lock: None,
+        offline: false,
+        locked: false,
+        timeout: None,
+        cancellation: &cancellation,
+    };
+    // Parent directory does not exist, so writing the source fails.
+    let bad_source = dir.join("missing").join("session.rs");
+    let result = compile_program(
+        &dir,
+        &bad_source,
+        &dir.join("session-bin"),
+        "fn main() {}\n".to_owned(),
+        &options,
+    );
+    assert!(result.is_err());
+    let _ = std::fs::remove_dir_all(&dir);
+}

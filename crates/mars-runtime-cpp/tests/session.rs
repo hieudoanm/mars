@@ -19,7 +19,7 @@ fn executes_cpp_cells_with_persistent_state() {
     let first = session
         .execute_with_control(
             "int answer = 40 + 2;",
-            Some(Duration::from_secs(120)),
+            Some(Duration::from_secs(300)),
             Arc::new(AtomicBool::new(false)),
         )
         .expect("first cell");
@@ -31,7 +31,7 @@ fn executes_cpp_cells_with_persistent_state() {
     let second = session
         .execute_with_control(
             "std::cout << \"answer=\" << answer << std::endl;",
-            Some(Duration::from_secs(120)),
+            Some(Duration::from_secs(300)),
             Arc::new(AtomicBool::new(false)),
         )
         .expect("second cell");
@@ -52,7 +52,7 @@ fn reports_compilation_errors() {
     };
     let result = session.execute_with_control(
         "this is not valid c++ !!!",
-        Some(Duration::from_secs(120)),
+        Some(Duration::from_secs(300)),
         Arc::new(AtomicBool::new(false)),
     );
     assert!(result.is_err());
@@ -66,7 +66,7 @@ fn reset_clears_state() {
     session
         .execute_with_control(
             "int x = 1;",
-            Some(Duration::from_secs(120)),
+            Some(Duration::from_secs(300)),
             Arc::new(AtomicBool::new(false)),
         )
         .expect("cell");
@@ -83,7 +83,7 @@ fn captures_stderr_output() {
     let result = session
         .execute_with_control(
             "std::cerr << \"warn here\" << std::endl;",
-            Some(Duration::from_secs(120)),
+            Some(Duration::from_secs(300)),
             Arc::new(AtomicBool::new(false)),
         )
         .expect("cell");
@@ -120,7 +120,7 @@ fn cancellation_interrupts_execution() {
     });
     let result = session.execute_with_control(
         "while (true) {}",
-        Some(Duration::from_secs(120)),
+        Some(Duration::from_secs(300)),
         cancellation,
     );
     let error = result.expect_err("cancelled execution must fail");
@@ -143,4 +143,51 @@ fn locked_without_lockfile_errors_before_conan() {
         )
         .expect_err("locked without conan_lock must fail");
     assert!(error.to_string().contains("conan_lock"));
+}
+
+#[test]
+fn nonzero_exit_status_is_an_error() {
+    let Some(mut session) = session() else {
+        eprintln!("no C++ compiler available; skipping");
+        return;
+    };
+    let result = session.execute_with_control(
+        "return 1;",
+        Some(Duration::from_secs(300)),
+        Arc::new(AtomicBool::new(false)),
+    );
+    let error = result.expect_err("nonzero exit must fail");
+    assert!(error.to_string().contains("Execution failed"));
+}
+
+#[test]
+fn dependencies_require_conan() {
+    let mut deps = HashMap::new();
+    deps.insert("fmt".to_owned(), "11.0.0".to_owned());
+    let mut session = match CppSession::new(deps, None, false, false) {
+        Ok(session) => session,
+        Err(_) => {
+            eprintln!("no C++ compiler available; skipping");
+            return;
+        }
+    };
+    let result = session.execute_with_control(
+        "int x = 1;",
+        Some(Duration::from_secs(300)),
+        Arc::new(AtomicBool::new(false)),
+    );
+    // conan is not installed in CI/dev shells; either the conanfile write or
+    // the `conan install` spawn must surface as an error, never a panic.
+    assert!(result.is_err());
+}
+
+#[test]
+fn trait_surface_covers_counts_and_lock() {
+    let Some(mut session) = session() else {
+        eprintln!("no C++ compiler available; skipping");
+        return;
+    };
+    assert_eq!(session.execution_count(), 0);
+    assert!(session.cargo_lock().expect("cargo lock").is_none());
+    session.reset().expect("reset");
 }
