@@ -170,19 +170,58 @@ importers:
         specifier: 2.11.10
         version: 2.11.10
 
+  extensions/vscode:
+    devDependencies:
+      '@eslint/js':
+        specifier: 10.0.1
+        version: 10.0.1(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
+      '@types/node':
+        specifier: 26.6.6
+        version: 26.6.6
+      '@types/vscode':
+        specifier: 1.145.0
+        version: 1.145.0
+      '@vitest/coverage-v8':
+        specifier: 5.1.0
+        version: 5.1.0(vitest@5.1.0)
+      '@vscode/vsce':
+        specifier: 4.1.0
+        version: 4.1.0(supports-color@7.2.0)
+      eslint:
+        specifier: 10.14.0
+        version: 10.14.0(jiti@2.7.0)(supports-color@7.2.0)
+      globals:
+        specifier: 17.14.0
+        version: 17.14.0
+      prettier:
+        specifier: 3.9.10
+        version: 3.9.10
+      prettier-plugin-tailwindcss:
+        specifier: 0.8.1
+        version: 0.8.1(prettier@3.9.10)
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+      typescript-eslint:
+        specifier: 8.72.1
+        version: 8.72.1(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
+      vitest:
+        specifier: 5.1.0
+        version: 5.1.0(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(jsdom@31.0.0)(vite@8.3.6(@types/node@26.6.6)(jiti@2.7.0))
+
   packages/desktop:
     dependencies:
       '@codemirror/lang-markdown':
         specifier: 6.5.2
         version: 6.5.2
       '@codemirror/lang-python':
-        specifier: ^6.2.1
+        specifier: 6.2.1
         version: 6.2.1
       '@codemirror/lang-rust':
         specifier: 6.0.2
         version: 6.0.2
       '@codemirror/legacy-modes':
-        specifier: ^6.5.5
+        specifier: 6.5.5
         version: 6.5.5
       '@codemirror/search':
         specifier: 6.7.2
@@ -399,45 +438,6 @@ importers:
       tailwindcss:
         specifier: 4.3.5
         version: 4.3.5
-      typescript:
-        specifier: 6.0.3
-        version: 6.0.3
-      typescript-eslint:
-        specifier: 8.72.1
-        version: 8.72.1(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
-      vitest:
-        specifier: 5.1.0
-        version: 5.1.0(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(jsdom@31.0.0)(vite@8.3.6(@types/node@26.6.6)(jiti@2.7.0))
-
-  extensions/vscode:
-    devDependencies:
-      '@eslint/js':
-        specifier: 10.0.1
-        version: 10.0.1(eslint@10.14.0(jiti@2.7.0)(supports-color@7.2.0))
-      '@types/node':
-        specifier: 26.6.6
-        version: 26.6.6
-      '@types/vscode':
-        specifier: 1.145.0
-        version: 1.145.0
-      '@vitest/coverage-v8':
-        specifier: 5.1.0
-        version: 5.1.0(vitest@5.1.0)
-      '@vscode/vsce':
-        specifier: 4.1.0
-        version: 4.1.0(supports-color@7.2.0)
-      eslint:
-        specifier: 10.14.0
-        version: 10.14.0(jiti@2.7.0)(supports-color@7.2.0)
-      globals:
-        specifier: 17.14.0
-        version: 17.14.0
-      prettier:
-        specifier: 3.9.10
-        version: 3.9.10
-      prettier-plugin-tailwindcss:
-        specifier: 0.8.1
-        version: 0.8.1(prettier@3.9.10)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
