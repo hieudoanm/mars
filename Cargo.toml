@@ -8,6 +8,7 @@ members = [
     "crates/mars-kernel",
     "crates/mars-jupyter",
     "crates/mars-renderer",
+    "crates/mars-lsp",
     "crates/mars-cli",
     "apps/desktop/src-tauri",
     "extensions/zed",

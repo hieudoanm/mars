@@ -3,6 +3,7 @@ import {
   convertCell,
   createCell,
   deleteCell,
+  deleteCells,
   duplicateCell,
   insertCellAt,
   moveCell,
@@ -96,6 +97,28 @@ describe('notebookOperations', () => {
     expect(result!.notebook.cells).toHaveLength(1);
     expect(result!.notebook.cells[0].cell_type).toBe('code');
     expect(result!.nextId).toBe(notebook.cells[1].id);
+  });
+
+  it('deletes multiple cells by id', () => {
+    const notebook: Notebook = {
+      format_version: 2,
+      metadata: { language: 'rust' },
+      cells: [createCell('markdown'), createCell('code'), createCell('code')],
+    };
+    const ids = new Set([notebook.cells[0].id, notebook.cells[2].id]);
+    const result = deleteCells(notebook, ids);
+    expect(result.cells).toHaveLength(1);
+    expect(result.cells[0].id).toBe(notebook.cells[1].id);
+  });
+
+  it('deleteCells is a no-op for empty or full selections', () => {
+    const notebook: Notebook = {
+      format_version: 2,
+      metadata: { language: 'rust' },
+      cells: [createCell('code'), createCell('code')],
+    };
+    expect(deleteCells(notebook, new Set())).toBe(notebook);
+    expect(deleteCells(notebook, new Set(notebook.cells.map((c) => c.id)))).toBe(notebook);
   });
 
   it("deletes cell when it's the only cell returns null", () => {

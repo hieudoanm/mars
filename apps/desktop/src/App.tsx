@@ -1,258 +1,359 @@
-import { useRef, useState, type FC } from 'react';
-import type { Notebook } from './types/types';
+import { useCallback, useEffect, useMemo, useState, type FC } from 'react';
 import { useEditorPreferences } from './hooks/useEditorPreferences';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { useKernelExecution } from './hooks/useKernelExecution';
-import { useNotebookEditor } from './hooks/useNotebookEditor';
-import { useNotebookPersistence } from './hooks/useNotebookPersistence';
-import { useNotebookExecutionCommands } from './hooks/useNotebookExecutionCommands';
-import { useNotebookUiState } from './hooks/useNotebookUiState';
-import NotebookCellView from './components/notebook/NotebookCellView';
-import NotebookSidebar from './components/notebook/NotebookSidebar';
-import NotebookStatusBar from './components/notebook/NotebookStatusBar';
-import NotebookToolbar from './components/notebook/NotebookToolbar';
-import UnsavedChangesDialog from './components/dialogs/UnsavedChangesDialog';
-import Header from './components/header/Header';
+import NotebookSession, { type SessionPreferences } from './NotebookSession';
 import FileExplorer from './components/explorer/FileExplorer';
+import WorkspaceHeader, { type WorkspaceTab } from './components/header/WorkspaceHeader';
+import CommandPalette, { type PaletteCommand } from './components/palette/CommandPalette';
+import SettingsDialog, {
+  applyTheme,
+  readThemePreference,
+  type ThemePreference,
+} from './components/settings/SettingsDialog';
+import {
+  readLastNotebookPath,
+  readRecentPaths,
+  readUntitledNotebook,
+  readWorkspaceTabs,
+  untitledTabKey,
+  writeLastNotebookPath,
+  writeRecentPath,
+  writeWorkspaceTabs,
+} from './lib/workspace';
+import TemplatePickerDialog from './components/dialogs/TemplatePickerDialog';
+import type { NotebookTemplate } from './lib/notebookTemplates';
+import type { Notebook } from './types/types';
 
-const initialNotebook: Notebook = {
-  format_version: 2,
-  metadata: { language: 'rust', title: 'Untitled notebook' },
-  cells: [
-    {
-      id: crypto.randomUUID(),
-      cell_type: 'markdown',
-      source: '# Welcome to Mars\n\nExplore ideas. Execute code. Discover possibilities.',
-      execution_count: null,
-      outputs: [],
-      metadata: {},
-    },
-    {
-      id: crypto.randomUUID(),
-      cell_type: 'code',
-      source: 'println!("Hello from Mars!");',
-      execution_count: null,
-      outputs: [],
-      metadata: {},
-    },
-  ],
+type SessionEntry = {
+  id: string;
+  initialPath: string | null;
+  untitledId: string | null;
+  initialNotebook?: Notebook;
 };
 
+const sessionKey = (session: Pick<SessionEntry, 'initialPath' | 'untitledId'>, path: string | null) =>
+  path ?? (session.untitledId ? untitledTabKey(session.untitledId) : null);
+
 const App: FC = () => {
-  const editor = useNotebookEditor(initialNotebook);
-  const ui = useNotebookUiState();
-  const preferences = useEditorPreferences();
-  const persistence = useNotebookPersistence({
-    notebook: editor.notebook,
-    setNotebook: editor.setNotebook,
-    setStatus: ui.setStatus,
-    resetHistory: editor.resetHistory,
+  const initialSessions = useMemo<SessionEntry[]>(() => {
+    const saved = readWorkspaceTabs();
+    if (saved && saved.entries.length > 0) {
+      return saved.entries.map((entry) => ({
+        id: crypto.randomUUID(),
+        initialPath: entry.path,
+        untitledId: entry.untitledId ?? (entry.path ? null : crypto.randomUUID()),
+        initialNotebook:
+          entry.untitledId && !entry.path
+            ? ((readUntitledNotebook(entry.untitledId) as Notebook | null) ?? undefined)
+            : undefined,
+      }));
+    }
+    const lastPath = readLastNotebookPath();
+    return [
+      {
+        id: crypto.randomUUID(),
+        initialPath: lastPath,
+        untitledId: lastPath ? null : crypto.randomUUID(),
+      },
+    ];
+  }, []);
+  const [sessions, setSessions] = useState<SessionEntry[]>(initialSessions);
+  const [activeId, setActiveId] = useState(() => {
+    const saved = readWorkspaceTabs();
+    if (saved?.activeKey) {
+      const match = initialSessions.find((session) => {
+        const key = sessionKey(session, session.initialPath);
+        return key === saved.activeKey;
+      })?.id;
+      if (match) return match;
+    }
+    return initialSessions[0]?.id ?? '';
   });
-  const execution = useKernelExecution({
-    setNotebook: editor.setNotebook,
-    timeout: ui.executionTimeout,
-    setStatus: ui.setStatus,
-    onExecutionHalted: (cell) => {
-      editor.setSelectedId(cell.id);
-      editor.setMode('command');
-      window.requestAnimationFrame(() => {
-        document.getElementById(`cell-${cell.id}`)?.scrollIntoView({ block: 'center' });
-      });
-    },
-  });
-  const commands = useNotebookExecutionCommands({
-    cells: editor.cells,
-    selectedIndex: editor.selectedIndex,
-    executeCells: execution.executeCells,
-  });
-  const draggedCellId = useRef<string | null>(null);
-  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
-  const [collapsedCellIds, setCollapsedCellIds] = useState<ReadonlySet<string>>(new Set());
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sessionPaths, setSessionPaths] = useState<Record<string, string | null>>({});
+  const [dirtySessions, setDirtySessions] = useState<Record<string, boolean>>({});
+  const [pendingCloseId, setPendingCloseId] = useState<string | null>(null);
   const [explorerOpen, setExplorerOpen] = useState(true);
-  const toggleCellCollapse = (id: string) => {
-    setCollapsedCellIds((current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+  const [workspaceStatus, setWorkspaceStatus] = useState('');
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [recents, setRecents] = useState<string[]>(readRecentPaths);
+  const [theme, setTheme] = useState<ThemePreference>(readThemePreference);
+  const [sessionCommands, setSessionCommands] = useState<Record<string, PaletteCommand[]>>({});
+  const preferences = useEditorPreferences();
+  const sessionPreferences: SessionPreferences = {
+    fontSize: preferences.fontSize,
+    updateFontSize: preferences.updateFontSize,
+    autocomplete: preferences.preferences.autocomplete,
+    folding: preferences.preferences.folding,
+    colorScheme: theme === 'mars-light' ? 'light' : 'dark',
+  };
+
+  const addSession = useCallback(
+    (initialPath: string | null = null, initialNotebook?: Notebook) => {
+      const id = crypto.randomUUID();
+      setSessions((current) => [
+        ...current,
+        {
+          id,
+          initialPath,
+          untitledId: initialPath ? null : crypto.randomUUID(),
+          initialNotebook,
+        },
+      ]);
+      setActiveId(id);
+      return id;
+    },
+    [],
+  );
+
+  const removeSession = useCallback((id: string) => {
+    setSessions((current) => {
+      const index = current.findIndex((session) => session.id === id);
+      if (index < 0) return current;
+      const next = current.filter((session) => session.id !== id);
+      setActiveId((active) => {
+        if (active !== id) return active;
+        return next[Math.min(index, next.length - 1)]?.id ?? '';
+      });
       return next;
     });
-  };
-  const collapseAllCells = () => setCollapsedCellIds(new Set(editor.cells.map((cell) => cell.id)));
-  const expandAllCells = () => setCollapsedCellIds(new Set());
-  const handleDragCellStart = (id: string) => {
-    draggedCellId.current = id;
-  };
-  const handleDragCellEnd = () => {
-    draggedCellId.current = null;
-    setDropTargetId(null);
-  };
-  const handleCellDragOver = (id: string) => {
-    if (draggedCellId.current && draggedCellId.current !== id) setDropTargetId(id);
-  };
-  const handleCellDrop = (id: string) => {
-    const fromId = draggedCellId.current;
-    draggedCellId.current = null;
-    setDropTargetId(null);
-    if (fromId && fromId !== id) editor.moveCellTo(fromId, id);
-  };
+    setSessionPaths((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+    setDirtySessions((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+  }, []);
 
-  useKeyboardShortcuts({
-    cells: editor.cells,
-    selectedIndex: editor.selectedIndex,
-    mode: editor.mode,
-    lastCommand: ui.lastCommand,
-    setMode: editor.setMode,
-    setSelectedId: editor.setSelectedId,
-    setLastCommand: ui.setLastCommand,
-    saveNotebook: persistence.saveNotebook,
-    undo: editor.undo,
-    redo: editor.redo,
-    executeCell: execution.executeCell,
-    executeAll: commands.executeAll,
-    insertCell: editor.insertCell,
-    deleteSelected: editor.deleteSelected,
-    convertSelected: editor.convertSelected,
-    moveSelected: editor.moveSelected,
-    duplicateSelected: editor.duplicateSelected,
+  const reorderSessions = useCallback((fromId: string, toId: string) => {
+    setSessions((current) => {
+      const fromIndex = current.findIndex((session) => session.id === fromId);
+      const toIndex = current.findIndex((session) => session.id === toId);
+      if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return current;
+      const next = [...current];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  }, []);
+
+  const requestCloseSession = useCallback(
+    (id: string) => {
+      if (dirtySessions[id]) setPendingCloseId(id);
+      else removeSession(id);
+    },
+    [dirtySessions, removeSession],
+  );
+
+  const openPathInWorkspace = useCallback(
+    (path: string) => {
+      const existing = Object.entries(sessionPaths).find(([, p]) => p === path)?.[0];
+      if (existing) {
+        setActiveId(existing);
+        return;
+      }
+      addSession(path);
+    },
+    [sessionPaths, addSession],
+  );
+
+  const handlePathChange = useCallback((sessionId: string, path: string | null) => {
+    setSessionPaths((current) =>
+      current[sessionId] === path ? current : { ...current, [sessionId]: path },
+    );
+    if (path) {
+      writeLastNotebookPath(path);
+      writeRecentPath(path);
+      setRecents(readRecentPaths());
+    }
+  }, []);
+
+  const handleDirtyChange = useCallback((sessionId: string, isDirty: boolean) => {
+    setDirtySessions((current) =>
+      current[sessionId] === isDirty ? current : { ...current, [sessionId]: isDirty },
+    );
+  }, []);
+
+  useEffect(() => {
+    const activePath = activeId ? sessionPaths[activeId] : null;
+    if (activePath) writeLastNotebookPath(activePath);
+  }, [activeId, sessionPaths]);
+
+  const pathsHydrated = sessions.every((session) => session.id in sessionPaths);
+  useEffect(() => {
+    if (!pathsHydrated) return;
+    const entries = sessions
+      .map((session) => {
+        const path = sessionPaths[session.id] ?? session.initialPath;
+        const untitledId = path ? null : session.untitledId;
+        const key = path ?? (untitledId ? untitledTabKey(untitledId) : null);
+        return key ? { key, path, untitledId } : null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+    const activeSession = sessions.find((session) => session.id === activeId);
+    const activePath = activeId ? (sessionPaths[activeId] ?? null) : null;
+    const activeKey = activeSession
+      ? sessionKey(activeSession, activePath)
+      : null;
+    writeWorkspaceTabs({
+      entries,
+      activeKey: activeKey && entries.some((entry) => entry.key === activeKey)
+        ? activeKey
+        : (entries[0]?.key ?? null),
+    });
+  }, [pathsHydrated, sessions, sessionPaths, activeId]);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const modifier = event.metaKey || event.ctrlKey;
+      if (modifier && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setPaletteOpen((current) => !current);
+      }
+      if (modifier && event.key === ',') {
+        event.preventDefault();
+        setSettingsOpen((current) => !current);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (!('__TAURI_INTERNALS__' in window)) return;
+    let unlisten: (() => void) | undefined;
+    void import('@tauri-apps/api/webview').then(({ getCurrentWebview }) => {
+      void getCurrentWebview()
+        .onDragDropEvent((event) => {
+          if (event.payload.type !== 'drop') return;
+          for (const path of event.payload.paths) {
+            if (path.endsWith('.mars') || path.endsWith('.ipynb')) {
+              openPathInWorkspace(path);
+            }
+          }
+        })
+        .then((dispose) => {
+          unlisten = dispose;
+        });
+    });
+    return () => unlisten?.();
+  }, [openPathInWorkspace]);
+
+  const registerCommands = useCallback((sessionId: string, commands: PaletteCommand[]) => {
+    setSessionCommands((current) => ({ ...current, [sessionId]: commands }));
+  }, []);
+
+  const paletteCommands: PaletteCommand[] = [
+    { id: 'workspace-new-tab', title: 'New notebook tab', run: () => addSession(null) },
+    {
+      id: 'workspace-new-template',
+      title: 'New notebook from template…',
+      run: () => setTemplatePickerOpen(true),
+    },
+    ...recents.slice(0, 5).map((path) => ({
+      id: `workspace-recent-${path}`,
+      title: `Open recent: ${path.split('/').pop()}`,
+      hint: path,
+      run: () => openPathInWorkspace(path),
+    })),
+    {
+      id: 'workspace-toggle-explorer',
+      title: 'Toggle file explorer',
+      run: () => setExplorerOpen((c) => !c),
+    },
+    { id: 'workspace-settings', title: 'Open settings', run: () => setSettingsOpen(true) },
+    ...(activeId ? (sessionCommands[activeId] ?? []) : []),
+  ];
+
+  const tabs: WorkspaceTab[] = sessions.map((session) => {
+    const path = sessionPaths[session.id];
+    return {
+      id: session.id,
+      label: path?.split('/').pop() ?? 'Untitled notebook',
+      isDirty: dirtySessions[session.id] ?? false,
+    };
   });
-
-  const fileName = persistence.filePath?.split('/').pop() ?? 'Untitled.mars';
-  const clearAllOutputs = () => {
-    editor.clearOutputs();
-    ui.setStatus('Outputs cleared');
-  };
 
   return (
     <main data-component='App' className='flex h-screen flex-col overflow-hidden'>
-      <Header
-        status={ui.status}
-        mode={editor.mode}
-        onOpen={() => void persistence.openNotebook()}
-        onSave={() => void persistence.saveNotebook()}
-        onExport={() => void persistence.exportMarkdown()}
-        onImportIpynb={() => void persistence.importIpynb()}
-        onExportIpynb={() => void persistence.exportIpynb()}
-        onRestart={() => void execution.restart()}
-        isExecuting={execution.isExecuting}
-        sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen((current) => !current)}
+      <WorkspaceHeader
+        tabs={tabs}
+        activeId={activeId}
         explorerOpen={explorerOpen}
+        status={workspaceStatus}
+        onSelectTab={setActiveId}
+        onCloseTab={requestCloseSession}
+        onNewTab={() => addSession(null)}
         onToggleExplorer={() => setExplorerOpen((current) => !current)}
+        onOpenSettings={() => setSettingsOpen(true)}
+        recents={recents}
+        onOpenRecent={openPathInWorkspace}
+        onReorderTabs={reorderSessions}
       />
       <section className='flex min-h-0 flex-1 overflow-hidden'>
         <FileExplorer
-          currentFilePath={persistence.filePath}
+          currentFilePath={activeId ? (sessionPaths[activeId] ?? null) : null}
           open={explorerOpen}
-          onOpenNotebook={persistence.openNotebookAtPath}
-          onStatus={ui.setStatus}
+          onOpenNotebook={openPathInWorkspace}
+          onStatus={setWorkspaceStatus}
         />
-        <section className='flex min-h-0 min-w-0 flex-1 flex-col'>
-          <div className='mx-auto w-full max-w-4xl px-6 pt-8'>
-            <NotebookToolbar
-              fileName={fileName}
-              title={editor.notebook.metadata.title ?? 'Untitled notebook'}
-              isDirty={persistence.isDirty}
-              onRename={editor.renameNotebook}
-              isExecuting={execution.isExecuting}
-              executionTimeout={ui.executionTimeout}
-              fontSize={preferences.fontSize}
-              onTimeoutChange={ui.setExecutionTimeout}
-              onFontSizeChange={preferences.updateFontSize}
-              onCancel={() => void execution.cancelExecution()}
-              onRunCurrent={commands.executeCurrent}
-              onRunAll={commands.executeAll}
-              onRunAbove={commands.executeAbove}
-              onRunBelow={commands.executeBelow}
-              onClearOutputs={clearAllOutputs}
-              canDeleteCell={editor.cells.length > 1}
-              onDeleteCell={editor.deleteSelected}
-              onAddMarkdown={() => editor.addCell('markdown')}
-              onAddCode={() => editor.addCell('code')}
-              onAddRaw={() => editor.addCell('raw')}
-              onCollapseAllCells={collapseAllCells}
-              onExpandAllCells={expandAllCells}
-            />
-          </div>
-          <div className='min-h-0 flex-1 overflow-y-auto'>
-            <div className='mx-auto w-full max-w-4xl px-6 pb-16'>
-              <div className='flex flex-col gap-4'>
-                {editor.cells.map((cell) => (
-                  <NotebookCellView
-                    key={cell.id}
-                    cell={cell}
-                    selected={cell.id === editor.selectedId}
-                    isExecuting={cell.id === execution.activeCellId}
-                    fontSize={preferences.fontSize}
-                    autocompleteEnabled={preferences.preferences.autocomplete}
-                    foldingEnabled={preferences.preferences.folding}
-                    canDelete={editor.cells.length > 1}
-                    collapsed={collapsedCellIds.has(cell.id)}
-                    stream={execution.stream?.cellId === cell.id ? execution.stream : null}
-                    isDropTarget={dropTargetId === cell.id}
-                    onDragCellStart={handleDragCellStart}
-                    onDragCellEnd={handleDragCellEnd}
-                    onCellDragOver={handleCellDragOver}
-                    onCellDrop={handleCellDrop}
-                    onSelect={() => {
-                      editor.setSelectedId(cell.id);
-                      editor.setMode('command');
-                    }}
-                    onEdit={(source) => editor.updateCell(cell.id, source)}
-                    onFocus={() => {
-                      editor.setSelectedId(cell.id);
-                      editor.setMode('edit');
-                    }}
-                    onExecute={() => {
-                      editor.setSelectedId(cell.id);
-                      void execution.executeCell(cell);
-                    }}
-                    onClear={() => editor.clearOutputs(cell.id)}
-                    onDelete={() => editor.removeCell(cell.id)}
-                    onToggleCollapse={() => toggleCellCollapse(cell.id)}
-                    onStatus={ui.setStatus}
-                  />
-                ))}
-              </div>
+        <div className='relative min-h-0 min-w-0 flex-1'>
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              className={session.id === activeId ? 'h-full' : 'hidden'}
+              aria-hidden={session.id !== activeId}>
+              <NotebookSession
+                sessionId={session.id}
+                initialPath={session.initialPath}
+                untitledId={session.untitledId}
+                initialNotebook={session.initialNotebook}
+                isActive={session.id === activeId}
+                tabCloseRequested={pendingCloseId === session.id}
+                preferences={sessionPreferences}
+                onPathChange={handlePathChange}
+                onDirtyChange={handleDirtyChange}
+                onTabClosed={(id) => {
+                  setPendingCloseId(null);
+                  removeSession(id);
+                }}
+                onTabCloseCancel={() => setPendingCloseId(null)}
+                registerCommands={registerCommands}
+                onOpenSettings={() => setSettingsOpen(true)}
+              />
             </div>
-          </div>
-        </section>
-        <NotebookSidebar
-          open={sidebarOpen}
-          cells={editor.cells}
-          selectedId={editor.selectedId}
-          filePath={persistence.filePath}
-          isDirty={persistence.isDirty}
-          onSelect={(id) => {
-            editor.setSelectedId(id);
-            editor.setMode('command');
-            window.requestAnimationFrame(() => {
-              document.getElementById(`cell-${id}`)?.scrollIntoView({ block: 'center' });
-            });
-          }}
-          onRenameFile={persistence.renameFile}
-        />
+          ))}
+        </div>
       </section>
-      <NotebookStatusBar cellCount={editor.cells.length} isDirty={persistence.isDirty} />
-      {(persistence.pendingOpenPath || persistence.closeRequested) && (
-        <UnsavedChangesDialog
-          closeRequested={persistence.closeRequested}
-          onCancel={() => {
-            persistence.setPendingOpenPath(null);
-            persistence.setCloseRequested(false);
-          }}
-          onDiscard={() =>
-            persistence.closeRequested
-              ? void persistence.discardAndClose()
-              : persistence.discardAndOpen()
-          }
-          onSave={() =>
-            persistence.closeRequested
-              ? void persistence.saveAndClose()
-              : void persistence.saveAndOpen()
-          }
-        />
-      )}
+      <TemplatePickerDialog
+        open={templatePickerOpen}
+        onSelect={(template: NotebookTemplate) => {
+          setTemplatePickerOpen(false);
+          addSession(null, template.notebook);
+        }}
+        onClose={() => setTemplatePickerOpen(false)}
+      />
+      <CommandPalette
+        open={paletteOpen}
+        commands={paletteCommands}
+        onClose={() => setPaletteOpen(false)}
+      />
+      <SettingsDialog
+        open={settingsOpen}
+        theme={theme}
+        onThemeChange={setTheme}
+        editorPreferences={preferences.preferences}
+        onEditorPreferencesChange={preferences.setPreferences}
+        onClose={() => setSettingsOpen(false)}
+      />
     </main>
   );
 };

@@ -13,7 +13,7 @@ use crate::output::{
 use mars_core::Output;
 use std::process::Stdio;
 use std::sync::{
-    Arc,
+    Arc, Mutex,
     atomic::{AtomicBool, Ordering},
 };
 use std::time::{Duration, Instant};
@@ -80,21 +80,23 @@ impl RustSession {
                 phase: StreamPhase::Compiling,
             });
         }
+        let mut program = render_program(&candidate_cells);
         let mut compile = crate::compilation::compile_program(
             &self.workdir,
             &source_path,
             &binary_path,
-            render_program(&candidate_cells),
+            program.clone(),
             &compile_options,
         )?;
         if !compile.status.is_some_and(|status| status.success())
             && crate::expression::split_final_expression(source).is_some()
         {
+            program = render_program_with_last_output(&candidate_cells, ExpressionOutput::Display);
             let display_compile = crate::compilation::compile_program(
                 &self.workdir,
                 &source_path,
                 &binary_path,
-                render_program_with_last_output(&candidate_cells, ExpressionOutput::Display),
+                program.clone(),
                 &CompileOptions {
                     timeout: remaining_timeout(started, timeout),
                     ..compile_options
@@ -135,11 +137,16 @@ impl RustSession {
                 .join("debug")
                 .join("mars-session")
         };
-        let execution_child = configured_command(&execution_path)
+        let mut execution_child = configured_command(&execution_path)
+            .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
             .map_err(RuntimeError::Execution)?;
+        self.stdin = execution_child
+            .stdin
+            .take()
+            .map(|stdin| Arc::new(Mutex::new(stdin)));
         if let Some(sink) = events.as_deref_mut() {
             sink(StreamEvent::Phase {
                 phase: StreamPhase::Running,
@@ -151,6 +158,7 @@ impl RustSession {
             &cancellation,
             events,
         )?;
+        self.stdin = None;
         if run.interrupted {
             return Ok(interrupted_result(
                 started.elapsed(),
@@ -159,8 +167,12 @@ impl RustSession {
             ));
         }
         if !run.status.is_some_and(|status| status.success()) {
+            let stderr = crate::output::annotate_source_locations(
+                &String::from_utf8_lossy(&run.stderr),
+                &program,
+            );
             return Ok(ExecutionResult {
-                outputs: execution_outputs(&run.stdout, &run.stderr, "RuntimeError"),
+                outputs: execution_outputs(&run.stdout, stderr.as_bytes(), "RuntimeError"),
                 duration: started.elapsed(),
                 execution_count: self.execution_count,
                 interrupted: false,
@@ -169,8 +181,12 @@ impl RustSession {
 
         self.cells.push(source.to_owned());
         self.execution_count += 1;
+        let stderr = crate::output::annotate_source_locations(
+            &String::from_utf8_lossy(&run.stderr),
+            &program,
+        );
         Ok(ExecutionResult {
-            outputs: execution_outputs(&run.stdout, &run.stderr, "RuntimeError"),
+            outputs: execution_outputs(&run.stdout, stderr.as_bytes(), "RuntimeError"),
             duration: started.elapsed(),
             execution_count: self.execution_count,
             interrupted: false,
@@ -209,5 +225,22 @@ impl RuntimeBackend for RustSession {
 
     fn cargo_lock(&self) -> Result<Option<String>, crate::error::RuntimeError> {
         RustSession::cargo_lock(self)
+    }
+
+    fn inspect_variables(
+        &mut self,
+    ) -> Result<Vec<crate::inspect::VariableInfo>, crate::error::RuntimeError> {
+        RustSession::inspect_variables(self)
+    }
+
+    fn diagnose(
+        &mut self,
+        source: &str,
+    ) -> Result<Vec<crate::inspect::CellDiagnostic>, crate::error::RuntimeError> {
+        RustSession::diagnose(self, source)
+    }
+
+    fn write_stdin(&mut self, text: &str) -> Result<(), crate::error::RuntimeError> {
+        RustSession::write_stdin(self, text)
     }
 }

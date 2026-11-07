@@ -5,6 +5,7 @@ import {
   LuChevronsDown,
   LuChevronsUp,
   LuCircleStop,
+  LuChevronDown,
   LuEraser,
   LuFile,
   LuFileCode,
@@ -13,7 +14,7 @@ import {
   LuPlay,
   LuTrash2,
 } from 'react-icons/lu';
-import { IconButton, TextInput } from '../shared';
+import { IconButton } from '../shared';
 
 export type NotebookToolbarControlsProps = {
   isExecuting: boolean;
@@ -43,12 +44,24 @@ type ToolbarGroupProps = {
 
 const iconClassName = 'h-3.5 w-3.5';
 
+const TIMEOUT_OPTIONS: [string, string][] = [
+  ['', 'Unlimited'],
+  ['5000', '5 s'],
+  ['10000', '10 s'],
+  ['30000', '30 s'],
+  ['60000', '1 min'],
+  ['300000', '5 min'],
+  ['900000', '15 min'],
+];
+
+const FONT_SIZE_OPTIONS = [10, 11, 12, 13, 14, 16, 18, 20, 24];
+
 const ToolbarGroup: FC<ToolbarGroupProps> = ({ label, children }) => (
   <div
     role='group'
     aria-label={label}
     data-component='NotebookToolbarGroup'
-    className='flex items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/60 p-1'>
+    className='flex items-center gap-0.5 border-l border-neutral-800 pl-3'>
     {children}
   </div>
 );
@@ -74,25 +87,58 @@ const NotebookToolbarControls: FC<NotebookToolbarControlsProps> = ({
   onExpandAllCells,
 }) => {
   return (
-    <div data-component='NotebookToolbarControls' className='flex flex-wrap items-center gap-3'>
-      <TextInput
-        type='number'
-        min='1'
-        placeholder='Unlimited'
-        value={executionTimeout}
-        onChange={(event) => onTimeoutChange(event.target.value)}
-        aria-label='Execution timeout in milliseconds'
-        className='w-20'
-      />
-      <TextInput
-        type='number'
-        min='10'
-        max='28'
-        value={fontSize}
-        aria-label='Editor font size'
-        onChange={(event) => onFontSizeChange(Number(event.target.value))}
-        className='w-16'
-      />
+    <div
+      data-component='NotebookToolbarControls'
+      className='flex flex-wrap items-center gap-x-4 gap-y-2'>
+      <div className='flex items-center gap-3'>
+        <span className='relative flex items-center'>
+          <select
+            aria-label='Execution timeout in milliseconds'
+            title='Execution timeout'
+            value={executionTimeout}
+            onChange={(event) => onTimeoutChange(event.target.value)}
+            className='h-7 w-auto appearance-none rounded-md border border-neutral-700 bg-neutral-900 px-2 pr-5 text-xs text-neutral-200'>
+            {TIMEOUT_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+            {executionTimeout && !TIMEOUT_OPTIONS.some(([value]) => value === executionTimeout) ? (
+              <option value={executionTimeout}>{executionTimeout} ms</option>
+            ) : null}
+          </select>
+          <LuChevronDown
+            aria-hidden='true'
+            className='pointer-events-none absolute top-1/2 right-1.5 h-3 w-3 -translate-y-1/2 text-neutral-500'
+          />
+        </span>
+        <span className='flex items-center gap-1'>
+          <span className='relative flex items-center'>
+            <select
+              aria-label='Editor font size'
+              title='Editor font size'
+              value={fontSize}
+              onChange={(event) => onFontSizeChange(Number(event.target.value))}
+              className='h-7 w-auto appearance-none rounded-md border border-neutral-700 bg-neutral-900 px-2 pr-5 text-xs text-neutral-200'>
+              {FONT_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+              {!FONT_SIZE_OPTIONS.includes(fontSize) ? (
+                <option value={fontSize}>{fontSize}</option>
+              ) : null}
+            </select>
+            <LuChevronDown
+              aria-hidden='true'
+              className='pointer-events-none absolute top-1/2 right-1.5 h-3 w-3 -translate-y-1/2 text-neutral-500'
+            />
+          </span>
+          <span aria-hidden='true' className='text-[10px] text-neutral-600'>
+            px
+          </span>
+        </span>
+      </div>
       <ToolbarGroup label='Execution controls'>
         {isExecuting && (
           <IconButton

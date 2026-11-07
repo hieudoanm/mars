@@ -5,13 +5,22 @@ import {
   convertCell,
   createCell,
   deleteCell,
+  deleteCells,
   duplicateCell,
   insertCellAt,
+  mergeCellWithNext,
   moveCell,
   moveCellToIndex,
+  removeCellOutput,
   serializeNotebook,
+  splitCellAt,
   updateCellSource,
+  updateCellAttachments,
+  updateCellLanguage,
+  updateCellTags,
+  updateNotebookDependencies,
 } from '../lib/notebookOperations';
+import { getCellAttachments } from '../lib/cellAttachments';
 
 const MAX_HISTORY_ENTRIES = 100;
 const MAX_HISTORY_BYTES = 2_000_000;
@@ -88,6 +97,14 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     setMode('edit');
   };
 
+  const duplicateCellById = (id: string) => {
+    const index = notebook.cells.findIndex((cell) => cell.id === id);
+    if (index < 0) return;
+    const result = duplicateCell(notebook, index);
+    setNotebook(result.notebook);
+    setSelectedId(result.cell.id);
+  };
+
   const duplicateSelected = () => {
     if (selectedIndex < 0) return;
     const result = duplicateCell(notebook, selectedIndex);
@@ -104,6 +121,18 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
   };
 
   const deleteSelected = () => removeCell(selectedId);
+
+  const deleteCellsByIds = (ids: ReadonlySet<string>) => {
+    setNotebook((current) => deleteCells(current, ids));
+    if (ids.has(selectedId)) {
+      const remaining = notebook.cells.filter((cell) => !ids.has(cell.id));
+      setSelectedId(remaining[0]?.id ?? '');
+    }
+  };
+
+  const splitCellById = (id: string, offset: number) => {
+    setNotebook((current) => splitCellAt(current, id, offset));
+  };
 
   const moveSelected = (offset: number) => {
     if (selectedIndex < 0) return;
@@ -125,8 +154,58 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     setNotebook((current) => convertCell(current, selectedId, cellType));
   };
 
+  const convertCellType = (id: string, cellType: CellType) => {
+    setNotebook((current) => convertCell(current, id, cellType));
+  };
+
+  const moveCellById = (id: string, offset: number) => {
+    setNotebook((current) => {
+      const index = current.cells.findIndex((cell) => cell.id === id);
+      if (index < 0) return current;
+      return moveCell(current, index, offset);
+    });
+  };
+
   const clearOutputs = (cellId?: string) => {
     setNotebook((current) => clearCellOutputs(current, cellId));
+  };
+
+  const removeOutput = (cellId: string, outputIndex: number) => {
+    setNotebook((current) => removeCellOutput(current, cellId, outputIndex));
+  };
+
+  const mergeCellById = (id: string) => {
+    setNotebook((current) => mergeCellWithNext(current, id));
+  };
+
+  const mergeSelectedWithNext = () => {
+    if (selectedIndex < 0) return;
+    setNotebook((current) => mergeCellWithNext(current, selectedId));
+  };
+
+  const splitSelectedAt = (offset: number) => {
+    if (selectedIndex < 0) return;
+    setNotebook((current) => splitCellAt(current, selectedId, offset));
+  };
+
+  const updateTags = (cellId: string, tags: string[]) => {
+    setNotebook((current) => updateCellTags(current, cellId, tags));
+  };
+
+  const setCellLanguage = (cellId: string, language: string) => {
+    setNotebook((current) => updateCellLanguage(current, cellId, language));
+  };
+
+  const updateAttachments = (cellId: string, patch: Record<string, string>) => {
+    setNotebook((current) => {
+      const cell = current.cells.find((entry) => entry.id === cellId);
+      const existing = cell ? getCellAttachments(cell.metadata) : {};
+      return updateCellAttachments(current, cellId, { ...existing, ...patch });
+    });
+  };
+
+  const setDependencies = (dependencies: Record<string, string>) => {
+    setNotebook((current) => updateNotebookDependencies(current, dependencies));
   };
 
   const undo = () => {
@@ -160,12 +239,25 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     addCell,
     insertCell,
     duplicateSelected,
+    duplicateCellById,
     removeCell,
     deleteSelected,
+    deleteCellsByIds,
+    splitCellById,
     moveSelected,
     moveCellTo,
     convertSelected,
+    convertCellType,
+    moveCellById,
     clearOutputs,
+    removeOutput,
+    mergeCellById,
+    mergeSelectedWithNext,
+    splitSelectedAt,
+    updateTags,
+    setCellLanguage,
+    updateAttachments,
+    setDependencies,
     undo,
     redo,
     resetHistory,

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import type { CellType, NotebookCell } from '../types/types';
+import { comboMatches, getShortcut } from '../lib/shortcuts';
 
 type KeyboardShortcutsOptions = {
   cells: NotebookCell[];
@@ -19,6 +20,7 @@ type KeyboardShortcutsOptions = {
   convertSelected: (cellType: CellType) => void;
   moveSelected: (offset: number) => void;
   duplicateSelected: () => void;
+  enabled?: boolean;
 };
 
 export const useKeyboardShortcuts = ({
@@ -39,15 +41,12 @@ export const useKeyboardShortcuts = ({
   convertSelected,
   moveSelected,
   duplicateSelected,
+  enabled = true,
 }: KeyboardShortcutsOptions): void => {
   useEffect(() => {
+    if (!enabled) return;
     const onKeyDown = (event: KeyboardEvent) => {
       const modifier = event.metaKey || event.ctrlKey;
-      if (modifier && event.key.toLowerCase() === 's') {
-        event.preventDefault();
-        void saveNotebook();
-        return;
-      }
       const target = event.target;
       const isCodeEditor = target instanceof HTMLElement && target.closest('.cm-editor') !== null;
       const isPlainTextInput =
@@ -57,13 +56,20 @@ export const useKeyboardShortcuts = ({
           target.isContentEditable ||
           target.closest('[role="textbox"]') !== null);
       if (isPlainTextInput) return;
-      if (modifier && event.key.toLowerCase() === 'z') {
+
+      const matches = (id: string) => comboMatches(getShortcut(id), event);
+
+      if (matches('save')) {
         event.preventDefault();
-        if (event.shiftKey) redo();
-        else undo();
+        void saveNotebook();
         return;
       }
-      if (modifier && event.key.toLowerCase() === 'y') {
+      if (matches('undo')) {
+        event.preventDefault();
+        undo();
+        return;
+      }
+      if (matches('redo') || matches('redo-alt')) {
         event.preventDefault();
         redo();
         return;
@@ -74,70 +80,53 @@ export const useKeyboardShortcuts = ({
       }
       if (selectedIndex < 0) return;
       const selectedCell = cells[selectedIndex];
-      if (event.shiftKey && event.key === 'Enter') {
+      if (matches('run-cell')) {
         event.preventDefault();
         void executeCell(selectedCell);
         const nextCell = cells[selectedIndex + 1];
         if (nextCell) setSelectedId(nextCell.id);
         return;
       }
-      if (modifier && event.key === 'Enter') {
+      if (matches('run-stay')) {
         event.preventDefault();
         void executeCell(selectedCell);
         return;
       }
-      if (event.altKey && event.key === 'Enter') {
+      if (matches('run-insert')) {
         event.preventDefault();
         void executeCell(selectedCell);
         insertCell(selectedIndex + 1, 'code');
         return;
       }
-      if (event.key === 'F6') {
+      if (matches('run-all')) {
         event.preventDefault();
         executeAll();
         return;
       }
       if (mode !== 'command' || modifier || isCodeEditor) return;
-      switch (event.key.toLowerCase()) {
-        case 'a':
+
+      const commandActions: [string, () => void][] = [
+        ['insert-above', () => insertCell(selectedIndex, 'code')],
+        ['insert-below', () => insertCell(selectedIndex + 1, 'code')],
+        ['to-markdown', () => convertSelected('markdown')],
+        ['to-code', () => convertSelected('code')],
+        ['to-raw', () => convertSelected('raw')],
+        ['move-down', () => moveSelected(1)],
+        ['move-up', () => moveSelected(-1)],
+        ['duplicate', () => duplicateSelected()],
+      ];
+      for (const [id, action] of commandActions) {
+        if (matches(id)) {
           event.preventDefault();
-          insertCell(selectedIndex, 'code');
-          break;
-        case 'b':
-          event.preventDefault();
-          insertCell(selectedIndex + 1, 'code');
-          break;
-        case 'd':
-          event.preventDefault();
-          if (lastCommand === 'd') deleteSelected();
-          setLastCommand('d');
-          break;
-        case 'm':
-          event.preventDefault();
-          convertSelected('markdown');
-          break;
-        case 'y':
-          event.preventDefault();
-          convertSelected('code');
-          break;
-        case 'r':
-          event.preventDefault();
-          convertSelected('raw');
-          break;
-        case 'j':
-          event.preventDefault();
-          moveSelected(1);
-          break;
-        case 'k':
-          event.preventDefault();
-          moveSelected(-1);
-          break;
-        case 'c':
-          event.preventDefault();
-          duplicateSelected();
-          break;
-        default:
+          action();
           setLastCommand('');
+          return;
+        }
+      }
+      if (matches('delete-cell')) {
+        event.preventDefault();
+        if (lastCommand === getShortcut('delete-cell')) deleteSelected();
+        setLastCommand(getShortcut('delete-cell'));
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -160,5 +149,6 @@ export const useKeyboardShortcuts = ({
     convertSelected,
     moveSelected,
     duplicateSelected,
+    enabled,
   ]);
 };

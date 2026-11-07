@@ -1,5 +1,11 @@
 use crate::error::RuntimeError;
-use std::{collections::BTreeMap, fs, path::PathBuf};
+use std::{
+    collections::BTreeMap,
+    fs,
+    path::PathBuf,
+    process::ChildStdin,
+    sync::{Arc, Mutex},
+};
 use uuid::Uuid;
 
 pub struct RustSession {
@@ -10,6 +16,8 @@ pub struct RustSession {
     pub cargo_lock: Option<String>,
     pub offline: bool,
     pub locked: bool,
+    /// stdin handle of the currently running cell program, for `mars_prompt`.
+    pub stdin: Option<Arc<Mutex<ChildStdin>>>,
 }
 
 impl RustSession {
@@ -41,6 +49,7 @@ impl RustSession {
             cargo_lock,
             offline,
             locked,
+            stdin: None,
         })
     }
 

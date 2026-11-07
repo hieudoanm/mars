@@ -92,7 +92,7 @@ describe('NotebookCellView', () => {
 
   it('renders markdown cell with type label', () => {
     renderCell(markdownCell);
-    expect(screen.getByText('markdown')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cell type')).toHaveValue('markdown');
     expect(screen.queryByRole('button', { name: /Run cell/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete cell (D, D)' })).toBeInTheDocument();
   });
@@ -107,7 +107,7 @@ describe('NotebookCellView', () => {
 
   it('renders code cell with run button and outputs', async () => {
     renderCell(codeCell);
-    expect(screen.getByText('code')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cell type')).toHaveValue('code');
     expect(screen.getByText('In [1]')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Run cell/ })).toBeInTheDocument();
     expect(await screen.findByText('hello world', {}, { timeout: 5000 })).toBeInTheDocument();

@@ -20,3 +20,4 @@ export { default as SectionHeading } from './SectionHeading';
 export type { SectionHeadingLevel, SectionHeadingProps } from './SectionHeading';
 export { default as TextInput } from './TextInput';
 export type { TextInputProps } from './TextInput';
+export { default as ToastViewport } from './ToastViewport';

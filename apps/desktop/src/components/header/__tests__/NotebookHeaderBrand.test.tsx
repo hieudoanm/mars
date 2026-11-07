@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import HeaderBrand from '../HeaderBrand';
+import NotebookHeaderBrand from '../NotebookHeaderBrand';
 
-describe('HeaderBrand', () => {
+describe('NotebookHeaderBrand', () => {
   it('renders the Mars logo, brand label, and headline', () => {
-    render(<HeaderBrand />);
+    render(<NotebookHeaderBrand />);
     const logo = screen.getByAltText('Mars');
     expect(logo).toHaveAttribute('src');
     expect(screen.getByRole('heading', { level: 1, name: 'Mars' })).toBeInTheDocument();
@@ -12,7 +12,7 @@ describe('HeaderBrand', () => {
   });
 
   it('exposes the component marker', () => {
-    const { container } = render(<HeaderBrand />);
-    expect(container.querySelector('[data-component="HeaderBrand"]')).toBeInTheDocument();
+    const { container } = render(<NotebookHeaderBrand />);
+    expect(container.querySelector('[data-component="NotebookHeaderBrand"]')).toBeInTheDocument();
   });
 });

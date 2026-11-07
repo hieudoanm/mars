@@ -22,7 +22,7 @@ describe('Button', () => {
       </Button>,
     );
     const button = screen.getByRole('button', { name: 'Go' });
-    expect(button.className).toContain('bg-orange-700');
+    expect(button.className).toContain('btn-primary');
     expect(button.className).toContain('text-base');
   });
 
@@ -56,9 +56,9 @@ describe('Button', () => {
 
   it('supports ghost and danger variants', () => {
     const { rerender } = render(<Button variant='ghost'>Ghost</Button>);
-    expect(screen.getByRole('button', { name: 'Ghost' }).className).toContain('bg-transparent');
+    expect(screen.getByRole('button', { name: 'Ghost' }).className).toContain('btn-ghost');
     rerender(<Button variant='danger'>Danger</Button>);
-    expect(screen.getByRole('button', { name: 'Danger' }).className).toContain('bg-red-950');
+    expect(screen.getByRole('button', { name: 'Danger' }).className).toContain('btn-error');
   });
 
   it('supports small and medium sizes', () => {
@@ -74,7 +74,7 @@ describe('Button', () => {
 
   it('supports icon size', () => {
     render(<Button size='icon'>X</Button>);
-    expect(screen.getByRole('button', { name: 'X' }).className).toContain('p-2');
+    expect(screen.getByRole('button', { name: 'X' }).className).toContain('size-7');
   });
 
   it('centers content by default and supports start alignment', () => {

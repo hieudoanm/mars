@@ -30,33 +30,34 @@ describe('kernelService', () => {
       duration_millis: 2,
     };
     invoke.mockResolvedValueOnce(response).mockResolvedValueOnce(response);
-    await expect(executeSource('1+1', null)).resolves.toEqual(response);
-    expect(invoke).toHaveBeenNthCalledWith(1, 'execute_cell', { source: '1+1' });
-    await executeSource('2+2', 100);
+    await expect(executeSource('s', '1+1', null)).resolves.toEqual(response);
+    expect(invoke).toHaveBeenNthCalledWith(1, 'execute_cell', { session: 's', source: '1+1' });
+    await executeSource('s', '2+2', 100);
     expect(invoke).toHaveBeenNthCalledWith(2, 'execute_cell_with_timeout', {
+      session: 's',
       source: '2+2',
       timeoutMillis: 100,
     });
     invoke.mockResolvedValueOnce({ type: 'error', message: 'compile error' });
-    await expect(executeSource('bad', null)).rejects.toThrow('compile error');
+    await expect(executeSource('s', 'bad', null)).rejects.toThrow('compile error');
     invoke.mockResolvedValueOnce({ type: 'status', status: 'busy', execution_count: 0 });
-    await expect(executeSource('busy', null)).rejects.toThrow('busy');
+    await expect(executeSource('s', 'busy', null)).rejects.toThrow('busy');
   });
 
   it('forwards lifecycle and file operations to Tauri', async () => {
     invoke.mockResolvedValue(undefined);
-    await cancelKernelExecution();
-    await resetKernel();
-    await configureKernel('cargo content');
+    await cancelKernelExecution('s');
+    await resetKernel('s');
+    await configureKernel('s', 'cargo content');
     await saveNotebookFile('/book.mars', '{}');
     await renameNotebookFile('/book.mars', '/renamed.mars');
     await exportMarkdownFile('/book.md', '{}');
     await exportIpynbFile('/book.ipynb', '{}');
     await listNotebookFiles('/books');
     expect(invoke.mock.calls).toEqual([
-      ['cancel_execution'],
-      ['reset_kernel'],
-      ['configure_kernel', { content: 'cargo content' }],
+      ['cancel_execution', { session: 's' }],
+      ['reset_kernel', { session: 's' }],
+      ['configure_kernel', { session: 's', content: 'cargo content' }],
       ['save_notebook', { path: '/book.mars', content: '{}' }],
       ['rename_notebook_file', { oldPath: '/book.mars', newPath: '/renamed.mars' }],
       ['export_notebook_markdown', { path: '/book.md', content: '{}' }],

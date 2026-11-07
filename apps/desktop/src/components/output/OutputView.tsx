@@ -1,4 +1,4 @@
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, type ReactNode, useEffect, useRef, useState } from 'react';
 import katex from 'katex';
 import vegaEmbed from 'vega-embed';
 import type { Output } from '../../types/types';
@@ -10,14 +10,50 @@ import 'katex/dist/katex.min.css';
 const OUTPUT_SURFACE =
   'mt-3 overflow-auto rounded-lg bg-neutral-950 p-3 leading-relaxed whitespace-pre-wrap';
 
-const OutputView: FC<{ output: Output }> = ({ output }) => {
+const SOURCE_ANNOTATION = /\[mars:cell=(\d+),line=(\d+)\]/g;
+
+const ErrorMessage: FC<{
+  message: string;
+  onNavigateSource?: (cellHash: number, line: number) => void;
+}> = ({ message, onNavigateSource }) => {
+  const parts: ReactNode[] = [];
+  let cursor = 0;
+  for (const match of message.matchAll(SOURCE_ANNOTATION)) {
+    const index = match.index ?? 0;
+    if (index > cursor) parts.push(message.slice(cursor, index));
+    const cellHash = Number(match[1]);
+    const line = Number(match[2]);
+    parts.push(
+      onNavigateSource ? (
+        <button
+          key={index}
+          type='button'
+          className='cursor-pointer text-sky-400 underline decoration-dotted underline-offset-2 hover:text-sky-300'
+          onClick={() => onNavigateSource(cellHash, line)}
+        >
+          {match[0]}
+        </button>
+      ) : (
+        match[0]
+      ),
+    );
+    cursor = index + match[0].length;
+  }
+  if (cursor < message.length) parts.push(message.slice(cursor));
+  return <>{parts}</>;
+};
+
+const OutputView: FC<{
+  output: Output;
+  onNavigateSource?: (cellHash: number, line: number) => void;
+}> = ({ output, onNavigateSource }) => {
   if (output.type === 'text') return <CodeBlock>{output.text}</CodeBlock>;
   if (output.type === 'error') {
     return (
       <CodeBlock tone='danger'>
         <strong className='text-red-400'>{output.name}</strong>
         {'\n'}
-        {output.message}
+        <ErrorMessage message={output.message} onNavigateSource={onNavigateSource} />
       </CodeBlock>
     );
   }

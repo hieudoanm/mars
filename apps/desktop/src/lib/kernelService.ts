@@ -1,6 +1,15 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import type { KernelResponse, KernelStreamEvent, Notebook, Output } from '../types/types';
+import type {
+  CellDiagnostic,
+  KernelResponse,
+  KernelStatusResponse,
+  KernelStreamMessage,
+  KernelVariable,
+  LspCellDiagnostic,
+  Notebook,
+  Output,
+} from '../types/types';
 import { parseNotebookJson } from './notebookOperations';
 
 export type FileExplorerEntry = {
@@ -11,13 +20,15 @@ export type FileExplorerEntry = {
 };
 
 export const executeSource = async (
+  session: string,
   source: string,
   timeoutMillis: number | null,
 ): Promise<Extract<KernelResponse, { type: 'execution' }>> => {
   const response =
     timeoutMillis === null
-      ? await invoke<KernelResponse>('execute_cell', { source })
+      ? await invoke<KernelResponse>('execute_cell', { session, source })
       : await invoke<KernelResponse>('execute_cell_with_timeout', {
+          session,
           source,
           timeoutMillis,
         });
@@ -27,16 +38,141 @@ export const executeSource = async (
   return response;
 };
 
-export const cancelKernelExecution = async (): Promise<void> => {
-  await invoke('cancel_execution');
+export const cancelKernelExecution = async (session: string): Promise<void> => {
+  await invoke('cancel_execution', { session });
 };
 
-export const resetKernel = async (): Promise<void> => {
-  await invoke('reset_kernel');
+export const resetKernel = async (session: string): Promise<void> => {
+  await invoke('reset_kernel', { session });
 };
 
-export const configureKernel = async (content: string): Promise<void> => {
-  await invoke('configure_kernel', { content });
+export const kernelStatus = async (session: string): Promise<KernelStatusResponse> => {
+  const response = await invoke<KernelResponse>('kernel_status', { session });
+  if (response.type !== 'status') {
+    throw new Error(response.type === 'error' ? response.message : response.type);
+  }
+  return response;
+};
+
+export const inspectVariables = async (session: string): Promise<KernelVariable[]> => {
+  return invoke<KernelVariable[]>('inspect_variables', { session });
+};
+
+export const diagnoseCell = async (session: string, source: string): Promise<CellDiagnostic[]> => {
+  return invoke<CellDiagnostic[]>('diagnose_cell', { session, source });
+};
+
+export const sendKernelInput = async (session: string, text: string): Promise<void> => {
+  await invoke('send_kernel_input', { session, text });
+};
+
+export type LspSyncCell = {
+  id: string;
+  cell_type: string;
+  source: string;
+};
+
+export const lspSync = async (
+  session: string,
+  cells: LspSyncCell[],
+  dependencies: Record<string, string>,
+): Promise<void> => {
+  await invoke('lsp_sync', { request: { session, cells, dependencies } });
+};
+
+export type LspHoverResult = {
+  contents?: { kind?: string; value?: string } | { kind?: string; value?: string }[];
+};
+
+export const lspHover = async (
+  session: string,
+  cellId: string,
+  line: number,
+  character: number,
+): Promise<LspHoverResult | null> => {
+  return invoke<LspHoverResult | null>('lsp_hover', {
+    request: { session, cellId, line, character },
+  });
+};
+
+export type LspCompletionItem = {
+  label: string;
+  kind?: number;
+  detail?: string;
+  insertText?: string;
+};
+
+export const lspCompletion = async (
+  session: string,
+  cellId: string,
+  line: number,
+  character: number,
+): Promise<{ items?: LspCompletionItem[] } | LspCompletionItem[] | null> => {
+  return invoke('lsp_completion', {
+    request: { session, cellId, line, character },
+  });
+};
+
+export const lspSignatureHelp = async (
+  session: string,
+  cellId: string,
+  line: number,
+  character: number,
+): Promise<unknown> => {
+  return invoke('lsp_signature_help', {
+    request: { session, cellId, line, character },
+  });
+};
+
+export type LspDefinitionTarget = {
+  cellId: string;
+  line: number;
+  character: number;
+};
+
+export const lspDefinition = async (
+  session: string,
+  cellId: string,
+  line: number,
+  character: number,
+): Promise<LspDefinitionTarget | null> => {
+  return invoke<LspDefinitionTarget | null>('lsp_definition', {
+    request: { session, cellId, line, character },
+  });
+};
+
+export type LspCellTextEdit = {
+  cellId: string;
+  startLine: number;
+  startCharacter: number;
+  endLine: number;
+  endCharacter: number;
+  newText: string;
+};
+
+export type LspCodeAction = {
+  title: string;
+  kind?: string;
+  edits: LspCellTextEdit[];
+};
+
+export const lspCodeActions = async (
+  session: string,
+  cellId: string,
+  line: number,
+  character: number,
+): Promise<LspCodeAction[]> => {
+  return invoke<LspCodeAction[]>('lsp_code_actions', {
+    request: { session, cellId, line, character },
+  });
+};
+
+export const lspDiagnostics = async (session: string): Promise<LspCellDiagnostic[]> => {
+  return invoke<LspCellDiagnostic[]>('lsp_diagnostics', { session });
+};
+
+export const configureKernel = async (session: string, content: string): Promise<void> => {
+  await invoke('configure_kernel', { session, content });
 };
 
 export const loadNotebookFile = async (
@@ -57,11 +193,19 @@ export const exportIpynbFile = async (path: string, content: string): Promise<vo
   await invoke('export_notebook_ipynb', { path, content });
 };
 
+export const exportHtmlFile = async (path: string, content: string): Promise<void> => {
+  await invoke('export_notebook_html', { path, content });
+};
+
+export const exportPdfFile = async (path: string, content: string): Promise<void> => {
+  await invoke('export_notebook_pdf', { path, content });
+};
+
 export const listenKernelStream = async (
-  handler: (event: KernelStreamEvent) => void,
+  handler: (event: KernelStreamMessage) => void,
 ): Promise<() => void> => {
   if (!('__TAURI_INTERNALS__' in window)) return () => {};
-  return listen<KernelStreamEvent>('kernel-stream', (event) => handler(event.payload));
+  return listen<KernelStreamMessage>('kernel-stream', (event) => handler(event.payload));
 };
 
 export const saveNotebookFile = async (path: string, content: string): Promise<void> => {
@@ -76,6 +220,26 @@ export const renameNotebookFile = async (oldPath: string, newPath: string): Prom
   await invoke('rename_notebook_file', { oldPath, newPath });
 };
 
+export const createNotebookFile = async (path: string): Promise<void> => {
+  await invoke('create_notebook_file', { path });
+};
+
+export const createDirectory = async (path: string): Promise<void> => {
+  await invoke('create_directory', { path });
+};
+
+export const deletePath = async (path: string): Promise<void> => {
+  await invoke('delete_path', { path });
+};
+
+export const writeTextFile = async (path: string, content: string): Promise<void> => {
+  await invoke('write_text_file', { path, content });
+};
+
+export const openInTerminal = async (path: string): Promise<void> => {
+  await invoke('open_in_terminal', { path });
+};
+
 export const exportMarkdownFile = async (path: string, content: string): Promise<void> => {
   await invoke('export_notebook_markdown', { path, content });
 };
@@ -86,4 +250,26 @@ export const listNotebookFiles = async (path: string): Promise<FileExplorerEntry
 
 export const hasInterruptedOutput = (outputs: Output[]): boolean => {
   return outputs.some((output) => output.type === 'error' && output.name === 'Interrupted');
+};
+
+export const createNotebookCheckpoint = async (path: string): Promise<string> => {
+  return invoke<string>('create_notebook_checkpoint', { path });
+};
+
+export const listNotebookCheckpoints = async (path: string): Promise<string[]> => {
+  return invoke<string[]>('list_notebook_checkpoints', { path });
+};
+
+export const readNotebookCheckpoint = async (
+  path: string,
+  checkpointPath: string,
+): Promise<string> => {
+  return invoke<string>('read_notebook_checkpoint', { path, checkpointPath });
+};
+
+export const restoreNotebookCheckpoint = async (
+  path: string,
+  checkpointPath: string,
+): Promise<void> => {
+  await invoke('restore_notebook_checkpoint', { path, checkpointPath });
 };

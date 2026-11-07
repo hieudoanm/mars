@@ -6,7 +6,7 @@ describe('NotebookStatusBar', () => {
   it('renders cell count and saved state', () => {
     render(<NotebookStatusBar cellCount={2} isDirty={false} />);
     expect(screen.getByText('Rust 2024')).toBeInTheDocument();
-    expect(screen.getByText('Kernel connected')).toBeInTheDocument();
+    expect(screen.getByText('Kernel idle')).toBeInTheDocument();
     expect(screen.getByText('2 cells')).toBeInTheDocument();
     expect(screen.getByText('All changes saved')).toBeInTheDocument();
   });

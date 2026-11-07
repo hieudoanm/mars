@@ -30,37 +30,47 @@ describe('useNotebookExecutionCommands', () => {
     expect(typeof result.current.executeBelow).toBe('function');
   });
 
-  it('executes the selected code cell', () => {
+  it('executes the selected code cell', async () => {
     const { result, executeCells } = renderCommands();
 
-    act(() => result.current.executeCurrent());
+    await act(async () => {
+      await result.current.executeCurrent();
+    });
 
     expect(executeCells).toHaveBeenCalledWith([cells[1]]);
   });
 
-  it('ignores the current cell when it is not code', () => {
+  it('ignores the current cell when it is not code', async () => {
     const { result, executeCells } = renderCommands(0);
 
-    act(() => result.current.executeCurrent());
+    await act(async () => {
+      await result.current.executeCurrent();
+    });
 
     expect(executeCells).not.toHaveBeenCalled();
   });
 
-  it('executes only code cells', () => {
+  it('executes only code cells', async () => {
     const { result, executeCells } = renderCommands();
 
-    act(() => result.current.executeAll());
+    await act(async () => {
+      await result.current.executeAll();
+    });
 
     expect(executeCells).toHaveBeenCalledWith([cells[1]]);
   });
 
-  it('executes code cells above and below the selection', () => {
+  it('executes code cells above and below the selection', async () => {
     const { result, executeCells } = renderCommands();
 
-    act(() => result.current.executeAbove());
+    await act(async () => {
+      await result.current.executeAbove();
+    });
     expect(executeCells).toHaveBeenCalledWith([]);
 
-    act(() => result.current.executeBelow());
+    await act(async () => {
+      await result.current.executeBelow();
+    });
     expect(executeCells).toHaveBeenCalledWith([]);
   });
 });

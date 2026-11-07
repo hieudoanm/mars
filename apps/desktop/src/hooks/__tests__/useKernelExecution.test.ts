@@ -14,6 +14,12 @@ vi.mock('../../lib/kernelService', () => ({
   cancelKernelExecution: vi.fn(async () => {}),
   listenKernelStream: vi.fn(async () => () => {}),
   resetKernel: vi.fn(async () => {}),
+  sendKernelInput: vi.fn(async () => {}),
+  kernelStatus: vi.fn(async () => ({
+    type: 'status',
+    status: 'idle',
+    execution_count: 0,
+  })),
 }));
 vi.mock('../../lib/diagnostics', () => ({
   parseExecutionTimeout: vi.fn(() => ({ value: 1000 })),
@@ -50,7 +56,7 @@ describe('useKernelExecution', () => {
 
   it('non-code cell', async () => {
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     const r = await result.current.executeCell(cell('markdown'));
     expect(r).toBe(true);
@@ -58,7 +64,7 @@ describe('useKernelExecution', () => {
 
   it('success path', async () => {
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     let r = false;
     await act(async () => {
@@ -71,7 +77,7 @@ describe('useKernelExecution', () => {
   it('timeout error path', async () => {
     vi.mocked(dg.parseExecutionTimeout).mockReturnValue({ value: null, error: 'bad' });
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: 'x', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: 'x', setStatus }),
     );
     let r = false;
     await act(async () => {
@@ -83,7 +89,7 @@ describe('useKernelExecution', () => {
   it('execute throws', async () => {
     vi.mocked(ks.executeSource).mockRejectedValue(new Error('boom'));
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     let r = false;
     await act(async () => {
@@ -96,7 +102,7 @@ describe('useKernelExecution', () => {
   it('interrupted output', async () => {
     vi.mocked(ks.hasInterruptedOutput).mockReturnValue(true);
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     let r = false;
     await act(async () => {
@@ -120,7 +126,7 @@ describe('useKernelExecution', () => {
       duration_millis: 7,
     });
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     let r = true;
     await act(async () => {
@@ -150,7 +156,13 @@ describe('useKernelExecution', () => {
       });
     const onExecutionHalted = vi.fn();
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus, onExecutionHalted }),
+      useKernelExecution({
+        sessionId: 's',
+        setNotebook,
+        timeout: '1s',
+        setStatus,
+        onExecutionHalted,
+      }),
     );
     await act(async () => {
       await result.current.executeCells([failing, ok]);
@@ -161,7 +173,7 @@ describe('useKernelExecution', () => {
 
   it('reports per-cell progress during batch execution', async () => {
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     await act(async () => {
       await result.current.executeCells([
@@ -176,7 +188,7 @@ describe('useKernelExecution', () => {
 
   it('executeCells', async () => {
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     await act(async () => {
       await result.current.executeCells([cell()]);
@@ -186,7 +198,7 @@ describe('useKernelExecution', () => {
 
   it('restart', async () => {
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     await act(async () => {
       await result.current.restart();
@@ -196,7 +208,7 @@ describe('useKernelExecution', () => {
 
   it('cancel', async () => {
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     await act(async () => {
       await result.current.cancelExecution();
@@ -207,7 +219,7 @@ describe('useKernelExecution', () => {
   it('cancel throws', async () => {
     vi.mocked(ks.cancelKernelExecution).mockRejectedValue(new Error('no'));
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     await act(async () => {
       await result.current.cancelExecution();
@@ -218,18 +230,26 @@ describe('useKernelExecution', () => {
   it('prevents overlapping executions', async () => {
     let resolveExecution:
       ((value: Awaited<ReturnType<typeof ks.executeSource>>) => void) | undefined;
-    vi.mocked(ks.executeSource).mockImplementation(
+    vi.mocked(ks.executeSource).mockImplementationOnce(
       () =>
         new Promise((resolve) => {
           resolveExecution = resolve;
         }),
     );
     const { result } = renderHook(() =>
-      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
     );
     const first = result.current.executeCell(cell());
     await waitFor(() => expect(result.current.isExecuting).toBe(true));
-    await expect(result.current.executeCell(cell())).resolves.toBe(false);
+    let secondResolved: boolean | undefined;
+    const second = result.current.executeCell(cell()).then((ok) => {
+      secondResolved = ok;
+      return ok;
+    });
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(secondResolved).toBeUndefined();
     expect(ks.executeSource).toHaveBeenCalledOnce();
     await act(async () => {
       resolveExecution?.({
@@ -239,6 +259,9 @@ describe('useKernelExecution', () => {
         duration_millis: 1,
       });
       await first;
+      await second;
     });
+    expect(secondResolved).toBe(true);
+    expect(ks.executeSource).toHaveBeenCalledTimes(2);
   });
 });

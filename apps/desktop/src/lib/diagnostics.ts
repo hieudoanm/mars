@@ -1,5 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint';
-import type { NotebookCell } from '../types/types';
+import type { CellDiagnostic, LspCellDiagnostic, NotebookCell } from '../types/types';
 
 export const diagnosticsForCell = (cell: NotebookCell): Diagnostic[] => {
   return cell.outputs.flatMap((output) =>
@@ -53,6 +53,19 @@ const sourceOffset = (lines: string[], line: number, column: number): number => 
   return lineStart + [...content].slice(0, scalarColumn).join('').length;
 };
 
+export const lspDiagnosticsFor = (source: string, items: LspCellDiagnostic[]): Diagnostic[] => {
+  const lines = source.split('\n');
+  return items.map((item) => {
+    const from = sourceOffset(lines, item.line + 1, item.column + 1);
+    return {
+      from: Math.min(source.length, from),
+      to: Math.min(source.length, from + 1),
+      severity: item.severity === 'warning' ? 'warning' : 'error',
+      message: item.message,
+    };
+  });
+};
+
 export const parseExecutionTimeout = (
   value: string,
 ): {
@@ -64,4 +77,21 @@ export const parseExecutionTimeout = (
   return Number.isSafeInteger(timeout) && timeout > 0
     ? { value: timeout, error: null }
     : { value: null, error: 'Execution limit must be a positive whole number' };
+};
+
+export const liveDiagnosticsFor = (source: string, report: CellDiagnostic[]): Diagnostic[] => {
+  const lines = source.split('\n');
+  return report.map((item) => {
+    const from = sourceOffset(lines, item.line, item.column);
+    const to = Math.max(
+      from + 1,
+      sourceOffset(lines, Math.max(item.line, item.endLine), item.endColumn),
+    );
+    return {
+      from: Math.min(source.length, from),
+      to: Math.min(source.length, to),
+      severity: item.severity === 'warning' ? 'warning' : 'error',
+      message: item.code ? `${item.code}: ${item.message}` : item.message,
+    };
+  });
 };

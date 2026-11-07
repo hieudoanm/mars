@@ -232,6 +232,260 @@ Phase 7 — Desktop and rendering polish
   editor diagnostics remain visible. Previously only interruptions and
   thrown errors stopped the batch; compile/runtime error outputs did not.
 
+### Jupyter catch-up batch (desktop)
+
+- Multi-notebook workspace: `App.tsx` is now a tabbed shell hosting one
+  `NotebookSession` per open notebook; kernels are per-session in the Tauri
+  host (`session` arg on all execution commands, stream events carry the
+  session id). Tabs track dirty state, dedupe by path, prompt before closing
+  dirty tabs, and restore the last-opened path.
+- File explorer CRUD: new notebook/folder, inline rename, recursive delete,
+  hidden/dot entries and `*.checkpoints` dirs filtered.
+- Output ergonomics: `CellOutput` wrapper adds per-output collapse, copy, and
+  clear; cell header gained type dropdown, move up/down, merge-with-next.
+- Global notebook search dialog (sidebar + palette), Rust-aware completion
+  source (keywords, primitives, `let`/`fn`/type symbols collected from all
+  code cells), and a variables/symbols inspector in the notebook sidebar.
+- Dependencies dialog edits `metadata.dependencies`; checkpoints are stored in
+  `<notebook>.mars.checkpoints/` via new Tauri commands with restore support.
+- Command palette (Cmd+K) aggregates workspace + per-session commands;
+  settings dialog (Cmd+, or header gear) offers mars-dark/mars-light
+  DaisyUI themes (`data-theme`) and documents shortcuts.
+- Session restore persists scroll position and selected cell per file path.
+- Print stylesheet hides chrome and restyles cells for printing/PDF.
+- Header gained HTML/PDF export; runtime restart variants (clear outputs,
+  restart & run all) added.
+
+Follow-up pass on the limitations:
+
+- Cell ops completed: split-at-cursor (scissors button reads the CodeMirror
+  cursor offset), comma-separated tag editing with tag badges, and
+  shift-click range multi-select — range selections highlight, delete as a
+  group, and can be run via the "Run selected cells" palette command.
+- Shortcuts are now rebindable: `lib/shortcuts.ts` stores per-action combos
+  in localStorage; `useKeyboardShortcuts` matches events through
+  `comboMatches`; the settings dialog records new combos on click and offers
+  per-action reset plus "Reset all".
+- Styling migrated to DaisyUI 5 with custom `mars-dark` (default) and
+  `mars-light` themes defined in `src/styles.css`; shared primitives
+  (Button, IconButton, TextInput, Checkbox) use `btn`/`input`/`checkbox`
+  classes so theme colors resolve from CSS variables in both themes.
+- Light theme extended to the CodeMirror editor (light chrome, caret,
+  placeholder, panels, search-match colors; `oneDark` skipped in light mode)
+  via a `colorScheme` prop threaded App → session → cell → editor.
+- Rust completion gained macro entries (`println!`, `vec!`, `assert_eq!`, …)
+  that insert `name!()`.
+
+Second gap-analysis batch (desktop + runtime):
+
+- Live variable inspector: new `mars-runtime::inspect` module exposes
+  `inspect_variables` (per-session bindings with type/value previews via a
+  replayed probe program) and `diagnose_cell` (rustc JSON diagnostics mapped
+  back to notebook cells through accumulated-source offsets). Wired through
+  `mars-kernel` traits, Tauri commands `inspect_variables`/`diagnose_cell`,
+  `kernelService.ts`, and the notebook sidebar's live variables section with
+  manual refresh.
+- Interactive stdin: runtime emits `StreamEvent::Prompt` via a
+  `__MARS_PROMPT__` marker scanned across chunk boundaries (`PromptScan` in
+  `execution.rs`, unit-tested); `mars_prompt()` is injected into replayed
+  programs; stdin plumbing runs through `session_execution.rs`, the kernel
+  trait, Tauri `send_kernel_input`, `useKernelExecution.submitInput`, and a
+  `PromptDialog` in the notebook UI.
+- Pre-execution diagnostics: selecting a code cell debounces a `diagnose_cell`
+  call and maps compiler diagnostics onto the cell via `liveDiagnostics`.
+- Cell magic directives: `cellDirectives.ts` parses `// mars: dep …` and
+  `// mars: timeout …` comments; dependencies feed `editor.setDependencies`
+  and timeout overrides the execution timeout for that run.
+- Recents + templates + drag-drop: `lib/recents.ts` persists recent paths;
+  `TemplatePickerDialog` offers starter notebooks; `App.tsx` accepts
+  drag-dropped `.mars`/`.ipynb` files onto the workspace.
+- Search & replace: `NotebookSearchDialog` gained replace mode that rewrites
+  matching cell sources through `notebookOperations`.
+- Virtualization: cell wrappers already use `content-visibility: auto`, which
+  covers the large-notebook rendering cost without a virtualizer.
+- Document collaboration and interactive widget/debugging protocols were
+  reviewed and documented as out of scope for now.
+
+Third gap-analysis batch (desktop + runtime):
+
+- Execution queue: `useKernelExecution` now queues cell executions FIFO while
+  a run is in flight instead of rejecting them; the status bar shows the
+  queued count.
+- Search & replace upgraded: case-sensitive / whole-word / regex toggles in
+  `NotebookSearchDialog` (shared `lib/textSearch.ts` matcher), and replace-all
+  is a single notebook mutation (`replaceInNotebookCells`) so it is one undo
+  step.
+- Session restore now persists per-cell collapse state alongside scroll
+  position and selected cell (`useSessionRestore` hook).
+- Kernel status bar shows the short session id and queued executions.
+- Checkpoints gained a diff view: `read_notebook_checkpoint` Tauri command
+  (path-validated), LCS line diff in `lib/textDiff.ts`, and an inline diff
+  pane in `CheckpointsDialog`.
+- `NotebookSession` was split: `useSessionRestore`, `useNotebookInspection`,
+  and `NotebookSessionOverlays` extracted (585 → ~450 lines of wiring/JSX).
+- rust-analyzer LSP: new `crates/mars-lsp` crate — a minimal stdio JSON-RPC
+  client plus `LspSession` that maintains a scratch Cargo project per
+  notebook session under the temp dir, wraps code cells in `fn main()`,
+  syncs on edit (debounced), maps positions/diagnostics back to cells, and
+  surfaces hover tooltips in CodeMirror plus live `publishDiagnostics` in
+  the editor. Tauri commands: `lsp_sync`, `lsp_hover`, `lsp_completion`,
+  `lsp_diagnostics`. Semantic completions via LSP are wired backend-side but
+  the editor still uses the heuristic source (async LSP completion merge is
+  a follow-up).
+- Editor virtualization: `LazyMount` mounts CodeMirror only when a cell
+  approaches the viewport (`content-visibility` already covered paint cost).
+- "Open containing folder in terminal" header action (`open_in_terminal`
+  Tauri command; macOS Terminal / Windows start / common Linux emulators).
+- Debugger/breakpoints, a full extension ecosystem, real-time collaboration,
+  and a widget protocol remain deliberately out of scope: they are
+  multi-week protocol/runtime projects rather than gap-fillers, and the
+  replay execution model has no debug hooks to attach to.
+
+Remaining limitation: rust-analyzer LSP covers hover and live diagnostics;
+completion still uses the heuristic source and go-to-definition/signature
+help are not yet surfaced in the UI.
+
+### Jupyter catch-up batch 4 (desktop)
+
+- Editor line numbers enabled in the CodeMirror gutter.
+- LSP completion merge: `lib/lspCompletions.ts` adapts rust-analyzer
+  completion items into CodeMirror sources merged with the heuristic
+  fallback; signature help is surfaced via a tooltip on `(` while typing;
+  go-to-definition (Ctrl/Cmd+click) jumps to the target cell and position
+  via `LspDefinitionTarget` plumbing through `NotebookSession`.
+- Workspace persistence: open tab list and active tab are stored in
+  localStorage (`lib/workspace.ts`) with defensive parsing, and sessions
+  are restored on launch.
+- `WorkspaceHeader` gained a visible recents dropdown (recent notebook
+  paths), HTML5 drag-to-reorder tabs, and middle-click tab close.
+- Sidebar problems panel: aggregated pre-execution + LSP diagnostics across
+  cells with severity dots and click-to-select navigation.
+- Variable inspector polish: per-variable copy-to-clipboard and full-value
+  tooltips on truncated previews.
+- Search dialog replace-all now shows an inline "Replace N occurrences?"
+  confirmation before applying the single-undo mutation.
+- Per-cell language metadata: code cells carry `metadata.language`
+  (`rust` default, `text` for non-executed cells); the cell header exposes
+  a language selector, non-Rust cells skip highlighting/LSP/execution, and
+  `lib/cellLanguage.ts` centralizes the predicate.
+- Output download action on every cell output (images and image MIME
+  bundles download as real image files; other outputs download as text
+  with type-appropriate extensions).
+- True editor unmount virtualization remains a documented trade-off:
+  `LazyMount` preserves CodeMirror undo history; windowed unmounting would
+  discard it.
+
+### Jupyter catch-up batch 5 (desktop)
+
+- `NotebookSession.tsx` re-split: LSP sync/hover/signature/definition wiring
+  extracted to `hooks/useLspIntegration.ts`, aggregated problems moved into
+  `useNotebookInspection`, collapse/dialog state consolidated in
+  `useNotebookUiState`, and cell selection/drag/range logic extracted to
+  `hooks/useCellInteractions.ts` (558 → ~440 lines).
+- Interrupt now drains the FIFO execution queue: `cancelExecution` resolves
+  all queued cells as failed instead of letting them run after cancel.
+- Per-cell execution badges: each code cell shows a persistent
+  `✓/✗/‖ Nms` badge in its header (success/error/interrupted + duration),
+  cleared on runtime restart.
+- Sidebar "Contents" section: markdown `#`–`######` headings are extracted
+  per cell and rendered as an indented, click-to-navigate table of contents.
+- LSP unit coverage: `lib/lsp.ts` hover/signature-help formatting and the
+  `lspCompletions` CodeMirror adapter are tested; live rust-analyzer
+  signature/definition remains a manual smoke item.
+- Editor polish: `rectangularSelection()` + `allowMultipleSelections` from
+  `@codemirror/view` (Alt-drag block selection) and
+  `@replit/codemirror-indentation-markers` indent guides for Rust cells.
+- Workspace tab persistence now covers untitled notebooks: tab entries store
+  `{key, path, untitledId}` with legacy `paths` format still readable, and
+  untitled notebook content is snapshotted to localStorage (debounced) and
+  restored on launch.
+- Checkpoint diffs gained a per-cell view: `lib/notebookCellDiff.ts` matches
+  cells by id across checkpoint/current and the dialog shows per-cell
+  `+added -removed` chips that swap the diff pane to that cell's source diff.
+- Playwright E2E (`tests/app.spec.ts`) now covers tab persistence across
+  reload and was updated for the select-based font-size control; all 4
+  specs pass in Chromium. Native Tauri-shell E2E (tauri-driver) remains a
+  release-machine task.
+- Deliberately not implemented (documented scope decisions): zen/focus
+  mode, split-pane editing, cell attachments, drag-between-notebooks, and
+  i18n — niche conveniences with low payoff for a Rust-first notebook tool;
+  debugger/collaboration/widget-protocol/extension-ecosystem remain out of
+  scope as multi-week protocol projects.
+
+### Jupyter catch-up batch 6 (desktop + runtime)
+
+- Editor preferences are reachable again: Autocomplete and Folding
+  checkboxes were restored to `SettingsDialog` (the stored preferences had
+  become UI-unreachable after the toolbar rework).
+- `NotebookCellList` extracted from `NotebookSession.tsx`: the ~55-line
+  per-cell JSX block and its ~30 props now live in
+  `components/notebook/NotebookCellList.tsx`.
+- Variable inspector depth: sidebar variables expand to show full values
+  and offer copy/copy-as-JSON actions.
+- Editor polish: standard CodeMirror `highlightActiveLine`,
+  `highlightActiveLineGutter`, `highlightSelectionMatches`, and
+  `drawSelection` extensions (rectangular selection already present).
+- LSP quick fixes: `textDocument/codeAction` is implemented in `mars-lsp`
+  with generated-document→cell edit mapping, exposed via Tauri
+  `lsp_code_actions`, surfaced through `useLspIntegration`/`cellTextEdit`,
+  and presented as a lightbulb menu in the editor gutter.
+- Runtime error → cell navigation: generated `// Mars cell` markers now
+  embed a djb2 source hash; `output::annotate_source_locations` rewrites
+  `*.rs:LINE:COL` panic locations in stderr with
+  `[mars:cell=HASH,line=N]` annotations, which `OutputView` renders as
+  clickable links that select the matching cell and reveal the line
+  (hash-based mapping survives out-of-order cell execution).
+- Image attachments: pasting or dropping an image onto a Markdown cell
+  stores it as a base64 data URL under `metadata.attachments` and inserts
+  `![name](attachment:name)`; `MarkdownPreview` resolves attachment
+  references and the sanitize schema/urlTransform allow `data:image/`
+  sources only. Code/raw cells do not accept image pastes.
+- Scope decisions documented: Mars remains Rust-first — a second language
+  runtime is a deliberate future integration behind a subprocess/protocol
+  boundary, not a Jupyter-parity requirement. Native Tauri E2E
+  (tauri-driver launch/save/reopen) remains a release-machine validation
+  task; browser Playwright covers workspace logic. Zen mode, split view,
+  drag-between-notebooks, i18n, debugger, collaboration, widgets, and
+  extensions remain out of scope.
+
+### Jupyter catch-up batch 7 (desktop + runtime + LSP)
+
+- LSP verified against a real rust-analyzer: new opt-in
+  `crates/mars-lsp/tests/live_smoke.rs` spawns rust-analyzer (skipped when
+  the binary is absent, `MARS_RUST_ANALYZER` env override supported) and
+  asserts cell-mapped diagnostics, hover, completion, definition, and code
+  actions. The smoke test caught three real bugs, all fixed:
+  - `--disable-build-scripts` is not a valid rust-analyzer flag and killed
+    the server during initialize (LSP was effectively dead).
+  - rust-analyzer returns `null` for `textDocument/codeAction` unless the
+    client declares the `codeAction` capability at initialize.
+  - `build_document` wrapped cell sources verbatim, so a trailing bare
+    expression (`value`) broke parsing for every following cell; cells now
+    get a `;` appended via `mars_runtime::expression::split_final_expression`
+    (positions preserved).
+  - `code_actions` now expands a bare cursor position to the covering
+    diagnostic's range, which quick fixes require.
+- Toast notifications: `hooks/useToasts.ts` + `ToastViewport` (bottom-right,
+  tone-coded, auto-dismiss); file-operation failures (open/save/import/
+  export/rename/autosave/terminal) now surface as error toasts and saves
+  confirm with a success toast.
+- Cell context menu: right-click a cell for run/insert/duplicate/copy
+  source/move/merge/convert/clear/delete (`CellContextMenu.tsx`,
+  `editor.duplicateCellById`).
+- Markdown alerts: `> [!NOTE|TIP|IMPORTANT|WARNING|CAUTION]` blockquotes
+  render as styled callouts via a custom `blockquote` component.
+- Global search now lands on the exact match: `SearchMatch` carries the
+  column, and selection routes through the editor reveal mechanism
+  (`onRevealMatch` → `pendingReveal`) instead of only scrolling to the
+  cell. In-cell find already used the CodeMirror search panel.
+- Keyboard shortcut customization was already implemented
+  (`lib/shortcuts.ts` overrides + SettingsDialog rebind UI); verified, no
+  change needed.
+- `mars_table` helper: every replayed program now injects
+  `mars_table(&[columns], &[vec![rows]])`, which emits a
+  `__MARS_TABLE__=<json>` stdout line parsed into `Output::Table` — Rust
+  cells can render the existing table output without new dependencies.
+
 ## Outstanding
 
 - Longer-lived compiler/runtime strategies remain a future optimization; the

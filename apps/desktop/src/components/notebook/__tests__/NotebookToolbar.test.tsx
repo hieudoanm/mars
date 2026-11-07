@@ -2,7 +2,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 const {
-  onRename,
   onTimeoutChange,
   onFontSizeChange,
   onCancel,
@@ -18,7 +17,6 @@ const {
   onCollapseAllCells,
   onExpandAllCells,
 } = vi.hoisted(() => ({
-  onRename: vi.fn(),
   onTimeoutChange: vi.fn(),
   onFontSizeChange: vi.fn(),
   onCancel: vi.fn(),
@@ -40,9 +38,7 @@ import NotebookToolbar, { type NotebookToolbarProps } from '../NotebookToolbar';
 const toolbar = (overrides: Partial<NotebookToolbarProps> = {}) => (
   <NotebookToolbar
     fileName='experiment.mars'
-    title='My Notebook'
     isDirty={false}
-    onRename={onRename}
     isExecuting={false}
     executionTimeout=''
     fontSize={14}
@@ -67,7 +63,6 @@ const toolbar = (overrides: Partial<NotebookToolbarProps> = {}) => (
 
 describe('NotebookToolbar', () => {
   beforeEach(() => {
-    onRename.mockReset();
     onTimeoutChange.mockReset();
     onFontSizeChange.mockReset();
     onCancel.mockReset();
@@ -84,17 +79,13 @@ describe('NotebookToolbar', () => {
     onExpandAllCells.mockReset();
   });
 
-  it('renders breadcrumb, title, and dirty indicator', () => {
+  it('renders breadcrumb and dirty indicator', () => {
     render(toolbar({ isDirty: true }));
     expect(screen.getByText('Workspace')).toBeInTheDocument();
     expect(screen.getByText('experiment.mars')).toHaveAttribute('title', 'experiment.mars');
     expect(screen.getByTitle('Unsaved changes')).toHaveAttribute(
       'data-component',
       'NotebookDirtyIndicator',
-    );
-    expect(screen.getByRole('heading', { name: 'My Notebook' })).toHaveAttribute(
-      'title',
-      'My Notebook',
     );
   });
 
@@ -106,7 +97,7 @@ describe('NotebookToolbar', () => {
   it('renders execution timeout input', () => {
     render(toolbar());
     expect(screen.getByLabelText('Execution timeout in milliseconds')).toBeInTheDocument();
-    expect(screen.getByLabelText('Execution timeout in milliseconds')).toHaveValue(null);
+    expect(screen.getByLabelText('Execution timeout in milliseconds')).toHaveValue('');
   });
 
   it('renders Stop button only when executing', () => {
@@ -123,7 +114,6 @@ describe('NotebookToolbar', () => {
     const tooltips = screen.getAllByRole('tooltip');
 
     expect(tooltips.map((tooltip) => tooltip.textContent)).toEqual([
-      'Rename notebook',
       'Stop',
       'Run current cell',
       'Run all (F6)',
@@ -180,11 +170,11 @@ describe('NotebookToolbar', () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
-  it('updates font size input', () => {
+  it('updates font size select', () => {
     render(toolbar());
-    const input = screen.getByLabelText('Editor font size');
-    expect(input).toHaveValue(14);
-    fireEvent.change(input, { target: { value: '18' } });
+    const select = screen.getByLabelText('Editor font size');
+    expect(select).toHaveValue('14');
+    fireEvent.change(select, { target: { value: '18' } });
     expect(onFontSizeChange).toHaveBeenCalledWith(18);
   });
 });

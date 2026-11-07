@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 const { embed } = vi.hoisted(() => ({ embed: vi.fn() }));
@@ -84,5 +84,23 @@ describe('OutputView', () => {
       unmount();
     }
     expect(embed).not.toHaveBeenCalled();
+  });
+
+  it('renders runtime source annotations as navigation buttons', () => {
+    const onNavigateSource = vi.fn();
+    render(
+      <OutputView
+        output={{
+          type: 'error',
+          name: 'RuntimeError',
+          message: "thread 'main' panicked at src/main.rs:5:5: [mars:cell=42,line=2]",
+          traceback: [],
+        }}
+        onNavigateSource={onNavigateSource}
+      />,
+    );
+    const button = screen.getByRole('button', { name: '[mars:cell=42,line=2]' });
+    fireEvent.click(button);
+    expect(onNavigateSource).toHaveBeenCalledWith(42, 2);
   });
 });

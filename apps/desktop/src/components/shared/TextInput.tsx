@@ -6,8 +6,7 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>
   wrapperClassName?: string;
 };
 
-const inputClasses =
-  'h-7 rounded-lg border border-neutral-700 bg-neutral-800 px-2 text-xs text-neutral-100 focus:border-orange-500 focus:outline-1 focus:outline-orange-500';
+const inputClasses = 'input input-sm h-7 w-auto text-xs';
 
 const TextInput: FC<TextInputProps> = ({ label, className, wrapperClassName, ...props }) => {
   const input = (

@@ -4,40 +4,155 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Notebook } from '../types/types';
 import {
   configureKernel,
+  exportHtmlFile,
   exportIpynbFile,
   exportMarkdownFile,
+  exportPdfFile,
   importNotebookIpynb,
   loadNotebookFile,
   notebookFileMtime,
   renameNotebookFile,
   saveNotebookFile,
 } from '../lib/kernelService';
+import { isNotebookTrusted, notebookHasCode, trustNotebook } from '../lib/trust';
 import { renamedNotebookPath } from '../lib/filePath';
-import { serializeNotebook } from '../lib/notebookOperations';
+import { parseNotebookJson, serializeNotebook } from '../lib/notebookOperations';
 
 type PersistenceOptions = {
+  sessionId: string;
   notebook: Notebook;
   setNotebook: (notebook: Notebook) => void;
   setStatus: (status: string) => void;
+  notify?: (message: string, tone?: 'info' | 'success' | 'error') => void;
   resetHistory: (notebook: Notebook) => void;
+  initialPath?: string | null;
+  onPathChange?: (path: string | null) => void;
 };
 
 export const useNotebookPersistence = ({
+  sessionId,
   notebook,
   setNotebook,
   setStatus,
+  notify,
   resetHistory,
+  initialPath = null,
+  onPathChange,
 }: PersistenceOptions) => {
   const [filePath, setFilePath] = useState<string | null>(null);
   const [savedSnapshot, setSavedSnapshot] = useState(() => serializeNotebook(notebook));
   const [pendingOpenPath, setPendingOpenPath] = useState<string | null>(null);
   const [closeRequested, setCloseRequested] = useState(false);
+  const [pendingTrustPath, setPendingTrustPath] = useState<string | null>(null);
+  const [pendingTrustContent, setPendingTrustContent] = useState<string | null>(null);
+  const [pendingTrustIsIpynb, setPendingTrustIsIpynb] = useState(false);
   const autosaveInFlight = useRef<Promise<void> | null>(null);
   const autosaveQueuedSnapshot = useRef<string | null>(null);
   const fileStamp = useRef<number | null>(null);
   const allowClose = useRef(false);
   const snapshot = useMemo(() => serializeNotebook(notebook), [notebook]);
   const isDirty = snapshot !== savedSnapshot;
+
+  useEffect(() => {
+    onPathChange?.(filePath);
+  }, [filePath, onPathChange]);
+
+  const applyLoadedNotebook = async (
+    path: string,
+    isIpynb: boolean,
+    loadedFile: { content: string; notebook: Notebook },
+  ) => {
+    await configureKernel(sessionId, loadedFile.content);
+    setNotebook(loadedFile.notebook);
+    resetHistory(loadedFile.notebook);
+    setSavedSnapshot(isIpynb ? '' : serializeNotebook(loadedFile.notebook));
+    setFilePath(isIpynb ? null : path);
+    fileStamp.current = isIpynb ? null : await notebookFileMtime(path).catch(() => null);
+    setStatus(isIpynb ? 'Imported .ipynb' : 'Opened');
+    setPendingOpenPath(null);
+  };
+
+  const loadNotebook = async (path: string) => {
+    try {
+      const isIpynb = path.toLowerCase().endsWith('.ipynb');
+      const loadedFile = isIpynb ? await importNotebookIpynb(path) : await loadNotebookFile(path);
+      if (!isIpynb && notebookHasCode(loadedFile.content) && !isNotebookTrusted(path)) {
+        setPendingTrustPath(path);
+        setPendingTrustContent(loadedFile.content);
+        setPendingTrustIsIpynb(isIpynb);
+        setStatus('Review notebook trust before executing');
+        return;
+      }
+      await applyLoadedNotebook(path, isIpynb, loadedFile);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Open failed');
+      notify?.(error instanceof Error ? error.message : 'Open failed', 'error');
+    }
+  };
+
+  const trustAndLoad = async () => {
+    if (!pendingTrustPath || !pendingTrustContent) return;
+    const path = pendingTrustPath;
+    const isIpynb = pendingTrustIsIpynb;
+    const content = pendingTrustContent;
+    setPendingTrustPath(null);
+    setPendingTrustContent(null);
+    trustNotebook(path);
+    try {
+      const loadedFile = isIpynb
+        ? await importNotebookIpynb(path)
+        : { content, notebook: parseNotebookJson(content) };
+      await applyLoadedNotebook(path, isIpynb, loadedFile);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Open failed');
+      notify?.(error instanceof Error ? error.message : 'Open failed', 'error');
+    }
+  };
+
+  const cancelTrust = () => {
+    setPendingTrustPath(null);
+    setPendingTrustContent(null);
+    setStatus('Open cancelled');
+  };
+
+  const openNotebook = async () => {
+    try {
+      const path = await open({
+        multiple: false,
+        filters: [{ name: 'Mars', extensions: ['mars'] }],
+      });
+      if (!path || Array.isArray(path)) return;
+      if (isDirty) setPendingOpenPath(path);
+      else await loadNotebook(path);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Open failed');
+      notify?.(error instanceof Error ? error.message : 'Open failed', 'error');
+    }
+  };
+
+  const importIpynb = async () => {
+    try {
+      const path = await open({
+        multiple: false,
+        filters: [{ name: 'Jupyter', extensions: ['ipynb'] }],
+      });
+      if (!path || Array.isArray(path)) return;
+      if (isDirty) setPendingOpenPath(path);
+      else await loadNotebook(path);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Import failed');
+      notify?.(error instanceof Error ? error.message : 'Import failed', 'error');
+    }
+  };
+
+  const openNotebookAtPath = (path: string) => {
+    if (isDirty) setPendingOpenPath(path);
+    else void loadNotebook(path);
+  };
+
+  useEffect(() => {
+    if (initialPath) void loadNotebook(initialPath);
+  }, [initialPath]);
 
   const saveNotebook = async (): Promise<boolean> => {
     try {
@@ -53,9 +168,11 @@ export const useNotebookPersistence = ({
       setFilePath(path);
       setSavedSnapshot(snapshot);
       setStatus('Saved');
+      notify?.('Notebook saved', 'success');
       return true;
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Save failed');
+      notify?.(error instanceof Error ? error.message : 'Save failed', 'error');
       return false;
     }
   };
@@ -75,95 +192,66 @@ export const useNotebookPersistence = ({
       await renameNotebookFile(filePath, nextPath);
       fileStamp.current = null;
       setFilePath(nextPath);
+      setSavedSnapshot(snapshot);
       setStatus('Renamed');
       return true;
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Rename failed');
+      notify?.(error instanceof Error ? error.message : 'Rename failed', 'error');
       return false;
     }
   };
 
-  const exportMarkdown = async (): Promise<boolean> => {
+  const exportFile = async (
+    kind: 'markdown' | 'html' | 'pdf' | 'ipynb',
+    extensions: string[],
+    name: string,
+    defaultPath: string,
+  ): Promise<boolean> => {
     try {
-      const path = await save({
-        defaultPath: filePath ? filePath.replace(/\.mars$/i, '.md') : 'Untitled.md',
-        filters: [{ name: 'Markdown', extensions: ['md'] }],
-      });
+      const path = await save({ defaultPath, filters: [{ name, extensions }] });
       if (!path) return false;
-      await exportMarkdownFile(path, snapshot);
-      setStatus('Exported Markdown');
+      if (kind === 'markdown') await exportMarkdownFile(path, snapshot);
+      else if (kind === 'html') await exportHtmlFile(path, snapshot);
+      else if (kind === 'pdf') await exportPdfFile(path, snapshot);
+      else await exportIpynbFile(path, snapshot);
+      setStatus(`Exported ${name}`);
       return true;
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Markdown export failed');
+      setStatus(error instanceof Error ? error.message : `${name} export failed`);
+      notify?.(error instanceof Error ? error.message : `${name} export failed`, 'error');
       return false;
     }
   };
 
-  const exportIpynb = async (): Promise<boolean> => {
-    try {
-      const path = await save({
-        defaultPath: filePath ? filePath.replace(/\.mars$/i, '.ipynb') : 'Untitled.ipynb',
-        filters: [{ name: 'Jupyter', extensions: ['ipynb'] }],
-      });
-      if (!path) return false;
-      await exportIpynbFile(path, snapshot);
-      setStatus('Exported .ipynb');
-      return true;
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : '.ipynb export failed');
-      return false;
-    }
-  };
-
-  const loadNotebook = async (path: string) => {
-    try {
-      const isIpynb = path.toLowerCase().endsWith('.ipynb');
-      const loadedFile = isIpynb ? await importNotebookIpynb(path) : await loadNotebookFile(path);
-      await configureKernel(loadedFile.content);
-      setNotebook(loadedFile.notebook);
-      resetHistory(loadedFile.notebook);
-      setSavedSnapshot(isIpynb ? '' : serializeNotebook(loadedFile.notebook));
-      setFilePath(isIpynb ? null : path);
-      fileStamp.current = isIpynb ? null : await notebookFileMtime(path).catch(() => null);
-      setStatus(isIpynb ? 'Imported .ipynb' : 'Opened');
-      setPendingOpenPath(null);
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Open failed');
-    }
-  };
-
-  const openNotebook = async () => {
-    try {
-      const path = await open({
-        multiple: false,
-        filters: [{ name: 'Mars', extensions: ['mars'] }],
-      });
-      if (!path || Array.isArray(path)) return;
-      if (isDirty) setPendingOpenPath(path);
-      else await loadNotebook(path);
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Open failed');
-    }
-  };
-
-  const importIpynb = async () => {
-    try {
-      const path = await open({
-        multiple: false,
-        filters: [{ name: 'Jupyter', extensions: ['ipynb'] }],
-      });
-      if (!path || Array.isArray(path)) return;
-      if (isDirty) setPendingOpenPath(path);
-      else await loadNotebook(path);
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Import failed');
-    }
-  };
-
-  const openNotebookAtPath = (path: string) => {
-    if (isDirty) setPendingOpenPath(path);
-    else void loadNotebook(path);
-  };
+  const exportMarkdown = () =>
+    exportFile(
+      'markdown',
+      ['md'],
+      'Markdown',
+      filePath ? filePath.replace(/\.mars$/i, '.md') : 'Untitled.md',
+    );
+  const exportHtml = () =>
+    exportFile(
+      'html',
+      ['html'],
+      'HTML',
+      filePath ? filePath.replace(/\.mars$/i, '.html') : 'Untitled.html',
+    );
+  const exportPdf = () =>
+    exportFile(
+      'pdf',
+      ['pdf'],
+      'PDF',
+      filePath ? filePath.replace(/\.mars$/i, '.pdf') : 'Untitled.pdf',
+    );
+  const exportIpynb = () =>
+    exportFile(
+      'ipynb',
+      ['ipynb'],
+      'Jupyter',
+      filePath ? filePath.replace(/\.mars$/i, '.ipynb') : 'Untitled.ipynb',
+    );
 
   const autosave = (nextSnapshot: string) => {
     if (!filePath) return;
@@ -187,6 +275,7 @@ export const useNotebookPersistence = ({
           setStatus('Autosaved');
         } catch (error) {
           setStatus(error instanceof Error ? error.message : 'Autosave failed');
+          notify?.(error instanceof Error ? error.message : 'Autosave failed', 'error');
         }
       }
       autosaveInFlight.current = null;
@@ -217,6 +306,7 @@ export const useNotebookPersistence = ({
       })
       .catch((error: unknown) => {
         setStatus(error instanceof Error ? error.message : 'Close handling unavailable');
+        notify?.(error instanceof Error ? error.message : 'Close handling unavailable', 'error');
       });
     return () => {
       disposed = true;
@@ -243,9 +333,9 @@ export const useNotebookPersistence = ({
   return {
     filePath,
     isDirty,
-    notebookSnapshot: snapshot,
     pendingOpenPath,
     closeRequested,
+    pendingTrustPath,
     setPendingOpenPath,
     setCloseRequested,
     openNotebook,
@@ -253,11 +343,16 @@ export const useNotebookPersistence = ({
     saveNotebook,
     renameFile,
     exportMarkdown,
+    exportHtml,
+    exportPdf,
     exportIpynb,
     importIpynb,
+    trustAndLoad,
+    cancelTrust,
     discardAndOpen,
     saveAndOpen,
     discardAndClose,
     saveAndClose,
+    reloadFromDisk: () => (filePath ? loadNotebook(filePath) : Promise.resolve()),
   };
 };

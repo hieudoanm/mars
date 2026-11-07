@@ -1,4 +1,5 @@
 import type { NotebookCell } from '../types/types';
+import { isRunnableCodeCell } from '../lib/cellLanguage';
 
 type ExecutionCommandsOptions = {
   cells: NotebookCell[];
@@ -11,17 +12,20 @@ export const useNotebookExecutionCommands = ({
   selectedIndex,
   executeCells,
 }: ExecutionCommandsOptions) => {
-  const codeCells = (items: NotebookCell[]) => items.filter((cell) => cell.cell_type === 'code');
-  const executeAll = () => void executeCells(codeCells(cells));
+  const codeCells = (items: NotebookCell[]) => items.filter(isRunnableCodeCell);
+  const executeAll = () => executeCells(codeCells(cells));
   const executeCurrent = () => {
     const cell = cells[selectedIndex];
-    if (cell?.cell_type === 'code') void executeCells([cell]);
+    if (cell && isRunnableCodeCell(cell)) return executeCells([cell]);
+    return Promise.resolve();
   };
   const executeAbove = () => {
-    if (selectedIndex >= 0) void executeCells(codeCells(cells.slice(0, selectedIndex)));
+    if (selectedIndex < 0) return Promise.resolve();
+    return executeCells(codeCells(cells.slice(0, selectedIndex)));
   };
   const executeBelow = () => {
-    if (selectedIndex >= 0) void executeCells(codeCells(cells.slice(selectedIndex + 1)));
+    if (selectedIndex < 0) return Promise.resolve();
+    return executeCells(codeCells(cells.slice(selectedIndex + 1)));
   };
 
   return { executeAll, executeCurrent, executeAbove, executeBelow };

@@ -21,6 +21,7 @@ pub enum ChunkStream {
 pub enum StreamEvent {
     Phase { phase: StreamPhase },
     Chunk { stream: ChunkStream, data: String },
+    Prompt { message: String },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -46,9 +47,28 @@ pub struct BinaryOutput {
     pub interrupted: bool,
 }
 
+pub fn strip_prompt_protocol(stdout: &str) -> String {
+    const MARKER: &str = "__MARS_PROMPT__";
+    let mut output = String::with_capacity(stdout.len());
+    let mut rest = stdout;
+    while let Some(index) = rest.find(MARKER) {
+        output.push_str(&rest[..index]);
+        let after = &rest[index + MARKER.len()..];
+        match after.find('\n') {
+            Some(newline) => {
+                output.push('\n');
+                rest = &after[newline + 1..];
+            }
+            None => return output,
+        }
+    }
+    output.push_str(rest);
+    output
+}
+
 pub fn normalize_stdout(stdout: &str) -> String {
     const MARKER: &str = "__MARS_RESULT__=";
-    stdout
+    strip_prompt_protocol(stdout)
         .lines()
         .map(|line| line.strip_prefix(MARKER).unwrap_or(line))
         .collect::<Vec<_>>()
@@ -167,9 +187,11 @@ pub fn execution_outputs(stdout: &[u8], stderr: &[u8], error_name: &str) -> Vec<
     if !stdout.is_empty() {
         let normalized = normalize_stdout(&String::from_utf8_lossy(stdout));
         let (text, content_outputs) = parse_evcxr_content(&normalized);
+        let (text, table_outputs) = extract_table_outputs(&text);
         if !text.is_empty() {
             outputs.push(Output::Text { text });
         }
+        outputs.extend(table_outputs);
         outputs.extend(content_outputs);
     }
     if !stderr.is_empty() {
@@ -180,6 +202,85 @@ pub fn execution_outputs(stdout: &[u8], stderr: &[u8], error_name: &str) -> Vec<
         });
     }
     outputs
+}
+
+/// Rewrite `*.rs:LINE:COL` references in runtime stderr with Mars cell
+/// annotations (`[mars:cell=HASH,line=N]`) so the UI can navigate to the
+/// originating cell. `program` is the generated source that produced the
+/// binary; `// Mars cell` markers delimit each cell's line range.
+pub fn annotate_source_locations(stderr: &str, program: &str) -> String {
+    let markers: Vec<(usize, u32)> = program
+        .lines()
+        .enumerate()
+        .filter_map(|(index, line)| {
+            let position = line.find("// Mars cell ")?;
+            let rest = &line[position + "// Mars cell ".len()..];
+            let hash = rest.split_whitespace().last()?.parse::<u32>().ok()?;
+            Some((index, hash))
+        })
+        .collect();
+    if markers.is_empty() || !stderr.contains(".rs:") {
+        return stderr.to_owned();
+    }
+
+    let bytes = stderr.as_bytes();
+    let mut output = String::with_capacity(stderr.len() + 64);
+    let mut cursor = 0usize;
+    while cursor < bytes.len() {
+        // Find the next ".rs:" occurrence.
+        let window = &stderr[cursor..];
+        let Some(rel) = window.find(".rs:") else {
+            output.push_str(&stderr[cursor..]);
+            break;
+        };
+        let match_start = cursor + rel;
+        let digits_start = match_start + ".rs:".len();
+        let line_end = stderr[digits_start..]
+            .find(|c: char| !c.is_ascii_digit())
+            .map(|offset| digits_start + offset)
+            .unwrap_or(stderr.len());
+        if line_end == digits_start {
+            output.push_str(&stderr[cursor..digits_start]);
+            cursor = digits_start;
+            continue;
+        }
+        let Ok(panic_line) = stderr[digits_start..line_end].parse::<usize>() else {
+            output.push_str(&stderr[cursor..line_end]);
+            cursor = line_end;
+            continue;
+        };
+        // Expect ":COL" after the line number.
+        let after_line = &stderr[line_end..];
+        let Some(col_part) = after_line.strip_prefix(':') else {
+            output.push_str(&stderr[cursor..line_end]);
+            cursor = line_end;
+            continue;
+        };
+        let col_len = col_part
+            .find(|c: char| !c.is_ascii_digit())
+            .unwrap_or(col_part.len());
+        if col_len == 0 {
+            output.push_str(&stderr[cursor..line_end]);
+            cursor = line_end;
+            continue;
+        }
+        let location_end = line_end + 1 + col_len;
+
+        // Map the 1-based program line back to a cell via the markers.
+        let panic_index = panic_line.saturating_sub(1);
+        let cell = markers
+            .iter()
+            .rev()
+            .find(|(marker_index, _)| *marker_index < panic_index)
+            .map(|(marker_index, hash)| (*hash, panic_index - marker_index));
+
+        output.push_str(&stderr[cursor..location_end]);
+        if let Some((hash, local_line)) = cell {
+            output.push_str(&format!(" [mars:cell={hash},line={local_line}]"));
+        }
+        cursor = location_end;
+    }
+    output
 }
 
 pub fn interrupted_result(
@@ -196,5 +297,98 @@ pub fn interrupted_result(
         duration,
         execution_count,
         interrupted: true,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::annotate_source_locations;
+
+    #[test]
+    fn annotates_panic_locations_with_cell_hashes() {
+        let program = "fn main() {\n    // Mars cell 0 111\n    let a = 1;\n    // Mars cell 1 222\n    panic!(\"boom\");\n}\n";
+        let stderr = "thread 'main' panicked at src/main.rs:5:5:\nboom\n";
+        let annotated = annotate_source_locations(stderr, program);
+        // Line 5 is inside cell 1's region (marker at line 4, content starts line 5).
+        assert!(annotated.contains("[mars:cell=222,line=1]"));
+    }
+
+    #[test]
+    fn leaves_unmapped_locations_untouched() {
+        let program = "fn main() {\n    // Mars cell 0 111\n    let a = 1;\n}\n";
+        let stderr = "note: run with RUST_BACKTRACE=1\n";
+        assert_eq!(annotate_source_locations(stderr, program), stderr);
+    }
+}
+
+const TABLE_MARKER: &str = "__MARS_TABLE__=";
+
+/// Pull `__MARS_TABLE__=<json>` lines (emitted by the injected `mars_table`
+/// helper) out of stdout text and convert them into `Output::Table` values.
+fn extract_table_outputs(text: &str) -> (String, Vec<Output>) {
+    let mut kept = Vec::new();
+    let mut tables = Vec::new();
+    for line in text.lines() {
+        if let Some(json) = line.trim_end().strip_prefix(TABLE_MARKER) {
+            if let Some(table) = parse_table_json(json) {
+                tables.push(table);
+                continue;
+            }
+        }
+        kept.push(line);
+    }
+    let mut remaining = kept.join("\n");
+    if text.ends_with('\n') && !remaining.is_empty() {
+        remaining.push('\n');
+    }
+    (remaining, tables)
+}
+
+fn parse_table_json(json: &str) -> Option<Output> {
+    let value: serde_json::Value = serde_json::from_str(json).ok()?;
+    let columns = value
+        .get("columns")?
+        .as_array()?
+        .iter()
+        .map(|entry| entry.as_str().map(str::to_owned))
+        .collect::<Option<Vec<_>>>()?;
+    let rows = value
+        .get("rows")?
+        .as_array()?
+        .iter()
+        .map(|row| {
+            row.as_array()?
+                .iter()
+                .map(|cell| cell.as_str().map(str::to_owned))
+                .collect::<Option<Vec<_>>>()
+        })
+        .collect::<Option<Vec<_>>>()?;
+    Some(Output::Table { columns, rows })
+}
+
+#[cfg(test)]
+mod table_tests {
+    use super::execution_outputs;
+    use crate::output::Output;
+
+    #[test]
+    fn extracts_table_marker_lines() {
+        let stdout = b"before\n__MARS_TABLE__={\"columns\":[\"a\",\"b\"],\"rows\":[[\"1\",\"2\"],[\"3\",\"4\"]]}\nafter\n";
+        let outputs = execution_outputs(stdout, b"", "RuntimeError");
+        assert_eq!(outputs.len(), 2);
+        match &outputs[1] {
+            Output::Table { columns, rows } => {
+                assert_eq!(columns, &vec!["a".to_owned(), "b".to_owned()]);
+                assert_eq!(rows.len(), 2);
+            }
+            other => panic!("expected table, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn ignores_malformed_table_marker() {
+        let stdout = b"__MARS_TABLE__={not json}\n";
+        let outputs = execution_outputs(stdout, b"", "RuntimeError");
+        assert!(matches!(outputs[0], Output::Text { .. }));
     }
 }

@@ -8,9 +8,7 @@ export type NotebookToolbarProps = NotebookToolbarHeadingProps & NotebookToolbar
 
 const NotebookToolbar: FC<NotebookToolbarProps> = ({
   fileName,
-  title,
   isDirty,
-  onRename,
   isExecuting,
   executionTimeout,
   fontSize,
@@ -32,12 +30,7 @@ const NotebookToolbar: FC<NotebookToolbarProps> = ({
 }) => {
   return (
     <div data-component='NotebookToolbar' className='mb-8 flex flex-col gap-4'>
-      <NotebookToolbarHeading
-        fileName={fileName}
-        title={title}
-        isDirty={isDirty}
-        onRename={onRename}
-      />
+      <NotebookToolbarHeading fileName={fileName} isDirty={isDirty} />
       <NotebookToolbarControls
         isExecuting={isExecuting}
         executionTimeout={executionTimeout}

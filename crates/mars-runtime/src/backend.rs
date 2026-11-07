@@ -25,4 +25,26 @@ pub trait RuntimeBackend: Send {
     fn execution_count(&self) -> u64;
 
     fn cargo_lock(&self) -> Result<Option<String>, crate::error::RuntimeError>;
+
+    /// Live bindings from the accumulated cells, when the backend can inspect them.
+    fn inspect_variables(
+        &mut self,
+    ) -> Result<Vec<crate::inspect::VariableInfo>, crate::error::RuntimeError> {
+        Ok(Vec::new())
+    }
+
+    /// Pre-execution diagnostics for `source` in the context of committed cells.
+    fn diagnose(
+        &mut self,
+        _source: &str,
+    ) -> Result<Vec<crate::inspect::CellDiagnostic>, crate::error::RuntimeError> {
+        Ok(Vec::new())
+    }
+
+    /// Writes a line to the running cell program's stdin (`mars_prompt` answers).
+    fn write_stdin(&mut self, _text: &str) -> Result<(), crate::error::RuntimeError> {
+        Err(crate::error::RuntimeError::Backend(
+            "kernel input is not supported by this backend".to_owned(),
+        ))
+    }
 }

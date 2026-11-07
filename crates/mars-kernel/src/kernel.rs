@@ -74,6 +74,21 @@ impl Kernel {
         self.runtime.cargo_lock()
     }
 
+    pub fn inspect_variables(&mut self) -> Result<Vec<mars_runtime::VariableInfo>, RuntimeError> {
+        self.runtime.inspect_variables()
+    }
+
+    pub fn diagnose(
+        &mut self,
+        source: &str,
+    ) -> Result<Vec<mars_runtime::CellDiagnostic>, RuntimeError> {
+        self.runtime.diagnose(source)
+    }
+
+    pub fn write_stdin(&mut self, text: &str) -> Result<(), RuntimeError> {
+        self.runtime.write_stdin(text)
+    }
+
     pub fn execute_source(
         &mut self,
         source: &str,

@@ -33,7 +33,41 @@ export type Notebook = {
 
 export type KernelStreamEvent =
   | { type: 'phase'; phase: 'compiling' | 'running' }
-  | { type: 'chunk'; stream: 'stdout' | 'stderr'; data: string };
+  | { type: 'chunk'; stream: 'stdout' | 'stderr'; data: string }
+  | { type: 'prompt'; message: string };
+
+export type KernelVariable = {
+  name: string;
+  typeName: string | null;
+  value: string | null;
+};
+
+export type CellDiagnostic = {
+  cellIndex: number | null;
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+  severity: 'error' | 'warning' | string;
+  code: string | null;
+  message: string;
+};
+
+export type LspCellDiagnostic = {
+  cellId: string;
+  line: number;
+  column: number;
+  severity: string;
+  message: string;
+};
+
+export type KernelStreamMessage = { session: string } & KernelStreamEvent;
+
+export type KernelStatusResponse = {
+  type: 'status';
+  status: string;
+  execution_count: number;
+};
 
 export type KernelResponse =
   | {

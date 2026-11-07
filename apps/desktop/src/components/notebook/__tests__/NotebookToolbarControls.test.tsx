@@ -82,8 +82,8 @@ describe('NotebookToolbarControls', () => {
   it('renders execution and editor preference controls', () => {
     renderControls();
 
-    expect(screen.getByLabelText('Execution timeout in milliseconds')).toHaveValue(null);
-    expect(screen.getByLabelText('Editor font size')).toHaveValue(14);
+    expect(screen.getByLabelText('Execution timeout in milliseconds')).toHaveValue('');
+    expect(screen.getByLabelText('Editor font size')).toHaveValue('14');
     expect(screen.getByRole('button', { name: 'Run current cell' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run all (F6)' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add Markdown' })).toBeInTheDocument();

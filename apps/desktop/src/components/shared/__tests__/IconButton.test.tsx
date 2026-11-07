@@ -51,8 +51,8 @@ describe('IconButton', () => {
     );
     const button = screen.getByRole('button', { name: 'Delete' });
 
-    expect(button.className).toContain('bg-red-950');
-    expect(button.className).toContain('p-2');
+    expect(button.className).toContain('btn-error');
+    expect(button.className).toContain('size-7');
     fireEvent.click(button);
     expect(onClick).toHaveBeenCalledOnce();
   });

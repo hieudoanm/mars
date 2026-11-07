@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('opens the notebook editor and exposes core workflows', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Explore ideas.' })).toBeVisible();
+  await expect(page.locator('.cm-content').first()).toContainText('Explore ideas');
   await expect(page.getByRole('button', { name: 'Run current cell' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Run all (F6)' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add Code' })).toBeVisible();
@@ -35,15 +35,24 @@ test('persists editor preferences and supports undo/redo shortcuts', async ({ pa
   await page.keyboard.press('Control+Shift+Z');
   await expect(editor).toContainText('let answer = 42;');
 
-  await page.getByLabel('Editor font size').fill('18');
-  await page.getByLabel('Autocomplete').uncheck();
-  await page.getByLabel('Folding').uncheck();
+  await page.getByLabel('Editor font size').selectOption('18');
   await expect(page.getByLabel('Editor font size')).toHaveValue('18');
-  await expect(page.getByLabel('Autocomplete')).not.toBeChecked();
-  await expect(page.getByLabel('Folding')).not.toBeChecked();
 
   await page.reload();
   await expect(page.getByLabel('Editor font size')).toHaveValue('18');
-  await expect(page.getByLabel('Autocomplete')).not.toBeChecked();
-  await expect(page.getByLabel('Folding')).not.toBeChecked();
+});
+
+test('persists open notebook tabs across reload', async ({ page }) => {
+  await page.goto('/');
+
+  const closeButtons = page.getByRole('button', { name: /^Close / });
+  await expect(closeButtons).toHaveCount(1);
+
+  await page.getByRole('button', { name: 'New notebook tab' }).click();
+  await expect(closeButtons).toHaveCount(2);
+
+  // allow the debounced untitled-notebook snapshot to flush
+  await page.waitForTimeout(1200);
+  await page.reload();
+  await expect(closeButtons).toHaveCount(2);
 });

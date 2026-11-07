@@ -31,6 +31,24 @@ vi.mock('../lib/kernelService', () => ({
   hasInterruptedOutput: () => false,
   resetKernel,
   cancelKernelExecution: vi.fn(),
+  kernelStatus: vi.fn(async () => ({ type: 'status', status: 'idle', execution_count: 0 })),
+  inspectVariables: vi.fn(async () => []),
+  diagnoseCell: vi.fn(async () => []),
+  sendKernelInput: vi.fn(async () => {}),
+  lspSync: vi.fn(async () => {}),
+  lspHover: vi.fn(async () => null),
+  lspDiagnostics: vi.fn(async () => []),
+  openInTerminal: vi.fn(async () => {}),
+  createNotebookFile: vi.fn(),
+  createDirectory: vi.fn(),
+  deletePath: vi.fn(),
+  writeTextFile: vi.fn(),
+  exportHtmlFile: vi.fn(),
+  exportPdfFile: vi.fn(),
+  createNotebookCheckpoint: vi.fn(async () => '/tmp/checkpoint.mars'),
+  listNotebookCheckpoints: vi.fn(async () => []),
+  readNotebookCheckpoint: vi.fn(async () => '{}'),
+  restoreNotebookCheckpoint: vi.fn(),
 }));
 vi.mock('../components/editor/CodeEditor', () => ({
   default: ({
@@ -91,13 +109,13 @@ describe('App', () => {
     await waitFor(() =>
       expect(saveFile).toHaveBeenCalledWith('/notes/experiment.mars', expect.any(String)),
     );
-    expect(screen.getAllByText('experiment.mars')).toHaveLength(2);
+    expect(screen.getAllByText('experiment.mars')).toHaveLength(3);
 
     fireEvent.click(screen.getByRole('button', { name: /Run cell/ }));
     await screen.findByText('42');
-    expect(executeSource).toHaveBeenCalledWith('40 + 2', null);
+    expect(executeSource).toHaveBeenCalledWith(expect.any(String), '40 + 2', null);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Restart runtime' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Restart runtime and clear outputs' }));
     await waitFor(() => expect(resetKernel).toHaveBeenCalledOnce());
     fireEvent.click(screen.getByRole('button', { name: /Run all/ }));
     await waitFor(() =>
@@ -123,15 +141,17 @@ describe('App', () => {
     expect(screen.getAllByText('analysis.mars')).toHaveLength(2);
   });
 
-  it('renames the notebook title from the toolbar heading', () => {
+  it('renames the notebook title from the command palette', () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Rename notebook' }));
+    fireEvent.keyDown(window, { key: 'k', metaKey: true });
+    fireEvent.click(screen.getByText('Rename notebook'));
+
     const input = screen.getByLabelText('Notebook title');
     fireEvent.change(input, { target: { value: 'Data exploration' } });
-    fireEvent.blur(input);
+    fireEvent.click(screen.getByRole('button', { name: 'Rename' }));
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Data exploration' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Notebook title')).not.toBeInTheDocument();
     expect(screen.getAllByText('Unsaved changes').length).toBeGreaterThan(0);
   });
 

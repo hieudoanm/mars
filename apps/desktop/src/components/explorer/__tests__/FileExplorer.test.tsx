@@ -36,7 +36,7 @@ describe('FileExplorer', () => {
 
     await waitFor(() => expect(listFiles).toHaveBeenCalledWith('/workspace'));
     expect(screen.getByText('analysis.mars')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /analysis\.mars/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'analysis.mars' }));
     expect(onOpenNotebook).toHaveBeenCalledWith('/workspace/examples/analysis.mars');
   });
 });

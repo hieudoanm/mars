@@ -5,52 +5,57 @@ const {
   onOpen,
   onSave,
   onExport,
+  onExportHtml,
+  onExportPdf,
   onImportIpynb,
   onExportIpynb,
   onRestart,
+  onRestartRunAll,
   onToggleSidebar,
-  onToggleExplorer,
 } = vi.hoisted(() => ({
   onOpen: vi.fn(),
   onSave: vi.fn(),
   onExport: vi.fn(),
+  onExportHtml: vi.fn(),
+  onExportPdf: vi.fn(),
   onImportIpynb: vi.fn(),
   onExportIpynb: vi.fn(),
   onRestart: vi.fn(),
+  onRestartRunAll: vi.fn(),
   onToggleSidebar: vi.fn(),
-  onToggleExplorer: vi.fn(),
 }));
 
-import Header from '../Header';
+import NotebookHeader from '../NotebookHeader';
+
+const actionProps = {
+  onOpen,
+  onSave,
+  onExport,
+  onExportHtml,
+  onExportPdf,
+  onImportIpynb,
+  onExportIpynb,
+  onRestart,
+  onRestartRunAll,
+  sidebarOpen: true,
+  onToggleSidebar,
+};
 
 const renderHeader = (status = 'Saved', mode: 'command' | 'edit' = 'command') =>
-  render(
-    <Header
-      status={status}
-      mode={mode}
-      onOpen={onOpen}
-      onSave={onSave}
-      onExport={onExport}
-      onImportIpynb={onImportIpynb}
-      onExportIpynb={onExportIpynb}
-      onRestart={onRestart}
-      sidebarOpen
-      onToggleSidebar={onToggleSidebar}
-      explorerOpen
-      onToggleExplorer={onToggleExplorer}
-    />,
-  );
+  render(<NotebookHeader status={status} mode={mode} {...actionProps} />);
 
-describe('Header', () => {
+describe('NotebookHeader', () => {
   beforeEach(() => {
     onOpen.mockReset();
     onSave.mockReset();
     onExport.mockReset();
+    onExportHtml.mockReset();
+    onExportPdf.mockReset();
     onImportIpynb.mockReset();
     onExportIpynb.mockReset();
     onRestart.mockReset();
+    onRestartRunAll.mockReset();
     onToggleSidebar.mockReset();
-    onToggleExplorer.mockReset();
   });
 
   it('renders brand, title, and status', () => {
@@ -61,11 +66,17 @@ describe('Header', () => {
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
   });
 
+  it('hides the brand when showBrand is false', () => {
+    render(<NotebookHeader status='Saved' mode='command' showBrand={false} {...actionProps} />);
+    expect(screen.queryByRole('heading', { name: 'Mars' })).not.toBeInTheDocument();
+    expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
+  });
+
   it('composes the brand and action regions', () => {
     const { container } = renderHeader();
-    expect(container.querySelector('[data-component="Header"]')).toBeInTheDocument();
-    expect(container.querySelector('[data-component="HeaderBrand"]')).toBeInTheDocument();
-    expect(container.querySelector('[data-component="HeaderActions"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-component="NotebookHeader"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-component="NotebookHeaderBrand"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-component="NotebookHeaderActions"]')).toBeInTheDocument();
   });
 
   it('renders edit mode status', () => {
@@ -77,22 +88,7 @@ describe('Header', () => {
     const { rerender } = renderHeader();
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
 
-    rerender(
-      <Header
-        status='Autosaved'
-        mode='edit'
-        onOpen={onOpen}
-        onSave={onSave}
-        onExport={onExport}
-        onImportIpynb={onImportIpynb}
-        onExportIpynb={onExportIpynb}
-        onRestart={onRestart}
-        sidebarOpen
-        onToggleSidebar={onToggleSidebar}
-        explorerOpen
-        onToggleExplorer={onToggleExplorer}
-      />,
-    );
+    rerender(<NotebookHeader status='Autosaved' mode='edit' {...actionProps} />);
     expect(screen.getByText('Autosaved · Edit mode')).toBeInTheDocument();
     expect(screen.queryByText('Saved · Command mode')).not.toBeInTheDocument();
   });
@@ -102,13 +98,10 @@ describe('Header', () => {
     expect(screen.getByRole('button', { name: 'Open' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Export Markdown' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Restart runtime' })).toBeInTheDocument();
-  });
-
-  it('calls onOpen when Open is clicked', () => {
-    renderHeader();
-    fireEvent.click(screen.getByRole('button', { name: 'Open' }));
-    expect(onOpen).toHaveBeenCalledOnce();
+    expect(
+      screen.getByRole('button', { name: 'Restart runtime and clear outputs' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Restart runtime and run all' })).toBeInTheDocument();
   });
 
   it('calls onSave when Save is clicked', () => {
@@ -117,15 +110,9 @@ describe('Header', () => {
     expect(onSave).toHaveBeenCalledOnce();
   });
 
-  it('calls onExport when Export Markdown is clicked', () => {
+  it('calls onRestartRunAll when restart-and-run is clicked', () => {
     renderHeader();
-    fireEvent.click(screen.getByRole('button', { name: 'Export Markdown' }));
-    expect(onExport).toHaveBeenCalledOnce();
-  });
-
-  it('calls onRestart when Restart runtime is clicked', () => {
-    renderHeader();
-    fireEvent.click(screen.getByRole('button', { name: 'Restart runtime' }));
-    expect(onRestart).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button', { name: 'Restart runtime and run all' }));
+    expect(onRestartRunAll).toHaveBeenCalledOnce();
   });
 });

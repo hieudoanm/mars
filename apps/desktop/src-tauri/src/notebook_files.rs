@@ -22,7 +22,7 @@ fn read_directory(path: &Path, depth: usize) -> Result<Vec<FileExplorerEntry>, S
         .filter_map(Result::ok)
         .filter_map(|entry| {
             let name = entry.file_name().to_string_lossy().into_owned();
-            if name.starts_with('.') {
+            if name.starts_with('.') || name.ends_with(".checkpoints") {
                 return None;
             }
             let file_type = entry.file_type().ok()?;
@@ -52,7 +52,7 @@ fn read_directory(path: &Path, depth: usize) -> Result<Vec<FileExplorerEntry>, S
     Ok(entries)
 }
 
-pub fn rename_notebook_file(old_path: &str, new_path: &str) -> Result<(), String> {
+pub fn rename_path(old_path: &str, new_path: &str) -> Result<(), String> {
     if old_path == new_path {
         return Ok(());
     }
@@ -61,6 +61,84 @@ pub fn rename_notebook_file(old_path: &str, new_path: &str) -> Result<(), String
         return Err("A file with that name already exists".to_owned());
     }
     std::fs::rename(old_path, new_path).map_err(|error| error.to_string())
+}
+
+pub fn delete_path(path: &str) -> Result<(), String> {
+    let target = Path::new(path);
+    let metadata = std::fs::symlink_metadata(target).map_err(|error| error.to_string())?;
+    if metadata.file_type().is_symlink() || metadata.is_file() {
+        return std::fs::remove_file(target).map_err(|error| error.to_string());
+    }
+    if metadata.is_dir() {
+        return std::fs::remove_dir_all(target).map_err(|error| error.to_string());
+    }
+    Err("Unsupported file type".to_owned())
+}
+
+pub fn checkpoints_directory(notebook_path: &str) -> Result<String, String> {
+    let notebook = Path::new(notebook_path);
+    let file_name = notebook
+        .file_name()
+        .ok_or_else(|| "Invalid notebook path".to_owned())?
+        .to_string_lossy();
+    let parent = notebook.parent().unwrap_or_else(|| Path::new("."));
+    Ok(parent
+        .join(format!("{file_name}.checkpoints"))
+        .to_string_lossy()
+        .into_owned())
+}
+
+pub fn create_checkpoint(notebook_path: &str) -> Result<String, String> {
+    let source = Path::new(notebook_path);
+    if !source.is_file() {
+        return Err("Notebook file does not exist".to_owned());
+    }
+    let directory_path = checkpoints_directory(notebook_path)?;
+    let directory = Path::new(&directory_path);
+    std::fs::create_dir_all(directory).map_err(|error| error.to_string())?;
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|error| error.to_string())?
+        .as_millis();
+    let checkpoint = directory.join(format!("checkpoint-{timestamp}.mars"));
+    std::fs::copy(source, &checkpoint).map_err(|error| error.to_string())?;
+    Ok(checkpoint.to_string_lossy().into_owned())
+}
+
+pub fn list_checkpoints(notebook_path: &str) -> Result<Vec<String>, String> {
+    let directory_path = checkpoints_directory(notebook_path)?;
+    let directory = Path::new(&directory_path);
+    if !directory.is_dir() {
+        return Ok(Vec::new());
+    }
+    let mut checkpoints = std::fs::read_dir(directory)
+        .map_err(|error| error.to_string())?
+        .filter_map(Result::ok)
+        .map(|entry| entry.path().to_string_lossy().into_owned())
+        .filter(|path| path.ends_with(".mars"))
+        .collect::<Vec<_>>();
+    checkpoints.sort();
+    Ok(checkpoints)
+}
+
+pub fn read_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<String, String> {
+    let allowed = checkpoints_directory(notebook_path)?;
+    let checkpoint_path = Path::new(checkpoint);
+    if !checkpoint_path.starts_with(Path::new(&allowed)) || !checkpoint_path.is_file() {
+        return Err("Checkpoint is outside the notebook checkpoint directory".to_owned());
+    }
+    std::fs::read_to_string(checkpoint_path).map_err(|error| error.to_string())
+}
+
+pub fn restore_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<(), String> {
+    let allowed = checkpoints_directory(notebook_path)?;
+    let checkpoint_path = Path::new(checkpoint);
+    if !checkpoint_path.starts_with(Path::new(&allowed)) || !checkpoint_path.is_file() {
+        return Err("Checkpoint is outside the notebook checkpoint directory".to_owned());
+    }
+    std::fs::copy(checkpoint_path, notebook_path)
+        .map(|_| ())
+        .map_err(|error| error.to_string())
 }
 
 fn is_notebook(path: &Path) -> bool {
@@ -79,6 +157,59 @@ fn is_case_only_rename(old_path: &str, new_path: &str) -> bool {
         (Ok(source), Ok(destination)) => source == destination,
         _ => false,
     }
+}
+
+/// Open the containing directory of `path` in the platform's terminal
+/// emulator. Best-effort: returns an error only when no candidate exists.
+pub fn open_in_terminal(path: &str) -> Result<(), String> {
+    let target = std::path::Path::new(path)
+        .parent()
+        .map(|p| p.to_path_buf())
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    open_directory_in_terminal(&target)
+}
+
+#[cfg(target_os = "macos")]
+fn open_directory_in_terminal(dir: &std::path::Path) -> Result<(), String> {
+    std::process::Command::new("open")
+        .arg("-a")
+        .arg("Terminal")
+        .arg(dir)
+        .spawn()
+        .map(|_| ())
+        .map_err(|error| error.to_string())
+}
+
+#[cfg(target_os = "windows")]
+fn open_directory_in_terminal(dir: &std::path::Path) -> Result<(), String> {
+    std::process::Command::new("cmd")
+        .args(["/c", "start", ""])
+        .arg(dir)
+        .spawn()
+        .map(|_| ())
+        .map_err(|error| error.to_string())
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn open_directory_in_terminal(dir: &std::path::Path) -> Result<(), String> {
+    for terminal in [
+        "x-terminal-emulator",
+        "gnome-terminal",
+        "konsole",
+        "alacritty",
+        "kitty",
+        "xterm",
+    ] {
+        if std::process::Command::new(terminal)
+            .arg(dir)
+            .spawn()
+            .is_ok()
+        {
+            return Ok(());
+        }
+    }
+    Err("No terminal emulator found".to_owned())
 }
 
 #[cfg(test)]
@@ -137,7 +268,7 @@ mod tests {
         std::fs::write(&source, "source").expect("creates source");
         std::fs::write(&destination, "destination").expect("creates destination");
 
-        let error = rename_notebook_file(&source.to_string_lossy(), &destination.to_string_lossy())
+        let error = rename_path(&source.to_string_lossy(), &destination.to_string_lossy())
             .expect_err("does not overwrite destination");
 
         assert_eq!(error, "A file with that name already exists");

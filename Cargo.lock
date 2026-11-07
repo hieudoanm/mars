@@ -2312,6 +2312,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "mars-lsp"
+version = "0.0.1"
+dependencies = [
+ "mars-runtime",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "uuid",
+]
+
+[[package]]
 name = "mars-protocol"
 version = "0.0.1"
 dependencies = [
@@ -2361,9 +2372,11 @@ dependencies = [
 name = "mars-tauri"
 version = "0.0.1"
 dependencies = [
+ "mars-core",
  "mars-document",
  "mars-jupyter",
  "mars-kernel",
+ "mars-lsp",
  "mars-protocol",
  "mars-renderer",
  "mars-runtime",

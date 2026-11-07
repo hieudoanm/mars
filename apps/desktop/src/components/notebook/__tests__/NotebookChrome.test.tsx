@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import type { NotebookCell } from '../../../types/types';
-import Header from '../../header/Header';
+import NotebookHeader from '../../header/NotebookHeader';
 import NotebookSidebar from '../NotebookSidebar';
 import NotebookStatusBar from '../NotebookStatusBar';
 import UnsavedChangesDialog from '../../dialogs/UnsavedChangesDialog';
@@ -29,19 +29,20 @@ describe('notebook chrome components', () => {
   it('shows header state and routes toolbar actions', () => {
     const onSave = vi.fn();
     render(
-      <Header
+      <NotebookHeader
         status='Saved'
         mode='command'
         onOpen={vi.fn()}
         onSave={onSave}
         onExport={vi.fn()}
+        onExportHtml={vi.fn()}
+        onExportPdf={vi.fn()}
         onImportIpynb={vi.fn()}
         onExportIpynb={vi.fn()}
         onRestart={vi.fn()}
+        onRestartRunAll={vi.fn()}
         sidebarOpen
         onToggleSidebar={vi.fn()}
-        explorerOpen
-        onToggleExplorer={vi.fn()}
       />,
     );
     expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();

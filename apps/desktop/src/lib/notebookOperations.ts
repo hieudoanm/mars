@@ -1,4 +1,6 @@
 import type { CellType, Notebook, NotebookCell } from '../types/types';
+import { createSearchPattern } from './textSearch';
+import type { SearchOptions } from './textSearch';
 
 export const serializeNotebook = (notebook: Notebook): string => {
   return JSON.stringify(notebook);
@@ -182,4 +184,117 @@ export const clearCellOutputs = (notebook: Notebook, id?: string): Notebook => {
 
 export const resetNotebookOutputs = (notebook: Notebook): Notebook => {
   return clearCellOutputs(notebook);
+};
+
+export const removeCellOutput = (
+  notebook: Notebook,
+  cellId: string,
+  outputIndex: number,
+): Notebook => ({
+  ...notebook,
+  cells: notebook.cells.map((cell) =>
+    cell.id === cellId
+      ? { ...cell, outputs: cell.outputs.filter((_, index) => index !== outputIndex) }
+      : cell,
+  ),
+});
+
+export const mergeCellWithNext = (notebook: Notebook, id: string): Notebook => {
+  const index = notebook.cells.findIndex((cell) => cell.id === id);
+  const next = notebook.cells[index + 1];
+  if (index < 0 || !next) return notebook;
+  const separator = notebook.cells[index].source.endsWith('\n') || next.source === '' ? '' : '\n';
+  const cells = notebook.cells
+    .slice(0, index)
+    .concat({
+      ...notebook.cells[index],
+      source: notebook.cells[index].source + separator + next.source,
+    })
+    .concat(notebook.cells.slice(index + 2));
+  return { ...notebook, cells };
+};
+
+export const splitCellAt = (notebook: Notebook, id: string, offset: number): Notebook => {
+  const index = notebook.cells.findIndex((cell) => cell.id === id);
+  const cell = notebook.cells[index];
+  if (index < 0 || offset <= 0 || offset >= cell.source.length) return notebook;
+  const head = cell.source.slice(0, offset);
+  const tail = cell.source.slice(offset);
+  const tailCell = {
+    ...createCell(cell.cell_type),
+    source: tail,
+    metadata: { ...cell.metadata },
+  };
+  const cells = notebook.cells
+    .slice(0, index)
+    .concat({ ...cell, source: head })
+    .concat(tailCell)
+    .concat(notebook.cells.slice(index + 1));
+  return { ...notebook, cells };
+};
+
+export const deleteCells = (notebook: Notebook, ids: ReadonlySet<string>): Notebook => {
+  if (ids.size === 0) return notebook;
+  const cells = notebook.cells.filter((cell) => !ids.has(cell.id));
+  if (cells.length === notebook.cells.length || cells.length === 0) return notebook;
+  return { ...notebook, cells };
+};
+
+export const updateCellLanguage = (
+  notebook: Notebook,
+  id: string,
+  language: string,
+): Notebook => ({
+  ...notebook,
+  cells: notebook.cells.map((cell) =>
+    cell.id === id
+      ? { ...cell, metadata: { ...cell.metadata, language } }
+      : cell,
+  ),
+});
+
+export const updateCellTags = (notebook: Notebook, id: string, tags: string[]): Notebook => ({
+  ...notebook,
+  cells: notebook.cells.map((cell) =>
+    cell.id === id ? { ...cell, metadata: { ...cell.metadata, tags } } : cell,
+  ),
+});
+
+export const updateCellAttachments = (
+  notebook: Notebook,
+  id: string,
+  attachments: Record<string, string>,
+): Notebook => ({
+  ...notebook,
+  cells: notebook.cells.map((cell) =>
+    cell.id === id ? { ...cell, metadata: { ...cell.metadata, attachments } } : cell,
+  ),
+});
+
+export const updateNotebookDependencies = (
+  notebook: Notebook,
+  dependencies: Record<string, string>,
+): Notebook => ({
+  ...notebook,
+  metadata: { ...notebook.metadata, dependencies },
+});
+
+export const replaceInNotebookCells = (
+  notebook: Notebook,
+  find: string,
+  replace: string,
+  options: SearchOptions,
+): { notebook: Notebook; count: number } => {
+  const pattern = createSearchPattern(find, options);
+  if (!pattern) return { notebook, count: 0 };
+  let count = 0;
+  const cells = notebook.cells.map((cell) => {
+    pattern.lastIndex = 0;
+    const next = cell.source.replace(pattern, () => {
+      count += 1;
+      return replace;
+    });
+    return next === cell.source ? cell : { ...cell, source: next };
+  });
+  return { notebook: { ...notebook, cells }, count };
 };

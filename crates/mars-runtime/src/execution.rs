@@ -45,6 +45,73 @@ pub fn run_child(
     }
 }
 
+/// Scans decoded stdout for `__MARS_PROMPT__<question>\n` protocol lines
+/// emitted by the injected `mars_prompt` helper, returning cleaned text and
+/// prompt messages. Incomplete markers are carried across chunk boundaries.
+#[derive(Default)]
+pub struct PromptScan {
+    carry: String,
+}
+
+impl PromptScan {
+    const MARKER: &'static str = "__MARS_PROMPT__";
+
+    pub fn feed(&mut self, text: &str) -> (String, Vec<String>) {
+        let combined = format!("{}{}", self.carry, text);
+        self.carry.clear();
+        let mut prompts = Vec::new();
+        let mut cleaned = String::with_capacity(combined.len());
+        let mut rest = combined.as_str();
+        while let Some(index) = rest.find(Self::MARKER) {
+            cleaned.push_str(&rest[..index]);
+            let after_marker = &rest[index + Self::MARKER.len()..];
+            match after_marker.find('\n') {
+                Some(newline) => {
+                    prompts.push(after_marker[..newline].trim_end().to_owned());
+                    rest = &after_marker[newline + 1..];
+                }
+                None => {
+                    // Marker without a terminating newline yet: hold from the
+                    // marker start so the next chunk can complete it.
+                    self.carry = rest[index..].to_owned();
+                    rest = "";
+                    break;
+                }
+            }
+        }
+        if rest.is_empty() && self.carry.is_empty() {
+            // nothing held back
+        } else if self.carry.is_empty() {
+            cleaned.push_str(rest);
+        }
+        // Keep a tail that could be the start of a split marker.
+        if self.carry.is_empty() {
+            let keep = Self::MARKER.len() - 1;
+            let mut start = cleaned.len().saturating_sub(keep);
+            while start > 0 && !cleaned.is_char_boundary(start) {
+                start -= 1;
+            }
+            self.carry = cleaned[start..].to_owned();
+            cleaned.truncate(start);
+        }
+        (cleaned, prompts)
+    }
+
+    pub fn finish(&mut self) -> (String, Vec<String>) {
+        let tail = std::mem::take(&mut self.carry);
+        let (mut cleaned, mut prompts) = self.feed(&tail);
+        if !self.carry.is_empty() {
+            let rest = std::mem::take(&mut self.carry);
+            if let Some(message) = rest.strip_prefix(Self::MARKER) {
+                prompts.push(message.trim_end().to_owned());
+            } else {
+                cleaned.push_str(&rest);
+            }
+        }
+        (cleaned, prompts)
+    }
+}
+
 pub fn run_child_streaming(
     mut child: Child,
     timeout: Option<Duration>,
@@ -93,6 +160,7 @@ pub fn run_child_streaming(
     let mut stderr_pending = Vec::new();
     let mut stdout_bytes = Vec::new();
     let mut stderr_bytes = Vec::new();
+    let mut prompt_scan = PromptScan::default();
 
     loop {
         if let Some(status) = child.try_wait().map_err(RuntimeError::Execution)? {
@@ -105,10 +173,23 @@ pub fn run_child_streaming(
                     &mut stderr_pending,
                     &mut stdout_bytes,
                     &mut stderr_bytes,
+                    &mut prompt_scan,
                 );
             }
             for reader in readers {
                 let _ = reader.join();
+            }
+            let (tail, prompts) = prompt_scan.finish();
+            if let Some(events) = sink.as_deref_mut() {
+                for message in prompts {
+                    events(StreamEvent::Prompt { message });
+                }
+                if !tail.is_empty() {
+                    events(StreamEvent::Chunk {
+                        stream: ChunkStream::Stdout,
+                        data: tail,
+                    });
+                }
             }
             return Ok(BinaryOutput {
                 status: Some(status),
@@ -127,6 +208,7 @@ pub fn run_child_streaming(
                 &mut stderr_pending,
                 &mut stdout_bytes,
                 &mut stderr_bytes,
+                &mut prompt_scan,
             );
         }
 
@@ -145,6 +227,7 @@ pub fn run_child_streaming(
             for reader in readers {
                 let _ = reader.join();
             }
+            let _ = prompt_scan.finish();
             return Ok(BinaryOutput {
                 status: None,
                 stdout: Vec::new(),
@@ -166,6 +249,7 @@ fn handle_stream_chunk(
     stderr_pending: &mut Vec<u8>,
     stdout_bytes: &mut Vec<u8>,
     stderr_bytes: &mut Vec<u8>,
+    prompt_scan: &mut PromptScan,
 ) {
     if is_stderr {
         stderr_bytes.extend_from_slice(&bytes);
@@ -181,15 +265,25 @@ fn handle_stream_chunk(
     if text.is_empty() {
         return;
     }
+    let (text, prompts) = if is_stderr {
+        (text, Vec::new())
+    } else {
+        prompt_scan.feed(&text)
+    };
     if let Some(events) = sink.as_deref_mut() {
-        events(StreamEvent::Chunk {
-            stream: if is_stderr {
-                ChunkStream::Stderr
-            } else {
-                ChunkStream::Stdout
-            },
-            data: text,
-        });
+        for message in prompts {
+            events(StreamEvent::Prompt { message });
+        }
+        if !text.is_empty() {
+            events(StreamEvent::Chunk {
+                stream: if is_stderr {
+                    ChunkStream::Stderr
+                } else {
+                    ChunkStream::Stdout
+                },
+                data: text,
+            });
+        }
     }
 }
 
@@ -269,4 +363,33 @@ pub fn interruption_message(cancellation: &AtomicBool, phase: &str) -> &'static 
 
 pub fn remaining_timeout(started: Instant, timeout: Option<Duration>) -> Option<Duration> {
     timeout.map(|limit| limit.saturating_sub(started.elapsed()))
+}
+
+#[cfg(test)]
+mod prompt_scan_tests {
+    use super::PromptScan;
+
+    #[test]
+    fn extracts_prompt_and_cleans_output() {
+        let mut scan = PromptScan::default();
+        let (_, prompts) = scan.feed("Hello\n__MARS_PROMPT__Name?\nWorld\n");
+        assert_eq!(prompts, vec!["Name?"]);
+        let (tail, _) = scan.finish();
+        assert!(tail.contains("Hello"));
+        assert!(tail.contains("World"));
+        assert!(!tail.contains("__MARS_PROMPT__"));
+    }
+
+    #[test]
+    fn carries_marker_across_chunks() {
+        let mut scan = PromptScan::default();
+        let (clean1, prompts1) = scan.feed("start __MARS_PROM");
+        assert!(prompts1.is_empty());
+        assert!(clean1.starts_with("sta"));
+        let (_, prompts2) = scan.feed("PT__Pick one\nrest");
+        assert_eq!(prompts2, vec!["Pick one"]);
+        let (tail, _) = scan.finish();
+        assert!(tail.contains("rest"));
+        assert!(!tail.contains("__MARS_PROMPT__"));
+    }
 }

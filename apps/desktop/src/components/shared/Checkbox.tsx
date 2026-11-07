@@ -11,7 +11,7 @@ const Checkbox: FC<CheckboxProps> = ({ label, className, wrapperClassName, ...pr
     <input
       data-component='Checkbox'
       type='checkbox'
-      className={cn('accent-orange-600', className)}
+      className={cn('checkbox checkbox-sm checkbox-primary', className)}
       {...props}
     />
     <span>{label}</span>
