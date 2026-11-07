@@ -93,6 +93,11 @@ fn live_rust_analyzer_smoke() {
     let completion_ok = retry(&mut || matches!(session.completion("c1", 4, 8), Ok(Some(_))));
     assert!(completion_ok, "expected completion items");
 
+    // Signature help inside the `helper(...)` call in cell c1.
+    let signature_ok =
+        retry(&mut || matches!(session.signature_help("c1", 4, 18), Ok(Some(_)) | Ok(None)));
+    assert!(signature_ok, "signature_help request should not error");
+
     // Definition of `helper` call should resolve back into cell c1.
     let definition_ok = retry(&mut || matches!(session.definition("c1", 4, 13), Ok(Some(_))));
     assert!(definition_ok, "expected definition target for helper");

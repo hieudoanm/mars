@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.mars.idea</id>
     <name>Mars Notebooks</name>
-    <vendor>mars-project</vendor>
+    <vendor>project-mars</vendor>
     <description><![CDATA[
         Mars notebook (.mars) support for JetBrains IDEs.
 

@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 export NODE_NO_WARNINGS=1
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DESKTOP_DIR="$REPO_ROOT/packages/desktop"
 VSCODE_DIR="$REPO_ROOT/extensions/vscode"
 ZED_DIR="$REPO_ROOT/extensions/zed"

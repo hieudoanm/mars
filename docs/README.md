@@ -28,11 +28,6 @@ reading order.
 | 17  | [17-kernel-protocol.md](./17-kernel-protocol.md)   | Kernel protocol and future architecture  |
 | 18  | [18-mcp.md](./18-mcp.md)                           | Model Context Protocol integration       |
 
-## Screenshots
-
-See [screenshots/README.md](./screenshots/README.md) for captured and
-recommended release screenshots.
-
 ## Related
 
 - Landing app docs: `packages/landing/md/docs/` (comprehensive multi-language and extension documentation)

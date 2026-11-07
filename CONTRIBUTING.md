@@ -8,11 +8,11 @@ documentation whenever a supported workflow or limitation changes.
 ## Development setup
 
 Install the latest stable Rust toolchain, Node.js 20 or newer, and pnpm
-10.12.1. From the repository root:
+12.8.0. From the repository root:
 
 ```bash
 corepack enable
-corepack prepare pnpm@10.12.1 --activate
+corepack prepare pnpm@12.8.0 --activate
 pnpm install
 ```
 

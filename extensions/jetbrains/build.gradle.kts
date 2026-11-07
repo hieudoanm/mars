@@ -38,7 +38,7 @@ intellijPlatform {
             cell execution via `mars kernel serve`, and a kernel tool window.
         """.trimIndent()
         vendor {
-            name = "mars-project"
+            name = "project-mars"
         }
     }
 }

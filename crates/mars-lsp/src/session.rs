@@ -553,7 +553,8 @@ impl LspSession {
 
 /// Extract (uri, line, character) from a definition result, which may be a
 /// Location, an array of Locations, or a LocationLink/array of LocationLinks.
-fn first_location(result: &Value) -> Option<(String, (u64, u64))> {
+#[doc(hidden)]
+pub fn first_location(result: &Value) -> Option<(String, (u64, u64))> {
     let pick = |value: &Value| -> Option<(String, (u64, u64))> {
         if let Some(uri) = value.get("uri").and_then(Value::as_str) {
             let range = value.get("range")?;
@@ -611,7 +612,8 @@ pub fn build_document(cells: &[CellSource]) -> (String, Vec<CellSpan>) {
     document.push_str("}\n");
     (document, spans)
 }
-fn diagnostic_range(diagnostic: &Value) -> Option<((u32, u32), (u32, u32))> {
+#[doc(hidden)]
+pub fn diagnostic_range(diagnostic: &Value) -> Option<((u32, u32), (u32, u32))> {
     let range = diagnostic.get("range")?;
     let start = range.get("start")?;
     let end = range.get("end")?;
@@ -624,7 +626,8 @@ fn diagnostic_range(diagnostic: &Value) -> Option<((u32, u32), (u32, u32))> {
     Some((position(start)?, position(end)?))
 }
 
-fn diagnostic_covers(diagnostic: &Value, line: u32, character: u32) -> bool {
+#[doc(hidden)]
+pub fn diagnostic_covers(diagnostic: &Value, line: u32, character: u32) -> bool {
     let Some(((sl, sc), (el, ec))) = diagnostic_range(diagnostic) else {
         return false;
     };

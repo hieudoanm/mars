@@ -14,7 +14,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 
 corepack enable
-corepack prepare pnpm@10.12.1 --activate
+corepack prepare pnpm@12.8.0 --activate
 pnpm install --frozen-lockfile
 pnpm exec turbo run check
 pnpm exec turbo run build

@@ -155,9 +155,10 @@ impl RuntimeBackend for CppSession {
             )));
         }
 
-        // Execute the compiled binary
+        // Execute the compiled binary in its own process group so timeout
+        // and cancellation can kill the whole tree.
         let binary_path = self.workdir_path().join("main");
-        let mut exec_cmd = Command::new(&binary_path);
+        let mut exec_cmd = mars_runtime::execution::configured_command(&binary_path);
         exec_cmd.stdin(Stdio::piped());
         exec_cmd.stdout(Stdio::piped());
         exec_cmd.stderr(Stdio::piped());
@@ -270,20 +271,13 @@ fn find_compiler() -> Result<String, RuntimeError> {
 
 #[cfg(unix)]
 fn terminate_process_tree(pid: u32) -> Result<(), RuntimeError> {
-    use std::os::unix::process::CommandExt;
-
-    // Kill the process group
-    unsafe {
-        Command::new("kill")
-            .arg("-")
-            .arg(pid.to_string())
-            .pre_exec(|| {
-                libc::setpgid(0, 0);
-                Ok(())
-            })
-            .status()
-            .map_err(|e| RuntimeError::Backend(format!("Failed to kill process tree: {e}")))?;
-    }
+    // The child runs in its own process group (pgid == pid), so a negative
+    // pid targets the whole group.
+    Command::new("kill")
+        .arg("-KILL")
+        .arg(format!("-{pid}"))
+        .status()
+        .map_err(|e| RuntimeError::Backend(format!("Failed to kill process tree: {e}")))?;
 
     Ok(())
 }

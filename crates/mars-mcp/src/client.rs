@@ -94,9 +94,13 @@ impl McpClient {
         loop {
             let line = {
                 let mut line = String::new();
-                self.stdout
+                let read = self
+                    .stdout
                     .read_line(&mut line)
                     .map_err(|error| format!("failed to read response: {error}"))?;
+                if read == 0 {
+                    return Err("server closed the connection".to_owned());
+                }
                 line
             };
             if line.trim().is_empty() {

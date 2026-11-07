@@ -2393,7 +2393,6 @@ dependencies = [
 name = "mars-runtime-cpp"
 version = "0.0.1"
 dependencies = [
- "libc",
  "mars-core",
  "mars-runtime",
  "serde",

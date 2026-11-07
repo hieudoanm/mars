@@ -58,7 +58,7 @@ cargo test --workspace
 
 ```bash
 corepack enable
-corepack prepare pnpm@10.12.1 --activate
+corepack prepare pnpm@12.18.0 --activate
 pnpm install
 pnpm run check
 pnpm run build
@@ -76,7 +76,7 @@ mars new analysis.mars
 
 ### Desktop application
 
-- Install stable Rust toolchain, Node.js 20+, and platform prerequisites in [`docs/08-development.md`](docs/08-development.md).
+- Install stable Rust toolchain, Node.js 20+, and platform prerequisites in [`docs/13-development.md`](docs/13-development.md).
 - Run:
 
 ```bash
@@ -98,7 +98,7 @@ pnpm --filter @mars/desktop dev
 npm run tauri build
 ```
 
-- See [`docs/09-release.md`](docs/09-release.md) for signing, platform targets, and artifact verification.
+- See [`docs/14-release.md`](docs/14-release.md) for signing, platform targets, and artifact verification.
 
 - `mars run` reports each executable cell's position, execution count, duration, output count, and captured output.
 - Failed cells persist partial results and exit unsuccessfully after reporting.
@@ -113,7 +113,7 @@ npm run tauri build
   `mars_*` display helpers autocomplete with snippets, table outputs filter
   and sort, and the problems panel cycles diagnostics.
 - See `AGENTS.md` for product architecture and development strategy.
-- Contributor docs: `CONTRIBUTING.md`, `docs/04-architecture.md`, `docs/03-notebook-format.md`, `docs/06-runtime.md`, `docs/07-cli.md`, `docs/05-protocol.md`, `docs/08-development.md`, `docs/09-release.md`, `docs/02-branding.md`.
+- Contributor docs: `CONTRIBUTING.md`, `docs/04-architecture.md`, `docs/03-notebook-format.md`, `docs/06-runtime.md`, `docs/12-cli.md`, `docs/05-protocol.md`, `docs/13-development.md`, `docs/14-release.md`, `docs/02-branding.md`.
 
 - Execution runtime recompiles accumulated cells in an isolated temporary program.
 - Preserves Rust bindings between cells without executing notebook code in the CLI process.

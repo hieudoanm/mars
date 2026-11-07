@@ -100,7 +100,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
             let format = args.get(2).map(String::as_str).unwrap_or("ipynb");
             let mut page_size_str = "a4";
             let mut output: Option<&str> = None;
-            for arg in &args[3..] {
+            for arg in args.get(3..).unwrap_or(&[]) {
                 if let Some(size) = arg.strip_prefix("--page-size=") {
                     page_size_str = size;
                 } else if output.is_none() {

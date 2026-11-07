@@ -3,7 +3,7 @@ name = "Mars Notebooks"
 description = "Language support and notebook execution for .mars files."
 version = "0.0.1"
 schema_version = 1
-authors = ["mars-project"]
+authors = ["project-mars"]
 repository = "https://github.com/hieudoanm/mars"
 
 [[languages]]

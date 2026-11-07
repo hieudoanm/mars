@@ -117,7 +117,8 @@ fn worse_status(current: ExecutionStatus, next: ExecutionStatus) -> ExecutionSta
     }
 }
 
-fn serve_connection<R: BufRead, W: Write + Send>(
+#[doc(hidden)]
+pub fn serve_connection<R: BufRead, W: Write + Send>(
     mut reader: R,
     writer: BufWriter<W>,
     backend: RuntimeBackendKind,

@@ -108,7 +108,8 @@ pub fn render_inspect_program(cells: &[String], names: &[String], with_values: b
     program
 }
 
-fn parse_variables(stdout: &[u8]) -> Vec<VariableInfo> {
+#[doc(hidden)]
+pub fn parse_variables(stdout: &[u8]) -> Vec<VariableInfo> {
     let text = String::from_utf8_lossy(stdout);
     let mut variables = Vec::new();
     for line in text.lines() {
@@ -261,14 +262,16 @@ impl RustSession {
 
 /// Maps `// Mars cell N` marker lines in the generated program to cell
 /// indices so rustc line numbers become (cell, line-in-cell) pairs.
-fn cell_line_map(program: &str) -> Vec<(usize, usize)> {
+#[doc(hidden)]
+pub fn cell_line_map(program: &str) -> Vec<(usize, usize)> {
     program
         .lines()
         .enumerate()
         .filter_map(|(index, line)| {
             let marker = line.trim().strip_prefix("// Mars cell ")?;
             marker
-                .trim()
+                .split_whitespace()
+                .next()?
                 .parse::<usize>()
                 .ok()
                 .map(|cell| (index + 1, cell))
@@ -276,7 +279,8 @@ fn cell_line_map(program: &str) -> Vec<(usize, usize)> {
         .collect()
 }
 
-fn diagnostic_object(value: &Value) -> Option<&Value> {
+#[doc(hidden)]
+pub fn diagnostic_object(value: &Value) -> Option<&Value> {
     if value.get("$message_type").and_then(Value::as_str) == Some("diagnostic") {
         return Some(value);
     }
@@ -286,7 +290,8 @@ fn diagnostic_object(value: &Value) -> Option<&Value> {
     None
 }
 
-fn map_diagnostics(
+#[doc(hidden)]
+pub fn map_diagnostics(
     program: &str,
     stderr: &[u8],
     source_path: &std::path::Path,

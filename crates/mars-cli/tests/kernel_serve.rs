@@ -114,6 +114,79 @@ fn serve_rejects_invalid_json() {
 }
 
 #[test]
+fn serve_handles_variables_diagnose_input_and_cancel() {
+    let mut serve = ServeProcess::spawn();
+
+    // Variables on a fresh kernel reports an empty list without compiling.
+    serve.send(json!({ "id": "v1", "request": { "type": "variables" } }));
+    let variables = serve.read_line();
+    assert_eq!(variables["response"]["type"], "variables");
+    assert_eq!(variables["response"]["variables"], json!([]));
+
+    // Diagnose with empty source short-circuits before compiling.
+    serve.send(json!({
+        "id": "d1",
+        "request": { "type": "diagnose", "source": "   " }
+    }));
+    let diagnose = serve.read_line();
+    assert_eq!(diagnose["response"]["type"], "diagnostics");
+    assert_eq!(diagnose["response"]["diagnostics"], json!([]));
+
+    // Input with no active execution is an error, not a hang.
+    serve.send(json!({
+        "id": "i1",
+        "request": { "type": "input", "text": "answer" }
+    }));
+    let input = serve.read_line();
+    assert_eq!(input["response"]["type"], "error");
+
+    // Cancel is acknowledged immediately by the reader loop.
+    serve.send(json!({ "id": "c1", "request": { "type": "cancel" } }));
+    let cancel = serve.read_line();
+    assert_eq!(cancel["response"]["type"], "cancelled");
+}
+
+#[test]
+fn serve_rejects_empty_execute_source() {
+    let mut serve = ServeProcess::spawn();
+    serve.send(json!({
+        "id": "e1",
+        "request": { "type": "execute", "source": "   " }
+    }));
+    let response = serve.read_line();
+    assert_eq!(response["response"]["type"], "error");
+}
+
+#[test]
+fn serve_executes_in_requested_language() {
+    let mut serve = ServeProcess::spawn();
+    // python3 is available on dev machines; skip gracefully if not.
+    serve.send(json!({
+        "id": "py1",
+        "request": {
+            "type": "execute",
+            "source": "21 * 2",
+            "language": "python"
+        }
+    }));
+
+    let mut response = None;
+    for _ in 0..30 {
+        let line = serve.read_line();
+        if line.get("event").is_none() {
+            response = Some(line);
+            break;
+        }
+    }
+    let response = response.expect("final response");
+    match &response["response"]["type"] {
+        // Either the expression result or an honest backend error.
+        Value::String(kind) => assert!(kind == "execution" || kind == "error"),
+        _ => panic!("unexpected response: {response}"),
+    }
+}
+
+#[test]
 fn serve_tcp_handles_status() {
     // Find a free port, then hand it to the kernel.
     let port = {

@@ -400,7 +400,8 @@ fn reader_loop(stdout: std::process::ChildStdout, shared: Arc<Shared>) {
     }
 }
 
-fn read_message(reader: &mut impl BufRead) -> std::io::Result<Option<Value>> {
+#[doc(hidden)]
+pub fn read_message(reader: &mut impl BufRead) -> std::io::Result<Option<Value>> {
     let mut content_length: Option<usize> = None;
     loop {
         let mut line = String::new();

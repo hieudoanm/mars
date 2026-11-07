@@ -3,7 +3,7 @@
   "displayName": "Mars Notebooks",
   "description": "Language support and preview commands for .mars notebooks.",
   "version": "0.0.1",
-  "publisher": "mars-project",
+  "publisher": "project-mars",
   "icon": "assets/images/mars-logo.png",
   "license": "MIT",
   "packageManager": "pnpm@12.18.0",
@@ -152,7 +152,11 @@
       "mars": [
         {
           "id": "mars.variables",
-          "name": "Kernel Variables"
+          "name": "Kernel Variables",
+          "icon": {
+            "light": "./assets/svg/mars-variables-light.svg",
+            "dark": "./assets/svg/mars-variables-dark.svg"
+          }
         }
       ]
     },
