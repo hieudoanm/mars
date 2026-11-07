@@ -1,12 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import type { EditorPreferences } from '../../../hooks/useEditorPreferences';
 
 const {
   onRename,
   onTimeoutChange,
   onFontSizeChange,
-  onPreferencesChange,
   onCancel,
   onRunCurrent,
   onRunAll,
@@ -23,7 +21,6 @@ const {
   onRename: vi.fn(),
   onTimeoutChange: vi.fn(),
   onFontSizeChange: vi.fn(),
-  onPreferencesChange: vi.fn(),
   onCancel: vi.fn(),
   onRunCurrent: vi.fn(),
   onRunAll: vi.fn(),
@@ -40,8 +37,6 @@ const {
 
 import NotebookToolbar, { type NotebookToolbarProps } from '../NotebookToolbar';
 
-const preferences: EditorPreferences = { autocomplete: true, folding: true };
-
 const toolbar = (overrides: Partial<NotebookToolbarProps> = {}) => (
   <NotebookToolbar
     fileName='experiment.mars'
@@ -51,10 +46,8 @@ const toolbar = (overrides: Partial<NotebookToolbarProps> = {}) => (
     isExecuting={false}
     executionTimeout=''
     fontSize={14}
-    preferences={preferences}
     onTimeoutChange={onTimeoutChange}
     onFontSizeChange={onFontSizeChange}
-    onPreferencesChange={onPreferencesChange}
     onCancel={onCancel}
     onRunCurrent={onRunCurrent}
     onRunAll={onRunAll}
@@ -77,7 +70,6 @@ describe('NotebookToolbar', () => {
     onRename.mockReset();
     onTimeoutChange.mockReset();
     onFontSizeChange.mockReset();
-    onPreferencesChange.mockReset();
     onCancel.mockReset();
     onRunCurrent.mockReset();
     onRunAll.mockReset();
@@ -194,21 +186,5 @@ describe('NotebookToolbar', () => {
     expect(input).toHaveValue(14);
     fireEvent.change(input, { target: { value: '18' } });
     expect(onFontSizeChange).toHaveBeenCalledWith(18);
-  });
-
-  it('toggles autocomplete preference', () => {
-    render(toolbar());
-    const input = screen.getByLabelText(/Autocomplete/i);
-    expect(input).toBeChecked();
-    fireEvent.click(input);
-    expect(onPreferencesChange).toHaveBeenCalledWith(expect.any(Function));
-  });
-
-  it('toggles folding preference', () => {
-    render(toolbar());
-    const input = screen.getByLabelText(/Folding/i);
-    expect(input).toBeChecked();
-    fireEvent.click(input);
-    expect(onPreferencesChange).toHaveBeenCalledWith(expect.any(Function));
   });
 });

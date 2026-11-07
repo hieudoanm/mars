@@ -14,11 +14,15 @@ const Header: FC<HeaderProps> = ({
   onExportIpynb,
   onRestart,
   isExecuting,
+  sidebarOpen,
+  onToggleSidebar,
+  explorerOpen,
+  onToggleExplorer,
 }) => {
   return (
     <header
       data-component='Header'
-      className='flex min-h-20 items-center justify-between border-b border-neutral-800 bg-neutral-900 px-7 py-4'>
+      className='flex min-h-16 items-center justify-between border-b border-neutral-800 bg-neutral-900 px-5 py-3'>
       <HeaderBrand />
       <HeaderActions
         status={status}
@@ -30,6 +34,10 @@ const Header: FC<HeaderProps> = ({
         onExportIpynb={onExportIpynb}
         onRestart={onRestart}
         isExecuting={isExecuting}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={onToggleSidebar}
+        explorerOpen={explorerOpen}
+        onToggleExplorer={onToggleExplorer}
       />
     </header>
   );

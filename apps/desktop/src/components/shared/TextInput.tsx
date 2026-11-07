@@ -7,7 +7,7 @@ export type TextInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>
 };
 
 const inputClasses =
-  'rounded-lg border border-neutral-700 bg-neutral-800 px-2 py-2 text-neutral-100 focus:border-orange-500 focus:outline-1 focus:outline-orange-500';
+  'h-7 rounded-lg border border-neutral-700 bg-neutral-800 px-2 text-xs text-neutral-100 focus:border-orange-500 focus:outline-1 focus:outline-orange-500';
 
 const TextInput: FC<TextInputProps> = ({ label, className, wrapperClassName, ...props }) => {
   const input = (

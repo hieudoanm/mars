@@ -45,10 +45,10 @@ export type NotebookCellViewProps = {
   onCellDrop?: (id: string) => void;
 };
 
-const iconClassName = 'h-4 w-4';
+const iconClassName = 'h-3.5 w-3.5';
 
 const editorFallback = (
-  <div className='min-h-[76px] rounded-md border border-neutral-800 bg-neutral-950' />
+  <div className='min-h-[44px] rounded-md border border-neutral-800 bg-neutral-950' />
 );
 
 const NotebookCellView: FC<NotebookCellViewProps> = ({
@@ -104,11 +104,11 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
         event.preventDefault();
         onCellDrop?.(cell.id);
       }}>
-      <div className='w-24 p-2 pt-5 text-right text-xs text-neutral-500'>
+      <div className='w-12 p-1.5 pt-4 text-right text-xs text-neutral-500'>
         <span>{cell.cell_type === 'code' ? `In [${cell.execution_count ?? ' '}]` : ' '}</span>
       </div>
-      <div className='min-w-0 flex-1 py-4 pr-5'>
-        <div className='mb-2 flex items-center justify-between gap-3'>
+      <div className='min-w-0 flex-1 py-3 pr-4'>
+        <div className='mb-1.5 flex items-center justify-between gap-3'>
           <div className='flex items-center gap-2'>
             <span
               draggable
@@ -127,6 +127,13 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
             <span className='text-xs tracking-widest text-neutral-400 uppercase'>
               {cell.cell_type}
             </span>
+            {isExecuting ? (
+              <span
+                data-component='CellRunningBadge'
+                className='animate-pulse text-xs font-medium text-amber-400'>
+                Running…
+              </span>
+            ) : null}
           </div>
           <div className='flex items-center gap-1.5'>
             <IconButton

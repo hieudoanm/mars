@@ -38,9 +38,14 @@ describe('notebook chrome components', () => {
         onImportIpynb={vi.fn()}
         onExportIpynb={vi.fn()}
         onRestart={vi.fn()}
+        sidebarOpen
+        onToggleSidebar={vi.fn()}
+        explorerOpen
+        onToggleExplorer={vi.fn()}
       />,
     );
-    expect(screen.getByRole('heading', { name: 'Explore ideas.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByText('Explore ideas.')).toBeInTheDocument();
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(onSave).toHaveBeenCalledOnce();

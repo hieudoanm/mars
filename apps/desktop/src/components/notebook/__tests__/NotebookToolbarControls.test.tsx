@@ -1,11 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import type { EditorPreferences } from '../../../hooks/useEditorPreferences';
 
 const {
   onTimeoutChange,
   onFontSizeChange,
-  onPreferencesChange,
   onCancel,
   onRunCurrent,
   onRunAll,
@@ -21,7 +19,6 @@ const {
 } = vi.hoisted(() => ({
   onTimeoutChange: vi.fn(),
   onFontSizeChange: vi.fn(),
-  onPreferencesChange: vi.fn(),
   onCancel: vi.fn(),
   onRunCurrent: vi.fn(),
   onRunAll: vi.fn(),
@@ -40,18 +37,14 @@ import NotebookToolbarControls, {
   type NotebookToolbarControlsProps,
 } from '../NotebookToolbarControls';
 
-const preferences: EditorPreferences = { autocomplete: true, folding: false };
-
 const renderControls = (overrides: Partial<NotebookToolbarControlsProps> = {}) =>
   render(
     <NotebookToolbarControls
       isExecuting={false}
       executionTimeout=''
       fontSize={14}
-      preferences={preferences}
       onTimeoutChange={onTimeoutChange}
       onFontSizeChange={onFontSizeChange}
-      onPreferencesChange={onPreferencesChange}
       onCancel={onCancel}
       onRunCurrent={onRunCurrent}
       onRunAll={onRunAll}
@@ -73,7 +66,6 @@ describe('NotebookToolbarControls', () => {
   beforeEach(() => {
     onTimeoutChange.mockReset();
     onFontSizeChange.mockReset();
-    onPreferencesChange.mockReset();
     onCancel.mockReset();
     onRunCurrent.mockReset();
     onRunAll.mockReset();
@@ -92,8 +84,6 @@ describe('NotebookToolbarControls', () => {
 
     expect(screen.getByLabelText('Execution timeout in milliseconds')).toHaveValue(null);
     expect(screen.getByLabelText('Editor font size')).toHaveValue(14);
-    expect(screen.getByLabelText('Autocomplete')).toBeChecked();
-    expect(screen.getByLabelText('Folding')).not.toBeChecked();
     expect(screen.getByRole('button', { name: 'Run current cell' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run all (F6)' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add Markdown' })).toBeInTheDocument();
@@ -112,10 +102,8 @@ describe('NotebookToolbarControls', () => {
         isExecuting
         executionTimeout=''
         fontSize={14}
-        preferences={preferences}
         onTimeoutChange={onTimeoutChange}
         onFontSizeChange={onFontSizeChange}
-        onPreferencesChange={onPreferencesChange}
         onCancel={onCancel}
         onRunCurrent={onRunCurrent}
         onRunAll={onRunAll}

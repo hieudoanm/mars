@@ -7,7 +7,7 @@ describe('useEditorPreferences', () => {
 
   it('defaults', () => {
     const { result } = renderHook(() => useEditorPreferences());
-    expect(result.current.fontSize).toBe(14);
+    expect(result.current.fontSize).toBe(13);
     expect(result.current.preferences).toEqual({ autocomplete: true, folding: true });
   });
 
@@ -26,7 +26,7 @@ describe('useEditorPreferences', () => {
     localStorage.setItem('mars.editor.fontSize', '100');
     localStorage.setItem('mars.editor.preferences', '{bad');
     const { result } = renderHook(() => useEditorPreferences());
-    expect(result.current.fontSize).toBe(14);
+    expect(result.current.fontSize).toBe(13);
     expect(result.current.preferences).toEqual({ autocomplete: true, folding: true });
   });
 

@@ -5,7 +5,7 @@ export type EditorPreferences = {
   folding: boolean;
 };
 
-const DEFAULT_FONT_SIZE = 14;
+const DEFAULT_FONT_SIZE = 13;
 const DEFAULT_PREFERENCES: EditorPreferences = {
   autocomplete: true,
   folding: true,

@@ -44,7 +44,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
   onChange,
   onFocus,
   diagnostics = [],
-  fontSize = 14,
+  fontSize = 13,
   autocompleteEnabled = true,
   foldingEnabled = true,
   onViewReady,
@@ -95,7 +95,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
             '&': {
               backgroundColor: '#242424',
               color: '#e5e5e5',
-              minHeight: '76px',
+              minHeight: '44px',
               border: '1px solid #333',
               borderRadius: '7px',
               fontSize: `${fontSize}px`,
@@ -105,11 +105,11 @@ const CodeEditor: FC<CodeEditorProps> = ({
               borderColor: '#c2410c',
             },
             '.cm-scroller': {
-              minHeight: '76px',
-              padding: '14px',
+              minHeight: '44px',
+              padding: '10px 14px',
             },
             '.cm-content': {
-              minHeight: '48px',
+              minHeight: '24px',
               padding: '0',
             },
             '.cm-gutters': {

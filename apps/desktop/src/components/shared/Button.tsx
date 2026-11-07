@@ -28,7 +28,7 @@ const sizeClasses: Record<ButtonSize, string> = {
   sm: 'rounded-md px-2 py-1 text-xs',
   md: 'rounded-lg px-3 py-2 text-sm',
   lg: 'rounded-lg px-4 py-2.5 text-base',
-  icon: 'rounded-lg p-2',
+  icon: 'rounded-lg p-1.5',
 };
 
 const alignClasses: Record<ButtonAlign, string> = {

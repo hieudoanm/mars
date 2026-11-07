@@ -14,10 +14,8 @@ const NotebookToolbar: FC<NotebookToolbarProps> = ({
   isExecuting,
   executionTimeout,
   fontSize,
-  preferences,
   onTimeoutChange,
   onFontSizeChange,
-  onPreferencesChange,
   onCancel,
   onRunCurrent,
   onRunAll,
@@ -33,9 +31,7 @@ const NotebookToolbar: FC<NotebookToolbarProps> = ({
   onExpandAllCells,
 }) => {
   return (
-    <div
-      data-component='NotebookToolbar'
-      className='mb-10 flex flex-wrap items-end justify-between gap-6'>
+    <div data-component='NotebookToolbar' className='mb-8 flex flex-col gap-4'>
       <NotebookToolbarHeading
         fileName={fileName}
         title={title}
@@ -46,10 +42,8 @@ const NotebookToolbar: FC<NotebookToolbarProps> = ({
         isExecuting={isExecuting}
         executionTimeout={executionTimeout}
         fontSize={fontSize}
-        preferences={preferences}
         onTimeoutChange={onTimeoutChange}
         onFontSizeChange={onFontSizeChange}
-        onPreferencesChange={onPreferencesChange}
         onCancel={onCancel}
         onRunCurrent={onRunCurrent}
         onRunAll={onRunAll}

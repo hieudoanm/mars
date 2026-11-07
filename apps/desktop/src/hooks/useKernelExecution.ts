@@ -42,14 +42,18 @@ export const useKernelExecution = ({
   const [stream, setStream] = useState<KernelStream | null>(null);
   const executionInFlight = useRef(false);
 
-  const executeCell = async (cell: NotebookCell, manageExecutionState = true): Promise<boolean> => {
+  const executeCell = async (
+    cell: NotebookCell,
+    manageExecutionState = true,
+    label?: string,
+  ): Promise<boolean> => {
     if (cell.cell_type !== 'code') return true;
     if (manageExecutionState && executionInFlight.current) {
       setStatus('Execution already in progress');
       return false;
     }
     if (manageExecutionState) executionInFlight.current = true;
-    setStatus('Running');
+    setStatus(label ? `Running ${label}` : 'Running');
     setActiveCellId(cell.id);
     if (manageExecutionState) setIsExecuting(true);
     try {
@@ -62,7 +66,8 @@ export const useKernelExecution = ({
       let stderr = '';
       const unlisten = await listenKernelStream((event) => {
         if (event.type === 'phase') {
-          setStatus(event.phase === 'compiling' ? 'Compiling…' : 'Running…');
+          const phase = event.phase === 'compiling' ? 'Compiling' : 'Running';
+          setStatus(label ? `${phase} ${label}…` : `${phase}…`);
           return;
         }
         if (event.stream === 'stdout') stdout += event.data;
@@ -112,16 +117,17 @@ export const useKernelExecution = ({
       return;
     }
     executionInFlight.current = true;
-    setStatus('Running');
     setIsExecuting(true);
     try {
-      for (const cell of cells) {
-        if (!(await executeCell(cell, false))) {
+      const runnable = cells.filter((cell) => cell.cell_type === 'code');
+      for (const [index, cell] of runnable.entries()) {
+        const label = `cell ${index + 1} of ${runnable.length}`;
+        if (!(await executeCell(cell, false, label))) {
           onExecutionHalted?.(cell);
           return;
         }
       }
-      setStatus(`Executed ${cells.filter((cell) => cell.cell_type === 'code').length} code cells`);
+      setStatus(`Executed ${runnable.length} code cells`);
     } finally {
       executionInFlight.current = false;
       setActiveCellId(null);

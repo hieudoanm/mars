@@ -79,7 +79,7 @@ describe('App', () => {
     saveDialog.mockResolvedValue('/notes/experiment.mars');
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Explore ideas.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();
     expect(screen.getAllByText('Untitled.mars')).toHaveLength(2);
     expect(screen.getByText('2 cells')).toBeInTheDocument();
 

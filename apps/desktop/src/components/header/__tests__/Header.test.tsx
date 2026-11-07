@@ -1,13 +1,24 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
-const { onOpen, onSave, onExport, onImportIpynb, onExportIpynb, onRestart } = vi.hoisted(() => ({
+const {
+  onOpen,
+  onSave,
+  onExport,
+  onImportIpynb,
+  onExportIpynb,
+  onRestart,
+  onToggleSidebar,
+  onToggleExplorer,
+} = vi.hoisted(() => ({
   onOpen: vi.fn(),
   onSave: vi.fn(),
   onExport: vi.fn(),
   onImportIpynb: vi.fn(),
   onExportIpynb: vi.fn(),
   onRestart: vi.fn(),
+  onToggleSidebar: vi.fn(),
+  onToggleExplorer: vi.fn(),
 }));
 
 import Header from '../Header';
@@ -23,6 +34,10 @@ const renderHeader = (status = 'Saved', mode: 'command' | 'edit' = 'command') =>
       onImportIpynb={onImportIpynb}
       onExportIpynb={onExportIpynb}
       onRestart={onRestart}
+      sidebarOpen
+      onToggleSidebar={onToggleSidebar}
+      explorerOpen
+      onToggleExplorer={onToggleExplorer}
     />,
   );
 
@@ -34,13 +49,15 @@ describe('Header', () => {
     onImportIpynb.mockReset();
     onExportIpynb.mockReset();
     onRestart.mockReset();
+    onToggleSidebar.mockReset();
+    onToggleExplorer.mockReset();
   });
 
   it('renders brand, title, and status', () => {
     renderHeader();
     expect(screen.getByAltText('Mars')).toBeInTheDocument();
-    expect(screen.getByText('MARS')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Explore ideas.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByText('Explore ideas.')).toBeInTheDocument();
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
   });
 
@@ -70,6 +87,10 @@ describe('Header', () => {
         onImportIpynb={onImportIpynb}
         onExportIpynb={onExportIpynb}
         onRestart={onRestart}
+        sidebarOpen
+        onToggleSidebar={onToggleSidebar}
+        explorerOpen
+        onToggleExplorer={onToggleExplorer}
       />,
     );
     expect(screen.getByText('Autosaved · Edit mode')).toBeInTheDocument();

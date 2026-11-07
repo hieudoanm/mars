@@ -5,6 +5,7 @@
   :root {
     color: #e8e7e5;
     background: #141414;
+    font-size: 14px;
     font-family:
       Inter,
       ui-sans-serif,
@@ -20,7 +21,7 @@
 
   body {
     margin: 0;
-    min-width: 960px;
+    min-width: 840px;
     height: 100vh;
     overflow: hidden;
     background: #141414;

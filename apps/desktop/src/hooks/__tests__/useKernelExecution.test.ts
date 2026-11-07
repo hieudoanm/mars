@@ -159,6 +159,21 @@ describe('useKernelExecution', () => {
     expect(onExecutionHalted).toHaveBeenCalledWith(failing);
   });
 
+  it('reports per-cell progress during batch execution', async () => {
+    const { result } = renderHook(() =>
+      useKernelExecution({ setNotebook, timeout: '1s', setStatus }),
+    );
+    await act(async () => {
+      await result.current.executeCells([
+        { ...cell(), id: 'a' },
+        { ...cell(), id: 'b' },
+      ]);
+    });
+    expect(setStatus).toHaveBeenCalledWith('Running cell 1 of 2');
+    expect(setStatus).toHaveBeenCalledWith('Running cell 2 of 2');
+    expect(setStatus).toHaveBeenCalledWith('Executed 2 code cells');
+  });
+
   it('executeCells', async () => {
     const { result } = renderHook(() =>
       useKernelExecution({ setNotebook, timeout: '1s', setStatus }),

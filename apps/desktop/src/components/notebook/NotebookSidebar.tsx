@@ -10,6 +10,7 @@ type NotebookSidebarProps = {
   selectedId: string;
   filePath: string | null;
   isDirty: boolean;
+  open?: boolean;
   onSelect: (id: string) => void;
   onRenameFile: (fileName: string) => Promise<boolean>;
 };
@@ -19,6 +20,7 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
   selectedId,
   filePath,
   isDirty,
+  open = true,
   onSelect,
   onRenameFile,
 }) => {
@@ -53,64 +55,67 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
   return (
     <aside
       data-component='NotebookSidebar'
-      className='flex w-56 shrink-0 flex-col border-l border-neutral-800 bg-neutral-900 px-3 py-5'>
-      <SectionHeading>Notebook</SectionHeading>
-      <div className='mb-8 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 p-3'>
-        <img className='h-7 w-7 shrink-0 rounded-md object-cover' src={marsFileLogo} alt='' />
-        <div className='min-w-0 flex-1'>
-          {isRenamingFile ? (
-            <TextInput
-              autoFocus
-              aria-label='File name'
-              value={fileDraft}
-              onChange={(event) => setFileDraft(event.target.value)}
-              onBlur={() => void commitFileRename()}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  event.currentTarget.blur();
-                }
-                if (event.key === 'Escape') {
-                  event.preventDefault();
-                  cancelRenamingFile();
-                }
-              }}
-              className='w-full text-sm'
-            />
-          ) : (
-            <div className='flex min-w-0 items-center gap-1'>
-              <strong className='block min-w-0 flex-1 truncate text-sm' title={fileName}>
-                {fileName}
-                {isDirty ? ' •' : ''}
-              </strong>
-              {filePath ? (
-                <IconButton
-                  label='Rename file'
-                  variant='ghost'
-                  className='shrink-0 p-1'
-                  icon={<LuPencil aria-hidden='true' className='h-3.5 w-3.5' />}
-                  onClick={startRenamingFile}
-                />
-              ) : null}
-            </div>
-          )}
-          <Badge className='mt-0.5' tone={isDirty ? 'warning' : 'success'}>
-            {isDirty ? 'Unsaved changes' : 'Saved notebook'}
-          </Badge>
+      aria-hidden={!open}
+      className={`shrink-0 overflow-hidden bg-neutral-900 transition-[width] duration-300 ease-in-out ${open ? 'w-48 border-l border-neutral-800' : 'w-0'}`}>
+      <div className='flex h-full w-48 flex-col px-2 py-4'>
+        <SectionHeading>Notebook</SectionHeading>
+        <div className='mb-6 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 p-2.5'>
+          <img className='h-7 w-7 shrink-0 rounded-md object-cover' src={marsFileLogo} alt='' />
+          <div className='min-w-0 flex-1'>
+            {isRenamingFile ? (
+              <TextInput
+                autoFocus
+                aria-label='File name'
+                value={fileDraft}
+                onChange={(event) => setFileDraft(event.target.value)}
+                onBlur={() => void commitFileRename()}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    event.currentTarget.blur();
+                  }
+                  if (event.key === 'Escape') {
+                    event.preventDefault();
+                    cancelRenamingFile();
+                  }
+                }}
+                className='w-full text-sm'
+              />
+            ) : (
+              <div className='flex min-w-0 items-center gap-1'>
+                <strong className='block min-w-0 flex-1 truncate text-sm' title={fileName}>
+                  {fileName}
+                  {isDirty ? ' •' : ''}
+                </strong>
+                {filePath ? (
+                  <IconButton
+                    label='Rename file'
+                    variant='ghost'
+                    className='shrink-0 p-1'
+                    icon={<LuPencil aria-hidden='true' className='h-3.5 w-3.5' />}
+                    onClick={startRenamingFile}
+                  />
+                ) : null}
+              </div>
+            )}
+            <Badge className='mt-0.5' tone={isDirty ? 'warning' : 'success'}>
+              {isDirty ? 'Unsaved changes' : 'Saved notebook'}
+            </Badge>
+          </div>
         </div>
+        <SectionHeading>Cell navigation</SectionHeading>
+        <nav className='min-h-0 flex-1 overflow-y-auto' aria-label='Cell navigation'>
+          {cells.map((cell, index) => (
+            <NavButton
+              key={cell.id}
+              active={cell.id === selectedId}
+              index={String(index + 1).padStart(2, '0')}
+              onClick={() => onSelect(cell.id)}>
+              {cell.cell_type}
+            </NavButton>
+          ))}
+        </nav>
       </div>
-      <SectionHeading>Cell navigation</SectionHeading>
-      <nav className='min-h-0 flex-1 overflow-y-auto' aria-label='Cell navigation'>
-        {cells.map((cell, index) => (
-          <NavButton
-            key={cell.id}
-            active={cell.id === selectedId}
-            index={String(index + 1).padStart(2, '0')}
-            onClick={() => onSelect(cell.id)}>
-            {cell.cell_type}
-          </NavButton>
-        ))}
-      </nav>
     </aside>
   );
 };

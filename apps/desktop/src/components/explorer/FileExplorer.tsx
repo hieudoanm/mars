@@ -1,4 +1,4 @@
-import { open } from '@tauri-apps/plugin-dialog';
+import { open as openDialog } from '@tauri-apps/plugin-dialog';
 import { type FC, useState } from 'react';
 import {
   LuChevronDown,
@@ -12,18 +12,28 @@ import { IconButton, SectionHeading } from '../shared';
 
 type FileExplorerProps = {
   currentFilePath: string | null;
+  open?: boolean;
   onOpenNotebook: (path: string) => void;
   onStatus: (status: string) => void;
 };
 
-const FileExplorer: FC<FileExplorerProps> = ({ currentFilePath, onOpenNotebook, onStatus }) => {
+const FileExplorer: FC<FileExplorerProps> = ({
+  currentFilePath,
+  open = true,
+  onOpenNotebook,
+  onStatus,
+}) => {
   const [rootPath, setRootPath] = useState<string | null>(null);
   const [entries, setEntries] = useState<FileExplorerEntry[]>([]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const openFolder = async () => {
     try {
-      const path = await open({ directory: true, multiple: false, title: 'Open notebook folder' });
+      const path = await openDialog({
+        directory: true,
+        multiple: false,
+        title: 'Open notebook folder',
+      });
       if (!path || Array.isArray(path)) return;
       const nextEntries = await listNotebookFiles(path);
       setRootPath(path);
@@ -38,41 +48,45 @@ const FileExplorer: FC<FileExplorerProps> = ({ currentFilePath, onOpenNotebook, 
   };
 
   return (
-    <aside className='flex w-64 shrink-0 flex-col border-r border-neutral-800 bg-neutral-900 px-3 py-5'>
-      <div className='mb-4 flex items-center justify-between gap-2'>
-        <SectionHeading>Explorer</SectionHeading>
-        <IconButton
-          label='Open folder'
-          icon={<LuFolderOpen aria-hidden='true' className='h-4 w-4' />}
-          onClick={() => void openFolder()}
-        />
-      </div>
-      {rootPath ? (
-        <p className='mb-3 truncate text-xs text-neutral-500' title={rootPath}>
-          {rootPath}
-        </p>
-      ) : null}
-      <div className='min-h-0 flex-1 overflow-y-auto pr-1'>
-        {rootPath ? (
-          <ExplorerEntries
-            entries={entries}
-            currentFilePath={currentFilePath}
-            expanded={expanded}
-            onToggle={(path) =>
-              setExpanded((current) => {
-                const next = new Set(current);
-                if (next.has(path)) next.delete(path);
-                else next.add(path);
-                return next;
-              })
-            }
-            onOpenNotebook={onOpenNotebook}
+    <aside
+      aria-hidden={!open}
+      className={`shrink-0 overflow-hidden bg-neutral-900 transition-[width] duration-300 ease-in-out ${open ? 'w-56 border-r border-neutral-800' : 'w-0'}`}>
+      <div className='flex h-full w-56 flex-col px-2 py-4'>
+        <div className='mb-3 flex items-center justify-between gap-2'>
+          <SectionHeading>Explorer</SectionHeading>
+          <IconButton
+            label='Open folder'
+            icon={<LuFolderOpen aria-hidden='true' className='h-4 w-4' />}
+            onClick={() => void openFolder()}
           />
-        ) : (
-          <p className='px-2 text-sm leading-6 text-neutral-500'>
-            Open a folder to browse Mars notebooks.
+        </div>
+        {rootPath ? (
+          <p className='mb-3 truncate text-xs text-neutral-500' title={rootPath}>
+            {rootPath}
           </p>
-        )}
+        ) : null}
+        <div className='min-h-0 flex-1 overflow-y-auto pr-1'>
+          {rootPath ? (
+            <ExplorerEntries
+              entries={entries}
+              currentFilePath={currentFilePath}
+              expanded={expanded}
+              onToggle={(path) =>
+                setExpanded((current) => {
+                  const next = new Set(current);
+                  if (next.has(path)) next.delete(path);
+                  else next.add(path);
+                  return next;
+                })
+              }
+              onOpenNotebook={onOpenNotebook}
+            />
+          ) : (
+            <p className='px-2 text-sm leading-6 text-neutral-500'>
+              Open a folder to browse Mars notebooks.
+            </p>
+          )}
+        </div>
       </div>
     </aside>
   );

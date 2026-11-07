@@ -7,8 +7,8 @@ describe('HeaderBrand', () => {
     render(<HeaderBrand />);
     const logo = screen.getByAltText('Mars');
     expect(logo).toHaveAttribute('src');
-    expect(screen.getByText('MARS')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 1, name: 'Explore ideas.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByText('Explore ideas.')).toBeInTheDocument();
   });
 
   it('exposes the component marker', () => {

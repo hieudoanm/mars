@@ -10,7 +10,7 @@ const NotebookStatusBar: FC<NotebookStatusBarProps> = ({ cellCount, isDirty }) =
   return (
     <footer
       data-component='NotebookStatusBar'
-      className='flex gap-5 border-t border-neutral-800 bg-neutral-900 px-4 py-2 text-xs text-neutral-400'>
+      className='flex gap-5 border-t border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs text-neutral-400'>
       <span>Rust 2024</span>
       <Badge dot dotTone='success'>
         Kernel connected

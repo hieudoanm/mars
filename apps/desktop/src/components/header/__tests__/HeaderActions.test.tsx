@@ -1,18 +1,34 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
-const { onOpen, onSave, onExport, onImportIpynb, onExportIpynb, onRestart } = vi.hoisted(() => ({
+const {
+  onOpen,
+  onSave,
+  onExport,
+  onImportIpynb,
+  onExportIpynb,
+  onRestart,
+  onToggleSidebar,
+  onToggleExplorer,
+} = vi.hoisted(() => ({
   onOpen: vi.fn(),
   onSave: vi.fn(),
   onExport: vi.fn(),
   onImportIpynb: vi.fn(),
   onExportIpynb: vi.fn(),
   onRestart: vi.fn(),
+  onToggleSidebar: vi.fn(),
+  onToggleExplorer: vi.fn(),
 }));
 
 import HeaderActions from '../HeaderActions';
 
-const renderActions = (status = 'Saved', mode: 'command' | 'edit' = 'command') =>
+const renderActions = (
+  status = 'Saved',
+  mode: 'command' | 'edit' = 'command',
+  sidebarOpen = true,
+  explorerOpen = true,
+) =>
   render(
     <HeaderActions
       status={status}
@@ -23,6 +39,10 @@ const renderActions = (status = 'Saved', mode: 'command' | 'edit' = 'command') =
       onImportIpynb={onImportIpynb}
       onExportIpynb={onExportIpynb}
       onRestart={onRestart}
+      sidebarOpen={sidebarOpen}
+      onToggleSidebar={onToggleSidebar}
+      explorerOpen={explorerOpen}
+      onToggleExplorer={onToggleExplorer}
     />,
   );
 
@@ -34,6 +54,8 @@ describe('HeaderActions', () => {
     onImportIpynb.mockReset();
     onExportIpynb.mockReset();
     onRestart.mockReset();
+    onToggleSidebar.mockReset();
+    onToggleExplorer.mockReset();
   });
 
   it('renders the command mode status', () => {
@@ -58,6 +80,10 @@ describe('HeaderActions', () => {
         onImportIpynb={onImportIpynb}
         onExportIpynb={onExportIpynb}
         onRestart={onRestart}
+        sidebarOpen
+        onToggleSidebar={onToggleSidebar}
+        explorerOpen
+        onToggleExplorer={onToggleExplorer}
       />,
     );
     expect(screen.getByText('Autosaved · Edit mode')).toBeInTheDocument();
@@ -79,7 +105,7 @@ describe('HeaderActions', () => {
     renderActions();
     const buttons = screen.getAllByRole('button');
 
-    expect(buttons).toHaveLength(6);
+    expect(buttons).toHaveLength(8);
     for (const button of buttons) {
       const icon = button.querySelector('svg');
       expect(icon).toBeInTheDocument();
@@ -92,7 +118,7 @@ describe('HeaderActions', () => {
     const buttons = screen.getAllByRole('button');
     const tooltips = screen.getAllByRole('tooltip');
 
-    expect(tooltips).toHaveLength(6);
+    expect(tooltips).toHaveLength(8);
     expect(tooltips.map((tooltip) => tooltip.textContent)).toEqual([
       'Open',
       'Save',
@@ -100,6 +126,8 @@ describe('HeaderActions', () => {
       'Import .ipynb',
       'Export .ipynb',
       'Restart runtime',
+      'Hide file explorer',
+      'Hide notebook sidebar',
     ]);
 
     for (const [index, button] of buttons.entries()) {
@@ -117,6 +145,8 @@ describe('HeaderActions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Import .ipynb' }));
     fireEvent.click(screen.getByRole('button', { name: 'Export .ipynb' }));
     fireEvent.click(screen.getByRole('button', { name: 'Restart runtime' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Hide file explorer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Hide notebook sidebar' }));
 
     expect(onOpen).toHaveBeenCalledOnce();
     expect(onSave).toHaveBeenCalledOnce();
@@ -124,5 +154,17 @@ describe('HeaderActions', () => {
     expect(onImportIpynb).toHaveBeenCalledOnce();
     expect(onExportIpynb).toHaveBeenCalledOnce();
     expect(onRestart).toHaveBeenCalledOnce();
+    expect(onToggleSidebar).toHaveBeenCalledOnce();
+    expect(onToggleExplorer).toHaveBeenCalledOnce();
+  });
+
+  it('labels the sidebar toggle when closed', () => {
+    renderActions('Saved', 'command', false);
+    expect(screen.getByRole('button', { name: 'Show notebook sidebar' })).toBeInTheDocument();
+  });
+
+  it('labels the explorer toggle when closed', () => {
+    renderActions('Saved', 'command', true, false);
+    expect(screen.getByRole('button', { name: 'Show file explorer' })).toBeInTheDocument();
   });
 });

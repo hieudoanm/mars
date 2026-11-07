@@ -68,6 +68,8 @@ const App: FC = () => {
   const draggedCellId = useRef<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
   const [collapsedCellIds, setCollapsedCellIds] = useState<ReadonlySet<string>>(new Set());
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [explorerOpen, setExplorerOpen] = useState(true);
   const toggleCellCollapse = (id: string) => {
     setCollapsedCellIds((current) => {
       const next = new Set(current);
@@ -133,15 +135,20 @@ const App: FC = () => {
         onExportIpynb={() => void persistence.exportIpynb()}
         onRestart={() => void execution.restart()}
         isExecuting={execution.isExecuting}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((current) => !current)}
+        explorerOpen={explorerOpen}
+        onToggleExplorer={() => setExplorerOpen((current) => !current)}
       />
       <section className='flex min-h-0 flex-1 overflow-hidden'>
         <FileExplorer
           currentFilePath={persistence.filePath}
+          open={explorerOpen}
           onOpenNotebook={persistence.openNotebookAtPath}
           onStatus={ui.setStatus}
         />
-        <section className='min-w-0 flex-1 overflow-y-auto'>
-          <div className='mx-auto w-full max-w-5xl px-8 py-10 pb-20'>
+        <section className='flex min-h-0 min-w-0 flex-1 flex-col'>
+          <div className='mx-auto w-full max-w-4xl px-6 pt-8'>
             <NotebookToolbar
               fileName={fileName}
               title={editor.notebook.metadata.title ?? 'Untitled notebook'}
@@ -150,10 +157,8 @@ const App: FC = () => {
               isExecuting={execution.isExecuting}
               executionTimeout={ui.executionTimeout}
               fontSize={preferences.fontSize}
-              preferences={preferences.preferences}
               onTimeoutChange={ui.setExecutionTimeout}
               onFontSizeChange={preferences.updateFontSize}
-              onPreferencesChange={preferences.setPreferences}
               onCancel={() => void execution.cancelExecution()}
               onRunCurrent={commands.executeCurrent}
               onRunAll={commands.executeAll}
@@ -168,47 +173,52 @@ const App: FC = () => {
               onCollapseAllCells={collapseAllCells}
               onExpandAllCells={expandAllCells}
             />
-            <div className='flex flex-col gap-5'>
-              {editor.cells.map((cell) => (
-                <NotebookCellView
-                  key={cell.id}
-                  cell={cell}
-                  selected={cell.id === editor.selectedId}
-                  isExecuting={cell.id === execution.activeCellId}
-                  fontSize={preferences.fontSize}
-                  autocompleteEnabled={preferences.preferences.autocomplete}
-                  foldingEnabled={preferences.preferences.folding}
-                  canDelete={editor.cells.length > 1}
-                  collapsed={collapsedCellIds.has(cell.id)}
-                  stream={execution.stream?.cellId === cell.id ? execution.stream : null}
-                  isDropTarget={dropTargetId === cell.id}
-                  onDragCellStart={handleDragCellStart}
-                  onDragCellEnd={handleDragCellEnd}
-                  onCellDragOver={handleCellDragOver}
-                  onCellDrop={handleCellDrop}
-                  onSelect={() => {
-                    editor.setSelectedId(cell.id);
-                    editor.setMode('command');
-                  }}
-                  onEdit={(source) => editor.updateCell(cell.id, source)}
-                  onFocus={() => {
-                    editor.setSelectedId(cell.id);
-                    editor.setMode('edit');
-                  }}
-                  onExecute={() => {
-                    editor.setSelectedId(cell.id);
-                    void execution.executeCell(cell);
-                  }}
-                  onClear={() => editor.clearOutputs(cell.id)}
-                  onDelete={() => editor.removeCell(cell.id)}
-                  onToggleCollapse={() => toggleCellCollapse(cell.id)}
-                  onStatus={ui.setStatus}
-                />
-              ))}
+          </div>
+          <div className='min-h-0 flex-1 overflow-y-auto'>
+            <div className='mx-auto w-full max-w-4xl px-6 pb-16'>
+              <div className='flex flex-col gap-4'>
+                {editor.cells.map((cell) => (
+                  <NotebookCellView
+                    key={cell.id}
+                    cell={cell}
+                    selected={cell.id === editor.selectedId}
+                    isExecuting={cell.id === execution.activeCellId}
+                    fontSize={preferences.fontSize}
+                    autocompleteEnabled={preferences.preferences.autocomplete}
+                    foldingEnabled={preferences.preferences.folding}
+                    canDelete={editor.cells.length > 1}
+                    collapsed={collapsedCellIds.has(cell.id)}
+                    stream={execution.stream?.cellId === cell.id ? execution.stream : null}
+                    isDropTarget={dropTargetId === cell.id}
+                    onDragCellStart={handleDragCellStart}
+                    onDragCellEnd={handleDragCellEnd}
+                    onCellDragOver={handleCellDragOver}
+                    onCellDrop={handleCellDrop}
+                    onSelect={() => {
+                      editor.setSelectedId(cell.id);
+                      editor.setMode('command');
+                    }}
+                    onEdit={(source) => editor.updateCell(cell.id, source)}
+                    onFocus={() => {
+                      editor.setSelectedId(cell.id);
+                      editor.setMode('edit');
+                    }}
+                    onExecute={() => {
+                      editor.setSelectedId(cell.id);
+                      void execution.executeCell(cell);
+                    }}
+                    onClear={() => editor.clearOutputs(cell.id)}
+                    onDelete={() => editor.removeCell(cell.id)}
+                    onToggleCollapse={() => toggleCellCollapse(cell.id)}
+                    onStatus={ui.setStatus}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
         <NotebookSidebar
+          open={sidebarOpen}
           cells={editor.cells}
           selectedId={editor.selectedId}
           filePath={persistence.filePath}

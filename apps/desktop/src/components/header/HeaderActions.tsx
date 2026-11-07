@@ -4,6 +4,8 @@ import {
   LuFileInput,
   LuFileOutput,
   LuFolderOpen,
+  LuPanelLeft,
+  LuPanelRight,
   LuRotateCcw,
   LuSave,
 } from 'react-icons/lu';
@@ -21,6 +23,10 @@ export type HeaderActionsProps = {
   onExportIpynb: () => void;
   onRestart: () => void;
   isExecuting?: boolean;
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
+  explorerOpen: boolean;
+  onToggleExplorer: () => void;
 };
 
 const iconClassName = 'h-4 w-4';
@@ -35,6 +41,10 @@ const HeaderActions: FC<HeaderActionsProps> = ({
   onExportIpynb,
   onRestart,
   isExecuting = false,
+  sidebarOpen,
+  onToggleSidebar,
+  explorerOpen,
+  onToggleExplorer,
 }) => {
   return (
     <div data-component='HeaderActions' className='flex items-center gap-3'>
@@ -74,6 +84,17 @@ const HeaderActions: FC<HeaderActionsProps> = ({
         disabled={isExecuting}
         icon={<LuRotateCcw aria-hidden='true' className={iconClassName} />}
         onClick={onRestart}
+      />
+      <span aria-hidden='true' className='h-6 w-px bg-neutral-800' />
+      <IconButton
+        label={explorerOpen ? 'Hide file explorer' : 'Show file explorer'}
+        icon={<LuPanelLeft aria-hidden='true' className={iconClassName} />}
+        onClick={onToggleExplorer}
+      />
+      <IconButton
+        label={sidebarOpen ? 'Hide notebook sidebar' : 'Show notebook sidebar'}
+        icon={<LuPanelRight aria-hidden='true' className={iconClassName} />}
+        onClick={onToggleSidebar}
       />
     </div>
   );
