@@ -51,6 +51,34 @@ pub struct DefinitionTarget {
     pub character: u32,
 }
 
+/// An inlay hint mapped back to a notebook cell.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CellInlayHint {
+    pub cell_id: String,
+    pub line: u32,
+    pub character: u32,
+    pub label: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub kind: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub padding_left: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub padding_right: Option<bool>,
+}
+
+/// A semantic token mapped back to a notebook cell. `token_type` is the
+/// legend name (e.g. `function`, `keyword`) sent during initialize.
+#[derive(Debug, Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CellSemanticToken {
+    pub cell_id: String,
+    pub line: u32,
+    pub character: u32,
+    pub length: u32,
+    pub token_type: String,
+}
+
 /// A single text edit mapped back to cell-local coordinates.
 #[derive(Debug, Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -78,7 +106,30 @@ pub struct LspSession {
     client: LspClient,
     spans: Vec<CellSpan>,
     version: i64,
+    doc_line_count: u32,
     root: PathBuf,
+}
+
+/// Decode the LSP semantic-token delta encoding into absolute
+/// (line, character, length, token-type-index) tuples. Returns an empty
+/// iterator result when the data length is not a multiple of 5.
+fn decode_semantic_tokens(data: &[u32]) -> Vec<(u64, u64, u32, usize)> {
+    if data.len() % 5 != 0 {
+        return Vec::new();
+    }
+    let mut tokens = Vec::new();
+    let mut line: u64 = 0;
+    let mut character: u64 = 0;
+    for chunk in data.chunks_exact(5) {
+        line += chunk[0] as u64;
+        if chunk[0] == 0 {
+            character += chunk[1] as u64;
+        } else {
+            character = chunk[1] as u64;
+        }
+        tokens.push((line, character, chunk[2], chunk[3] as usize));
+    }
+    tokens
 }
 
 impl LspSession {
@@ -104,6 +155,7 @@ impl LspSession {
             client,
             spans: Vec::new(),
             version: 0,
+            doc_line_count: 0,
             root,
         })
     }
@@ -120,6 +172,7 @@ impl LspSession {
         let (document, spans) = build_document(cells);
         fs::write(self.root.join("src/main.rs"), &document)
             .map_err(|e| LspError::Spawn(e.to_string()))?;
+        self.doc_line_count = document.lines().count() as u32;
         self.spans = spans;
         self.client.sync_document(&document, self.version)
     }
@@ -270,6 +323,92 @@ impl LspSession {
             (line - span.start_line as u64) as u32,
             character as u32,
         ))
+    }
+
+    /// Request inlay hints for the whole generated document and map each
+    /// hint's position back to cell-local coordinates.
+    pub fn inlay_hints(&self) -> Result<Vec<CellInlayHint>, LspError> {
+        let Some(result) = self.client.inlay_hints(self.doc_line_count)? else {
+            return Ok(Vec::new());
+        };
+        let Some(items) = result.as_array() else {
+            return Ok(Vec::new());
+        };
+        let mut hints = Vec::new();
+        for item in items {
+            let position = item.get("position");
+            let (Some(line), Some(character)) = (
+                position.and_then(|p| p.get("line")).and_then(Value::as_u64),
+                position
+                    .and_then(|p| p.get("character"))
+                    .and_then(Value::as_u64),
+            ) else {
+                continue;
+            };
+            let Some((cell_id, line, character)) = self.unmap_position(line, character) else {
+                continue;
+            };
+            let label = match item.get("label") {
+                Some(Value::String(text)) => text.clone(),
+                Some(Value::Array(parts)) => parts
+                    .iter()
+                    .filter_map(|part| part.get("value").and_then(Value::as_str))
+                    .collect::<String>(),
+                _ => continue,
+            };
+            hints.push(CellInlayHint {
+                cell_id,
+                line,
+                character,
+                label,
+                kind: item
+                    .get("kind")
+                    .and_then(Value::as_u64)
+                    .map(|kind| match kind {
+                        1 => "type".to_owned(),
+                        2 => "parameter".to_owned(),
+                        _ => "other".to_owned(),
+                    }),
+                padding_left: item.get("paddingLeft").and_then(Value::as_bool),
+                padding_right: item.get("paddingRight").and_then(Value::as_bool),
+            });
+        }
+        Ok(hints)
+    }
+
+    /// Request semantic tokens for the whole generated document and decode the
+    /// LSP delta encoding into cell-local ranges.
+    pub fn semantic_tokens(&self) -> Result<Vec<CellSemanticToken>, LspError> {
+        let Some(result) = self.client.semantic_tokens()? else {
+            return Ok(Vec::new());
+        };
+        let Some(data) = result.get("data").and_then(Value::as_array) else {
+            return Ok(Vec::new());
+        };
+        let numbers: Vec<u32> = data
+            .iter()
+            .filter_map(Value::as_u64)
+            .map(|v| v as u32)
+            .collect();
+        let mut tokens = Vec::new();
+        for (line, character, length, type_index) in decode_semantic_tokens(&numbers) {
+            let token_type = LspClient::SEMANTIC_TOKEN_TYPES
+                .get(type_index)
+                .map(|name| (*name).to_owned())
+                .unwrap_or_else(|| "unknown".to_owned());
+            let Some((cell_id, cell_line, cell_character)) = self.unmap_position(line, character)
+            else {
+                continue;
+            };
+            tokens.push(CellSemanticToken {
+                cell_id,
+                line: cell_line,
+                character: cell_character,
+                length,
+                token_type,
+            });
+        }
+        Ok(tokens)
     }
 
     /// Request quick fixes / assists at a cell-local position. Edits that
@@ -517,5 +656,23 @@ mod tests {
         assert_eq!(spans[0].start_line, 1);
         assert_eq!(spans[1].start_line, 3);
         assert_eq!(spans[1].line_count, 2);
+    }
+
+    #[test]
+    fn semantic_token_delta_decoding() {
+        // Two tokens on line 0, then a token on line 2 (deltaLine=2 resets
+        // the character offset).
+        let data = [
+            0, 0, 2, 14, 0, // fn at char 0
+            0, 3, 4, 12, 0, // main at char 3
+            2, 5, 3, 9, 0, // let at line 2 char 5
+        ];
+        let tokens = decode_semantic_tokens(&data);
+        assert_eq!(tokens, vec![(0, 0, 2, 14), (0, 3, 4, 12), (2, 5, 3, 9)]);
+    }
+
+    #[test]
+    fn semantic_token_decode_rejects_bad_length() {
+        assert!(decode_semantic_tokens(&[1, 2, 3]).is_empty());
     }
 }

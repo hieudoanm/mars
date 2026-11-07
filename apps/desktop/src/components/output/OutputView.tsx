@@ -7,8 +7,9 @@ import { sanitizeHtml } from '../../lib/sanitizeHtml';
 import { cn, CodeBlock } from '../shared';
 import 'katex/dist/katex.min.css';
 
-const OUTPUT_SURFACE =
-  'mt-3 overflow-auto rounded-lg bg-neutral-950 p-3 leading-relaxed whitespace-pre-wrap';
+import { OUTPUT_SURFACE } from './outputStyles';
+import TableOutput from './TableOutput';
+import MarkdownPreview from './MarkdownPreview';
 
 const SOURCE_ANNOTATION = /\[mars:cell=(\d+),line=(\d+)\]/g;
 
@@ -29,8 +30,7 @@ const ErrorMessage: FC<{
           key={index}
           type='button'
           className='cursor-pointer text-sky-400 underline decoration-dotted underline-offset-2 hover:text-sky-300'
-          onClick={() => onNavigateSource(cellHash, line)}
-        >
+          onClick={() => onNavigateSource(cellHash, line)}>
           {match[0]}
         </button>
       ) : (
@@ -83,36 +83,7 @@ const OutputView: FC<{
   if (output.type === 'chart') return <ChartOutput spec={output.spec} />;
   if (output.type === 'mime_bundle') return <MimeBundleOutput data={output.data} />;
   if (output.type === 'table') {
-    return (
-      <div data-component='OutputView' className={OUTPUT_SURFACE}>
-        <table className='w-full border-collapse text-sm'>
-          <thead>
-            <tr>
-              {output.columns.map((column, index) => (
-                <th
-                  key={index}
-                  className='border border-neutral-700 bg-neutral-800 p-2 text-left text-neutral-100'>
-                  {column}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {output.rows.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((value, columnIndex) => (
-                  <td
-                    key={columnIndex}
-                    className='border border-neutral-700 bg-neutral-900 p-2 text-left text-neutral-300'>
-                    {value}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+    return <TableOutput columns={output.columns} rows={output.rows} />;
   }
   return <CodeBlock>{JSON.stringify(output, null, 2)}</CodeBlock>;
 };
@@ -147,6 +118,8 @@ const MimeBundleOutput: FC<{ data: MimeBundleData }> = ({ data }) => {
     }
     case 'chart':
       return <ChartSpec value={selected.value} />;
+    case 'markdown':
+      return <MarkdownPreview source={selected.value} />;
     case 'text':
       return <CodeBlock>{selected.value}</CodeBlock>;
   }
@@ -154,14 +127,55 @@ const MimeBundleOutput: FC<{ data: MimeBundleData }> = ({ data }) => {
 MimeBundleOutput.displayName = 'MimeBundleOutput';
 
 const ImageOutput: FC<{ mimeType: string; value: string }> = ({ mimeType, value }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
+  const src = imageDataUri(mimeType, value);
   return (
-    <div data-component='ImageOutput' className='mt-3 flex justify-center rounded-lg bg-white p-3'>
-      <img
-        className='block h-auto max-w-full'
-        src={imageDataUri(mimeType, value)}
-        alt='Notebook output'
-      />
-    </div>
+    <>
+      <div
+        data-component='ImageOutput'
+        className='mt-3 flex justify-center rounded-lg bg-white p-3'>
+        <button
+          type='button'
+          title='View full size'
+          aria-label='View image full size'
+          className='cursor-zoom-in'
+          onClick={() => setExpanded(true)}>
+          <img className='block h-auto max-w-full' src={src} alt='Notebook output' />
+        </button>
+      </div>
+      {expanded ? (
+        <div
+          data-component='ImageLightbox'
+          role='dialog'
+          aria-label='Image output'
+          className={`fixed inset-0 z-50 flex bg-black/80 p-8 ${zoomed ? 'items-start justify-start overflow-auto' : 'items-center justify-center'}`}
+          onClick={() => {
+            setExpanded(false);
+            setZoomed(false);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setExpanded(false);
+              setZoomed(false);
+            }
+          }}>
+          <img
+            className={
+              zoomed
+                ? 'block max-w-none cursor-zoom-out'
+                : 'block max-h-full max-w-full cursor-zoom-in object-contain'
+            }
+            src={src}
+            alt='Notebook output'
+            onClick={(event) => {
+              event.stopPropagation();
+              setZoomed((current) => !current);
+            }}
+          />
+        </div>
+      ) : null}
+    </>
   );
 };
 ImageOutput.displayName = 'ImageOutput';

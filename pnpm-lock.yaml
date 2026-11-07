@@ -205,6 +205,9 @@ importers:
       katex:
         specifier: 0.19.1
         version: 0.19.1
+      rainbowbrackets:
+        specifier: 2.0.2
+        version: 2.0.2
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -2967,6 +2970,9 @@ packages:
   qs@6.17.1:
     resolution: {integrity: sha512-jd3COkaKVgGUW+ZHyEHCG9bH7RoaaiWuMgzsIBjUMVjLAaWGWpoUAVwljVvBHxRu/2qEHnadLGZrkutYUBPQJA==}
     engines: {node: '>=0.6'}
+
+  rainbowbrackets@2.0.2:
+    resolution: {integrity: sha512-1LTemerx5oF7kq51j3Ib0UY9bMIBYUr02V1JDeqAm0YuSbBuvD7waFU1GAlIkBTcXVrzSGoiHgxIlPGCQ2Fi/g==}
 
   range-parser@1.2.0:
     resolution: {integrity: sha512-kA5WQoNVo4t9lNx2kQNFCxKeBl5IbbSNBl1M/tLkw9WCn+hxNBAW5Qh8gdhs63CJnhjJ2zQWFoqPJP2sK1AV5A==}
@@ -6211,6 +6217,10 @@ snapshots:
     dependencies:
       es-define-property: 1.0.1
       side-channel: 1.1.1
+
+  rainbowbrackets@2.0.2:
+    dependencies:
+      '@codemirror/view': 6.43.15
 
   range-parser@1.2.0: {}
 

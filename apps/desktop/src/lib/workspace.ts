@@ -81,6 +81,9 @@ export const writeRecentPath = (path: string): void => {
 };
 
 const TABS_KEY = 'mars.workspace.tabs';
+// Bump when the restore contract changes so stale state from older builds is
+// treated as a first launch instead of silently reopening a notebook.
+export const WORKSPACE_TABS_VERSION = 2;
 const UNTITLED_PREFIX = 'mars.workspace.untitled.';
 
 export type WorkspaceTabEntry = {
@@ -101,9 +104,20 @@ const parseEntry = (value: unknown): WorkspaceTabEntry | null => {
   if (!isRecord(value)) return null;
   const path = typeof value.path === 'string' ? value.path : null;
   const untitledId = typeof value.untitledId === 'string' ? value.untitledId : null;
-  const key = typeof value.key === 'string' ? value.key : (path ?? (untitledId ? `untitled:${untitledId}` : null));
+  const key =
+    typeof value.key === 'string'
+      ? value.key
+      : (path ?? (untitledId ? `untitled:${untitledId}` : null));
   if (!key || (!path && !untitledId)) return null;
   return { key, path, untitledId };
+};
+
+export const hasStoredWorkspaceTabs = (): boolean => {
+  try {
+    return window.localStorage.getItem(TABS_KEY) !== null;
+  } catch {
+    return false;
+  }
 };
 
 export const readWorkspaceTabs = (): WorkspaceTabs | null => {
@@ -112,6 +126,7 @@ export const readWorkspaceTabs = (): WorkspaceTabs | null => {
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
     if (!isRecord(parsed)) return null;
+    if (parsed.version !== WORKSPACE_TABS_VERSION) return null;
     if (Array.isArray(parsed.entries)) {
       const entries = parsed.entries
         .map(parseEntry)
@@ -136,7 +151,10 @@ export const readWorkspaceTabs = (): WorkspaceTabs | null => {
 
 export const writeWorkspaceTabs = (tabs: WorkspaceTabs): void => {
   try {
-    window.localStorage.setItem(TABS_KEY, JSON.stringify(tabs));
+    window.localStorage.setItem(
+      TABS_KEY,
+      JSON.stringify({ ...tabs, version: WORKSPACE_TABS_VERSION }),
+    );
   } catch {
     // best-effort
   }

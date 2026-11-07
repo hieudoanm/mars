@@ -20,6 +20,15 @@ type KeyboardShortcutsOptions = {
   convertSelected: (cellType: CellType) => void;
   moveSelected: (offset: number) => void;
   duplicateSelected: () => void;
+  cutSelected?: () => void;
+  copySelected?: () => void;
+  pasteSelected?: (below: boolean) => void;
+  interruptExecution?: () => void;
+  toggleOutputs?: () => void;
+  selectRelative?: (offset: number) => void;
+  setMarkdownHeading?: (level: number) => void;
+  toggleLineNumbers?: () => void;
+  openSettings?: () => void;
   enabled?: boolean;
 };
 
@@ -41,6 +50,15 @@ export const useKeyboardShortcuts = ({
   convertSelected,
   moveSelected,
   duplicateSelected,
+  cutSelected,
+  copySelected,
+  pasteSelected,
+  interruptExecution,
+  toggleOutputs,
+  selectRelative,
+  setMarkdownHeading,
+  toggleLineNumbers,
+  openSettings,
   enabled = true,
 }: KeyboardShortcutsOptions): void => {
   useEffect(() => {
@@ -103,6 +121,11 @@ export const useKeyboardShortcuts = ({
         executeAll();
         return;
       }
+      if (matches('toggle-line-numbers')) {
+        event.preventDefault();
+        toggleLineNumbers?.();
+        return;
+      }
       if (mode !== 'command' || modifier || isCodeEditor) return;
 
       const commandActions: [string, () => void][] = [
@@ -114,6 +137,16 @@ export const useKeyboardShortcuts = ({
         ['move-down', () => moveSelected(1)],
         ['move-up', () => moveSelected(-1)],
         ['duplicate', () => duplicateSelected()],
+        ['cut-cell', () => cutSelected?.()],
+        ['copy-cell', () => copySelected?.()],
+        ['paste-below', () => pasteSelected?.(true)],
+        ['paste-above', () => pasteSelected?.(false)],
+        ['toggle-outputs', () => toggleOutputs?.()],
+        ['undo-cell', () => undo()],
+        ['select-up', () => selectRelative?.(-1)],
+        ['select-down', () => selectRelative?.(1)],
+        ['help', () => openSettings?.()],
+        ['shortcuts-help', () => openSettings?.()],
       ];
       for (const [id, action] of commandActions) {
         if (matches(id)) {
@@ -122,6 +155,24 @@ export const useKeyboardShortcuts = ({
           setLastCommand('');
           return;
         }
+      }
+      for (let level = 1; level <= 6; level += 1) {
+        if (matches(`heading-${level}`)) {
+          event.preventDefault();
+          setMarkdownHeading?.(level);
+          setLastCommand('');
+          return;
+        }
+      }
+      if (matches('interrupt')) {
+        event.preventDefault();
+        if (lastCommand === getShortcut('interrupt')) {
+          interruptExecution?.();
+          setLastCommand('');
+        } else {
+          setLastCommand(getShortcut('interrupt'));
+        }
+        return;
       }
       if (matches('delete-cell')) {
         event.preventDefault();
@@ -149,6 +200,15 @@ export const useKeyboardShortcuts = ({
     convertSelected,
     moveSelected,
     duplicateSelected,
+    cutSelected,
+    copySelected,
+    pasteSelected,
+    interruptExecution,
+    toggleOutputs,
+    selectRelative,
+    setMarkdownHeading,
+    toggleLineNumbers,
+    openSettings,
     enabled,
   ]);
 };

@@ -66,9 +66,8 @@ describe('notebook chrome components', () => {
     );
     expect(screen.getByText('demo.mars •')).toBeInTheDocument();
     expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
-    const cellButtons = screen.getAllByRole('button');
-    expect(cellButtons[2].className).toContain('bg-orange-950');
-    fireEvent.click(cellButtons[1]);
+    expect(screen.getByTitle('2 · code: 1 + 1').className).toContain('bg-orange-950');
+    fireEvent.click(screen.getByTitle('1 · markdown: # Intro'));
     expect(onSelect).toHaveBeenCalledWith('md');
   });
 

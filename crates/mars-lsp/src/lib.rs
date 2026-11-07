@@ -19,8 +19,8 @@ use std::time::Duration;
 pub mod session;
 
 pub use session::{
-    CellDiagnostic, CellSource, CellTextEdit, DefinitionTarget, Dependencies, LspCodeAction,
-    LspSession,
+    CellDiagnostic, CellInlayHint, CellSemanticToken, CellSource, CellTextEdit, DefinitionTarget,
+    Dependencies, LspCodeAction, LspSession,
 };
 
 use serde_json::{Value, json};
@@ -163,6 +163,34 @@ impl LspClient {
         self.send(&json!({ "jsonrpc": "2.0", "method": method, "params": params }))
     }
 
+    /// Legend sent to the server; token type indices in semantic token data
+    /// refer to this ordered list.
+    pub const SEMANTIC_TOKEN_TYPES: &[&str] = &[
+        "namespace",
+        "type",
+        "class",
+        "enum",
+        "interface",
+        "struct",
+        "typeParameter",
+        "parameter",
+        "variable",
+        "property",
+        "enumMember",
+        "event",
+        "function",
+        "method",
+        "macro",
+        "keyword",
+        "modifier",
+        "comment",
+        "string",
+        "number",
+        "regexp",
+        "operator",
+        "decorator",
+    ];
+
     fn initialize(&mut self) -> Result<(), LspError> {
         let root_uri = document_uri(&self.root);
         let result = self.request(
@@ -175,6 +203,12 @@ impl LspClient {
                         "synchronization": { "didSave": false },
                         "hover": { "contentFormat": ["markdown", "plaintext"] },
                         "completion": { "completionItem": { "snippetSupport": false } },
+                        "semanticTokens": {
+                            "requests": { "full": true },
+                            "tokenTypes": Self::SEMANTIC_TOKEN_TYPES,
+                            "tokenModifiers": [],
+                            "formats": ["relative"]
+                        },
                         "codeAction": {
                             "codeActionLiteralSupport": {
                                 "codeActionKind": {
@@ -246,6 +280,31 @@ impl LspClient {
             .lock()
             .map(|mut guard| std::mem::take(&mut *guard))
             .unwrap_or_default()
+    }
+
+    /// Request inlay hints for the whole document. `line_count` bounds the
+    /// requested range; rust-analyzer returns hints with document positions.
+    pub fn inlay_hints(&self, line_count: u32) -> Result<Option<Value>, LspError> {
+        let result = self.request(
+            "textDocument/inlayHint",
+            json!({
+                "textDocument": { "uri": self.document_uri },
+                "range": {
+                    "start": { "line": 0, "character": 0 },
+                    "end": { "line": line_count, "character": 0 }
+                }
+            }),
+        )?;
+        Ok(if result.is_null() { None } else { Some(result) })
+    }
+
+    /// Request full-document semantic tokens (LSP delta-encoded u32 array).
+    pub fn semantic_tokens(&self) -> Result<Option<Value>, LspError> {
+        let result = self.request(
+            "textDocument/semanticTokens/full",
+            json!({ "textDocument": { "uri": self.document_uri } }),
+        )?;
+        Ok(if result.is_null() { None } else { Some(result) })
     }
 
     pub fn hover(&self, line: u32, character: u32) -> Result<Option<Value>, LspError> {

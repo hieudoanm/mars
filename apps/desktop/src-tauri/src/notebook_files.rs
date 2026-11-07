@@ -22,12 +22,15 @@ fn read_directory(path: &Path, depth: usize) -> Result<Vec<FileExplorerEntry>, S
         .filter_map(Result::ok)
         .filter_map(|entry| {
             let name = entry.file_name().to_string_lossy().into_owned();
-            if name.starts_with('.') || name.ends_with(".checkpoints") {
+            if (name.starts_with('.') && name != ".cargo")
+                || name.ends_with(".checkpoints")
+                || matches!(name.as_str(), "target" | "node_modules")
+            {
                 return None;
             }
             let file_type = entry.file_type().ok()?;
             let entry_path = entry.path();
-            if file_type.is_symlink() || (!file_type.is_dir() && !is_notebook(&entry_path)) {
+            if file_type.is_symlink() || (!file_type.is_dir() && !is_explorer_file(&entry_path)) {
                 return None;
             }
             let children = if file_type.is_dir() && depth < MAX_EXPLORER_DEPTH {
@@ -141,9 +144,15 @@ pub fn restore_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<(), S
         .map_err(|error| error.to_string())
 }
 
-fn is_notebook(path: &Path) -> bool {
-    path.extension()
-        .is_some_and(|extension| extension.eq_ignore_ascii_case("mars"))
+fn is_explorer_file(path: &Path) -> bool {
+    if path.file_name().is_some_and(|name| name == "Cargo.lock") {
+        return true;
+    }
+    path.extension().is_some_and(|extension| {
+        extension.eq_ignore_ascii_case("mars")
+            || extension.eq_ignore_ascii_case("rs")
+            || extension.eq_ignore_ascii_case("toml")
+    })
 }
 
 fn is_case_only_rename(old_path: &str, new_path: &str) -> bool {
@@ -212,6 +221,42 @@ fn open_directory_in_terminal(dir: &std::path::Path) -> Result<(), String> {
     Err("No terminal emulator found".to_owned())
 }
 
+pub fn open_path_external(path: &str) -> Result<(), String> {
+    let target = Path::new(path);
+    if !target.exists() {
+        return Err("File does not exist".to_owned());
+    }
+    open_external(target)
+}
+
+#[cfg(target_os = "macos")]
+fn open_external(path: &Path) -> Result<(), String> {
+    std::process::Command::new("open")
+        .arg(path)
+        .spawn()
+        .map(|_| ())
+        .map_err(|error| error.to_string())
+}
+
+#[cfg(target_os = "windows")]
+fn open_external(path: &Path) -> Result<(), String> {
+    std::process::Command::new("cmd")
+        .args(["/c", "start", ""])
+        .arg(path)
+        .spawn()
+        .map(|_| ())
+        .map_err(|error| error.to_string())
+}
+
+#[cfg(all(unix, not(target_os = "macos")))]
+fn open_external(path: &Path) -> Result<(), String> {
+    std::process::Command::new("xdg-open")
+        .arg(path)
+        .spawn()
+        .map(|_| ())
+        .map_err(|error| error.to_string())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -232,17 +277,35 @@ mod tests {
     }
 
     #[test]
-    fn lists_directories_and_mars_notebooks_only() {
+    fn lists_notebooks_and_rust_project_files() {
         let directory = temporary_directory();
         std::fs::create_dir(directory.join("notebooks")).expect("creates child directory");
         std::fs::write(directory.join("analysis.mars"), "{}").expect("creates notebook");
+        std::fs::write(directory.join("Cargo.toml"), "[package]").expect("creates manifest");
+        std::fs::write(directory.join("Cargo.lock"), "").expect("creates lockfile");
+        std::fs::write(directory.join("main.rs"), "fn main() {}").expect("creates source");
         std::fs::write(directory.join("notes.txt"), "ignored").expect("creates text file");
+        std::fs::create_dir(directory.join("target")).expect("creates target directory");
+        std::fs::write(directory.join("target").join("build.rs"), "").expect("creates build file");
 
         let entries = list_notebook_files(&directory).expect("lists directory");
+        let names = entries
+            .iter()
+            .map(|entry| entry.name.as_str())
+            .collect::<Vec<_>>();
 
-        assert_eq!(entries.len(), 2);
-        assert!(entries[0].is_directory);
-        assert_eq!(entries[1].name, "analysis.mars");
+        assert_eq!(
+            names,
+            [
+                "notebooks",
+                "analysis.mars",
+                "Cargo.lock",
+                "Cargo.toml",
+                "main.rs"
+            ]
+        );
+        assert!(!names.contains(&"target"));
+        assert!(!names.contains(&"notes.txt"));
         std::fs::remove_dir_all(directory).expect("removes temporary directory");
     }
 

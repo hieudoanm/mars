@@ -74,27 +74,25 @@ describe('NotebookSidebar', () => {
     expect(screen.queryByRole('button', { name: 'Rename file' })).not.toBeInTheDocument();
   });
 
-  it('renders cell navigation buttons', () => {
+  it('renders cell navigation buttons with content previews', () => {
     renderSidebar();
-    expect(screen.getByText('Cell navigation')).toBeInTheDocument();
-    expect(screen.getByText(/markdown/)).toBeInTheDocument();
-    expect(screen.getByText(/code/)).toBeInTheDocument();
-    expect(screen.getByText(/raw/)).toBeInTheDocument();
+    expect(screen.getByText('Cells')).toBeInTheDocument();
+    expect(screen.getByText('# Intro')).toBeInTheDocument();
+    expect(screen.getByText('1 + 1')).toBeInTheDocument();
+    expect(screen.getByText('raw content')).toBeInTheDocument();
   });
 
   it('highlights selected cell', () => {
     renderSidebar({ selectedId: 'cell-code' });
-    const buttons = screen.getAllByRole('button');
-    expect(buttons[1].className).toContain('bg-orange-950');
-    expect(buttons[0].className).not.toContain('bg-orange-950');
-    expect(buttons[2].className).not.toContain('bg-orange-950');
+    expect(screen.getByTitle('2 · code: 1 + 1').className).toContain('bg-orange-950');
+    expect(screen.getByTitle('1 · markdown: # Intro').className).not.toContain('bg-orange-950');
+    expect(screen.getByTitle('3 · raw: raw content').className).not.toContain('bg-orange-950');
   });
 
   it('calls onSelect when a cell button is clicked', () => {
     const onSelect = vi.fn();
     renderSidebar({ onSelect });
-    const buttons = screen.getAllByRole('button');
-    fireEvent.click(buttons[2]);
+    fireEvent.click(screen.getByTitle('3 · raw: raw content'));
     expect(onSelect).toHaveBeenCalledWith('cell-raw');
   });
 
@@ -143,5 +141,37 @@ describe('NotebookSidebar', () => {
   it('displays Windows file names', () => {
     renderSidebar({ filePath: 'C:\\notebooks\\demo.mars' });
     expect(screen.getByText(/demo\.mars/)).toBeInTheDocument();
+  });
+});
+
+describe('NotebookSidebar problems navigation', () => {
+  const problems = [
+    { cellId: 'cell-code', cellIndex: 1, line: 2, severity: 'error' as const, message: 'first' },
+    { cellId: 'cell-code', cellIndex: 1, line: 5, severity: 'warning' as const, message: 'second' },
+  ];
+
+  it('cycles problems with next/previous buttons', () => {
+    const onSelectProblem = vi.fn();
+    render(
+      <NotebookSidebar
+        cells={cells}
+        selectedId='cell-code'
+        filePath={null}
+        isDirty={false}
+        onSelect={vi.fn()}
+        onRenameFile={onRenameFile}
+        problems={problems}
+        onSelectProblem={onSelectProblem}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next problem' }));
+    expect(onSelectProblem).toHaveBeenLastCalledWith(problems[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'Next problem' }));
+    expect(onSelectProblem).toHaveBeenLastCalledWith(problems[1]);
+    // Wraps around to the first problem.
+    fireEvent.click(screen.getByRole('button', { name: 'Next problem' }));
+    expect(onSelectProblem).toHaveBeenLastCalledWith(problems[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'Previous problem' }));
+    expect(onSelectProblem).toHaveBeenLastCalledWith(problems[1]);
   });
 });

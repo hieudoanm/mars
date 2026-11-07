@@ -50,11 +50,15 @@ const renderCell = (
     isExecuting = false,
     canDelete = true,
     collapsed = false,
+    mode = 'command' as const,
+    outputsHidden = false,
   }: {
     selected?: boolean;
     isExecuting?: boolean;
     canDelete?: boolean;
     collapsed?: boolean;
+    mode?: 'edit' | 'command';
+    outputsHidden?: boolean;
   } = {},
 ) =>
   render(
@@ -67,6 +71,8 @@ const renderCell = (
       foldingEnabled={true}
       canDelete={canDelete}
       collapsed={collapsed}
+      mode={mode}
+      outputsHidden={outputsHidden}
       onSelect={onSelect}
       onEdit={onEdit}
       onFocus={onFocus}
@@ -123,6 +129,21 @@ describe('NotebookCellView', () => {
     const { container } = renderCell(markdownCell, { selected: true });
     const article = container.querySelector('article');
     expect(article?.className).toContain('border-orange-800');
+  });
+
+  it('shows a command-mode accent on the selected cell', () => {
+    const { container } = renderCell(codeCell, { selected: true, mode: 'command' });
+    expect(container.querySelector('article')?.className).toContain('#f97316');
+  });
+
+  it('shows an edit-mode accent on the selected cell', () => {
+    const { container } = renderCell(codeCell, { selected: true, mode: 'edit' });
+    expect(container.querySelector('article')?.className).toContain('#34d399');
+  });
+
+  it('hides outputs when outputsHidden is set', async () => {
+    renderCell(codeCell, { outputsHidden: true });
+    expect(screen.queryByText('hello world')).not.toBeInTheDocument();
   });
 
   it('marks the running cell with a distinct border', () => {

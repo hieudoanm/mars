@@ -9,12 +9,10 @@ describe('lspHoverText', () => {
   });
 
   it('extracts markdown and plaintext hover contents', () => {
-    expect(
-      lspHoverText({ contents: { kind: 'markdown', value: '```rust\nfn main()\n```' } }),
-    ).toBe('```rust\nfn main()\n```');
-    expect(lspHoverText({ contents: [{ kind: 'plaintext', value: 'a' }, 'b' as never] })).toBe(
-      'a',
+    expect(lspHoverText({ contents: { kind: 'markdown', value: '```rust\nfn main()\n```' } })).toBe(
+      '```rust\nfn main()\n```',
     );
+    expect(lspHoverText({ contents: [{ kind: 'plaintext', value: 'a' }, 'b' as never] })).toBe('a');
   });
 
   it('joins multiple content parts', () => {

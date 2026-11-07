@@ -6,6 +6,9 @@ import {
   LuChevronsUp,
   LuCircleStop,
   LuChevronDown,
+  LuClipboardPaste,
+  LuCopy,
+  LuScissors,
   LuEraser,
   LuFile,
   LuFileCode,
@@ -13,6 +16,8 @@ import {
   LuListChecks,
   LuPlay,
   LuTrash2,
+  LuUndo2,
+  LuRedo2,
 } from 'react-icons/lu';
 import { IconButton } from '../shared';
 
@@ -35,6 +40,16 @@ export type NotebookToolbarControlsProps = {
   onAddRaw: () => void;
   onCollapseAllCells: () => void;
   onExpandAllCells: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
+  cellClipboard?: {
+    onCut: () => void;
+    onCopy: () => void;
+    onPasteBelow: () => void;
+    onPasteAbove: () => void;
+  };
 };
 
 type ToolbarGroupProps = {
@@ -85,6 +100,11 @@ const NotebookToolbarControls: FC<NotebookToolbarControlsProps> = ({
   onAddRaw,
   onCollapseAllCells,
   onExpandAllCells,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  cellClipboard,
 }) => {
   return (
     <div
@@ -173,6 +193,20 @@ const NotebookToolbarControls: FC<NotebookToolbarControlsProps> = ({
           onClick={onRunBelow}
         />
       </ToolbarGroup>
+      <ToolbarGroup label='History'>
+        <IconButton
+          label='Undo (Ctrl+Z)'
+          disabled={!canUndo}
+          icon={<LuUndo2 aria-hidden='true' className={iconClassName} />}
+          onClick={onUndo}
+        />
+        <IconButton
+          label='Redo (Ctrl+Shift+Z)'
+          disabled={!canRedo}
+          icon={<LuRedo2 aria-hidden='true' className={iconClassName} />}
+          onClick={onRedo}
+        />
+      </ToolbarGroup>
       <ToolbarGroup label='Output controls'>
         <IconButton
           label='Clear outputs'
@@ -193,6 +227,30 @@ const NotebookToolbarControls: FC<NotebookToolbarControlsProps> = ({
         />
       </ToolbarGroup>
       <ToolbarGroup label='Cell controls'>
+        {cellClipboard ? (
+          <>
+            <IconButton
+              label='Cut cell (X)'
+              icon={<LuScissors aria-hidden='true' className={iconClassName} />}
+              onClick={cellClipboard.onCut}
+            />
+            <IconButton
+              label='Copy cell (C)'
+              icon={<LuCopy aria-hidden='true' className={iconClassName} />}
+              onClick={cellClipboard.onCopy}
+            />
+            <IconButton
+              label='Paste cell below (V)'
+              icon={<LuClipboardPaste aria-hidden='true' className={iconClassName} />}
+              onClick={cellClipboard.onPasteBelow}
+            />
+            <IconButton
+              label='Paste cell above (Shift+V)'
+              icon={<LuClipboardPaste aria-hidden='true' className={iconClassName} />}
+              onClick={cellClipboard.onPasteAbove}
+            />
+          </>
+        ) : null}
         <IconButton
           label='Add Markdown'
           icon={<LuFileText aria-hidden='true' className={iconClassName} />}

@@ -3,7 +3,7 @@ export type CellDirectives = {
   timeoutMillis: number | null;
 };
 
-const DEP_PREFIX = '// dep:';
+const DEP_PREFIXES = ['// dep:', '// deps:'];
 const TIMEOUT_PREFIX = '// timeout:';
 
 export const parseCellDirectives = (source: string): CellDirectives => {
@@ -11,8 +11,9 @@ export const parseCellDirectives = (source: string): CellDirectives => {
   let timeoutMillis: number | null = null;
   for (const line of source.split('\n')) {
     const trimmed = line.trim();
-    if (trimmed.startsWith(DEP_PREFIX)) {
-      const spec = trimmed.slice(DEP_PREFIX.length).trim();
+    const depPrefix = DEP_PREFIXES.find((prefix) => trimmed.startsWith(prefix));
+    if (depPrefix) {
+      const spec = trimmed.slice(depPrefix.length).trim();
       const at = spec.lastIndexOf('@');
       if (at > 0) {
         dependencies.push([spec.slice(0, at).trim(), spec.slice(at + 1).trim()]);

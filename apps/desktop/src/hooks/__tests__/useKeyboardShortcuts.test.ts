@@ -22,6 +22,15 @@ const setup = (overrides: Partial<Parameters<typeof useKeyboardShortcuts>[0]> = 
     convertSelected: vi.fn(),
     moveSelected: vi.fn(),
     duplicateSelected: vi.fn(),
+    cutSelected: vi.fn(),
+    copySelected: vi.fn(),
+    pasteSelected: vi.fn(),
+    interruptExecution: vi.fn(),
+    toggleOutputs: vi.fn(),
+    selectRelative: vi.fn(),
+    setMarkdownHeading: vi.fn(),
+    toggleLineNumbers: vi.fn(),
+    openSettings: vi.fn(),
   };
   const options = {
     cells,
@@ -64,7 +73,7 @@ describe('useKeyboardShortcuts', () => {
 
   it('supports command mode cell operations and ignores editor typing', () => {
     const { actions } = setup();
-    for (const key of ['a', 'b', 'm', 'y', 'j', 'k', 'c']) {
+    for (const key of ['a', 'b', 'm', 'y', 'j', 'k']) {
       fireEvent.keyDown(window, { key });
     }
     expect(actions.insertCell).toHaveBeenNthCalledWith(1, 0, 'code');
@@ -73,6 +82,7 @@ describe('useKeyboardShortcuts', () => {
     expect(actions.convertSelected).toHaveBeenNthCalledWith(2, 'code');
     expect(actions.moveSelected).toHaveBeenNthCalledWith(1, 1);
     expect(actions.moveSelected).toHaveBeenNthCalledWith(2, -1);
+    fireEvent.keyDown(window, { key: 'c', shiftKey: true });
     expect(actions.duplicateSelected).toHaveBeenCalledOnce();
 
     fireEvent.keyDown(window, { key: 'd' });
@@ -87,6 +97,56 @@ describe('useKeyboardShortcuts', () => {
     fireEvent.keyDown(editor, { key: 'a', bubbles: true });
     expect(actions.insertCell).toHaveBeenCalledTimes(2);
     editor.remove();
+  });
+
+  it('supports Jupyter-style cell clipboard and selection commands', () => {
+    const { actions } = setup();
+    fireEvent.keyDown(window, { key: 'x' });
+    fireEvent.keyDown(window, { key: 'c' });
+    fireEvent.keyDown(window, { key: 'v' });
+    fireEvent.keyDown(window, { key: 'v', shiftKey: true });
+    expect(actions.cutSelected).toHaveBeenCalledOnce();
+    expect(actions.copySelected).toHaveBeenCalledOnce();
+    expect(actions.pasteSelected).toHaveBeenNthCalledWith(1, true);
+    expect(actions.pasteSelected).toHaveBeenNthCalledWith(2, false);
+    fireEvent.keyDown(window, { key: 'ArrowUp' });
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    expect(actions.selectRelative).toHaveBeenNthCalledWith(1, -1);
+    expect(actions.selectRelative).toHaveBeenNthCalledWith(2, 1);
+  });
+
+  it('interrupts the kernel on a double-press of the interrupt key', () => {
+    const { actions } = setup();
+    fireEvent.keyDown(window, { key: 'i' });
+    expect(actions.interruptExecution).not.toHaveBeenCalled();
+    const second = setup({ lastCommand: 'i' });
+    fireEvent.keyDown(window, { key: 'i' });
+    expect(second.actions.interruptExecution).toHaveBeenCalledOnce();
+    second.unmount();
+  });
+
+  it('toggles outputs, undoes, and applies markdown headings in command mode', () => {
+    const { actions } = setup();
+    fireEvent.keyDown(window, { key: 'o' });
+    fireEvent.keyDown(window, { key: 'z' });
+    fireEvent.keyDown(window, { key: '3' });
+    expect(actions.toggleOutputs).toHaveBeenCalledOnce();
+    expect(actions.undo).toHaveBeenCalledOnce();
+    expect(actions.setMarkdownHeading).toHaveBeenCalledWith(3);
+    fireEvent.keyDown(window, { key: 'h' });
+    expect(actions.openSettings).toHaveBeenCalledOnce();
+  });
+
+  it('toggles line numbers with shift+l in any mode', () => {
+    const { actions } = setup({ mode: 'edit' });
+    fireEvent.keyDown(window, { key: 'L', shiftKey: true });
+    expect(actions.toggleLineNumbers).toHaveBeenCalledOnce();
+  });
+
+  it('opens settings for the shortcuts-help command key', () => {
+    const { actions } = setup();
+    fireEvent.keyDown(window, { key: '?' });
+    expect(actions.openSettings).toHaveBeenCalledOnce();
   });
 
   it('does nothing for navigation commands without a selected cell and removes listener', () => {

@@ -4,6 +4,7 @@ export { default as Button } from './Button';
 export type { ButtonAlign, ButtonProps, ButtonSize, ButtonVariant } from './Button';
 export { default as Checkbox } from './Checkbox';
 export type { CheckboxProps } from './Checkbox';
+export { default as ErrorBoundary } from './ErrorBoundary';
 export { cn } from './cn';
 export type { ClassName } from './cn';
 export { default as CodeBlock } from './CodeBlock';

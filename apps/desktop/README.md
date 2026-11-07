@@ -115,6 +115,15 @@ for Markdown export. Keep that boundary intact when adding features.
 | `A` / `B`        | Insert a cell above / below in command mode     |
 | `D`, `D`         | Delete the selected cell in command mode        |
 | `M` / `Y`        | Convert the selected cell to Markdown / code    |
+| `X` / `C`        | Cut / copy the selected cell (command mode)     |
+| `V` / `Shift+V`  | Paste the cell clipboard below / above          |
+| `I`, `I`         | Interrupt the running kernel (command mode)     |
+| `O`              | Toggle the selected cell's outputs              |
+| `Z`              | Undo the last notebook change (command mode)    |
+| `Up` / `Down`    | Move the selection between cells (command mode) |
+| `1`–`6`          | Set a Markdown cell's heading level             |
+| `H` or `?`       | Open the keyboard shortcut reference            |
+| `Shift+L`        | Toggle line numbers (editor preference)         |
 | `S`              | Save the notebook                               |
 | `Escape`         | Enter command mode                              |
 

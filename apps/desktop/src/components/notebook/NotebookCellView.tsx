@@ -27,12 +27,20 @@ export type NotebookCellViewProps = {
   selected: boolean;
   isExecuting: boolean;
   runInfo?: { status: 'success' | 'error' | 'interrupted'; durationMs: number } | null;
+  isQueued?: boolean;
+  inlayHints?: import('../../lib/inlayHints').InlayHint[];
+  semanticTokens?: import('../../lib/kernelService').LspSemanticToken[];
   fontSize: number;
   autocompleteEnabled: boolean;
   foldingEnabled: boolean;
   colorScheme?: 'dark' | 'light';
   canDelete: boolean;
   collapsed: boolean;
+  mode?: 'edit' | 'command';
+  outputsHidden?: boolean;
+  lineNumbersEnabled?: boolean;
+  onToggleOutputs?: () => void;
+  onCellClipboard?: (action: 'cut' | 'copy' | 'paste-below' | 'paste-above') => void;
   stream?: KernelStream | null;
   isDropTarget?: boolean;
   onSelect: () => void;
@@ -47,6 +55,7 @@ export type NotebookCellViewProps = {
   onMergeNext?: () => void;
   onSplitCell?: (offset: number) => void;
   onUpdateTags?: (tags: string[]) => void;
+  onEditMetadata?: () => void;
   onChangeLanguage?: (language: string) => void;
   onShiftSelect?: () => void;
   onChangeType?: (cellType: CellType) => void;
@@ -92,12 +101,20 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   selected,
   isExecuting,
   runInfo = null,
+  isQueued = false,
+  inlayHints = [],
+  semanticTokens = [],
   fontSize,
   autocompleteEnabled,
   foldingEnabled,
   colorScheme = 'dark',
   canDelete,
   collapsed,
+  mode = 'command',
+  outputsHidden = false,
+  lineNumbersEnabled = true,
+  onToggleOutputs,
+  onCellClipboard,
   stream = null,
   isDropTarget = false,
   onSelect,
@@ -112,6 +129,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   onMergeNext,
   onSplitCell,
   onUpdateTags,
+  onEditMetadata,
   onChangeLanguage,
   onShiftSelect,
   onChangeType,
@@ -218,6 +236,22 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
       },
       separatorBefore: true,
     });
+    if (onCellClipboard) {
+      items.push({
+        label: 'Cut cell',
+        onSelect: () => onCellClipboard('cut'),
+        separatorBefore: true,
+      });
+      items.push({ label: 'Copy cell', onSelect: () => onCellClipboard('copy') });
+      items.push({ label: 'Paste cell below', onSelect: () => onCellClipboard('paste-below') });
+      items.push({ label: 'Paste cell above', onSelect: () => onCellClipboard('paste-above') });
+    }
+    if (onToggleOutputs && cell.outputs.length > 0) {
+      items.push({
+        label: outputsHidden ? 'Show outputs' : 'Hide outputs',
+        onSelect: onToggleOutputs,
+      });
+    }
     if (onMoveUp) items.push({ label: 'Move cell up', onSelect: onMoveUp });
     if (onMoveDown) items.push({ label: 'Move cell down', onSelect: onMoveDown });
     if (onMergeNext) {
@@ -225,6 +259,9 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
     }
     if (cell.cell_type === 'code' && onClear) {
       items.push({ label: 'Clear outputs', onSelect: onClear });
+    }
+    if (onEditMetadata) {
+      items.push({ label: 'Edit metadata', onSelect: onEditMetadata });
     }
     const otherTypes = (['markdown', 'code', 'raw'] as CellType[]).filter(
       (type) => type !== cell.cell_type,
@@ -251,7 +288,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
       data-component='NotebookCellView'
       id={`cell-${cell.id}`}
       aria-busy={isExecuting || undefined}
-      className={`flex scroll-mt-6 rounded-xl border [contain-intrinsic-size:auto_14rem] [content-visibility:auto] ${isExecuting ? 'border-amber-400 ring-2 ring-amber-500/40' : isDropTarget ? 'border-orange-500 ring-1 ring-orange-500/60' : selected ? 'border-orange-800 ring-1 ring-orange-950' : 'border-transparent'} bg-neutral-900`}
+      className={`flex scroll-mt-6 rounded-xl border [contain-intrinsic-size:auto_14rem] [content-visibility:auto] ${isExecuting ? 'border-amber-400 ring-2 ring-amber-500/40' : isDropTarget ? 'border-orange-500 ring-1 ring-orange-500/60' : selected ? 'border-orange-800 ring-1 ring-orange-950' : 'border-transparent'} ${selected && !isExecuting && !isDropTarget ? (mode === 'edit' ? 'shadow-[inset_3px_0_0_0_#34d399]' : 'shadow-[inset_3px_0_0_0_#f97316]') : ''} bg-neutral-900`}
       onClick={(event) => {
         if (event.shiftKey && onShiftSelect) onShiftSelect();
         else onSelect();
@@ -280,6 +317,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
           cellLanguage={cellLanguage}
           isExecuting={isExecuting}
           runInfo={runInfo}
+          isQueued={isQueued}
           collapsed={collapsed}
           canDelete={canDelete}
           hasOutputs={cell.outputs.length > 0}
@@ -337,7 +375,10 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
                 fontSize={fontSize}
                 autocompleteEnabled={autocompleteEnabled}
                 foldingEnabled={foldingEnabled}
+                lineNumbersEnabled={lineNumbersEnabled}
                 colorScheme={colorScheme}
+                inlayHints={inlayHints}
+                semanticTokens={semanticTokens}
                 diagnostics={[...diagnosticsForCell(cell), ...(liveDiagnostics ?? [])]}
                 onHoverRequest={cell.cell_type === 'code' && onLspHover ? onLspHover : undefined}
                 extraCompletionSource={completionSource}
@@ -418,7 +459,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
               ) : null}
             </div>
           ) : null}
-          {cell.cell_type === 'code'
+          {cell.cell_type === 'code' && !outputsHidden
             ? cell.outputs.map((output, outputIndex) => (
                 <Suspense key={`${cell.id}-${outputIndex}`} fallback={null}>
                   <CellOutput

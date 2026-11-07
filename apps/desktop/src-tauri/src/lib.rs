@@ -286,6 +286,11 @@ fn open_in_terminal(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn open_path_external(path: String) -> Result<(), String> {
+    notebook_files::open_path_external(&path)
+}
+
+#[tauri::command]
 fn export_notebook_markdown(path: String, content: String) -> Result<(), String> {
     let notebook = from_json(&content).map_err(|error| error.to_string())?;
     let markdown = render_markdown_notebook(&notebook);
@@ -412,6 +417,22 @@ fn lsp_definition(
 }
 
 #[tauri::command]
+fn lsp_inlay_hints(
+    state: tauri::State<AppState>,
+    session: String,
+) -> Result<Vec<mars_lsp::CellInlayHint>, String> {
+    state.lsp.inlay_hints(&session)
+}
+
+#[tauri::command]
+fn lsp_semantic_tokens(
+    state: tauri::State<AppState>,
+    session: String,
+) -> Result<Vec<mars_lsp::CellSemanticToken>, String> {
+    state.lsp.semantic_tokens(&session)
+}
+
+#[tauri::command]
 fn lsp_diagnostics(
     state: tauri::State<AppState>,
     session: String,
@@ -444,6 +465,8 @@ pub fn run() -> tauri::Result<()> {
             lsp_signature_help,
             lsp_code_actions,
             lsp_definition,
+            lsp_inlay_hints,
+            lsp_semantic_tokens,
             lsp_diagnostics,
             configure_kernel,
             open_notebook,
@@ -456,6 +479,7 @@ pub fn run() -> tauri::Result<()> {
             delete_path,
             write_text_file,
             open_in_terminal,
+            open_path_external,
             export_notebook_markdown,
             export_notebook_html,
             export_notebook_pdf,

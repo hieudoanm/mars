@@ -1,8 +1,9 @@
 import { open as openDialog } from '@tauri-apps/plugin-dialog';
-import { type FC, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { LuFilePlus, LuFolderOpen, LuFolderPlus } from 'react-icons/lu';
 import {
   createDirectory,
+  openPathExternal,
   createNotebookFile,
   deletePath,
   listNotebookFiles,
@@ -15,6 +16,7 @@ import { ExplorerEntries } from './ExplorerEntries';
 type FileExplorerProps = {
   currentFilePath: string | null;
   open?: boolean;
+  requestedRootPath?: string | null;
   onOpenNotebook: (path: string) => void;
   onStatus: (status: string) => void;
 };
@@ -32,6 +34,7 @@ const uniqueName = (entries: FileExplorerEntry[], base: string) => {
 const FileExplorer: FC<FileExplorerProps> = ({
   currentFilePath,
   open = true,
+  requestedRootPath = null,
   onOpenNotebook,
   onStatus,
 }) => {
@@ -48,6 +51,16 @@ const FileExplorer: FC<FileExplorerProps> = ({
       new Set(nextEntries.filter((entry) => entry.isDirectory).map((entry) => entry.path)),
     );
   };
+
+  useEffect(() => {
+    if (!requestedRootPath || requestedRootPath === rootPath) return;
+    setRootPath(requestedRootPath);
+    void refresh(requestedRootPath)
+      .then(() => onStatus('Folder opened'))
+      .catch((error: unknown) =>
+        onStatus(error instanceof Error ? error.message : 'Unable to open folder'),
+      );
+  }, [requestedRootPath]);
 
   const openFolder = async () => {
     try {
@@ -165,10 +178,17 @@ const FileExplorer: FC<FileExplorerProps> = ({
                 })
               }
               onOpenNotebook={onOpenNotebook}
+              onOpenFile={(path) => {
+                void openPathExternal(path)
+                  .then(() => onStatus(`Opened ${path.split('/').pop() ?? path}`))
+                  .catch((error: unknown) =>
+                    onStatus(error instanceof Error ? error.message : 'Open failed'),
+                  );
+              }}
             />
           ) : (
             <p className='px-2 text-sm leading-6 text-neutral-500'>
-              Open a folder to browse Mars notebooks.
+              Open a folder to browse notebooks and Rust project files.
             </p>
           )}
         </div>

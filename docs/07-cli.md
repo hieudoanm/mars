@@ -47,7 +47,9 @@ fenced blocks, tables become Markdown tables, LaTeX becomes `$$` blocks, and
 images or offline charts become data-URI images. `markdown` is accepted as an
 alias for `md`.
 
-`mars run` saves partial outputs when execution fails or is interrupted and
+`mars run` prints `Running cell N...` progress for each code cell as it
+executes and a completion summary at the end. It saves partial outputs when
+execution fails or is interrupted and
 returns a nonzero exit code.
 
 By default, a successful run writes execution counts and outputs back to the
@@ -90,14 +92,21 @@ Kernel lifecycle and integration commands:
 ```bash
 mars kernel list
 mars kernel restart
-mars kernel serve [--runtime replay|evcxr] [--notebook <file.mars>]
+mars kernel serve [--runtime replay|evcxr] [--notebook <file.mars>] [--tcp <port>] [--tcp-host <addr>]
 ```
 
 `mars kernel serve` runs a persistent newline-delimited JSON transport. Each
-input line is a serialized `RequestEnvelope`; the corresponding output line is
-a serialized `ResponseEnvelope`. Pass `--notebook` to load the notebook's
-declared Cargo dependencies and lockfile into the kernel; without it the kernel
-starts with an empty dependency set.
+input line is a serialized `RequestEnvelope`; responses are serialized
+`ResponseEnvelope` lines. While an `execute` request runs, the kernel also
+emits `EventEnvelope` lines (`{"id", "event": {"type": "phase"|"chunk"|
+"prompt", ...}}`) for compiling/running phases and stdout/stderr chunks
+before the final response — see `docs/12-kernel-protocol.md`. Interactive
+`mars_prompt` input cannot be answered over this channel. With `--tcp
+<port>` the same protocol is served over TCP (loopback by default; add
+`--tcp-host` to bind another interface) — one kernel session per
+connection — for remote or headless clients. Pass `--notebook`
+to load the notebook's declared Cargo dependencies and lockfile into the
+kernel; without it the kernel starts with an empty dependency set.
 
 ## Examples
 

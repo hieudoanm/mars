@@ -61,6 +61,9 @@ export const useKernelExecution = ({
   const [kernelInfo, setKernelInfo] = useState<KernelInfo | null>(null);
   const [pendingPrompt, setPendingPrompt] = useState<string | null>(null);
   const [queueLength, setQueueLength] = useState(0);
+  const [queuedCellIds, setQueuedCellIds] = useState<ReadonlySet<string>>(new Set());
+  const syncQueuedCellIds = () =>
+    setQueuedCellIds(new Set(queueRef.current.map((item) => item.cell.id)));
   const [runInfo, setRunInfo] = useState<Record<string, CellRunInfo>>({});
   const executionInFlight = useRef(false);
   const queueRef = useRef<{ cell: NotebookCell; label?: string; resolve: (ok: boolean) => void }[]>(
@@ -98,6 +101,7 @@ export const useKernelExecution = ({
       setQueueLength(queueRef.current.length + 1);
       return new Promise<boolean>((resolve) => {
         queueRef.current.push({ cell, label, resolve });
+        syncQueuedCellIds();
       });
     }
     if (manageExecutionState) executionInFlight.current = true;
@@ -188,6 +192,7 @@ export const useKernelExecution = ({
     if (drainingRef.current || queueRef.current.length === 0) return;
     const next = queueRef.current.shift();
     setQueueLength(queueRef.current.length);
+    syncQueuedCellIds();
     if (!next) return;
     drainingRef.current = true;
     void executeCell(next.cell, true, next.label)
@@ -255,6 +260,7 @@ export const useKernelExecution = ({
       await cancelKernelExecution(sessionId);
       const queued = queueRef.current.splice(0);
       setQueueLength(0);
+      syncQueuedCellIds();
       for (const item of queued) item.resolve(false);
       setStatus('Cancelling');
     } catch (error) {
@@ -265,6 +271,7 @@ export const useKernelExecution = ({
   return {
     isExecuting,
     queueLength,
+    queuedCellIds,
     activeCellId,
     stream,
     kernelInfo,

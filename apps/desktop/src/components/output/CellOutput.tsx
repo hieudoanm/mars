@@ -1,14 +1,8 @@
 import { type FC, useState } from 'react';
-import {
-  LuChevronDown,
-  LuChevronRight,
-  LuClipboard,
-  LuDownload,
-  LuTrash2,
-} from 'react-icons/lu';
+import { LuChevronDown, LuChevronRight, LuClipboard, LuDownload, LuTrash2 } from 'react-icons/lu';
 import type { Output } from '../../types/types';
 import OutputView from './OutputView';
-import { IconButton } from '../shared';
+import { ErrorBoundary, IconButton } from '../shared';
 
 type CellOutputProps = {
   output: Output;
@@ -118,7 +112,10 @@ const downloadOutput = (output: Output) => {
     downloadBlob(new Blob([text], { type: 'text/plain' }), EXTENSIONS[mime ?? ''] ?? 'txt');
     return;
   }
-  downloadBlob(new Blob([outputText(output)], { type: 'text/plain' }), TEXT_EXTENSIONS[output.type]);
+  downloadBlob(
+    new Blob([outputText(output)], { type: 'text/plain' }),
+    TEXT_EXTENSIONS[output.type],
+  );
 };
 
 const CellOutput: FC<CellOutputProps> = ({ output, onRemove, onNavigateSource }) => {
@@ -171,7 +168,9 @@ const CellOutput: FC<CellOutputProps> = ({ output, onRemove, onNavigateSource })
         </span>
       </div>
       <div className={collapsed ? 'hidden' : 'p-2'}>
-        <OutputView output={output} onNavigateSource={onNavigateSource} />
+        <ErrorBoundary>
+          <OutputView output={output} onNavigateSource={onNavigateSource} />
+        </ErrorBoundary>
       </div>
     </div>
   );

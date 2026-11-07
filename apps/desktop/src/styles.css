@@ -308,3 +308,121 @@
 [data-theme='mars-light'] .text-amber-300 {
   color: #d97706;
 }
+
+.cm-mars-inlayhint {
+  color: #6b7280;
+  font-style: italic;
+  font-size: 0.85em;
+  user-select: none;
+}
+.cm-mars-inlayhint-param {
+  color: #8b949e;
+}
+
+.cm-bracket-0 {
+  color: #f87171;
+}
+.cm-bracket-1 {
+  color: #fb923c;
+}
+.cm-bracket-2 {
+  color: #facc15;
+}
+.cm-bracket-3 {
+  color: #4ade80;
+}
+.cm-bracket-4 {
+  color: #60a5fa;
+}
+.cm-bracket-5 {
+  color: #a78bfa;
+}
+.cm-bracket-6 {
+  color: #f472b6;
+}
+
+/* LSP semantic tokens — token-type colors layered over grammar highlighting. */
+.cm-semantic-namespace,
+.cm-semantic-type,
+.cm-semantic-class,
+.cm-semantic-enum,
+.cm-semantic-interface,
+.cm-semantic-struct,
+.cm-semantic-typeparameter {
+  color: #4ec9b0;
+}
+.cm-semantic-parameter,
+.cm-semantic-variable,
+.cm-semantic-property,
+.cm-semantic-enummember {
+  color: #9cdcfe;
+}
+.cm-semantic-function,
+.cm-semantic-method,
+.cm-semantic-macro,
+.cm-semantic-decorator,
+.cm-semantic-event {
+  color: #dcdcaa;
+}
+.cm-semantic-keyword,
+.cm-semantic-modifier {
+  color: #569cd6;
+}
+.cm-semantic-comment {
+  color: #6a9955;
+}
+.cm-semantic-string {
+  color: #ce9178;
+}
+.cm-semantic-number {
+  color: #b5cea8;
+}
+.cm-semantic-regexp {
+  color: #d16969;
+}
+.cm-semantic-operator {
+  color: #d4d4d4;
+}
+
+.cm-mars-sticky {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5;
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: #9cdcfe;
+  background: #1e1e1e;
+  border-bottom: 1px solid #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+  pointer-events: none;
+  user-select: none;
+}
+[data-theme='mars-light'] .cm-mars-sticky {
+  background: #fafafa;
+  color: #0550ae;
+  border-bottom-color: #d0d7de;
+}
+
+.mars-tab-strip {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 transparent;
+}
+.mars-tab-strip::-webkit-scrollbar {
+  height: 6px;
+}
+.mars-tab-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mars-tab-strip::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+.mars-tab-strip::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}

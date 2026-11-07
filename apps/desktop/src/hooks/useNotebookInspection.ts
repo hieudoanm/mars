@@ -99,6 +99,10 @@ export const useNotebookInspection = ({
           (item) => ({
             cellId: cell.id,
             cellIndex,
+            line:
+              1 +
+              (cell.source.slice(0, Math.min(item.from, cell.source.length)).match(/\n/g) ?? [])
+                .length,
             severity: item.severity,
             message: item.message,
           }),

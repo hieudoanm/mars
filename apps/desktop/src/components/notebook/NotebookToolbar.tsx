@@ -27,6 +27,11 @@ const NotebookToolbar: FC<NotebookToolbarProps> = ({
   onAddRaw,
   onCollapseAllCells,
   onExpandAllCells,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  cellClipboard,
 }) => {
   return (
     <div data-component='NotebookToolbar' className='mb-8 flex flex-col gap-4'>
@@ -50,6 +55,11 @@ const NotebookToolbar: FC<NotebookToolbarProps> = ({
         onAddRaw={onAddRaw}
         onCollapseAllCells={onCollapseAllCells}
         onExpandAllCells={onExpandAllCells}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={onUndo}
+        onRedo={onRedo}
+        cellClipboard={cellClipboard}
       />
     </div>
   );

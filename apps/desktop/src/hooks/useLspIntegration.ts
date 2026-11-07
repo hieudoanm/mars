@@ -5,12 +5,16 @@ import {
   lspCompletion,
   lspDefinition,
   lspHover,
+  lspInlayHints,
+  lspSemanticTokens,
   lspSignatureHelp,
   lspSync,
   type LspCellTextEdit,
   type LspCodeAction,
   type LspCompletionItem,
   type LspDefinitionTarget,
+  type LspInlayHint,
+  type LspSemanticToken,
 } from '../lib/kernelService';
 import { lspHoverText, signatureHelpText } from '../lib/lsp';
 import { isRunnableCodeCell } from '../lib/cellLanguage';
@@ -29,11 +33,7 @@ export type LspHandlers = {
     character: number,
   ) => Promise<LspDefinitionTarget | null>;
   onDefinitionResult: (target: LspDefinitionTarget) => void;
-  codeActions: (
-    cellId: string,
-    line: number,
-    character: number,
-  ) => Promise<LspCodeAction[]>;
+  codeActions: (cellId: string, line: number, character: number) => Promise<LspCodeAction[]>;
   applyEdits?: (edits: LspCellTextEdit[]) => void;
 };
 
@@ -83,13 +83,26 @@ export const useLspIntegration = ({
   );
 
   const [pendingReveal, setPendingReveal] = useState<LspDefinitionTarget | null>(null);
+  const [inlayHints, setInlayHints] = useState<LspInlayHint[]>([]);
+  const [semanticTokens, setSemanticTokens] = useState<LspSemanticToken[]>([]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void lspInlayHints(sessionId)
+        .then(setInlayHints)
+        .catch(() => {});
+      void lspSemanticTokens(sessionId)
+        .then(setSemanticTokens)
+        .catch(() => {});
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [sessionId, cells]);
   const onRevealCellRef = useRef(onRevealCell);
   onRevealCellRef.current = onRevealCell;
 
   const handlers = useMemo<LspHandlers>(
     () => ({
-      completion: (cellId, line, character) =>
-        lspCompletion(sessionId, cellId, line, character),
+      completion: (cellId, line, character) => lspCompletion(sessionId, cellId, line, character),
       signature: async (cellId, line, character) =>
         signatureHelpText(
           await lspSignatureHelp(sessionId, cellId, line, character).catch(() => null),
@@ -106,13 +119,10 @@ export const useLspIntegration = ({
     [sessionId],
   );
 
-  const reveal = useCallback(
-    (target: LspDefinitionTarget) => {
-      onRevealCellRef.current(target.cellId);
-      setPendingReveal(target);
-    },
-    [],
-  );
+  const reveal = useCallback((target: LspDefinitionTarget) => {
+    onRevealCellRef.current(target.cellId);
+    setPendingReveal(target);
+  }, []);
 
-  return { handleHover, handlers, pendingReveal, reveal };
+  return { handleHover, handlers, pendingReveal, reveal, inlayHints, semanticTokens };
 };

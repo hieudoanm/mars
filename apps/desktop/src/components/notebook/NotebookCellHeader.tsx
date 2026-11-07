@@ -26,6 +26,7 @@ export type NotebookCellHeaderProps = {
   cellLanguage?: string;
   isExecuting: boolean;
   runInfo?: { status: 'success' | 'error' | 'interrupted'; durationMs: number } | null;
+  isQueued?: boolean;
   collapsed: boolean;
   canDelete: boolean;
   hasOutputs: boolean;
@@ -57,6 +58,7 @@ const NotebookCellHeader: FC<NotebookCellHeaderProps> = ({
   cellLanguage = 'rust',
   isExecuting,
   runInfo = null,
+  isQueued = false,
   collapsed,
   canDelete,
   hasOutputs,
@@ -103,6 +105,14 @@ const NotebookCellHeader: FC<NotebookCellHeaderProps> = ({
           {tag}
         </span>
       ))}
+      {isQueued && !isExecuting ? (
+        <span
+          data-component='CellQueuedBadge'
+          title='Waiting for the current cell to finish'
+          className='text-[10px] font-medium text-neutral-500'>
+          Queued
+        </span>
+      ) : null}
       {isExecuting ? (
         <span
           data-component='CellRunningBadge'

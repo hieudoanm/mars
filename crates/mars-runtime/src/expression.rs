@@ -13,30 +13,53 @@ const PROMPT_HELPER: &str = r#"fn mars_prompt(question: &str) -> String {
     line.trim_end_matches(['\r', '\n']).to_owned()
 }
 
-fn mars_table<C: AsRef<str>, R: AsRef<str>>(columns: &[C], rows: &[Vec<R>]) {
-    fn esc(text: &str) -> String {
-        let mut out = String::with_capacity(text.len() + 2);
-        for ch in text.chars() {
-            match ch {
-                '"' => out.push_str("\\\""),
-                '\\' => out.push_str("\\\\"),
-                '\n' => out.push_str("\\n"),
-                '\r' => out.push_str("\\r"),
-                '\t' => out.push_str("\\t"),
-                c if (c as u32) < 0x20 => out.push_str(&format!("\\u{:04x}", c as u32)),
-                c => out.push(c),
-            }
+#[allow(dead_code)]
+fn __mars_esc(text: &str) -> String {
+    let mut out = String::with_capacity(text.len() + 2);
+    for ch in text.chars() {
+        match ch {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if (c as u32) < 0x20 => out.push_str(&format!("\\u{:04x}", c as u32)),
+            c => out.push(c),
         }
-        out
     }
+    out
+}
+
+#[allow(dead_code)]
+fn __mars_json_str(text: &str) -> String {
+    format!("\"{}\"", __mars_esc(text))
+}
+
+#[allow(dead_code)]
+fn __mars_base64(bytes: &[u8]) -> String {
+    const TABLE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut out = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for chunk in bytes.chunks(3) {
+        let b0 = u32::from(chunk[0]);
+        let b1 = u32::from(*chunk.get(1).unwrap_or(&0));
+        let b2 = u32::from(*chunk.get(2).unwrap_or(&0));
+        let value = (b0 << 16) | (b1 << 8) | b2;
+        out.push(TABLE[((value >> 18) & 63) as usize] as char);
+        out.push(TABLE[((value >> 12) & 63) as usize] as char);
+        out.push(if chunk.len() > 1 { TABLE[((value >> 6) & 63) as usize] as char } else { '=' });
+        out.push(if chunk.len() > 2 { TABLE[(value & 63) as usize] as char } else { '=' });
+    }
+    out
+}
+
+#[allow(dead_code)]
+fn mars_table<C: AsRef<str>, R: AsRef<str>>(columns: &[C], rows: &[Vec<R>]) {
     let mut line = String::from("__MARS_TABLE__={\"columns\":[");
     for (index, column) in columns.iter().enumerate() {
         if index > 0 {
             line.push(',');
         }
-        line.push('"');
-        line.push_str(&esc(column.as_ref()));
-        line.push('"');
+        line.push_str(&__mars_json_str(column.as_ref()));
     }
     line.push_str("],\"rows\":[");
     for (row_index, row) in rows.iter().enumerate() {
@@ -48,14 +71,104 @@ fn mars_table<C: AsRef<str>, R: AsRef<str>>(columns: &[C], rows: &[Vec<R>]) {
             if cell_index > 0 {
                 line.push(',');
             }
-            line.push('"');
-            line.push_str(&esc(cell.as_ref()));
-            line.push('"');
+            line.push_str(&__mars_json_str(cell.as_ref()));
         }
         line.push(']');
     }
     line.push_str("]}");
     println!("{line}");
+}
+
+#[allow(dead_code)]
+fn mars_display_html(html: &str) {
+    println!("__MARS_HTML__{}", __mars_json_str(html));
+}
+
+#[allow(dead_code)]
+fn mars_display_latex(latex: &str) {
+    println!("__MARS_LATEX__{}", __mars_json_str(latex));
+}
+
+#[allow(dead_code)]
+fn mars_display_image(mime_type: &str, bytes: &[u8]) {
+    println!(
+        "__MARS_IMAGE__={{\"mime_type\":{},\"data\":\"{}\"}}",
+        __mars_json_str(mime_type),
+        __mars_base64(bytes)
+    );
+}
+
+
+#[allow(dead_code)]
+fn __mars_csv_rows(text: &str) -> Vec<Vec<String>> {
+    let mut rows = Vec::new();
+    let mut row = Vec::new();
+    let mut field = String::new();
+    let mut chars = text.chars().peekable();
+    let mut in_quotes = false;
+    while let Some(ch) = chars.next() {
+        if in_quotes {
+            if ch == '"' {
+                if chars.peek() == Some(&'"') {
+                    chars.next();
+                    field.push('"');
+                } else {
+                    in_quotes = false;
+                }
+            } else {
+                field.push(ch);
+            }
+        } else if ch == '"' {
+            in_quotes = true;
+        } else if ch == ',' {
+            row.push(std::mem::take(&mut field));
+        } else if ch == '\n' || ch == '\r' {
+            if ch == '\r' && chars.peek() == Some(&'\n') {
+                chars.next();
+            }
+            row.push(std::mem::take(&mut field));
+            rows.push(std::mem::take(&mut row));
+        } else {
+            field.push(ch);
+        }
+    }
+    if !field.is_empty() || !row.is_empty() {
+        row.push(field);
+        rows.push(row);
+    }
+    rows.retain(|entry| entry.iter().any(|cell| !cell.trim().is_empty()));
+    rows
+}
+
+/// Parse CSV text (first row = header) and render it as a table output.
+#[allow(dead_code)]
+fn mars_csv(text: &str) {
+    let rows = __mars_csv_rows(text);
+    if rows.is_empty() {
+        return;
+    }
+    let header: Vec<String> = rows[0].clone();
+    let body: Vec<Vec<String>> = rows[1..].to_vec();
+    mars_table(&header, &body);
+}
+
+#[allow(dead_code)]
+#[allow(dead_code)]
+fn mars_display_mime(mime_type: &str, data: &str) {
+    println!(
+        "__MARS_MIME__={{{}: {}}}",
+        __mars_json_str(mime_type),
+        __mars_json_str(data)
+    );
+}
+
+#[allow(dead_code)]
+fn mars_display_markdown(markdown: &str) {
+    mars_display_mime("text/markdown", markdown);
+}
+
+fn mars_chart(spec_json: &str) {
+    println!("__MARS_CHART__{spec_json}");
 }
 
 "#;

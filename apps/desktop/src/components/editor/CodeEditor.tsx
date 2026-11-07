@@ -38,6 +38,11 @@ import { type FC, useEffect, useRef } from 'react';
 import type { CellType } from '../../types/types';
 import type { Diagnostic } from '@codemirror/lint';
 import { rustCompletionSource } from '../../lib/rustCompletions';
+import { csvSnippet } from '../../lib/cellCsv';
+import { inlayHintsField, setHintsEffect } from '../../lib/inlayHints';
+import { semanticTokensField, setTokensEffect } from '../../lib/semanticTokens';
+import { stickyScroll } from '../../lib/stickyScroll';
+import { bracketColorizer } from '../../lib/bracketColors';
 
 type CodeEditorProps = {
   cellType: CellType;
@@ -50,6 +55,7 @@ type CodeEditorProps = {
   fontSize?: number;
   autocompleteEnabled?: boolean;
   foldingEnabled?: boolean;
+  lineNumbersEnabled?: boolean;
   colorScheme?: 'dark' | 'light';
   onViewReady?: (view: EditorView | null) => void;
   onHoverRequest?: (line: number, character: number) => Promise<string | null>;
@@ -59,11 +65,9 @@ type CodeEditorProps = {
     line: number,
     character: number,
   ) => Promise<{ cellId: string; line: number; character: number } | null>;
-  onDefinitionResult?: (target: {
-    cellId: string;
-    line: number;
-    character: number;
-  }) => void;
+  onDefinitionResult?: (target: { cellId: string; line: number; character: number }) => void;
+  inlayHints?: import('../../lib/inlayHints').InlayHint[];
+  semanticTokens?: import('../../lib/kernelService').LspSemanticToken[];
   onImageAttachment?: (dataUrl: string, mimeType: string) => string | null;
 };
 
@@ -86,6 +90,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
   fontSize = 13,
   autocompleteEnabled = true,
   foldingEnabled = true,
+  lineNumbersEnabled = true,
   colorScheme = 'dark',
   onViewReady,
   onHoverRequest,
@@ -94,6 +99,8 @@ const CodeEditor: FC<CodeEditorProps> = ({
   onDefinitionRequest,
   onDefinitionResult,
   onImageAttachment,
+  inlayHints = [],
+  semanticTokens = [],
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -108,6 +115,10 @@ const CodeEditor: FC<CodeEditorProps> = ({
   const onDefinitionResultRef = useRef(onDefinitionResult);
   const signatureTooltipRef = useRef<HTMLDivElement | null>(null);
   const valueRef = useRef(value);
+  const inlayHintsRef = useRef(inlayHints);
+  inlayHintsRef.current = inlayHints;
+  const semanticTokensRef = useRef(semanticTokens);
+  semanticTokensRef.current = semanticTokens;
 
   onChangeRef.current = onChange;
   onFocusRef.current = onFocus;
@@ -117,6 +128,13 @@ const CodeEditor: FC<CodeEditorProps> = ({
   onDefinitionRequestRef.current = onDefinitionRequest;
   onDefinitionResultRef.current = onDefinitionResult;
   valueRef.current = value;
+
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    view.dispatch({ effects: setHintsEffect.of(inlayHintsRef.current) });
+    view.dispatch({ effects: setTokensEffect.of(semanticTokensRef.current) });
+  }, [inlayHints, semanticTokens]);
 
   const clearSignatureTooltip = () => {
     signatureTooltipRef.current?.remove();
@@ -175,6 +193,11 @@ const CodeEditor: FC<CodeEditorProps> = ({
         extensions: [
           ...(colorScheme === 'dark' ? [oneDark] : []),
           EditorState.allowMultipleSelections.of(true),
+          inlayHintsField,
+          semanticTokensField,
+          ...(cellType === 'code' && codeLanguage === 'rust'
+            ? [bracketColorizer(), stickyScroll()]
+            : []),
           drawSelection(),
           dropCursor(),
           highlightActiveLine(),
@@ -198,7 +221,13 @@ const CodeEditor: FC<CodeEditorProps> = ({
           ]),
           closeBrackets(),
           bracketMatching(),
-          foldingEnabled ? [foldGutter(), lineNumbers()] : lineNumbers(),
+          ...(lineNumbersEnabled
+            ? foldingEnabled
+              ? [foldGutter(), lineNumbers()]
+              : [lineNumbers()]
+            : foldingEnabled
+              ? [foldGutter()]
+              : []),
           indentOnInput(),
           autocompleteEnabled
             ? autocompletion({
@@ -298,6 +327,20 @@ const CodeEditor: FC<CodeEditorProps> = ({
               return true;
             },
             paste: (event, view) => {
+              if (cellType === 'code') {
+                const text = event.clipboardData?.getData('text/plain') ?? '';
+                const snippet = csvSnippet(text);
+                if (snippet) {
+                  event.preventDefault();
+                  const selection = view.state.selection.main;
+                  view.dispatch({
+                    changes: { from: selection.from, to: selection.to, insert: snippet },
+                    selection: { anchor: selection.from + snippet.length },
+                  });
+                  return true;
+                }
+                return false;
+              }
               const handler = onImageAttachmentRef.current;
               if (!handler || cellType !== 'markdown') return false;
               const items = event.clipboardData?.items;
@@ -389,6 +432,8 @@ const CodeEditor: FC<CodeEditorProps> = ({
       parent: containerRef.current,
     });
     viewRef.current = view;
+    view.dispatch({ effects: setHintsEffect.of(inlayHintsRef.current) });
+    view.dispatch({ effects: setTokensEffect.of(semanticTokensRef.current) });
     onViewReadyRef.current?.(view);
     return () => {
       clearSignatureTooltip();

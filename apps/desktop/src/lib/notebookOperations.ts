@@ -63,6 +63,32 @@ export const createCell = (cellType: CellType): NotebookCell => {
   };
 };
 
+export type PastedCellContent = {
+  source: string;
+  cellType: CellType;
+  language?: string;
+};
+
+export const pasteCellAt = (
+  notebook: Notebook,
+  index: number,
+  content: PastedCellContent,
+): { notebook: Notebook; cell: NotebookCell } => {
+  const { notebook: inserted, cell } = insertCellAt(notebook, index, content.cellType);
+  const withSource = updateCellSource(inserted, cell.id, content.source);
+  const withLanguage = content.language
+    ? withSource.cells.map((entry) =>
+        entry.id === cell.id
+          ? { ...entry, metadata: { ...entry.metadata, language: content.language } }
+          : entry,
+      )
+    : withSource.cells;
+  return {
+    cell,
+    notebook: { ...withSource, cells: withLanguage },
+  };
+};
+
 export const updateCellSource = (notebook: Notebook, id: string, source: string): Notebook => {
   return {
     ...notebook,
@@ -240,16 +266,10 @@ export const deleteCells = (notebook: Notebook, ids: ReadonlySet<string>): Noteb
   return { ...notebook, cells };
 };
 
-export const updateCellLanguage = (
-  notebook: Notebook,
-  id: string,
-  language: string,
-): Notebook => ({
+export const updateCellLanguage = (notebook: Notebook, id: string, language: string): Notebook => ({
   ...notebook,
   cells: notebook.cells.map((cell) =>
-    cell.id === id
-      ? { ...cell, metadata: { ...cell.metadata, language } }
-      : cell,
+    cell.id === id ? { ...cell, metadata: { ...cell.metadata, language } } : cell,
   ),
 });
 
@@ -257,6 +277,17 @@ export const updateCellTags = (notebook: Notebook, id: string, tags: string[]): 
   ...notebook,
   cells: notebook.cells.map((cell) =>
     cell.id === id ? { ...cell, metadata: { ...cell.metadata, tags } } : cell,
+  ),
+});
+
+export const updateCellMetadata = (
+  notebook: Notebook,
+  id: string,
+  metadata: Record<string, unknown>,
+): Notebook => ({
+  ...notebook,
+  cells: notebook.cells.map((cell) =>
+    cell.id === id ? { ...cell, metadata: { ...metadata } } : cell,
   ),
 });
 

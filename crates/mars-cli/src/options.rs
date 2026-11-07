@@ -14,6 +14,8 @@ pub struct RunOptions {
 pub struct ServeOptions {
     pub backend: RuntimeBackendKind,
     pub notebook: Option<String>,
+    pub tcp: Option<u16>,
+    pub tcp_host: Option<String>,
 }
 
 pub fn parse_run_options(args: &[String]) -> Result<RunOptions, String> {
@@ -64,6 +66,8 @@ pub fn parse_serve_options(args: &[String]) -> Result<ServeOptions, String> {
     let mut options = ServeOptions {
         backend: RuntimeBackendKind::Replay,
         notebook: None,
+        tcp: None,
+        tcp_host: None,
     };
     let mut index = 0;
     while index < args.len() {
@@ -82,6 +86,23 @@ pub fn parse_serve_options(args: &[String]) -> Result<ServeOptions, String> {
                 options.notebook = Some(value.clone());
                 index += 2;
             }
+            "--tcp" => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| "missing value for --tcp".to_owned())?;
+                let port: u16 = value
+                    .parse()
+                    .map_err(|_| format!("invalid --tcp port: {value}"))?;
+                options.tcp = Some(port);
+                index += 2;
+            }
+            "--tcp-host" => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| "missing value for --tcp-host".to_owned())?;
+                options.tcp_host = Some(value.clone());
+                index += 2;
+            }
             unknown => return Err(format!("unknown kernel serve option: {unknown}")),
         }
     }
@@ -93,5 +114,28 @@ fn parse_backend(value: &str) -> Result<RuntimeBackendKind, String> {
         "replay" => Ok(RuntimeBackendKind::Replay),
         "evcxr" => Ok(RuntimeBackendKind::Evcxr),
         _ => Err(format!("unsupported runtime backend: {value}")),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn args(list: &[&str]) -> Vec<String> {
+        list.iter().map(|s| s.to_string()).collect()
+    }
+
+    #[test]
+    fn serve_tcp_options_parse() {
+        let options =
+            parse_serve_options(&args(&["--tcp", "9000", "--tcp-host", "0.0.0.0"])).expect("parse");
+        assert_eq!(options.tcp, Some(9000));
+        assert_eq!(options.tcp_host.as_deref(), Some("0.0.0.0"));
+    }
+
+    #[test]
+    fn serve_tcp_requires_port() {
+        assert!(parse_serve_options(&args(&["--tcp"])).is_err());
+        assert!(parse_serve_options(&args(&["--tcp", "abc"])).is_err());
     }
 }

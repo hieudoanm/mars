@@ -4,9 +4,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /** Extract the `metadata.attachments` map (name → data URL) from a cell. */
-export const getCellAttachments = (
-  metadata: Record<string, unknown>,
-): Record<string, string> => {
+export const getCellAttachments = (metadata: Record<string, unknown>): Record<string, string> => {
   const raw = metadata['attachments'];
   if (!isRecord(raw)) return {};
   const result: Record<string, string> = {};

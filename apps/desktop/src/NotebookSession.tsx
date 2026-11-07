@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState, type FC } from 'react';
-import type { Notebook } from './types/types';
+import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react';
+import type { Notebook, NotebookCell } from './types/types';
 import type { EditorPreferences } from './hooks/useEditorPreferences';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { copyCellToClipboard, pasteCellFromClipboard } from './lib/cellClipboard';
 import { useKernelExecution } from './hooks/useKernelExecution';
 import { useNotebookEditor } from './hooks/useNotebookEditor';
 import { useNotebookPersistence } from './hooks/useNotebookPersistence';
@@ -10,9 +11,10 @@ import { useNotebookUiState } from './hooks/useNotebookUiState';
 import { useSessionRestore } from './hooks/useSessionRestore';
 import { useNotebookInspection } from './hooks/useNotebookInspection';
 import NotebookCellList from './components/notebook/NotebookCellList';
-import NotebookSidebar from './components/notebook/NotebookSidebar';
+import CellMetadataDialog from './components/notebook/CellMetadataDialog';
+import NotebookExplorer from './components/notebook/NotebookExplorer';
 import NotebookStatusBar from './components/notebook/NotebookStatusBar';
-import NotebookToolbar from './components/notebook/NotebookToolbar';
+import NotebookEditorToolbar from './components/notebook/NotebookEditorToolbar';
 import NotebookHeader from './components/header/NotebookHeader';
 import NotebookSessionOverlays from './components/notebook/NotebookSessionOverlays';
 import { ToastViewport } from './components/shared';
@@ -23,33 +25,14 @@ import { useLspIntegration } from './hooks/useLspIntegration';
 import { useCellInteractions } from './hooks/useCellInteractions';
 import { cellSourceHash } from './lib/cellHash';
 import { isRunnableCodeCell } from './lib/cellLanguage';
-
-const createInitialNotebook = (): Notebook => ({
-  format_version: 2,
-  metadata: { language: 'rust', title: 'Untitled notebook' },
-  cells: [
-    {
-      id: crypto.randomUUID(),
-      cell_type: 'markdown',
-      source: '# Welcome to Mars\n\nExplore ideas. Execute code. Discover possibilities.',
-      execution_count: null,
-      outputs: [],
-      metadata: {},
-    },
-    {
-      id: crypto.randomUUID(),
-      cell_type: 'code',
-      source: 'println!("Hello from Mars!");',
-      execution_count: null,
-      outputs: [],
-      metadata: {},
-    },
-  ],
-});
+import { createInitialNotebook } from './lib/initialNotebook';
+import { useNotebookCommands } from './hooks/useNotebookCommands';
+import type { LspInlayHint } from './lib/kernelService';
 
 export type SessionPreferences = EditorPreferences & {
   fontSize: number;
   updateFontSize: (value: number) => void;
+  toggleLineNumbers: () => void;
   colorScheme: 'dark' | 'light';
 };
 
@@ -144,6 +127,7 @@ const NotebookSession: FC<NotebookSessionProps> = ({
   } = useCellInteractions({ editor, executeCells: execution.executeCells });
   const { collapsedCellIds, setCollapsedCellIds, dialogs, setDialogOpen } = ui;
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [metadataCell, setMetadataCell] = useState<NotebookCell | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const toggleCellCollapse = (id: string) => {
     setCollapsedCellIds((current) => {
@@ -155,6 +139,56 @@ const NotebookSession: FC<NotebookSessionProps> = ({
   };
   const collapseAllCells = () => setCollapsedCellIds(new Set(editor.cells.map((cell) => cell.id)));
   const expandAllCells = () => setCollapsedCellIds(new Set());
+  const [hiddenOutputCellIds, setHiddenOutputCellIds] = useState<ReadonlySet<string>>(new Set());
+  const toggleCellOutputs = (id: string) => {
+    setHiddenOutputCellIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const selectedCell = editor.cells[editor.selectedIndex];
+  const handleCellClipboard = useCallback(
+    (cell: NotebookCell, action: 'cut' | 'copy' | 'paste-below' | 'paste-above') => {
+      if (action === 'cut' || action === 'copy') {
+        copyCellToClipboard(cell);
+        if (action === 'cut') editor.deleteCellsByIds(new Set([cell.id]));
+        return;
+      }
+      const entry = pasteCellFromClipboard();
+      if (!entry) {
+        ui.setStatus('Clipboard is empty — copy or cut a cell first');
+        return;
+      }
+      const index = editor.cells.findIndex((entry2) => entry2.id === cell.id);
+      if (index < 0) return;
+      editor.pasteCell(action === 'paste-below' ? index + 1 : index, entry);
+    },
+    [editor, ui],
+  );
+  const pasteSelected = useCallback(
+    (below: boolean) => {
+      if (!selectedCell) return;
+      handleCellClipboard(selectedCell, below ? 'paste-below' : 'paste-above');
+    },
+    [selectedCell, handleCellClipboard],
+  );
+  const selectRelative = useCallback(
+    (offset: number) => {
+      const next = editor.cells[editor.selectedIndex + offset];
+      if (next) editor.setSelectedId(next.id);
+    },
+    [editor],
+  );
+  const setMarkdownHeading = useCallback(
+    (level: number) => {
+      if (!selectedCell || selectedCell.cell_type !== 'markdown') return;
+      const withoutHeading = selectedCell.source.replace(/^\s*#{1,6}\s*/, '');
+      editor.updateCell(selectedCell.id, `${'#'.repeat(level)} ${withoutHeading}`);
+    },
+    [selectedCell, editor],
+  );
 
   useKeyboardShortcuts({
     cells: editor.cells,
@@ -174,6 +208,15 @@ const NotebookSession: FC<NotebookSessionProps> = ({
     convertSelected: editor.convertSelected,
     moveSelected: editor.moveSelected,
     duplicateSelected: editor.duplicateSelected,
+    cutSelected: selectedCell ? () => handleCellClipboard(selectedCell, 'cut') : undefined,
+    copySelected: selectedCell ? () => handleCellClipboard(selectedCell, 'copy') : undefined,
+    pasteSelected,
+    interruptExecution: () => void execution.cancelExecution(),
+    toggleOutputs: selectedCell ? () => toggleCellOutputs(selectedCell.id) : undefined,
+    selectRelative,
+    setMarkdownHeading,
+    toggleLineNumbers: preferences.toggleLineNumbers,
+    openSettings: onOpenSettings,
     enabled: isActive,
   });
 
@@ -212,6 +255,8 @@ const NotebookSession: FC<NotebookSessionProps> = ({
     handlers: lspHandlers,
     pendingReveal,
     reveal: revealLspTarget,
+    inlayHints,
+    semanticTokens,
   } = useLspIntegration({
     sessionId,
     cells: editor.cells,
@@ -230,8 +275,37 @@ const NotebookSession: FC<NotebookSessionProps> = ({
     [editor.cells, revealLspTarget],
   );
 
-  const paletteActionsRef = useRef<Record<string, () => void>>({});
-  paletteActionsRef.current = {
+  const semanticTokensByCell = useMemo(() => {
+    const map = new Map<string, import('./lib/kernelService').LspSemanticToken[]>();
+    for (const token of semanticTokens) {
+      const list = map.get(token.cellId) ?? [];
+      list.push(token);
+      map.set(token.cellId, list);
+    }
+    return map;
+  }, [semanticTokens]);
+
+  const inlayHintsByCell = useMemo(() => {
+    const grouped = new Map<string, LspInlayHint[]>();
+    for (const hint of preferences.inlayHints ? inlayHints : []) {
+      const list = grouped.get(hint.cellId) ?? [];
+      list.push(hint);
+      grouped.set(hint.cellId, list);
+    }
+    return grouped;
+  }, [inlayHints, preferences.inlayHints]);
+
+  const fileName = persistence.filePath?.split('/').pop() ?? 'Untitled.mars';
+  const clearAllOutputs = () => {
+    editor.clearOutputs();
+    ui.setStatus('Outputs cleared');
+  };
+  const restartAndRunAll = async () => {
+    await execution.restart();
+    await commands.executeAll();
+  };
+
+  useNotebookCommands(sessionId, registerCommands, {
     'run-cell': () => void execution.executeCell(editor.cells[editor.selectedIndex]),
     'run-all': () => void commands.executeAll(),
     restart: () => void execution.restart(),
@@ -244,45 +318,12 @@ const NotebookSession: FC<NotebookSessionProps> = ({
     checkpoints: () => setDialogOpen('checkpoints', true),
     rename: () => setDialogOpen('rename', true),
     settings: () => onOpenSettings?.(),
-  };
-
-  useEffect(() => {
-    if (!registerCommands) return;
-    const definitions: [string, string, string?][] = [
-      ['run-cell', 'Run selected cell'],
-      ['run-selected', 'Run selected cells'],
-      ['run-all', 'Run all cells'],
-      ['restart', 'Restart runtime'],
-      ['restart-run-all', 'Restart & run all'],
-      ['clear-outputs', 'Clear all outputs'],
-      ['save', 'Save notebook', 'Cmd+S'],
-      ['search', 'Search notebook', 'Cmd+Shift+F'],
-      ['dependencies', 'Edit dependencies'],
-      ['checkpoints', 'Checkpoints / version history'],
-      ['rename', 'Rename notebook'],
-      ['settings', 'Open settings'],
-    ];
-    registerCommands(
-      sessionId,
-      definitions.map(([id, title, hint]) => ({
-        id,
-        title,
-        hint,
-        run: () => paletteActionsRef.current[id]?.(),
-      })),
-    );
-    return () => registerCommands(sessionId, []);
-  }, [registerCommands, sessionId]);
-
-  const fileName = persistence.filePath?.split('/').pop() ?? 'Untitled.mars';
-  const clearAllOutputs = () => {
-    editor.clearOutputs();
-    ui.setStatus('Outputs cleared');
-  };
-  const restartAndRunAll = async () => {
-    await execution.restart();
-    await commands.executeAll();
-  };
+    'toggle-sidebar': () => setSidebarOpen((current) => !current),
+    'edit-metadata': () => {
+      const cell = editor.cells[editor.selectedIndex];
+      if (cell) setMetadataCell(cell);
+    },
+  });
 
   const showTabCloseDialog = tabCloseRequested && persistence.isDirty;
 
@@ -331,27 +372,27 @@ const NotebookSession: FC<NotebookSessionProps> = ({
       <section className='flex min-h-0 flex-1 overflow-hidden'>
         <div className='flex min-h-0 min-w-0 flex-1 flex-col'>
           <div className='mx-auto w-full max-w-4xl px-6 pt-8'>
-            <NotebookToolbar
+            <NotebookEditorToolbar
+              editor={editor}
+              ui={ui}
+              execution={execution}
+              commands={commands}
+              preferences={preferences}
               fileName={fileName}
               isDirty={persistence.isDirty}
-              isExecuting={execution.isExecuting}
-              executionTimeout={ui.executionTimeout}
-              fontSize={preferences.fontSize}
-              onTimeoutChange={ui.setExecutionTimeout}
-              onFontSizeChange={preferences.updateFontSize}
-              onCancel={() => void execution.cancelExecution()}
-              onRunCurrent={commands.executeCurrent}
-              onRunAll={commands.executeAll}
-              onRunAbove={commands.executeAbove}
-              onRunBelow={commands.executeBelow}
-              onClearOutputs={clearAllOutputs}
-              canDeleteCell={editor.cells.length > 1}
-              onDeleteCell={editor.deleteSelected}
-              onAddMarkdown={() => editor.addCell('markdown')}
-              onAddCode={() => editor.addCell('code')}
-              onAddRaw={() => editor.addCell('raw')}
-              onCollapseAllCells={collapseAllCells}
-              onExpandAllCells={expandAllCells}
+              clearAllOutputs={clearAllOutputs}
+              collapseAllCells={collapseAllCells}
+              expandAllCells={expandAllCells}
+              cellClipboard={
+                selectedCell
+                  ? {
+                      onCut: () => handleCellClipboard(selectedCell, 'cut'),
+                      onCopy: () => handleCellClipboard(selectedCell, 'copy'),
+                      onPasteBelow: () => pasteSelected(true),
+                      onPasteAbove: () => pasteSelected(false),
+                    }
+                  : undefined
+              }
             />
           </div>
           <div ref={scrollRef} className='min-h-0 flex-1 overflow-y-auto'>
@@ -359,52 +400,67 @@ const NotebookSession: FC<NotebookSessionProps> = ({
               <NotebookCellList
                 cells={editor.cells}
                 editor={editor}
-                selectedId={editor.selectedId}
-                rangeIds={rangeIds}
-                activeCellId={execution.activeCellId}
-                stream={execution.stream}
-                runInfo={execution.runInfo}
-                fontSize={preferences.fontSize}
-                autocompleteEnabled={preferences.autocomplete}
-                foldingEnabled={preferences.folding}
-                colorScheme={preferences.colorScheme}
-                canDelete={editor.cells.length > 1}
-                collapsedCellIds={collapsedCellIds}
-                toggleCellCollapse={toggleCellCollapse}
-                preDiagnostics={preDiagnostics}
-                lspDiagnosticsByCell={lspDiagnosticsByCell}
-                lsp={lspHandlers}
-                pendingReveal={pendingReveal}
-                onLspHover={handleLspHover}
-                onNavigateSource={navigateToSourceLocation}
-                onRunAllCells={() => void commands.executeAll()}
-                executeCell={(cell) => void execution.executeCell(cell)}
-                setStatus={ui.setStatus}
-                selectCell={selectCell}
-                shiftSelectCell={shiftSelectCell}
-                deleteCellOrRange={deleteCellOrRange}
-                dropTargetId={dropTargetId}
-                onDragCellStart={handleDragCellStart}
-                onDragCellEnd={handleDragCellEnd}
-                onCellDragOver={handleCellDragOver}
-                onCellDrop={handleCellDrop}
+                selection={{
+                  selectedId: editor.selectedId,
+                  rangeIds,
+                  activeCellId: execution.activeCellId,
+                  queuedCellIds: execution.queuedCellIds,
+                  canDelete: editor.cells.length > 1,
+                  collapsedCellIds,
+                  toggleCellCollapse,
+                  mode: editor.mode,
+                  hiddenOutputIds: hiddenOutputCellIds,
+                  toggleCellOutputs,
+                }}
+                runState={{
+                  stream: execution.stream,
+                  runInfo: execution.runInfo,
+                }}
+                editorPreferences={{
+                  fontSize: preferences.fontSize,
+                  autocompleteEnabled: preferences.autocomplete,
+                  foldingEnabled: preferences.folding,
+                  colorScheme: preferences.colorScheme,
+                  lineNumbersEnabled: preferences.lineNumbers,
+                }}
+                lspState={{
+                  inlayHintsByCell,
+                  semanticTokensByCell,
+                  preDiagnostics,
+                  lspDiagnosticsByCell,
+                  lsp: lspHandlers,
+                  pendingReveal,
+                  onLspHover: handleLspHover,
+                  onNavigateSource: navigateToSourceLocation,
+                }}
+                actions={{
+                  executeCell: (cell) => void execution.executeCell(cell),
+                  setStatus: ui.setStatus,
+                  selectCell,
+                  shiftSelectCell,
+                  deleteCellOrRange,
+                  onRunAllCells: () => void commands.executeAll(),
+                  onEditMetadata: setMetadataCell,
+                  onCellClipboard: handleCellClipboard,
+                }}
+                drag={{
+                  dropTargetId,
+                  onDragCellStart: handleDragCellStart,
+                  onDragCellEnd: handleDragCellEnd,
+                  onCellDragOver: handleCellDragOver,
+                  onCellDrop: handleCellDrop,
+                }}
               />
             </div>
           </div>
         </div>
-        <NotebookSidebar
+        <NotebookExplorer
           open={sidebarOpen}
           cells={editor.cells}
           selectedId={editor.selectedId}
           filePath={persistence.filePath}
           isDirty={persistence.isDirty}
-          onSelect={(id) => {
-            editor.setSelectedId(id);
-            editor.setMode('command');
-            window.requestAnimationFrame(() => {
-              document.getElementById(`cell-${id}`)?.scrollIntoView({ block: 'center' });
-            });
-          }}
+          onSelectCell={editor.setSelectedId}
           onRenameFile={persistence.renameFile}
           onOpenSearch={() => setDialogOpen('search', true)}
           onOpenDependencies={() => setDialogOpen('dependencies', true)}
@@ -412,6 +468,8 @@ const NotebookSession: FC<NotebookSessionProps> = ({
           liveVariables={liveVariables}
           onRefreshVariables={refreshVariables}
           problems={problems}
+          onRevealLine={revealLspTarget}
+          setCommandMode={() => editor.setMode('command')}
         />
       </section>
       <NotebookStatusBar
@@ -421,6 +479,7 @@ const NotebookSession: FC<NotebookSessionProps> = ({
         isExecuting={execution.isExecuting}
         sessionId={sessionId}
         queueLength={execution.queueLength}
+        mode={editor.mode}
       />
       <NotebookSessionOverlays
         persistence={persistence}
@@ -440,6 +499,13 @@ const NotebookSession: FC<NotebookSessionProps> = ({
         setShowRename={(open) => setDialogOpen('rename', open)}
         setStatus={ui.setStatus}
         onRevealMatch={(cellId, line, character) => revealLspTarget({ cellId, line, character })}
+      />
+      <CellMetadataDialog
+        cell={metadataCell}
+        onClose={() => setMetadataCell(null)}
+        onSave={(metadata) => {
+          if (metadataCell) editor.updateCellMetadata(metadataCell.id, metadata);
+        }}
       />
       <ToastViewport toasts={ui.toasts} onDismiss={ui.dismissToast} />
     </div>

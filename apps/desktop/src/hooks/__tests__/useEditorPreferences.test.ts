@@ -8,7 +8,12 @@ describe('useEditorPreferences', () => {
   it('defaults', () => {
     const { result } = renderHook(() => useEditorPreferences());
     expect(result.current.fontSize).toBe(13);
-    expect(result.current.preferences).toEqual({ autocomplete: true, folding: true });
+    expect(result.current.preferences).toEqual({
+      autocomplete: true,
+      folding: true,
+      inlayHints: true,
+      lineNumbers: true,
+    });
   });
 
   it('reads stored', () => {
@@ -27,7 +32,12 @@ describe('useEditorPreferences', () => {
     localStorage.setItem('mars.editor.preferences', '{bad');
     const { result } = renderHook(() => useEditorPreferences());
     expect(result.current.fontSize).toBe(13);
-    expect(result.current.preferences).toEqual({ autocomplete: true, folding: true });
+    expect(result.current.preferences).toEqual({
+      autocomplete: true,
+      folding: true,
+      inlayHints: true,
+      lineNumbers: true,
+    });
   });
 
   it('updateFontSize valid/invalid', () => {
@@ -40,10 +50,19 @@ describe('useEditorPreferences', () => {
 
   it('setPreferences persists', () => {
     const { result } = renderHook(() => useEditorPreferences());
-    act(() => result.current.setPreferences({ autocomplete: false, folding: false }));
+    act(() =>
+      result.current.setPreferences({
+        autocomplete: false,
+        folding: false,
+        inlayHints: false,
+        lineNumbers: false,
+      }),
+    );
     expect(JSON.parse(localStorage.getItem('mars.editor.preferences')!)).toEqual({
       autocomplete: false,
       folding: false,
+      inlayHints: false,
+      lineNumbers: false,
     });
   });
 });

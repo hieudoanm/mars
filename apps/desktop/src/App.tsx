@@ -12,6 +12,7 @@ import SettingsDialog, {
 import {
   readLastNotebookPath,
   readRecentPaths,
+  hasStoredWorkspaceTabs,
   readUntitledNotebook,
   readWorkspaceTabs,
   untitledTabKey,
@@ -20,6 +21,8 @@ import {
   writeWorkspaceTabs,
 } from './lib/workspace';
 import TemplatePickerDialog from './components/dialogs/TemplatePickerDialog';
+import WelcomeView from './components/welcome/WelcomeView';
+import { open as openFileDialog } from '@tauri-apps/plugin-dialog';
 import type { NotebookTemplate } from './lib/notebookTemplates';
 import type { Notebook } from './types/types';
 
@@ -30,13 +33,15 @@ type SessionEntry = {
   initialNotebook?: Notebook;
 };
 
-const sessionKey = (session: Pick<SessionEntry, 'initialPath' | 'untitledId'>, path: string | null) =>
-  path ?? (session.untitledId ? untitledTabKey(session.untitledId) : null);
+const sessionKey = (
+  session: Pick<SessionEntry, 'initialPath' | 'untitledId'>,
+  path: string | null,
+) => path ?? (session.untitledId ? untitledTabKey(session.untitledId) : null);
 
 const App: FC = () => {
   const initialSessions = useMemo<SessionEntry[]>(() => {
     const saved = readWorkspaceTabs();
-    if (saved && saved.entries.length > 0) {
+    if (saved) {
       return saved.entries.map((entry) => ({
         id: crypto.randomUUID(),
         initialPath: entry.path,
@@ -47,12 +52,16 @@ const App: FC = () => {
             : undefined,
       }));
     }
+    // Stale tab state from an older build counts as a first launch: show the
+    // welcome view once instead of silently reopening the previous session.
+    if (hasStoredWorkspaceTabs()) return [];
     const lastPath = readLastNotebookPath();
+    if (!lastPath) return [];
     return [
       {
         id: crypto.randomUUID(),
         initialPath: lastPath,
-        untitledId: lastPath ? null : crypto.randomUUID(),
+        untitledId: null,
       },
     ];
   }, []);
@@ -72,6 +81,7 @@ const App: FC = () => {
   const [dirtySessions, setDirtySessions] = useState<Record<string, boolean>>({});
   const [pendingCloseId, setPendingCloseId] = useState<string | null>(null);
   const [explorerOpen, setExplorerOpen] = useState(true);
+  const [explorerRootRequest, setExplorerRootRequest] = useState<string | null>(null);
   const [workspaceStatus, setWorkspaceStatus] = useState('');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -85,6 +95,13 @@ const App: FC = () => {
     updateFontSize: preferences.updateFontSize,
     autocomplete: preferences.preferences.autocomplete,
     folding: preferences.preferences.folding,
+    inlayHints: preferences.preferences.inlayHints,
+    lineNumbers: preferences.preferences.lineNumbers,
+    toggleLineNumbers: () =>
+      preferences.setPreferences((current) => ({
+        ...current,
+        lineNumbers: !current.lineNumbers,
+      })),
     colorScheme: theme === 'mars-light' ? 'light' : 'dark',
   };
 
@@ -161,6 +178,38 @@ const App: FC = () => {
     [sessionPaths, addSession],
   );
 
+  const openNotebookFile = useCallback(async () => {
+    try {
+      const path = await openFileDialog({
+        multiple: false,
+        title: 'Open notebook',
+        filters: [
+          { name: 'Notebooks', extensions: ['mars', 'ipynb'] },
+          { name: 'All files', extensions: ['*'] },
+        ],
+      });
+      if (!path || Array.isArray(path)) return;
+      openPathInWorkspace(path);
+    } catch (error) {
+      setWorkspaceStatus(error instanceof Error ? error.message : 'Unable to open file');
+    }
+  }, [openPathInWorkspace]);
+
+  const openWorkspaceFolder = useCallback(async () => {
+    try {
+      const path = await openFileDialog({
+        directory: true,
+        multiple: false,
+        title: 'Open folder',
+      });
+      if (!path || Array.isArray(path)) return;
+      setExplorerOpen(true);
+      setExplorerRootRequest(path);
+    } catch (error) {
+      setWorkspaceStatus(error instanceof Error ? error.message : 'Unable to open folder');
+    }
+  }, []);
+
   const handlePathChange = useCallback((sessionId: string, path: string | null) => {
     setSessionPaths((current) =>
       current[sessionId] === path ? current : { ...current, [sessionId]: path },
@@ -196,14 +245,13 @@ const App: FC = () => {
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
     const activeSession = sessions.find((session) => session.id === activeId);
     const activePath = activeId ? (sessionPaths[activeId] ?? null) : null;
-    const activeKey = activeSession
-      ? sessionKey(activeSession, activePath)
-      : null;
+    const activeKey = activeSession ? sessionKey(activeSession, activePath) : null;
     writeWorkspaceTabs({
       entries,
-      activeKey: activeKey && entries.some((entry) => entry.key === activeKey)
-        ? activeKey
-        : (entries[0]?.key ?? null),
+      activeKey:
+        activeKey && entries.some((entry) => entry.key === activeKey)
+          ? activeKey
+          : (entries[0]?.key ?? null),
     });
   }, [pathsHydrated, sessions, sessionPaths, activeId]);
 
@@ -270,6 +318,11 @@ const App: FC = () => {
       run: () => setExplorerOpen((c) => !c),
     },
     { id: 'workspace-settings', title: 'Open settings', run: () => setSettingsOpen(true) },
+    {
+      id: 'workspace-toggle-theme',
+      title: 'Toggle color theme',
+      run: () => setTheme((current) => (current === 'mars-dark' ? 'mars-light' : 'mars-dark')),
+    },
     ...(activeId ? (sessionCommands[activeId] ?? []) : []),
   ];
 
@@ -302,10 +355,21 @@ const App: FC = () => {
         <FileExplorer
           currentFilePath={activeId ? (sessionPaths[activeId] ?? null) : null}
           open={explorerOpen}
+          requestedRootPath={explorerRootRequest}
           onOpenNotebook={openPathInWorkspace}
           onStatus={setWorkspaceStatus}
         />
         <div className='relative min-h-0 min-w-0 flex-1'>
+          {sessions.length === 0 ? (
+            <WelcomeView
+              recents={recents}
+              onOpenFile={() => void openNotebookFile()}
+              onOpenFolder={() => void openWorkspaceFolder()}
+              onNewNotebook={() => addSession(null)}
+              onNewTemplate={() => setTemplatePickerOpen(true)}
+              onOpenRecent={openPathInWorkspace}
+            />
+          ) : null}
           {sessions.map((session) => (
             <div
               key={session.id}

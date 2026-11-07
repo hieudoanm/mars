@@ -104,5 +104,18 @@ fn live_rust_analyzer_smoke() {
     );
     assert!(actions_ok, "expected code actions for unused variable cell");
 
+    // Inlay hints should annotate the `let value` binding once rust-analyzer
+    // has finished indexing the scratch project.
+    let hints_ok = retry(
+        &mut || matches!(session.inlay_hints(), Ok(hints) if hints.iter().any(|h| h.cell_id == "c1" && !h.label.is_empty())),
+    );
+    assert!(hints_ok, "expected inlay hints mapped back to cell c1");
+
+    // Semantic tokens should classify at least one token back into a cell.
+    let tokens_ok = retry(
+        &mut || matches!(session.semantic_tokens(), Ok(tokens) if tokens.iter().any(|t| !t.cell_id.is_empty())),
+    );
+    assert!(tokens_ok, "expected semantic tokens mapped back to cells");
+
     let _ = std::fs::remove_dir_all(&base);
 }

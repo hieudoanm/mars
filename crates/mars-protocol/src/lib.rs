@@ -62,6 +62,44 @@ pub enum KernelEvent {
     Output { output: Output },
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KernelStreamPhase {
+    Compiling,
+    Running,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KernelChunkStream {
+    Stdout,
+    Stderr,
+}
+
+/// Wire representation of a runtime `StreamEvent`, emitted by
+/// `mars kernel serve` as `EventEnvelope` lines while an `Execute` request
+/// is in flight, before the final `ResponseEnvelope`.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum KernelStreamEvent {
+    Phase {
+        phase: KernelStreamPhase,
+    },
+    Chunk {
+        stream: KernelChunkStream,
+        data: String,
+    },
+    Prompt {
+        message: String,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct EventEnvelope {
+    pub id: String,
+    pub event: KernelStreamEvent,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

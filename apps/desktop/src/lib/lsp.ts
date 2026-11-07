@@ -24,10 +24,7 @@ export const signatureHelpText = (result: unknown): string | null => {
   if (!isObj(result)) return null;
   const signatures = result.signatures;
   if (!Array.isArray(signatures) || signatures.length === 0) return null;
-  const activeIndex =
-    typeof result.activeSignature === 'number'
-      ? result.activeSignature
-      : 0;
+  const activeIndex = typeof result.activeSignature === 'number' ? result.activeSignature : 0;
   const signature = signatures[activeIndex] ?? signatures[0];
   if (!isObj(signature) || typeof signature.label !== 'string') return null;
   const activeParameter = result.activeParameter;

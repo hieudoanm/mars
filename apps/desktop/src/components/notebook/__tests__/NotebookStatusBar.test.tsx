@@ -17,6 +17,13 @@ describe('NotebookStatusBar', () => {
     expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
   });
 
+  it('shows the current edit mode', () => {
+    const { rerender } = render(<NotebookStatusBar cellCount={1} isDirty={false} mode='edit' />);
+    expect(screen.getByText('Edit')).toBeInTheDocument();
+    rerender(<NotebookStatusBar cellCount={1} isDirty={false} mode='command' />);
+    expect(screen.getByText('Command')).toBeInTheDocument();
+  });
+
   it('renders zero cells', () => {
     render(<NotebookStatusBar cellCount={0} isDirty={false} />);
     expect(screen.getByText('0 cells')).toBeInTheDocument();

@@ -1,25 +1,19 @@
 import { type FC, useMemo, useRef, useState } from 'react';
-import {
-  LuChevronRight,
-  LuCopy,
-  LuHistory,
-  LuPackage,
-  LuPencil,
-  LuRefreshCw,
-  LuSearch,
-  LuList,
-  LuTriangleAlert,
-  LuVariable,
-} from 'react-icons/lu';
+import { LuChevronRight, LuHistory, LuList, LuPackage, LuPencil, LuSearch } from 'react-icons/lu';
 import type { KernelVariable, NotebookCell } from '../../types/types';
 import { fileNameFromPath } from '../../lib/filePath';
+import { cellPreview } from '../../lib/cellPreview';
 import { extractRustSymbols } from '../../lib/rustSymbols';
 import { Badge, IconButton, NavButton, SectionHeading, TextInput } from '../shared';
+import { SidebarSection } from './SidebarSection';
+import { NotebookProblems } from './NotebookProblems';
+import { NotebookVariables } from './NotebookVariables';
 import marsFileLogo from '../../assets/svg/mars-logo-file.svg';
 
 export type NotebookProblem = {
   cellId: string;
   cellIndex: number;
+  line: number;
   severity: string;
   message: string;
 };
@@ -31,6 +25,7 @@ type NotebookSidebarProps = {
   isDirty: boolean;
   open?: boolean;
   onSelect: (id: string) => void;
+  onRevealHeading?: (cellId: string, line: number) => void;
   onRenameFile: (fileName: string) => Promise<boolean>;
   onOpenSearch?: () => void;
   onOpenDependencies?: () => void;
@@ -38,6 +33,13 @@ type NotebookSidebarProps = {
   liveVariables?: KernelVariable[];
   onRefreshVariables?: () => void;
   problems?: NotebookProblem[];
+  onSelectProblem?: (problem: NotebookProblem) => void;
+};
+
+const cellTypeTone: Record<NotebookCell['cell_type'], string> = {
+  code: 'text-sky-400',
+  markdown: 'text-emerald-400',
+  raw: 'text-amber-400',
 };
 
 const NotebookSidebar: FC<NotebookSidebarProps> = ({
@@ -47,6 +49,7 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
   isDirty,
   open = true,
   onSelect,
+  onRevealHeading,
   onRenameFile,
   onOpenSearch,
   onOpenDependencies,
@@ -54,10 +57,10 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
   liveVariables = [],
   onRefreshVariables,
   problems = [],
+  onSelectProblem,
 }) => {
   const fileName = filePath ? fileNameFromPath(filePath) : 'Untitled.mars';
   const [isRenamingFile, setIsRenamingFile] = useState(false);
-  const [expandedVariables, setExpandedVariables] = useState<ReadonlySet<string>>(new Set());
   const [fileDraft, setFileDraft] = useState(fileName);
   const skipFileBlurRef = useRef(false);
 
@@ -75,13 +78,19 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
         if (cell.cell_type !== 'markdown') return [];
         return cell.source
           .split('\n')
-          .map((line) => /^(#{1,6})\s+(.+?)\s*#*\s*$/.exec(line))
-          .filter((match): match is RegExpExecArray => match !== null)
-          .map((match) => ({
+          .map((line, lineIndex) => ({
+            match: /^(#{1,6})\s+(.+?)\s*#*\s*$/.exec(line),
+            lineIndex,
+          }))
+          .filter(
+            (entry): entry is { match: RegExpExecArray; lineIndex: number } => entry.match !== null,
+          )
+          .map((entry) => ({
             cellId: cell.id,
             cellIndex,
-            level: match[1].length,
-            text: match[2],
+            level: entry.match[1].length,
+            text: entry.match[2],
+            line: entry.lineIndex,
           }));
       }),
     [cells],
@@ -115,9 +124,9 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
       data-component='NotebookSidebar'
       aria-hidden={!open}
       className={`shrink-0 overflow-hidden bg-neutral-900 transition-[width] duration-300 ease-in-out ${open ? 'w-56 border-l border-neutral-800' : 'w-0'}`}>
-      <div className='flex h-full w-56 flex-col px-3 py-4'>
+      <div className='h-full w-56 overflow-y-auto px-3 py-4'>
         <SectionHeading>Notebook</SectionHeading>
-        <div className='mb-6 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 p-2.5'>
+        <div className='mb-4 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 p-2.5'>
           <img className='h-7 w-7 shrink-0 rounded-md object-cover' src={marsFileLogo} alt='' />
           <div className='min-w-0 flex-1'>
             {isRenamingFile ? (
@@ -161,7 +170,7 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
             </Badge>
           </div>
         </div>
-        <div className='mb-2 flex items-center justify-between'>
+        <div className='mb-4 flex items-center gap-1'>
           {onOpenSearch ? (
             <IconButton
               label='Search notebook'
@@ -184,35 +193,52 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
             />
           ) : null}
         </div>
-        <SectionHeading>Cell navigation</SectionHeading>
-        <nav className='min-h-0 flex-1 overflow-y-auto' aria-label='Cell navigation'>
-          {cells.map((cell, index) => (
-            <NavButton
-              key={cell.id}
-              active={cell.id === selectedId}
-              index={String(index + 1).padStart(2, '0')}
-              onClick={() => onSelect(cell.id)}>
-              {cell.cell_type}
-            </NavButton>
-          ))}
-        </nav>
+        <SidebarSection id='cells' title={<span className='flex items-center gap-1'>Cells</span>}>
+          <nav aria-label='Cell navigation'>
+            {cells.map((cell, index) => {
+              const preview = cellPreview(cell);
+              return (
+                <NavButton
+                  key={cell.id}
+                  active={cell.id === selectedId}
+                  index={String(index + 1).padStart(2, '0')}
+                  title={`${index + 1} · ${cell.cell_type}${preview ? `: ${preview}` : ''}`}
+                  onClick={() => onSelect(cell.id)}>
+                  <span className='flex min-w-0 flex-1 items-baseline gap-1.5'>
+                    <span
+                      className={`shrink-0 text-[10px] uppercase ${cellTypeTone[cell.cell_type]}`}>
+                      {cell.cell_type.slice(0, 4)}
+                    </span>
+                    <span className='truncate text-xs text-neutral-400'>
+                      {preview || 'Empty cell'}
+                    </span>
+                  </span>
+                </NavButton>
+              );
+            })}
+          </nav>
+        </SidebarSection>
         {toc.length > 0 ? (
-          <>
-            <SectionHeading>
+          <SidebarSection
+            id='contents'
+            title={
               <span className='flex items-center gap-1'>
                 <LuList aria-hidden='true' className='h-3 w-3' />
                 Contents
               </span>
-            </SectionHeading>
-            <ul className='mb-2 max-h-40 overflow-y-auto' aria-label='Notebook contents'>
+            }>
+            <ul aria-label='Notebook contents'>
               {toc.map((entry, index) => (
                 <li key={`${entry.cellId}-${index}`}>
                   <button
                     type='button'
-                    className='flex w-full items-center gap-1.5 px-2 py-1 text-left text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
+                    className='flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-left text-xs text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
                     style={{ paddingLeft: `${0.5 + Math.min(entry.level - 1, 4) * 0.75}rem` }}
                     title={`Cell ${entry.cellIndex + 1}: ${entry.text}`}
-                    onClick={() => onSelect(entry.cellId)}>
+                    onClick={() => {
+                      onSelect(entry.cellId);
+                      onRevealHeading?.(entry.cellId, entry.line);
+                    }}>
                     <LuChevronRight
                       aria-hidden='true'
                       className='h-2.5 w-2.5 shrink-0 text-neutral-600'
@@ -222,116 +248,20 @@ const NotebookSidebar: FC<NotebookSidebarProps> = ({
                 </li>
               ))}
             </ul>
-          </>
+          </SidebarSection>
         ) : null}
         {problems.length > 0 ? (
-          <>
-            <SectionHeading>
-              <span className='flex items-center gap-1'>
-                <LuTriangleAlert aria-hidden='true' className='h-3 w-3 text-amber-400' />
-                Problems
-                <Badge tone='warning'>{problems.length}</Badge>
-              </span>
-            </SectionHeading>
-            <ul className='mb-2 max-h-40 overflow-y-auto' aria-label='Notebook problems'>
-              {problems.slice(0, 50).map((problem, index) => (
-                <li key={`${problem.cellId}-${index}`}>
-                  <button
-                    type='button'
-                    className='flex w-full items-baseline gap-1.5 px-2 py-1 text-left text-xs hover:bg-neutral-800'
-                    onClick={() => onSelect(problem.cellId)}>
-                    <span
-                      aria-hidden='true'
-                      className={`mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full ${problem.severity === 'warning' ? 'bg-amber-400' : 'bg-red-400'}`}
-                    />
-                    <span className='shrink-0 text-neutral-500'>
-                      Cell {problem.cellIndex + 1}
-                    </span>
-                    <span className='truncate text-neutral-400'>{problem.message}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
+          <NotebookProblems
+            problems={problems}
+            onSelectProblem={onSelectProblem}
+            onSelectCell={onSelect}
+          />
         ) : null}
-        {liveVariables.length > 0 || symbols.length > 0 ? (
-          <>
-            <SectionHeading>
-              <span className='flex items-center gap-1'>
-                <LuVariable aria-hidden='true' className='h-3 w-3' />{' '}
-                {liveVariables.length > 0 ? 'Live variables' : 'Variables & symbols'}
-                {onRefreshVariables ? (
-                  <IconButton
-                    label='Refresh variables'
-                    icon={<LuRefreshCw aria-hidden='true' className='h-3 w-3' />}
-                    onClick={onRefreshVariables}
-                  />
-                ) : null}
-              </span>
-            </SectionHeading>
-            {liveVariables.length > 0 ? (
-              <ul className='max-h-48 overflow-y-auto' aria-label='Live kernel variables'>
-                {liveVariables.map((variable) => (
-                  <li key={variable.name} className='px-2 py-1 text-xs'>
-                    <div className='flex items-center justify-between gap-2'>
-                      <span className='truncate font-mono text-neutral-300'>{variable.name}</span>
-                      <span className='flex shrink-0 items-center gap-1'>
-                        <span className='truncate text-neutral-600'>
-                          {variable.typeName ?? variable.value ?? ''}
-                        </span>
-                        <IconButton
-                          label={`Copy ${variable.name}`}
-                          variant='ghost'
-                          className='p-0.5'
-                          icon={<LuCopy aria-hidden='true' className='h-3 w-3' />}
-                          onClick={() => {
-                            void navigator.clipboard
-                              ?.writeText(variable.value ?? variable.name)
-                              .catch(() => {});
-                          }}
-                        />
-                      </span>
-                    </div>
-                    {variable.value !== null ? (
-                      <button
-                        type='button'
-                        className='block w-full text-left font-mono text-[10px] text-neutral-500 hover:text-neutral-300'
-                        title={expandedVariables.has(variable.name) ? 'Collapse value' : 'Expand value'}
-                        onClick={() =>
-                          setExpandedVariables((current) => {
-                            const next = new Set(current);
-                            if (next.has(variable.name)) next.delete(variable.name);
-                            else next.add(variable.name);
-                            return next;
-                          })
-                        }>
-                        <span
-                          className={
-                            expandedVariables.has(variable.name)
-                              ? 'block whitespace-pre-wrap break-all'
-                              : 'block truncate'
-                          }>
-                          {variable.value}
-                        </span>
-                      </button>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <ul className='max-h-40 overflow-y-auto' aria-label='Notebook symbols'>
-                {symbols.map((symbol) => (
-                  <li
-                    key={symbol.name}
-                    className='flex items-center justify-between gap-2 truncate px-2 py-1 text-xs'>
-                    <span className='truncate font-mono text-neutral-300'>{symbol.name}</span>
-                    <span className='shrink-0 text-neutral-600'>{symbol.kind}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        ) : null}
+        <NotebookVariables
+          liveVariables={liveVariables}
+          symbols={symbols}
+          onRefreshVariables={onRefreshVariables}
+        />
       </div>
     </aside>
   );

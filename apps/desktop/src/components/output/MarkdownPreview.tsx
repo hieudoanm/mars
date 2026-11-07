@@ -36,6 +36,32 @@ const sanitizeSchema = {
   },
 };
 
+const textOf = (node: ReactNode): string => {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(textOf).join('');
+  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children);
+  return '';
+};
+
+const slugify = (text: string): string =>
+  text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .trim()
+    .replace(/\s+/g, '-');
+
+const headingId =
+  (level: number): FC<HTMLAttributes<HTMLHeadingElement> & { children?: ReactNode }> =>
+  ({ children, ...props }) => {
+    const Tag = `h${level}` as 'h1';
+    const id = slugify(textOf(children));
+    return (
+      <Tag id={id || undefined} {...props}>
+        {children}
+      </Tag>
+    );
+  };
+
 const ALERT_PATTERN = /^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i;
 
 const ALERT_STYLES: Record<string, { className: string; Icon: typeof LuInfo }> = {
@@ -109,7 +135,15 @@ const MarkdownPreview: FC<MarkdownPreviewProps> = ({ source, attachments }) => (
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[[rehypeSanitize, sanitizeSchema], rehypeRaw]}
       urlTransform={urlTransform}
-      components={{ blockquote: AlertBlockquote }}>
+      components={{
+        blockquote: AlertBlockquote,
+        h1: headingId(1),
+        h2: headingId(2),
+        h3: headingId(3),
+        h4: headingId(4),
+        h5: headingId(5),
+        h6: headingId(6),
+      }}>
       {resolveAttachments(source, attachments)}
     </ReactMarkdown>
   </div>

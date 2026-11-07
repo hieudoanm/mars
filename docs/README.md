@@ -18,6 +18,8 @@ reading order.
 | 08  | [08-development.md](./08-development.md)           | Local development commands        |
 | 09  | [09-release.md](./09-release.md)                   | Release process and checks        |
 | 10  | [10-evcxr-experiment.md](./10-evcxr-experiment.md) | Evcxr runtime experiment          |
+| 11  | [11-runtime-helpers.md](./11-runtime-helpers.md)   | Runtime helpers, directives, attachments |
+| 12  | [12-kernel-protocol.md](./12-kernel-protocol.md)   | Kernel protocol and future architecture |
 
 ## Screenshots
 

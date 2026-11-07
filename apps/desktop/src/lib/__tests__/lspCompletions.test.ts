@@ -42,9 +42,7 @@ describe('createLspCompletionSource', () => {
   });
 
   it('accepts a bare array response', async () => {
-    const source = createLspCompletionSource(
-      vi.fn().mockResolvedValue([{ label: 'x', kind: 6 }]),
-    );
+    const source = createLspCompletionSource(vi.fn().mockResolvedValue([{ label: 'x', kind: 6 }]));
     const result = await source(contextAt('let x', 5));
     expect(result?.options[0]?.label).toBe('x');
   });

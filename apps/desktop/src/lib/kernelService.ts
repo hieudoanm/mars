@@ -240,6 +240,10 @@ export const openInTerminal = async (path: string): Promise<void> => {
   await invoke('open_in_terminal', { path });
 };
 
+export const openPathExternal = async (path: string): Promise<void> => {
+  await invoke('open_path_external', { path });
+};
+
 export const exportMarkdownFile = async (path: string, content: string): Promise<void> => {
   await invoke('export_notebook_markdown', { path, content });
 };
@@ -272,4 +276,30 @@ export const restoreNotebookCheckpoint = async (
   checkpointPath: string,
 ): Promise<void> => {
   await invoke('restore_notebook_checkpoint', { path, checkpointPath });
+};
+
+export type LspInlayHint = {
+  cellId: string;
+  line: number;
+  character: number;
+  label: string;
+  kind?: string;
+  paddingLeft?: boolean;
+  paddingRight?: boolean;
+};
+
+export const lspInlayHints = async (session: string): Promise<LspInlayHint[]> => {
+  return invoke<LspInlayHint[]>('lsp_inlay_hints', { session });
+};
+
+export type LspSemanticToken = {
+  cellId: string;
+  line: number;
+  character: number;
+  length: number;
+  tokenType: string;
+};
+
+export const lspSemanticTokens = async (session: string): Promise<LspSemanticToken[]> => {
+  return invoke<LspSemanticToken[]>('lsp_semantic_tokens', { session });
 };

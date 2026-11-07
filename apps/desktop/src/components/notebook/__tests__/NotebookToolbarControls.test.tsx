@@ -16,6 +16,10 @@ const {
   onAddRaw,
   onCollapseAllCells,
   onExpandAllCells,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
 } = vi.hoisted(() => ({
   onTimeoutChange: vi.fn(),
   onFontSizeChange: vi.fn(),
@@ -31,6 +35,10 @@ const {
   onAddRaw: vi.fn(),
   onCollapseAllCells: vi.fn(),
   onExpandAllCells: vi.fn(),
+  canUndo: true,
+  canRedo: true,
+  onUndo: vi.fn(),
+  onRedo: vi.fn(),
 }));
 
 import NotebookToolbarControls, {
@@ -58,6 +66,10 @@ const renderControls = (overrides: Partial<NotebookToolbarControlsProps> = {}) =
       onAddRaw={onAddRaw}
       onCollapseAllCells={onCollapseAllCells}
       onExpandAllCells={onExpandAllCells}
+      canUndo={canUndo}
+      canRedo={canRedo}
+      onUndo={onUndo}
+      onRedo={onRedo}
       {...overrides}
     />,
   );
@@ -117,6 +129,10 @@ describe('NotebookToolbarControls', () => {
         onAddRaw={onAddRaw}
         onCollapseAllCells={onCollapseAllCells}
         onExpandAllCells={onExpandAllCells}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={onUndo}
+        onRedo={onRedo}
       />,
     );
 

@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 const { openDialog, saveDialog, saveFile, renameFile, executeSource, resetKernel } = vi.hoisted(
   () => ({
@@ -13,6 +13,30 @@ const { openDialog, saveDialog, saveFile, renameFile, executeSource, resetKernel
 );
 
 vi.mock('@tauri-apps/plugin-dialog', () => ({ open: openDialog, save: saveDialog }));
+vi.mock('../lib/initialNotebook', () => ({
+  createInitialNotebook: () => ({
+    format_version: 2,
+    metadata: { language: 'rust', title: 'Untitled notebook' },
+    cells: [
+      {
+        id: 'cell-md',
+        cell_type: 'markdown',
+        source: '# Welcome',
+        execution_count: null,
+        outputs: [],
+        metadata: {},
+      },
+      {
+        id: 'cell-code',
+        cell_type: 'code',
+        source: 'println!("Hello from Mars!");',
+        execution_count: null,
+        outputs: [],
+        metadata: {},
+      },
+    ],
+  }),
+}));
 vi.mock('@tauri-apps/api/window', () => ({
   getCurrentWindow: () => ({ onCloseRequested: vi.fn(), close: vi.fn() }),
 }));
@@ -80,6 +104,16 @@ import App from '../App';
 
 describe('App', () => {
   beforeEach(() => {
+    window.localStorage.clear();
+    const untitledId = crypto.randomUUID();
+    window.localStorage.setItem(
+      'mars.workspace.tabs',
+      JSON.stringify({
+        version: 2,
+        entries: [{ key: `untitled:${untitledId}`, path: null, untitledId }],
+        activeKey: `untitled:${untitledId}`,
+      }),
+    );
     openDialog.mockReset();
     saveDialog.mockReset();
     saveFile.mockReset().mockResolvedValue(undefined);
@@ -176,6 +210,34 @@ describe('App', () => {
     expect(screen.getByText('1 cells')).toBeInTheDocument();
     expect(await screen.findByLabelText('Write Markdown...')).toBeInTheDocument();
     expect(screen.queryByLabelText('Write Rust code...')).not.toBeInTheDocument();
+  });
+
+  it('shows the welcome view for stale tab state from older builds', () => {
+    window.localStorage.setItem(
+      'mars.workspace.tabs',
+      JSON.stringify({ entries: [{ key: 'untitled:old', path: null, untitledId: 'old' }] }),
+    );
+    window.localStorage.setItem('mars.workspace.lastPath', '/notes/old.mars');
+    render(<App />);
+
+    expect(
+      screen.getByText('Explore ideas. Execute code. Discover possibilities.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('2 cells')).not.toBeInTheDocument();
+  });
+
+  it('shows the welcome view when no notebooks are open and starts one', () => {
+    window.localStorage.clear();
+    const { container } = render(<App />);
+
+    const welcome = container.querySelector('[data-component="WelcomeView"]') as HTMLElement;
+    expect(
+      within(welcome).getByText('Explore ideas. Execute code. Discover possibilities.'),
+    ).toBeVisible();
+    expect(screen.queryByText('2 cells')).not.toBeInTheDocument();
+
+    fireEvent.click(within(welcome).getByRole('button', { name: 'New notebook' }));
+    expect(screen.getByText('2 cells')).toBeInTheDocument();
   });
 
   it('prompts before opening a notebook when edits are unsaved', async () => {

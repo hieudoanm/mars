@@ -2,6 +2,7 @@ import { type FC } from 'react';
 import {
   LuChevronDown,
   LuChevronRight,
+  LuFileCode2,
   LuFolderTree,
   LuNotebook,
   LuPencil,
@@ -23,7 +24,10 @@ export type ExplorerEntriesProps = {
   onDelete: (entry: FileExplorerEntry) => void;
   onToggle: (path: string) => void;
   onOpenNotebook: (path: string) => void;
+  onOpenFile: (path: string) => void;
 };
+
+const isNotebook = (name: string) => name.toLowerCase().endsWith('.mars');
 
 const entryActions =
   'flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100';
@@ -41,6 +45,7 @@ export const ExplorerEntries: FC<ExplorerEntriesProps> = ({
   onDelete,
   onToggle,
   onOpenNotebook,
+  onOpenFile,
 }) => (
   <ul className='space-y-0.5' aria-label='Notebook files'>
     {entries.map((entry) => {
@@ -96,8 +101,14 @@ export const ExplorerEntries: FC<ExplorerEntriesProps> = ({
                 type='button'
                 className={`flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm ${currentFilePath === entry.path ? 'bg-orange-950 text-orange-100' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}`}
                 aria-current={currentFilePath === entry.path ? 'page' : undefined}
-                onClick={() => onOpenNotebook(entry.path)}>
-                <LuNotebook aria-hidden='true' className='h-4 w-4 shrink-0 text-orange-500' />
+                onClick={() =>
+                  isNotebook(entry.name) ? onOpenNotebook(entry.path) : onOpenFile(entry.path)
+                }>
+                {isNotebook(entry.name) ? (
+                  <LuNotebook aria-hidden='true' className='h-4 w-4 shrink-0 text-orange-500' />
+                ) : (
+                  <LuFileCode2 aria-hidden='true' className='h-4 w-4 shrink-0 text-sky-400' />
+                )}
                 <span className='truncate'>{entry.name}</span>
               </button>
               <span className={entryActions}>
@@ -130,6 +141,7 @@ export const ExplorerEntries: FC<ExplorerEntriesProps> = ({
                 onDelete={onDelete}
                 onToggle={onToggle}
                 onOpenNotebook={onOpenNotebook}
+                onOpenFile={onOpenFile}
               />
             </div>
           ) : null}

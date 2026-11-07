@@ -3,12 +3,16 @@ import { useEffect, useState } from 'react';
 export type EditorPreferences = {
   autocomplete: boolean;
   folding: boolean;
+  inlayHints: boolean;
+  lineNumbers: boolean;
 };
 
 const DEFAULT_FONT_SIZE = 13;
 const DEFAULT_PREFERENCES: EditorPreferences = {
   autocomplete: true,
   folding: true,
+  inlayHints: true,
+  lineNumbers: true,
 };
 
 const readFontSize = () => {
@@ -25,6 +29,8 @@ const readPreferences = (): EditorPreferences => {
     return {
       autocomplete: stored.autocomplete ?? DEFAULT_PREFERENCES.autocomplete,
       folding: stored.folding ?? DEFAULT_PREFERENCES.folding,
+      inlayHints: stored.inlayHints ?? DEFAULT_PREFERENCES.inlayHints,
+      lineNumbers: stored.lineNumbers ?? DEFAULT_PREFERENCES.lineNumbers,
     };
   } catch {
     return DEFAULT_PREFERENCES;

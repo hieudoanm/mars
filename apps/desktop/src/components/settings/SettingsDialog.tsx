@@ -165,6 +165,23 @@ const SettingsDialog: FC<SettingsDialogProps> = ({
               onEditorPreferencesChange({ ...editorPreferences, folding: event.target.checked })
             }
           />
+          <Checkbox
+            label='Line numbers'
+            checked={editorPreferences.lineNumbers}
+            onChange={(event) =>
+              onEditorPreferencesChange({ ...editorPreferences, lineNumbers: event.target.checked })
+            }
+          />
+          <Checkbox
+            label='Inlay hints'
+            checked={editorPreferences.inlayHints}
+            onChange={(event) =>
+              onEditorPreferencesChange({
+                ...editorPreferences,
+                inlayHints: event.target.checked,
+              })
+            }
+          />
         </div>
         <div className='mb-2 flex items-center justify-between'>
           <p className='text-xs font-medium tracking-wide text-neutral-500 uppercase'>

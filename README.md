@@ -97,6 +97,13 @@ npm run tauri build
 - Long-running cells can be bounded with `mars run analysis.mars --timeout-ms 5000`.
 - Timed-out cells are marked interrupted and not committed to the persistent runtime session.
 
+- The Rust cell editor integrates rust-analyzer over LSP: diagnostics,
+  hover, completion, signature help, go-to-definition, quick fixes, inlay
+  hints, and semantic-token highlighting; Markdown cells render GFM with
+  heading anchors and `> [!NOTE]`-style alerts; long functions pin their
+  signature via sticky scroll, bracket-pair colorization, and inlay hints;
+  `mars_*` display helpers autocomplete with snippets, table outputs filter
+  and sort, and the problems panel cycles diagnostics.
 - See `AGENTS.md` for product architecture and development strategy.
 - Contributor docs: `CONTRIBUTING.md`, `docs/04-architecture.md`, `docs/03-notebook-format.md`, `docs/06-runtime.md`, `docs/07-cli.md`, `docs/05-protocol.md`, `docs/08-development.md`, `docs/09-release.md`, `docs/02-branding.md`.
 

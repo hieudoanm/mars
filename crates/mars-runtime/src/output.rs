@@ -322,18 +322,22 @@ mod tests {
 }
 
 const TABLE_MARKER: &str = "__MARS_TABLE__=";
+const HTML_MARKER: &str = "__MARS_HTML__";
+const LATEX_MARKER: &str = "__MARS_LATEX__";
+const IMAGE_MARKER: &str = "__MARS_IMAGE__=";
+const CHART_MARKER: &str = "__MARS_CHART__";
+const MIME_MARKER: &str = "__MARS_MIME__=";
 
-/// Pull `__MARS_TABLE__=<json>` lines (emitted by the injected `mars_table`
-/// helper) out of stdout text and convert them into `Output::Table` values.
+/// Pull `__MARS_*__` marker lines (emitted by the injected `mars_*` display
+/// helpers) out of stdout text and convert them into rich `Output` values.
 fn extract_table_outputs(text: &str) -> (String, Vec<Output>) {
     let mut kept = Vec::new();
-    let mut tables = Vec::new();
+    let mut outputs = Vec::new();
     for line in text.lines() {
-        if let Some(json) = line.trim_end().strip_prefix(TABLE_MARKER) {
-            if let Some(table) = parse_table_json(json) {
-                tables.push(table);
-                continue;
-            }
+        let trimmed = line.trim_end();
+        if let Some(output) = parse_marker_line(trimmed) {
+            outputs.push(output);
+            continue;
         }
         kept.push(line);
     }
@@ -341,7 +345,42 @@ fn extract_table_outputs(text: &str) -> (String, Vec<Output>) {
     if text.ends_with('\n') && !remaining.is_empty() {
         remaining.push('\n');
     }
-    (remaining, tables)
+    (remaining, outputs)
+}
+
+fn parse_marker_line(line: &str) -> Option<Output> {
+    if let Some(json) = line.strip_prefix(TABLE_MARKER) {
+        return parse_table_json(json);
+    }
+    if let Some(json) = line.strip_prefix(HTML_MARKER) {
+        let html: String = serde_json::from_str(json).ok()?;
+        return Some(Output::Html { html });
+    }
+    if let Some(json) = line.strip_prefix(LATEX_MARKER) {
+        let latex: String = serde_json::from_str(json).ok()?;
+        return Some(Output::Latex { latex });
+    }
+    if let Some(json) = line.strip_prefix(IMAGE_MARKER) {
+        let value: serde_json::Value = serde_json::from_str(json).ok()?;
+        let mime_type = value.get("mime_type")?.as_str()?.to_owned();
+        let data = value.get("data")?.as_str()?.to_owned();
+        return Some(Output::Image { mime_type, data });
+    }
+    if let Some(json) = line.strip_prefix(CHART_MARKER) {
+        let spec: serde_json::Value = serde_json::from_str(json).ok()?;
+        return Some(Output::Chart { spec });
+    }
+    if let Some(json) = line.strip_prefix(MIME_MARKER) {
+        let value: serde_json::Value = serde_json::from_str(json).ok()?;
+        let serde_json::Value::Object(data) = value else {
+            return None;
+        };
+        return Some(Output::MimeBundle {
+            data,
+            metadata: serde_json::Map::new(),
+        });
+    }
+    None
 }
 
 fn parse_table_json(json: &str) -> Option<Output> {
@@ -383,6 +422,24 @@ mod table_tests {
             }
             other => panic!("expected table, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn extracts_display_marker_lines() {
+        let stdout = concat!(
+            "__MARS_HTML__\"<b>hi</b>\"\n",
+            "__MARS_LATEX__\"x^2\"\n",
+            "__MARS_IMAGE__={\"mime_type\":\"image/png\",\"data\":\"AQID\"}\n",
+            "__MARS_CHART__{\"mark\":\"bar\"}\n"
+        );
+        let outputs = execution_outputs(stdout.as_bytes(), b"", "RuntimeError");
+        assert_eq!(outputs.len(), 4);
+        assert!(matches!(&outputs[0], Output::Html { html } if html == "<b>hi</b>"));
+        assert!(matches!(&outputs[1], Output::Latex { latex } if latex == "x^2"));
+        assert!(
+            matches!(&outputs[2], Output::Image { mime_type, data } if mime_type == "image/png" && data == "AQID")
+        );
+        assert!(matches!(&outputs[3], Output::Chart { spec } if spec["mark"] == "bar"));
     }
 
     #[test]

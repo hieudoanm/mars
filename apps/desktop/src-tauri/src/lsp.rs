@@ -115,6 +115,21 @@ impl LspSessions {
         })
     }
 
+    pub fn inlay_hints(&self, session: &str) -> Result<Vec<mars_lsp::CellInlayHint>, String> {
+        self.with_session(session, |lsp| {
+            lsp.inlay_hints().map_err(|error| error.to_string())
+        })
+    }
+
+    pub fn semantic_tokens(
+        &self,
+        session: &str,
+    ) -> Result<Vec<mars_lsp::CellSemanticToken>, String> {
+        self.with_session(session, |lsp| {
+            lsp.semantic_tokens().map_err(|error| error.to_string())
+        })
+    }
+
     pub fn diagnostics(&self, session: &str) -> Result<Vec<mars_lsp::CellDiagnostic>, String> {
         self.with_session(session, |lsp| Ok(lsp.poll_diagnostics()))
     }

@@ -14,35 +14,59 @@ type Editor = ReturnType<typeof useNotebookEditor>;
 export type NotebookCellListProps = {
   cells: NotebookCell[];
   editor: Editor;
-  selectedId: string;
-  rangeIds: ReadonlySet<string>;
-  activeCellId: string | null;
-  stream: KernelStream | null;
-  runInfo: Record<string, CellRunInfo>;
-  fontSize: number;
-  autocompleteEnabled: boolean;
-  foldingEnabled: boolean;
-  colorScheme: 'dark' | 'light';
-  canDelete: boolean;
-  collapsedCellIds: ReadonlySet<string>;
-  toggleCellCollapse: (id: string) => void;
-  preDiagnostics: Record<string, Diagnostic[]>;
-  lspDiagnosticsByCell: Record<string, Diagnostic[]>;
-  lsp: LspHandlers;
-  pendingReveal: LspDefinitionTarget | null;
-  onLspHover: (cellId: string, line: number, character: number) => Promise<string | null>;
-  onNavigateSource?: (cellHash: number, line: number) => void;
-  onRunAllCells?: () => void;
-  executeCell: (cell: NotebookCell) => void;
-  setStatus: (status: string) => void;
-  selectCell: (cell: NotebookCell) => void;
-  shiftSelectCell: (cell: NotebookCell) => void;
-  deleteCellOrRange: (cell: NotebookCell) => void;
-  dropTargetId: string | null;
-  onDragCellStart: (id: string) => void;
-  onDragCellEnd: () => void;
-  onCellDragOver: (id: string) => void;
-  onCellDrop: (id: string) => void;
+  selection: {
+    selectedId: string;
+    rangeIds: ReadonlySet<string>;
+    activeCellId: string | null;
+    queuedCellIds: ReadonlySet<string>;
+    canDelete: boolean;
+    collapsedCellIds: ReadonlySet<string>;
+    toggleCellCollapse: (id: string) => void;
+    mode: 'edit' | 'command';
+    hiddenOutputIds: ReadonlySet<string>;
+    toggleCellOutputs: (id: string) => void;
+  };
+  runState: {
+    stream: KernelStream | null;
+    runInfo: Record<string, CellRunInfo>;
+  };
+  editorPreferences: {
+    fontSize: number;
+    autocompleteEnabled: boolean;
+    foldingEnabled: boolean;
+    colorScheme: 'dark' | 'light';
+    lineNumbersEnabled: boolean;
+  };
+  lspState: {
+    inlayHintsByCell: ReadonlyMap<string, import('../../lib/kernelService').LspInlayHint[]>;
+    semanticTokensByCell: ReadonlyMap<string, import('../../lib/kernelService').LspSemanticToken[]>;
+    preDiagnostics: Record<string, Diagnostic[]>;
+    lspDiagnosticsByCell: Record<string, Diagnostic[]>;
+    lsp: LspHandlers;
+    pendingReveal: LspDefinitionTarget | null;
+    onLspHover: (cellId: string, line: number, character: number) => Promise<string | null>;
+    onNavigateSource?: (cellHash: number, line: number) => void;
+  };
+  actions: {
+    executeCell: (cell: NotebookCell) => void;
+    setStatus: (status: string) => void;
+    selectCell: (cell: NotebookCell) => void;
+    shiftSelectCell: (cell: NotebookCell) => void;
+    deleteCellOrRange: (cell: NotebookCell) => void;
+    onRunAllCells?: () => void;
+    onEditMetadata?: (cell: NotebookCell) => void;
+    onCellClipboard?: (
+      cell: NotebookCell,
+      action: 'cut' | 'copy' | 'paste-below' | 'paste-above',
+    ) => void;
+  };
+  drag: {
+    dropTargetId: string | null;
+    onDragCellStart: (id: string) => void;
+    onDragCellEnd: () => void;
+    onCellDragOver: (id: string) => void;
+    onCellDrop: (id: string) => void;
+  };
 };
 
 const groupEditsByCell = (edits: LspCellTextEdit[]) => {
@@ -58,36 +82,49 @@ const groupEditsByCell = (edits: LspCellTextEdit[]) => {
 const NotebookCellList: FC<NotebookCellListProps> = ({
   cells,
   editor,
-  selectedId,
-  rangeIds,
-  activeCellId,
-  stream,
-  runInfo,
-  fontSize,
-  autocompleteEnabled,
-  foldingEnabled,
-  colorScheme,
-  canDelete,
-  collapsedCellIds,
-  toggleCellCollapse,
-  preDiagnostics,
-  lspDiagnosticsByCell,
-  lsp,
-  pendingReveal,
-  onLspHover,
-  onNavigateSource,
-  onRunAllCells,
-  executeCell,
-  setStatus,
-  selectCell,
-  shiftSelectCell,
-  deleteCellOrRange,
-  dropTargetId,
-  onDragCellStart,
-  onDragCellEnd,
-  onCellDragOver,
-  onCellDrop,
+  selection,
+  runState,
+  editorPreferences,
+  lspState,
+  actions,
+  drag,
 }) => {
+  const {
+    selectedId,
+    rangeIds,
+    activeCellId,
+    queuedCellIds,
+    canDelete,
+    collapsedCellIds,
+    toggleCellCollapse,
+    mode,
+    hiddenOutputIds,
+    toggleCellOutputs,
+  } = selection;
+  const { stream, runInfo } = runState;
+  const { fontSize, autocompleteEnabled, foldingEnabled, colorScheme, lineNumbersEnabled } =
+    editorPreferences;
+  const {
+    inlayHintsByCell,
+    semanticTokensByCell,
+    preDiagnostics,
+    lspDiagnosticsByCell,
+    lsp,
+    pendingReveal,
+    onLspHover,
+    onNavigateSource,
+  } = lspState;
+  const {
+    executeCell,
+    setStatus,
+    selectCell,
+    shiftSelectCell,
+    deleteCellOrRange,
+    onRunAllCells,
+    onEditMetadata,
+    onCellClipboard,
+  } = actions;
+  const { dropTargetId, onDragCellStart, onDragCellEnd, onCellDragOver, onCellDrop } = drag;
   const lspWithActions = {
     ...lsp,
     applyEdits: (edits: LspCellTextEdit[]) => {
@@ -106,12 +143,18 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
           key={cell.id}
           cell={cell}
           selected={cell.id === selectedId || rangeIds.has(cell.id)}
+          mode={mode}
+          outputsHidden={hiddenOutputIds.has(cell.id)}
           isExecuting={cell.id === activeCellId}
+          isQueued={queuedCellIds.has(cell.id)}
+          inlayHints={inlayHintsByCell.get(cell.id) ?? []}
+          semanticTokens={semanticTokensByCell.get(cell.id) ?? []}
           runInfo={runInfo[cell.id] ?? null}
           fontSize={fontSize}
           autocompleteEnabled={autocompleteEnabled}
           foldingEnabled={foldingEnabled}
           colorScheme={colorScheme}
+          lineNumbersEnabled={lineNumbersEnabled}
           canDelete={canDelete}
           collapsed={collapsedCellIds.has(cell.id)}
           stream={stream?.cellId === cell.id ? stream : null}
@@ -142,8 +185,11 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
           onDelete={() => deleteCellOrRange(cell)}
           onSplitCell={(offset) => editor.splitCellById(cell.id, offset)}
           onUpdateTags={(tags) => editor.updateTags(cell.id, tags)}
+          onEditMetadata={onEditMetadata ? () => onEditMetadata(cell) : undefined}
           onChangeLanguage={(language) => editor.setCellLanguage(cell.id, language)}
           onToggleCollapse={() => toggleCellCollapse(cell.id)}
+          onToggleOutputs={() => toggleCellOutputs(cell.id)}
+          onCellClipboard={onCellClipboard ? (action) => onCellClipboard(cell, action) : undefined}
           onMoveUp={() => editor.moveCellById(cell.id, -1)}
           onMoveDown={() => editor.moveCellById(cell.id, 1)}
           onMergeNext={

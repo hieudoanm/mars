@@ -51,7 +51,16 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
             }
             Some("serve") => {
                 let options = crate::options::parse_serve_options(&args[2..])?;
-                crate::kernel::serve_kernel(options.backend, options.notebook)
+                if let Some(port) = options.tcp {
+                    crate::kernel::serve_kernel_tcp(
+                        port,
+                        options.tcp_host,
+                        options.backend,
+                        options.notebook,
+                    )
+                } else {
+                    crate::kernel::serve_kernel(options.backend, options.notebook)
+                }
             }
             _ => {
                 Err("usage: mars kernel list | mars kernel restart | mars kernel serve".to_owned())

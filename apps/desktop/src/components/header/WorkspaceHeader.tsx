@@ -49,8 +49,8 @@ const RecentsMenu: FC<{ recents: string[]; onOpenRecent: (path: string) => void 
             className='fixed inset-0 z-30 cursor-default'
             onClick={() => setOpen(false)}
           />
-          <div className='absolute right-0 top-full z-40 mt-1 w-80 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-2xl'>
-            <p className='border-b border-neutral-800 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-500'>
+          <div className='absolute top-full right-0 z-40 mt-1 w-80 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-2xl'>
+            <p className='border-b border-neutral-800 px-3 py-1.5 text-[10px] font-semibold tracking-wider text-neutral-500 uppercase'>
               Recent notebooks
             </p>
             <ul className='max-h-64 overflow-y-auto py-1'>
@@ -101,7 +101,7 @@ const WorkspaceHeader: FC<WorkspaceHeaderProps> = ({
       className='flex min-h-14 items-center gap-4 border-b border-neutral-800 bg-neutral-900 px-4 py-2'>
       <NotebookHeaderBrand compact />
       <nav
-        className='flex min-w-0 flex-1 items-center gap-1 overflow-x-auto'
+        className='mars-tab-strip flex min-w-0 flex-1 items-center gap-1 overflow-x-auto overflow-y-hidden'
         aria-label='Open notebooks'>
         {tabs.map((tab) => {
           const active = tab.id === activeId;
@@ -119,7 +119,9 @@ const WorkspaceHeader: FC<WorkspaceHeaderProps> = ({
                 event.dataTransfer.dropEffect = 'move';
                 setDropTargetId(tab.id);
               }}
-              onDragLeave={() => setDropTargetId((current) => (current === tab.id ? null : current))}
+              onDragLeave={() =>
+                setDropTargetId((current) => (current === tab.id ? null : current))
+              }
               onDrop={(event) => {
                 event.preventDefault();
                 const fromId = dragTabId.current;

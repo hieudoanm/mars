@@ -8,6 +8,7 @@ import {
   deleteCells,
   duplicateCell,
   insertCellAt,
+  pasteCellAt,
   mergeCellWithNext,
   moveCell,
   moveCellToIndex,
@@ -17,8 +18,10 @@ import {
   updateCellSource,
   updateCellAttachments,
   updateCellLanguage,
+  updateCellMetadata as updateNotebookCellMetadata,
   updateCellTags,
   updateNotebookDependencies,
+  type PastedCellContent,
 } from '../lib/notebookOperations';
 import { getCellAttachments } from '../lib/cellAttachments';
 
@@ -42,6 +45,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     initialNotebook.cells[1]?.id ?? initialNotebook.cells[0]?.id ?? '',
   );
   const [mode, setMode] = useState<'edit' | 'command'>('edit');
+  const [historyTick, setHistoryTick] = useState(0);
   const historyRef = useRef<{ past: string[]; future: string[] }>({
     past: [serializeNotebook(initialNotebook)],
     future: [],
@@ -60,6 +64,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
       history.past.push(snapshot);
       history.future = [];
       trimHistory(history.past);
+      setHistoryTick((tick) => tick + 1);
     }
   }, [notebook]);
 
@@ -95,6 +100,13 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     setNotebook(result.notebook);
     setSelectedId(result.cell.id);
     setMode('edit');
+  };
+
+  const pasteCell = (index: number, content: PastedCellContent) => {
+    const result = pasteCellAt(notebook, index, content);
+    setNotebook(result.notebook);
+    setSelectedId(result.cell.id);
+    setMode('command');
   };
 
   const duplicateCellById = (id: string) => {
@@ -188,6 +200,10 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     setNotebook((current) => splitCellAt(current, selectedId, offset));
   };
 
+  const updateCellMetadata = (cellId: string, metadata: Record<string, unknown>) => {
+    setNotebook((current) => updateNotebookCellMetadata(current, cellId, metadata));
+  };
+
   const updateTags = (cellId: string, tags: string[]) => {
     setNotebook((current) => updateCellTags(current, cellId, tags));
   };
@@ -215,6 +231,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     if (current) history.future.push(current);
     const previous = history.past.at(-1);
     if (previous) restoreSnapshot(previous);
+    setHistoryTick((tick) => tick + 1);
   };
 
   const redo = () => {
@@ -223,6 +240,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     if (!next) return;
     history.past.push(next);
     restoreSnapshot(next);
+    setHistoryTick((tick) => tick + 1);
   };
 
   return {
@@ -238,6 +256,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     renameNotebook,
     addCell,
     insertCell,
+    pasteCell,
     duplicateSelected,
     duplicateCellById,
     removeCell,
@@ -254,12 +273,16 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     mergeCellById,
     mergeSelectedWithNext,
     splitSelectedAt,
+    updateCellMetadata,
     updateTags,
     setCellLanguage,
     updateAttachments,
     setDependencies,
     undo,
     redo,
+    canUndo: historyRef.current.past.length > 1,
+    canRedo: historyRef.current.future.length > 0,
+    historyTick,
     resetHistory,
   };
 };

@@ -1,9 +1,13 @@
 use mars_core::Output;
 use mars_runtime::{
-    cargo_manifest, format_compiler_diagnostics, parse_evcxr_content, CancellationToken, RuntimeError, RustSession,
+    CancellationToken, RuntimeError, RustSession, cargo_manifest, format_compiler_diagnostics,
+    parse_evcxr_content,
 };
 use std::collections::BTreeMap;
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{
+    Arc,
+    atomic::{AtomicBool, Ordering},
+};
 use std::thread;
 use std::time::Duration;
 
@@ -92,7 +96,7 @@ DisplayOnly
     assert_eq!(
         result.outputs,
         vec![Output::Text {
-            text: "[1, 2, 3]\ndisplay-only\n".to_owned()
+            text: "display-only\n".to_owned()
         }]
     );
 }
@@ -295,4 +299,57 @@ fn leaves_plain_stdout_untouched() {
 
     assert_eq!(text, "hello\n");
     assert!(outputs.is_empty());
+}
+
+#[test]
+fn display_helpers_emit_typed_outputs_end_to_end() {
+    let mut session = RustSession::new().expect("runtime directory");
+    let result = session
+        .execute(
+            r##"
+mars_display_html("<b>hi</b>");
+mars_display_latex("x^2");
+mars_display_image("image/png", &[1, 2, 3]);
+mars_chart(r#"{"mark":"bar","data":{"values":[{"x":"a","y":1}]},"encoding":{"x":{"field":"x","type":"nominal"},"y":{"field":"y","type":"quantitative"}}}"#);
+mars_table(&["name", "score"], &[vec!["alice".to_string(), "10".to_string()]]);
+mars_csv("city,pop\nOslo,700000\n");
+mars_display_markdown("**bold** text");
+mars_display_mime("application/json", "{\"a\":1}");
+"##,
+        )
+        .expect("execution result");
+
+    let kinds: Vec<&str> = result
+        .outputs
+        .iter()
+        .map(|output| match output {
+            Output::Html { .. } => "html",
+            Output::Latex { .. } => "latex",
+            Output::Image { .. } => "image",
+            Output::Chart { .. } => "chart",
+            Output::Table { .. } => "table",
+            _ => "other",
+        })
+        .collect();
+    assert_eq!(
+        kinds,
+        [
+            "html", "latex", "image", "chart", "table", "table", "other", "other"
+        ]
+    );
+    assert!(
+        matches!(&result.outputs[6], Output::MimeBundle { data, .. } if data["text/markdown"] == "**bold** text")
+    );
+    assert!(
+        matches!(&result.outputs[7], Output::MimeBundle { data, .. } if data["application/json"] == "{\"a\":1}")
+    );
+    assert!(
+        matches!(&result.outputs[2], Output::Image { mime_type, data } if mime_type == "image/png" && data == "AQID")
+    );
+    assert!(
+        matches!(&result.outputs[4], Output::Table { columns, rows } if columns == &["name", "score"] && rows[0] == ["alice", "10"])
+    );
+    assert!(
+        matches!(&result.outputs[5], Output::Table { columns, rows } if columns == &["city", "pop"] && rows[0] == ["Oslo", "700000"])
+    );
 }

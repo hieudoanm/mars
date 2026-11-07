@@ -9,6 +9,7 @@ type NotebookStatusBarProps = {
   isExecuting?: boolean;
   sessionId?: string;
   queueLength?: number;
+  mode?: 'edit' | 'command';
 };
 
 const NotebookStatusBar: FC<NotebookStatusBarProps> = ({
@@ -18,6 +19,7 @@ const NotebookStatusBar: FC<NotebookStatusBarProps> = ({
   isExecuting = false,
   sessionId = '',
   queueLength = 0,
+  mode = 'command',
 }) => {
   const shortSession = sessionId ? sessionId.slice(0, 8) : '';
   return (
@@ -35,6 +37,9 @@ const NotebookStatusBar: FC<NotebookStatusBarProps> = ({
         {queueLength > 0 ? ` · ${queueLength} queued` : ''}
       </Badge>
       <span>{cellCount} cells</span>
+      <Badge tone={mode === 'edit' ? 'success' : 'neutral'}>
+        {mode === 'edit' ? 'Edit' : 'Command'}
+      </Badge>
       <Badge tone={isDirty ? 'warning' : 'success'}>
         {isDirty ? 'Unsaved changes' : 'All changes saved'}
       </Badge>
