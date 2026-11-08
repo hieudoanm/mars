@@ -9,6 +9,6 @@ mars-runtime = { path = "../mars-runtime" }
 serde = { version = "=1.0.229", features = ["derive"] }
 serde_json = "=1.0.154"
 tempfile = "=3.27.0"
-which = "=6.0.3"
+which = "=8.0.6"
 uuid = { version = "=1.29.0", features = ["v4"] }
 thiserror = "=2.0.21"
