@@ -25,7 +25,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v7.0.1
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -71,7 +72,8 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v7.0.1
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.1.1
@@ -164,7 +166,8 @@ jobs:
     name: Landing build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.1.1
@@ -208,15 +211,18 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/configure-pages@v6.0.0
-      - id: deployment
+      - name: Configure Pages
+        uses: actions/configure-pages@v6.0.0
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v5.0.1
 
   extension-vscode:
     name: VS Code extension
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.1.1
@@ -259,7 +265,8 @@ jobs:
     name: Zed extension
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -304,7 +311,8 @@ jobs:
     name: JetBrains extension
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
 
       - name: Set up JDK 21
         uses: actions/setup-java@v6.2.0
