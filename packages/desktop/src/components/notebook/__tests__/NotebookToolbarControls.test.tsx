@@ -91,6 +91,21 @@ describe('NotebookToolbarControls', () => {
     onExpandAllCells.mockReset();
   });
 
+  it('shows a custom timeout option for non-preset values', () => {
+    renderControls({ executionTimeout: '12345' });
+    const select = screen.getByLabelText('Execution timeout in milliseconds');
+    expect(select).toHaveValue('12345');
+    expect(screen.getByRole('option', { name: '12345 ms' })).toBeInTheDocument();
+  });
+
+  it('routes timeout and font size changes', () => {
+    renderControls();
+    fireEvent.change(screen.getByLabelText('Execution timeout in milliseconds'), {
+      target: { value: '30000' },
+    });
+    expect(onTimeoutChange).toHaveBeenCalledWith('30000');
+  });
+
   it('renders execution and editor preference controls', () => {
     renderControls();
 

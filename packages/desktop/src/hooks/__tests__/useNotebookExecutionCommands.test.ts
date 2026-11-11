@@ -73,4 +73,41 @@ describe('useNotebookExecutionCommands', () => {
     });
     expect(executeCells).toHaveBeenCalledWith([]);
   });
+
+  it('does nothing when nothing is selected', async () => {
+    const executeCells = vi.fn().mockResolvedValue(undefined);
+    const { result } = renderHook(() =>
+      useNotebookExecutionCommands({ cells, selectedIndex: -1, executeCells }),
+    );
+    await act(async () => {
+      await result.current.executeAbove();
+      await result.current.executeBelow();
+    });
+    expect(executeCells).not.toHaveBeenCalled();
+  });
+
+  it('slices real code cells around the selection', async () => {
+    const three = [
+      createCell('c1', 'code'),
+      createCell('m', 'markdown'),
+      createCell('c2', 'code'),
+      createCell('c3', 'code'),
+    ];
+    const executeCells = vi.fn().mockResolvedValue(undefined);
+    const { result } = renderHook(() =>
+      useNotebookExecutionCommands({ cells: three, selectedIndex: 2, executeCells }),
+    );
+    await act(async () => {
+      await result.current.executeAbove();
+    });
+    expect(executeCells).toHaveBeenCalledWith([three[0]]);
+    await act(async () => {
+      await result.current.executeBelow();
+    });
+    expect(executeCells).toHaveBeenCalledWith([three[3]]);
+    await act(async () => {
+      await result.current.executeAll();
+    });
+    expect(executeCells).toHaveBeenCalledWith([three[0], three[2], three[3]]);
+  });
 });

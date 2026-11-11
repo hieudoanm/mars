@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { diagnosticsForCell, parseExecutionTimeout } from '../../lib/diagnostics';
-import type { NotebookCell, Output } from '../../types/types';
+import {
+  diagnosticsForCell,
+  liveDiagnosticsFor,
+  lspDiagnosticsFor,
+  parseExecutionTimeout,
+} from '../../lib/diagnostics';
+import type { CellDiagnostic, LspCellDiagnostic, NotebookCell, Output } from '../../types/types';
 
 const cell = (source: string, outputs: Output[]): NotebookCell => {
   return {
@@ -68,5 +73,56 @@ describe('diagnostics', () => {
       value: null,
       error: 'Execution limit must be a positive whole number',
     });
+  });
+
+  it('lspDiagnosticsFor maps LSP items to source offsets', () => {
+    const source = 'fn main() {\n  let x = 1;\n}\n';
+    const items: LspCellDiagnostic[] = [
+      { cellId: 'c', line: 1, column: 2, severity: 'warning', message: 'unused' },
+      { cellId: 'c', line: 0, column: 0, severity: 'error', message: 'bad' },
+    ];
+    const result = lspDiagnosticsFor(source, items);
+    expect(result).toHaveLength(2);
+    expect(result[0].severity).toBe('warning');
+    expect(result[0].message).toBe('unused');
+    expect(result[1].severity).toBe('error');
+    // second line, column 2 (0-based) → offset into line 2
+    expect(result[0].from).toBeGreaterThan(0);
+    expect(result[0].to).toBe(result[0].from + 1);
+    expect(result[1].from).toBeLessThan(result[0].from);
+  });
+
+  it('liveDiagnosticsFor maps cell diagnostics with optional codes', () => {
+    const source = 'let a = 1;\nlet b = 2;\n';
+    const report: CellDiagnostic[] = [
+      {
+        cellIndex: 0,
+        line: 2,
+        column: 5,
+        endLine: 2,
+        endColumn: 6,
+        severity: 'error',
+        code: 'E0308',
+        message: 'mismatched types',
+      },
+      {
+        cellIndex: 0,
+        line: 1,
+        column: 1,
+        endLine: 1,
+        endColumn: 2,
+        severity: 'warning',
+        code: null,
+        message: 'unused variable',
+      },
+    ];
+    const result = liveDiagnosticsFor(source, report);
+    expect(result).toHaveLength(2);
+    expect(result[0].message).toBe('E0308: mismatched types');
+    expect(result[0].severity).toBe('error');
+    expect(result[1].message).toBe('unused variable');
+    expect(result[1].severity).toBe('warning');
+    expect(result[0].from).toBeGreaterThanOrEqual(0);
+    expect(result[0].to).toBeGreaterThan(result[0].from);
   });
 });

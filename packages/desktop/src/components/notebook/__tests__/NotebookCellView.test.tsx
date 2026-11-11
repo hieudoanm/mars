@@ -52,6 +52,7 @@ const renderCell = (
     collapsed = false,
     mode = 'command' as const,
     outputsHidden = false,
+    ...extra
   }: {
     selected?: boolean;
     isExecuting?: boolean;
@@ -59,7 +60,7 @@ const renderCell = (
     collapsed?: boolean;
     mode?: 'edit' | 'command';
     outputsHidden?: boolean;
-  } = {},
+  } & Partial<Parameters<typeof NotebookCellView>[0]> = {},
 ) =>
   render(
     <NotebookCellView
@@ -81,6 +82,7 @@ const renderCell = (
       onDelete={onDelete}
       onToggleCollapse={onToggleCollapse}
       onStatus={onStatus}
+      {...extra}
     />,
   );
 
@@ -228,5 +230,143 @@ describe('NotebookCellView', () => {
     expect(await screen.findByLabelText('Write Markdown...')).toBeInTheDocument();
     renderCell(codeCell);
     expect(await screen.findByLabelText('Write Rust code...')).toBeInTheDocument();
+  });
+
+  it('opens the context menu on right-click and runs menu actions', async () => {
+    const onShiftSelect = vi.fn();
+    const onInsertAbove = vi.fn();
+    const onInsertBelow = vi.fn();
+    const onDuplicate = vi.fn();
+    const onRunAll = vi.fn();
+    const onChangeType = vi.fn();
+    const onEditMetadata = vi.fn();
+    const onCellClipboard = vi.fn();
+    const onToggleOutputs = vi.fn();
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn(async () => {}) },
+      configurable: true,
+    });
+    renderCell(codeCell, {
+      selected: true,
+      onShiftSelect,
+      onInsertAbove,
+      onInsertBelow,
+      onDuplicate,
+      onRunAll,
+      onChangeType,
+      onEditMetadata,
+      onCellClipboard,
+      onToggleOutputs,
+    });
+
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    expect(onSelect).toHaveBeenCalled();
+
+    fireEvent.click(await screen.findByText('Copy cell source'));
+    expect(onStatus).toHaveBeenCalledWith('Cell source copied');
+
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Insert cell above'));
+    expect(onInsertAbove).toHaveBeenCalled();
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Insert cell below'));
+    expect(onInsertBelow).toHaveBeenCalled();
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Duplicate cell'));
+    expect(onDuplicate).toHaveBeenCalled();
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Run all cells'));
+    expect(onRunAll).toHaveBeenCalled();
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Paste cell below'));
+    expect(onCellClipboard).toHaveBeenCalledWith('paste-below');
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Hide outputs'));
+    expect(onToggleOutputs).toHaveBeenCalled();
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Convert to markdown'));
+    expect(onChangeType).toHaveBeenCalledWith('markdown');
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Edit metadata'));
+    expect(onEditMetadata).toHaveBeenCalled();
+    fireEvent.contextMenu(screen.getByRole('article'), { clientX: 10, clientY: 20 });
+    fireEvent.click(await screen.findByText('Delete cell'));
+    expect(onDelete).toHaveBeenCalled();
+    void onShiftSelect;
+  });
+
+  it('calls onShiftSelect on shift-click', () => {
+    const onShiftSelect = vi.fn();
+    renderCell(markdownCell, { onShiftSelect });
+    fireEvent.click(screen.getByRole('article'), { shiftKey: true });
+    expect(onShiftSelect).toHaveBeenCalledOnce();
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('handles drag over and drop', () => {
+    const onCellDragOver = vi.fn();
+    const onCellDrop = vi.fn();
+    renderCell(codeCell, { onCellDragOver, onCellDrop });
+    const article = screen.getByRole('article');
+    fireEvent.dragOver(article);
+    expect(onCellDragOver).toHaveBeenCalledWith('cell-code');
+    fireEvent.drop(article);
+    expect(onCellDrop).toHaveBeenCalledWith('cell-code');
+  });
+
+  it('renders streaming stdout and stderr', () => {
+    renderCell(codeCell, {
+      stream: { cellId: 'cell-code', stdout: 'out text', stderr: 'err text' } as never,
+    });
+    expect(screen.getByText('out text')).toBeInTheDocument();
+    expect(screen.getByText('err text')).toBeInTheDocument();
+  });
+
+  it('toggles the markdown preview from the header', async () => {
+    renderCell(markdownCell);
+    const preview = await screen.findByRole('heading', { name: 'Welcome' });
+    expect(preview).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Hide Markdown preview' }));
+    await vi.waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Hide Markdown preview' })).toBeNull(),
+    );
+    expect(screen.getByRole('button', { name: 'Show Markdown preview' })).toBeInTheDocument();
+  });
+
+  it('loads and applies quick fixes when diagnostics exist', async () => {
+    const applyEdits = vi.fn();
+    const lsp = {
+      completion: vi.fn(async () => null),
+      signature: vi.fn(async () => null),
+      definition: vi.fn(async () => null),
+      onDefinitionResult: vi.fn(),
+      codeActions: vi.fn(async () => [
+        {
+          title: 'Add semicolon',
+          edits: [
+            {
+              cellId: 'cell-code',
+              startLine: 0,
+              startCharacter: 0,
+              endLine: 0,
+              endCharacter: 0,
+              newText: ';',
+            },
+          ],
+        },
+      ]),
+      applyEdits,
+    };
+    renderCell(
+      { ...codeCell, outputs: [] },
+      {
+        liveDiagnostics: [{ from: 0, to: 3, severity: 'error', message: 'oops' }],
+        lsp,
+      },
+    );
+    fireEvent.click(await screen.findByRole('button', { name: 'Quick fixes' }));
+    fireEvent.click(await screen.findByText('Add semicolon'));
+    expect(applyEdits).toHaveBeenCalled();
+    expect(onStatus).toHaveBeenCalledWith('Applied: Add semicolon');
   });
 });

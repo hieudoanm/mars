@@ -297,4 +297,102 @@ describe('useKernelExecution', () => {
     expect(secondResolved).toBe(true);
     expect(ks.executeSource).toHaveBeenCalledTimes(2);
   });
+
+  it('handles kernel stream phase, prompt, and chunk events', async () => {
+    let streamHandler: ((message: unknown) => void) | undefined;
+    vi.mocked(ks.listenKernelStream).mockImplementation(async (handler) => {
+      streamHandler = handler as (message: unknown) => void;
+      return () => {};
+    });
+    vi.mocked(ks.executeSource).mockImplementation(async () => {
+      streamHandler?.({ session: 'other', type: 'phase', phase: 'compiling' });
+      streamHandler?.({ session: 's', type: 'phase', phase: 'compiling' });
+      streamHandler?.({ session: 's', type: 'chunk', stream: 'stdout', data: 'hi' });
+      streamHandler?.({ session: 's', type: 'chunk', stream: 'stderr', data: 'oops' });
+      streamHandler?.({ session: 's', type: 'prompt', message: 'name?' });
+      return {
+        type: 'execution',
+        outputs: [],
+        execution_count: 1,
+        duration_millis: 5,
+      };
+    });
+    const { result } = renderHook(() =>
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
+    );
+    let ok = false;
+    await act(async () => {
+      ok = await result.current.executeCell(cell());
+    });
+    expect(ok).toBe(true);
+    expect(setStatus).toHaveBeenCalledWith('Compiling…');
+    expect(setStatus).toHaveBeenCalledWith('Waiting for input');
+  });
+
+  it('honors cell directives for dependencies and timeout', async () => {
+    const onCellDirectives = vi.fn();
+    const c = cell();
+    c.source = '// dep: serde@1.0\n// timeout: 2s\nfn main() {}';
+    const { result } = renderHook(() =>
+      useKernelExecution({
+        sessionId: 's',
+        setNotebook,
+        timeout: '1s',
+        setStatus,
+        onCellDirectives,
+      }),
+    );
+    await act(async () => {
+      await result.current.executeCell(c);
+    });
+    expect(onCellDirectives).toHaveBeenCalledWith(c, [['serde', '1.0']]);
+    expect(ks.executeSource).toHaveBeenCalledWith('s', c.source, 2000, 'rust');
+  });
+
+  it('responds to kernel prompts and reports failures', async () => {
+    vi.mocked(ks.sendKernelInput)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('nope'));
+    const { result } = renderHook(() =>
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
+    );
+    await act(async () => {
+      await result.current.respondToPrompt('answer');
+    });
+    expect(ks.sendKernelInput).toHaveBeenCalledWith('s', 'answer', 'rust');
+    expect(setStatus).toHaveBeenLastCalledWith('Running');
+    await act(async () => {
+      await result.current.respondToPrompt('again');
+    });
+    expect(setStatus).toHaveBeenLastCalledWith('nope');
+  });
+
+  it('refuses restart while executing', async () => {
+    let resolveExecution: ((value: unknown) => void) | undefined;
+    vi.mocked(ks.executeSource).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveExecution = resolve;
+        }) as never,
+    );
+    const { result } = renderHook(() =>
+      useKernelExecution({ sessionId: 's', setNotebook, timeout: '1s', setStatus }),
+    );
+    const running = result.current.executeCell(cell());
+    await waitFor(() => expect(result.current.isExecuting).toBe(true));
+    await act(async () => {
+      await result.current.restart();
+    });
+    expect(setStatus).toHaveBeenCalledWith('Stop execution before restarting the runtime');
+    expect(ks.resetKernel).not.toHaveBeenCalled();
+    await act(async () => {
+      resolveExecution?.({
+        type: 'execution',
+        outputs: [],
+        execution_count: 1,
+        duration_millis: 1,
+      });
+      await running;
+    });
+  });
 });

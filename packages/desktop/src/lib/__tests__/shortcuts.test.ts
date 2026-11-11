@@ -1,9 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   comboFromEvent,
   comboMatches,
   formatCombo,
   getShortcut,
+  resetShortcuts,
+  setShortcut,
   SHORTCUT_ACTIONS,
 } from '../shortcuts';
 
@@ -18,6 +20,8 @@ const event = (init: Partial<KeyboardEvent>): KeyboardEvent =>
   }) as KeyboardEvent;
 
 describe('shortcuts', () => {
+  beforeEach(() => window.localStorage.clear());
+
   it('has unique action ids', () => {
     expect(new Set(SHORTCUT_ACTIONS.map((a) => a.id)).size).toBe(SHORTCUT_ACTIONS.length);
   });
@@ -45,5 +49,30 @@ describe('shortcuts', () => {
 
   it('formats combos for display', () => {
     expect(formatCombo('mod+shift+z')).toBe('⌘/Ctrl + Shift + Z');
+  });
+
+  it('returns an empty string for unknown shortcut ids', () => {
+    expect(getShortcut('does-not-exist')).toBe('');
+  });
+
+  it('applies and clears shortcut overrides', () => {
+    setShortcut('save', 'mod+shift+s');
+    expect(getShortcut('save')).toBe('mod+shift+s');
+    // setting back to the default removes the override
+    setShortcut('save', 'mod+s');
+    expect(getShortcut('save')).toBe('mod+s');
+    expect(window.localStorage.getItem('mars.settings.shortcuts')).toBe('{}');
+  });
+
+  it('ignores corrupt stored overrides', () => {
+    window.localStorage.setItem('mars.settings.shortcuts', '{bad');
+    expect(getShortcut('save')).toBe('mod+s');
+  });
+
+  it('resetShortcuts clears stored overrides', () => {
+    setShortcut('save', 'f9');
+    expect(getShortcut('save')).toBe('f9');
+    resetShortcuts();
+    expect(getShortcut('save')).toBe('mod+s');
   });
 });

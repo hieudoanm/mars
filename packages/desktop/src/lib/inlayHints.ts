@@ -46,17 +46,18 @@ class InlayHintWidget extends WidgetType {
   }
 }
 
-const hintPosition = (state: EditorState, hint: InlayHint): number | null => {
-  const line = state.doc.line(Math.min(hint.line + 1, state.doc.lines));
+const hintPosition = (state: EditorState, hint: InlayHint): number => {
+  const line = state.doc.line(Math.min(Math.max(hint.line + 1, 1), state.doc.lines));
   const offset = Math.min(Math.max(hint.character, 0), line.length);
   return line.from + offset;
 };
 
 const buildDecorations = (hints: InlayHint[], state: EditorState) => {
   const builder = new RangeSetBuilder<Decoration>();
-  for (const hint of hints) {
-    const pos = hintPosition(state, hint);
-    if (pos === null) continue;
+  const positioned = hints
+    .map((hint) => ({ hint, pos: hintPosition(state, hint) }))
+    .sort((a, b) => a.pos - b.pos);
+  for (const { hint, pos } of positioned) {
     builder.add(
       pos,
       pos,

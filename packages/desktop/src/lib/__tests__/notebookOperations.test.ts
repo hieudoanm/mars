@@ -6,13 +6,23 @@ import {
   deleteCells,
   duplicateCell,
   insertCellAt,
+  mergeCellWithNext,
   moveCell,
   moveCellToIndex,
   parseNotebookJson,
+  removeCellOutput,
+  replaceInNotebookCells,
   resetNotebookOutputs,
   serializeNotebook,
+  splitCellAt,
+  updateCellAttachments,
+  updateCellLanguage,
+  updateCellMetadata,
   updateCellSource,
+  updateCellTags,
+  updateNotebookDependencies,
 } from '../notebookOperations';
+import { DEFAULT_SEARCH_OPTIONS } from '../textSearch';
 import type { Notebook } from '../../types/types';
 
 const baseNotebook: Notebook = {
@@ -251,5 +261,109 @@ describe('notebookOperations', () => {
         '{"format_version":2,"metadata":{},"cells":[{"id":"x","cell_type":"code","source":"","outputs":[{}]}]}',
       ),
     ).toThrow('malformed output');
+  });
+
+  it('removes a single output from a cell', () => {
+    const cell = {
+      ...createCell('code'),
+      outputs: [
+        { type: 'text' as const, text: 'a' },
+        { type: 'text' as const, text: 'b' },
+      ],
+    };
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [cell] };
+    const result = removeCellOutput(nb, cell.id, 0);
+    expect(result.cells[0].outputs).toEqual([{ type: 'text', text: 'b' }]);
+  });
+
+  it('merges a cell with the next one', () => {
+    const a = { ...createCell('code'), source: 'let a = 1;' };
+    const b = { ...createCell('code'), source: 'let b = 2;' };
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [a, b] };
+    const result = mergeCellWithNext(nb, a.id);
+    expect(result.cells).toHaveLength(1);
+    expect(result.cells[0].source).toBe('let a = 1;\nlet b = 2;');
+  });
+
+  it('does not add a separator when the first cell ends with a newline', () => {
+    const a = { ...createCell('code'), source: 'let a = 1;\n' };
+    const b = { ...createCell('code'), source: 'let b = 2;' };
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [a, b] };
+    expect(mergeCellWithNext(nb, a.id).cells[0].source).toBe('let a = 1;\nlet b = 2;');
+  });
+
+  it('mergeCellWithNext is a no-op for the last or missing cell', () => {
+    const nb: Notebook = {
+      format_version: 2,
+      metadata: { language: 'rust' },
+      cells: [createCell('code'), createCell('code')],
+    };
+    expect(mergeCellWithNext(nb, nb.cells[1].id)).toBe(nb);
+    expect(mergeCellWithNext(nb, 'missing')).toBe(nb);
+  });
+
+  it('splits a cell at an offset', () => {
+    const a = { ...createCell('code'), source: 'hello world' };
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [a] };
+    const result = splitCellAt(nb, a.id, 5);
+    expect(result.cells).toHaveLength(2);
+    expect(result.cells[0].source).toBe('hello');
+    expect(result.cells[1].source).toBe(' world');
+    expect(result.cells[1].id).not.toBe(a.id);
+  });
+
+  it('splitCellAt rejects invalid offsets', () => {
+    const a = { ...createCell('code'), source: 'abc' };
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [a] };
+    expect(splitCellAt(nb, a.id, 0)).toBe(nb);
+    expect(splitCellAt(nb, a.id, 3)).toBe(nb);
+    expect(splitCellAt(nb, 'missing', 1)).toBe(nb);
+  });
+
+  it('updates cell language, tags, metadata, and attachments', () => {
+    const cell = { ...createCell('code'), metadata: { language: 'rust', keep: true } };
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [cell] };
+    expect(updateCellLanguage(nb, cell.id, 'python').cells[0].metadata.language).toBe('python');
+    expect(updateCellTags(nb, cell.id, ['ml']).cells[0].metadata.tags).toEqual(['ml']);
+    expect(updateCellMetadata(nb, cell.id, { fresh: 1 }).cells[0].metadata).toEqual({ fresh: 1 });
+    expect(
+      updateCellAttachments(nb, cell.id, { 'a.png': 'data:image/png;base64,AA==' }).cells[0]
+        .metadata.attachments,
+    ).toEqual({ 'a.png': 'data:image/png;base64,AA==' });
+  });
+
+  it('updates notebook dependencies', () => {
+    const nb: Notebook = { format_version: 2, metadata: { language: 'rust' }, cells: [] };
+    const result = updateNotebookDependencies(nb, { serde: '1.0' });
+    expect(result.metadata.dependencies).toEqual({ serde: '1.0' });
+    expect(nb.metadata.dependencies).toBeUndefined();
+  });
+
+  it('replaces text across cells and counts matches', () => {
+    const nb: Notebook = {
+      format_version: 2,
+      metadata: { language: 'rust' },
+      cells: [
+        { ...createCell('code'), source: 'foo bar foo' },
+        { ...createCell('markdown'), source: 'no match' },
+        { ...createCell('code'), source: 'foo' },
+      ],
+    };
+    const { notebook, count } = replaceInNotebookCells(nb, 'foo', 'baz', DEFAULT_SEARCH_OPTIONS);
+    expect(count).toBe(3);
+    expect(notebook.cells[0].source).toBe('baz bar baz');
+    expect(notebook.cells[1].source).toBe('no match');
+    expect(notebook.cells[2].source).toBe('baz');
+  });
+
+  it('replaceInNotebookCells returns the notebook unchanged for empty queries', () => {
+    const nb: Notebook = {
+      format_version: 2,
+      metadata: { language: 'rust' },
+      cells: [createCell('code')],
+    };
+    const { notebook, count } = replaceInNotebookCells(nb, '  ', 'x', DEFAULT_SEARCH_OPTIONS);
+    expect(count).toBe(0);
+    expect(notebook).toBe(nb);
   });
 });
