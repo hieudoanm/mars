@@ -237,7 +237,7 @@
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
     "build": "npm run compile",
-    "check": "npm run compile",
+    "typecheck": "npm run compile",
     "compile": "tsc -p .",
     "package": "npm run compile && node -e \"require('fs').mkdirSync('vsix',{recursive:true})\" && vsce package --out vsix/mars-vscode.vsix",
     "lint": "eslint .",

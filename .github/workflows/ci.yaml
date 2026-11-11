@@ -164,11 +164,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Type check
+        run: pnpm --filter @mars/landing run typecheck
+
       - name: Lint
         run: pnpm --filter @mars/landing run lint
-
-      - name: Type check
-        run: pnpm --filter @mars/landing run check
 
       - name: Test
         run: pnpm --filter @mars/landing run test
@@ -216,7 +216,7 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Type check
-        run: pnpm --filter mars-vscode run check
+        run: pnpm --filter mars-vscode run typecheck
 
       - name: Lint
         run: pnpm --filter mars-vscode run lint

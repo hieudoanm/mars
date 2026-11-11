@@ -7,7 +7,7 @@
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
     "build": "next build --webpack",
-    "check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "dev": "next dev --port 3000",
     "serve": "serve out -l 3000",
     "test": "vitest run",

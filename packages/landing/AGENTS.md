@@ -47,7 +47,7 @@ rules apply to the public documentation and marketing site.
 Run scoped checks from the repository root:
 
 ```bash
-pnpm --filter @mars/landing check
+pnpm --filter @mars/landing typecheck
 pnpm --filter @mars/landing lint
 pnpm --filter @mars/landing test
 pnpm --filter @mars/landing build

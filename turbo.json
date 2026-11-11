@@ -5,8 +5,8 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**", "out/**", "*.vsix"]
     },
-    "check": {
-      "dependsOn": ["^check"],
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
       "outputs": []
     },
     "lint": {
