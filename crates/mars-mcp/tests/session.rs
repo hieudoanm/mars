@@ -112,3 +112,14 @@ fn kernel_lifecycle_is_lazy_and_scoped() {
     // A different language still has no kernel.
     assert_eq!(session.kernel_status(None, "python"), None);
 }
+
+#[test]
+fn kernel_for_rejects_unknown_languages() {
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, false, None);
+    assert!(session.kernel_for(None, "cobol").is_err());
+    let path = temp_dir("kernellang").join("nb.mars");
+    session.create_notebook(&path, Notebook::new());
+    assert!(session.kernel_for(Some(&path), "cobol").is_err());
+    // Status is read-only: no kernel created, so None.
+    assert!(session.kernel_status(None, "rust").is_none());
+}

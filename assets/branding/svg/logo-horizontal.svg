@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="340" viewBox="0 0 780 340" role="img" aria-labelledby="title desc">
+  <title id="title">Mars logo (horizontal)</title>
+  <desc id="desc">Mars planet mark with the wordmark, for headers and documentation.</desc>
+  <defs>
+    <radialGradient id="planet" cx="34%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#ff8a5c"/>
+      <stop offset=".48" stop-color="#e34d3d"/>
+      <stop offset="1" stop-color="#9f2631"/>
+    </radialGradient>
+    <clipPath id="planetClip">
+      <circle cx="256" cy="256" r="142"/>
+    </clipPath>
+  </defs>
+  <g transform="translate(158 170) scale(0.72) translate(-256 -256)">
+    <circle cx="256" cy="256" r="142" fill="url(#planet)"/>
+    <g clip-path="url(#planetClip)" fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
+      <path d="M92 218c81-45 177-55 311-15" stroke-width="18"/>
+      <path d="M104 330c73-39 170-54 286-31" stroke-width="13"/>
+      <path d="M179 106c-25 55-25 123 11 196s96 117 174 132" stroke-width="11"/>
+      <path d="M112 270c51 17 111 19 176 3 62-15 115-45 151-88" stroke-width="8"/>
+    </g>
+    <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff7ed" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="310" y="224" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="150" font-weight="700" letter-spacing="2" fill="#e5e5e5">Mars</text>
+</svg>

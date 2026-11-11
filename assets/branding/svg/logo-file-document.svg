@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Mars file document icon</title>
+  <desc id="desc">Generic document icon with the Mars planet mark at the bottom right.</desc>
+  <defs>
+    <linearGradient id="docBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#262626"/>
+      <stop offset="1" stop-color="#1c1c1c"/>
+    </linearGradient>
+    <radialGradient id="planet" cx="34%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#ff8a5c"/>
+      <stop offset=".48" stop-color="#e34d3d"/>
+      <stop offset="1" stop-color="#9f2631"/>
+    </radialGradient>
+    <clipPath id="docClip">
+      <path d="M140 72h176l56 56v312a20 20 0 0 1-20 20H140a20 20 0 0 1-20-20V92a20 20 0 0 1 20-20z"/>
+    </clipPath>
+    <clipPath id="planetClip">
+      <circle cx="256" cy="256" r="142"/>
+    </clipPath>
+  </defs>
+  <path d="M140 72h176l56 56v312a20 20 0 0 1-20 20H140a20 20 0 0 1-20-20V92a20 20 0 0 1 20-20z" fill="url(#docBody)" stroke="#3a3a3a" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M316 72l56 56h-56z" fill="#2e2e2e" stroke="#3a3a3a" stroke-width="4" stroke-linejoin="round"/>
+  <g clip-path="url(#docClip)">
+    <g transform="translate(312 392) scale(0.30) translate(-256 -256)">
+      <circle cx="256" cy="256" r="142" fill="url(#planet)"/>
+      <g clip-path="url(#planetClip)" fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
+        <path d="M92 218c81-45 177-55 311-15" stroke-width="18"/>
+        <path d="M104 330c73-39 170-54 286-31" stroke-width="13"/>
+        <path d="M179 106c-25 55-25 123 11 196s96 117 174 132" stroke-width="11"/>
+        <path d="M112 270c51 17 111 19 176 3 62-15 115-45 151-88" stroke-width="8"/>
+      </g>
+      <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff7ed" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

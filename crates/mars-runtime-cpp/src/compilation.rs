@@ -62,6 +62,13 @@ pub fn compile_command(
     // C++17 standard (minimum)
     cmd.arg("-std=c++17");
 
+    // Per-session clang module cache: concurrent sessions must not contend on
+    // the shared user cache (a killed compiler can leave it locked).
+    cmd.env(
+        "CLANG_MODULE_CACHE_PATH",
+        workdir.join("clang-module-cache"),
+    );
+
     // Enable all warnings
     cmd.arg("-Wall");
     cmd.arg("-Wextra");

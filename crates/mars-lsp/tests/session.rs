@@ -143,3 +143,39 @@ fn read_message_handles_eof_and_bad_frames() {
     let mut reader = Cursor::new(combined);
     assert!(read_message(&mut reader).is_err());
 }
+
+#[test]
+fn build_document_skips_non_code_cells_and_terminates_expressions() {
+    let cells = vec![
+        cell("m1", "markdown", "# Title"),
+        cell("c1", "code", "let x = 1;"),
+        cell("r1", "raw", "raw text"),
+        cell("c2", "code", "x + 1"),
+        cell("c3", "code", ""),
+    ];
+    let (document, spans) = build_document(&cells);
+    assert!(document.starts_with("fn main() {\n"));
+    assert!(document.ends_with("}\n"));
+    assert!(!document.contains("# Title"));
+    assert!(!document.contains("raw text"));
+    // All three code cells produce spans; markdown/raw are skipped.
+    assert_eq!(spans.len(), 3);
+    assert_eq!(spans[0].id, "c1");
+    assert_eq!(spans[1].id, "c2");
+    assert_eq!(spans[2].id, "c3");
+    // The trailing bare expression got a `;` appended.
+    assert!(document.contains("x + 1;"));
+}
+
+#[test]
+fn diagnostic_range_rejects_malformed_values() {
+    use mars_lsp::session::diagnostic_range;
+    assert!(diagnostic_range(&serde_json::json!({})).is_none());
+    assert!(diagnostic_range(&serde_json::json!({"range": {}})).is_none());
+    assert!(
+        diagnostic_range(&serde_json::json!({
+            "range": {"start": {"line": 0, "character": 0}, "end": {"line": 0, "character": 1}}
+        }))
+        .is_some()
+    );
+}

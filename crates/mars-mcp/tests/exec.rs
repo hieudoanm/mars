@@ -280,3 +280,86 @@ fn kernel_tools_cover_status_reset_variables_and_diagnose() {
 
     let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
 }
+
+#[test]
+fn kernel_tools_accept_an_open_notebook_path() {
+    let path = temp_notebook("kernel-path", &code_notebook());
+    let path_string = path.to_string_lossy().to_string();
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+
+    for name in [
+        "mars_kernel_status",
+        "mars_kernel_reset",
+        "mars_kernel_variables",
+    ] {
+        let result = call_exec_tool(
+            &mut session,
+            name,
+            &json!({ "path": path_string, "language": "rust" }),
+        )
+        .unwrap_or_else(|| panic!("{name} should be an exec tool"))
+        .expect(name);
+        assert!(result.is_object(), "{name} result");
+    }
+
+    // cell_diagnose resolves source from the notebook path too.
+    let diagnosed = call_exec_tool(
+        &mut session,
+        "mars_cell_diagnose",
+        &json!({ "path": path_string, "index": 1 }),
+    )
+    .expect("diagnose tool")
+    .expect("diagnose");
+    assert!(diagnosed.is_object());
+
+    // Ad-hoc source with explicit language exercises the fallback chain.
+    let status = call_exec_tool(
+        &mut session,
+        "mars_kernel_status",
+        &json!({ "path": path_string, "language": "rust" }),
+    )
+    .expect("status tool")
+    .expect("status");
+    assert!(status["language"] == "rust");
+
+    let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
+}
+
+#[test]
+fn exec_tools_report_missing_source_and_bad_indices() {
+    let path = temp_notebook("exec-errors", &code_notebook());
+    let path_string = path.to_string_lossy().to_string();
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+
+    // Neither index nor source.
+    assert!(
+        call_exec_tool(
+            &mut session,
+            "mars_cell_execute",
+            &json!({ "path": path_string }),
+        )
+        .expect("tool")
+        .is_err()
+    );
+    assert!(
+        call_exec_tool(
+            &mut session,
+            "mars_cell_diagnose",
+            &json!({ "path": path_string }),
+        )
+        .expect("tool")
+        .is_err()
+    );
+    // Out-of-range cell index.
+    assert!(
+        call_exec_tool(
+            &mut session,
+            "mars_cell_execute",
+            &json!({ "path": path_string, "index": 42 }),
+        )
+        .expect("tool")
+        .is_err()
+    );
+
+    let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
+}

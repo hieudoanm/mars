@@ -76,7 +76,7 @@ export PATH="$HOME/.local/bin:$PATH"
 ## screenshot.sh
 
 Captures the desktop UI screenshots used in the README into
-[`assets/screenshots/`](../assets/screenshots/):
+[`assets/demo/png/`](../assets/demo/png/):
 
 ```bash
 ./scripts/sh/screenshot.sh

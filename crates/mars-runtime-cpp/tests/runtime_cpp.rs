@@ -63,3 +63,52 @@ fn test_raw_stderr() {
     assert_eq!(result.len(), 1);
     assert_eq!(result[0], stderr);
 }
+
+#[test]
+fn test_render_program_accumulates_and_dedups_includes() {
+    let cells = vec![
+        "#include <iostream>\n#include <numeric>\nint x = 1;".to_string(),
+        "#include <numeric>\n#include <set>\nstd::cout << x;".to_string(),
+    ];
+    let program = mars_runtime_cpp::render_program(&cells);
+    assert!(program.contains("#include <iostream>"));
+    assert!(program.contains("#include <numeric>"));
+    assert!(program.contains("#include <set>"));
+    // Duplicated include appears once in the header block (plus the std set).
+    assert_eq!(program.matches("#include <numeric>").count(), 1);
+    assert!(program.contains("int main()"));
+    assert!(program.contains("return 0;"));
+}
+
+#[test]
+fn test_render_program_empty_cells() {
+    let program = mars_runtime_cpp::render_program(&[]);
+    assert!(program.contains("int main()"));
+    assert!(!program.contains("#include <numeric>"));
+}
+
+#[test]
+fn test_compile_command_without_dependencies() {
+    let dir = std::env::temp_dir().join("mars-cpp-cmd-test");
+    let cmd = mars_runtime_cpp::compile_command("clang++", &dir.join("main.cpp"), &dir, false);
+    let args: Vec<String> = cmd
+        .get_args()
+        .map(|a| a.to_string_lossy().into_owned())
+        .collect();
+    assert!(args.iter().any(|a| a == "-std=c++17"));
+    assert!(args.iter().any(|a| a == "-O2"));
+    assert!(!args.iter().any(|a| a.contains("profile:build")));
+}
+
+#[test]
+fn test_compile_command_with_dependencies_adds_conan_profiles() {
+    let dir = std::env::temp_dir().join("mars-cpp-cmd-test");
+    let cmd = mars_runtime_cpp::compile_command("clang++", &dir.join("main.cpp"), &dir, true);
+    let args: Vec<String> = cmd
+        .get_args()
+        .map(|a| a.to_string_lossy().into_owned())
+        .collect();
+    assert!(args.iter().any(|a| a.contains("--profile:build=")));
+    assert!(args.iter().any(|a| a.contains("--profile:host=")));
+    assert!(args.iter().any(|a| a.contains("conan_profile")));
+}

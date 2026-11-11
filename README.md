@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/svg/mars-logo.svg" alt="Mars logo" width="128">
+  <img src="assets/branding/svg/logo.svg" alt="Mars logo" width="128">
 </p>
 
 <h1 align="center">Mars</h1>
@@ -9,13 +9,26 @@
 </p>
 
 <p align="center">
-  <img src="assets/images/mars-og.png" alt="Mars — a Rust-powered interactive notebook platform" width="720">
+  <a href="https://github.com/hieudoanm/mars/actions/workflows/ci.yaml"><img src="https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
+  <a href="rust-toolchain.toml"><img src="https://img.shields.io/badge/rust-1.85%2B-orange.svg" alt="Rust 1.85+"></a>
+  <a href="packages/desktop"><img src="https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg" alt="Tauri 2 desktop"></a>
+  <a href="docs/18-mcp.md"><img src="https://img.shields.io/badge/MCP-supported-8b5cf6.svg" alt="MCP support"></a>
+  <a href="Makefile"><img src="https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg" alt="Rust coverage: 89% lines, 80% functions"></a>
+</p>
+
+<p align="center">
+  <img src="assets/branding/png/og.png" alt="Mars — a Rust-powered interactive notebook platform" width="720">
 </p>
 
 - Rust-first interactive notebook platform.
 - Supports executable code, Markdown, mathematics, and rich output.
 - Uses an independent `.mars` document format.
 - Supports Jupyter import/export without being a Jupyter frontend.
+
+**Supported languages:**
+
+<img src="assets/icons/languages/svg/rust.svg" width="28" alt="Rust">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/python.svg" width="28" alt="Python">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/r.svg" width="28" alt="R">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/julia.svg" width="28" alt="Julia">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/cpp.svg" width="28" alt="C++">
 
 ## Status
 
@@ -153,14 +166,23 @@ npm run test:e2e
 
 - Tests run against Vite and do not yet launch the native Tauri shell.
 
-## Screenshots
+## Demo
 
-- Desktop application uses a dark, notebook-oriented editor with CodeMirror cells, execution controls, rich output panels, and native open/save dialogs.
-- Social/Open Graph preview image: [`assets/images/mars-og.png`](assets/images/mars-og.png) (1280x640).
-- ![Mars desktop notebook overview](assets/screenshots/desktop-overview.png)
-- ![Mars welcome screen](assets/screenshots/desktop-welcome.png)
-- Release screenshots live in [`assets/screenshots/`](assets/screenshots/).
-- Regenerate them with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which captures the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright.
+Mars fits into a real workflow — start in the terminal, then move to the desktop when you want a visual editor.
+
+**From the command line.** Create a notebook, run every cell, inspect it, and export it to HTML — all headless, scriptable, and CI-friendly.
+
+![Mars CLI session: mars new, run, inspect, --version, export, and kernel restart](assets/demo/png/terminal.png)
+
+**Into the desktop app.** Launch `mars-desktop` (or the Tauri build) and pick up where the CLI left off — same `.mars` files, same kernel semantics.
+
+![Mars desktop welcome screen](assets/demo/png/desktop-welcome.png)
+
+**A real notebook.** Markdown cells render as prose, Rust cells get syntax highlighting and persistent variables, and outputs — text, errors, tables, images, and charts — appear inline beneath each cell.
+
+![Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-overview.png)
+
+Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG exports in `png/`). Regenerate the app captures with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which records the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright. The social preview card is [`assets/branding/png/og.png`](assets/branding/png/og.png).
 
 ## VS Code extension
 

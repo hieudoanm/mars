@@ -4,6 +4,8 @@ mod manifest;
 mod session;
 
 #[doc(hidden)]
+pub use compilation::{compile_command, render_program};
+#[doc(hidden)]
 pub use diagnostics::parse_compiler_diagnostics;
 #[doc(hidden)]
 pub use manifest::generate_conanfile;

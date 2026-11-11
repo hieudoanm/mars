@@ -137,40 +137,52 @@ fn invalid_json_line_terminates_connection() {
 
 #[test]
 fn serve_kernel_tcp_accepts_connections() {
-    let port = {
-        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("probe");
-        listener.local_addr().expect("addr").port()
-    };
+    // Bind port 0 ourselves and hand the listener to the server: no
+    // probe-then-release race for the port to be stolen between bind and
+    // accept.
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("bind");
+    let port = listener.local_addr().expect("addr").port();
     std::thread::spawn(move || {
-        let _ = mars::kernel::serve_kernel_tcp(port, None, RuntimeBackendKind::Replay, None, None);
+        let _ =
+            mars::kernel::serve_kernel_listener(listener, RuntimeBackendKind::Replay, None, None);
     });
 
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
-    let stream = loop {
-        match std::net::TcpStream::connect(("127.0.0.1", port)) {
-            Ok(stream) => break stream,
-            Err(_) if std::time::Instant::now() < deadline => {
-                std::thread::sleep(std::time::Duration::from_millis(50));
+    // Retry the whole exchange: under load the accepted socket can be torn
+    // down before the request is written, so a single attempt is flaky.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
+    let response = loop {
+        let attempt = (|| -> std::io::Result<Value> {
+            let stream = std::net::TcpStream::connect(("127.0.0.1", port))?;
+            stream
+                .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+                .expect("timeout");
+            use std::io::{BufRead, BufReader, Write};
+            let mut reader = BufReader::new(stream.try_clone().expect("clone"));
+            let mut writer = stream;
+            writeln!(
+                writer,
+                "{}",
+                serde_json::json!({"id":"tcp","request":{"type":"status"}})
+            )?;
+            writer.flush()?;
+            let mut line = String::new();
+            if reader.read_line(&mut line)? == 0 {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::UnexpectedEof,
+                    "empty response",
+                ));
             }
-            Err(error) => panic!("connect: {error}"),
+            serde_json::from_str(line.trim())
+                .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidData, error))
+        })();
+        match attempt {
+            Ok(response) => break response,
+            Err(_) if std::time::Instant::now() < deadline => {
+                std::thread::sleep(std::time::Duration::from_millis(100));
+            }
+            Err(error) => panic!("tcp exchange failed: {error}"),
         }
     };
-    stream
-        .set_read_timeout(Some(std::time::Duration::from_secs(10)))
-        .expect("timeout");
-    use std::io::{BufRead, BufReader, Write};
-    let mut reader = BufReader::new(stream.try_clone().expect("clone"));
-    let mut writer = stream;
-    writeln!(
-        writer,
-        "{}",
-        serde_json::json!({"id":"tcp","request":{"type":"status"}})
-    )
-    .expect("write");
-    writer.flush().expect("flush");
-    let mut line = String::new();
-    assert!(reader.read_line(&mut line).expect("read") > 0);
-    let response: Value = serde_json::from_str(line.trim()).expect("json");
     assert_eq!(response["id"], "tcp");
     assert_eq!(response["response"]["type"], "status");
     // The listener thread keeps running until the test process exits.

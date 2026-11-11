@@ -410,6 +410,18 @@ pub fn serve_kernel_tcp(
     let listener = TcpListener::bind((host.as_str(), port))
         .map_err(|error| format!("cannot bind {host}:{port}: {error}"))?;
     eprintln!("mars kernel listening on {host}:{port}");
+    serve_kernel_listener(listener, backend, notebook, language)
+}
+
+/// Serve the kernel protocol on an already-bound TCP listener. Split out so
+/// callers (and tests) can bind port 0 and learn the assigned port without a
+/// probe-then-release race.
+pub fn serve_kernel_listener(
+    listener: TcpListener,
+    backend: RuntimeBackendKind,
+    notebook: Option<String>,
+    language: Option<String>,
+) -> Result<(), String> {
     for stream in listener.incoming() {
         let Ok(stream) = stream else { continue };
         let notebook = notebook.clone();

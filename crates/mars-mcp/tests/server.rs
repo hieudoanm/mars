@@ -1,7 +1,7 @@
 use mars_kernel::RuntimeBackendKind;
-use mars_mcp::jsonrpc::{METHOD_NOT_FOUND, PARSE_ERROR};
+use mars_mcp::jsonrpc::{METHOD_NOT_FOUND, PARSE_ERROR, Request};
 use mars_mcp::server::{MarsMcpServer, serve};
-use serde_json::Value;
+use serde_json::{Value, json};
 use std::io::Cursor;
 
 fn run_session(input: &str) -> String {
@@ -118,4 +118,57 @@ fn tools_call_document_and_exec_tools() {
     }
 
     let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn preload_notebook_loads_into_session() {
+    let dir = std::env::temp_dir().join(format!("mars-mcp-preload-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let path = dir.join("notebook.mars");
+    mars_document::save_atomic(&mars_document::Notebook::new(), &path).expect("save");
+
+    let mut server = MarsMcpServer::new(RuntimeBackendKind::Replay, true, None);
+    server.preload_notebook(&path).expect("preload");
+    let response = server
+        .handle(Request {
+            id: Some(json!(1)),
+            method: "tools/call".to_owned(),
+            params: Some(json!({
+                "name": "mars_notebook_inspect",
+                "arguments": { "path": path.to_string_lossy() }
+            })),
+        })
+        .expect("response");
+    assert!(response.result.is_some());
+
+    // Preloading a missing notebook errors.
+    assert!(server.preload_notebook(&dir.join("missing.mars")).is_err());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn notifications_and_non_request_json_get_no_response_or_parse_error() {
+    let mut server = MarsMcpServer::new(RuntimeBackendKind::Replay, true, None);
+    // A JSON-RPC notification (no id) still dispatches but returns None.
+    let notification = Request {
+        id: None,
+        method: "notifications/initialized".to_owned(),
+        params: None,
+    };
+    assert!(server.handle(notification).is_none());
+
+    // Serve loop: a request-shaped message with unknown method gets a response;
+    // a bare JSON value that is not a Request gets a parse error.
+    let input = "{\"jsonrpc\":\"2.0\",\"id\":5,\"method\":\"bogus/method\"}\n[1,2,3]\n";
+    let mut output = Vec::new();
+    serve(input.as_bytes(), &mut output, &mut server).expect("serve");
+    let text = String::from_utf8(output).expect("utf8");
+    let lines: Vec<&str> = text.lines().collect();
+    assert_eq!(lines.len(), 2);
+    let first: serde_json::Value = serde_json::from_str(lines[0]).expect("json");
+    assert_eq!(first["id"], json!(5));
+    assert!(first["error"].is_object() || first["result"].is_object());
+    let second: serde_json::Value = serde_json::from_str(lines[1]).expect("json");
+    assert!(second["error"].is_object());
 }

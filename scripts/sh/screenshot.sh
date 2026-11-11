@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Capture Mars desktop UI screenshots into assets/screenshots/.
+# Capture Mars desktop UI screenshots into assets/demo/png/.
 #
 # Starts the Vite dev server for packages/desktop, then delegates the actual
 # capture to scripts/js/screenshot.mjs (Playwright). Screenshots are written at
@@ -13,7 +13,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DESKTOP="$ROOT/packages/desktop"
-OUT="$ROOT/assets/screenshots"
+OUT="$ROOT/assets/demo/png"
 PORT="${MARS_SHOT_PORT:-4173}"
 BASE="http://127.0.0.1:$PORT"
 

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" color="#ffffff" role="img" aria-labelledby="title desc">
+  <title id="title">Mars logo (monochrome)</title>
+  <desc id="desc">Single-color line-art Mars mark: planet outline, orbit arcs, and notebook M. Uses currentColor.</desc>
+  <defs>
+    <clipPath id="planetClip"><circle cx="256" cy="256" r="142"/></clipPath>
+  </defs>
+  <g transform="translate(256 256) scale(1.38) translate(-256 -256)">
+  <circle cx="256" cy="256" r="142" fill="none" stroke="currentColor" stroke-width="12"/>
+  <g clip-path="url(#planetClip)" fill="none" stroke="currentColor" stroke-linecap="round" opacity=".35">
+    <path d="M92 218c81-45 177-55 311-15" stroke-width="18"/>
+    <path d="M104 330c73-39 170-54 286-31" stroke-width="13"/>
+    <path d="M179 106c-25 55-25 123 11 196s96 117 174 132" stroke-width="11"/>
+    <path d="M112 270c51 17 111 19 176 3 62-15 115-45 151-88" stroke-width="8"/>
+  </g>
+  <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

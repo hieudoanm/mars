@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">Mars CLI terminal demo</title>
+  <desc id="desc">A terminal window running mars --version, new, run, inspect, export, and kernel commands on a Mars notebook.</desc>
+  <rect width="1280" height="640" fill="#0b0b0b"/>
+  <rect x="12" y="12" width="1256" height="616" rx="28" fill="#141414" stroke="#2e2e2e" stroke-width="2"/>
+  <path d="M12 68V40a28 28 0 0 1 28-28h1200a28 28 0 0 1 28 28v28H12Z" fill="#1c1c1c"/>
+  <circle cx="56" cy="40" r="8" fill="#ff5f57"/>
+  <circle cx="84" cy="40" r="8" fill="#febc2e"/>
+  <circle cx="112" cy="40" r="8" fill="#28c840"/>
+  <text x="640" y="47" text-anchor="middle" font-family="Menlo, monospace" font-size="17" fill="#8a8a8a">mars — zsh</text>
+
+  <g font-family="Menlo, monospace" font-size="20" fill="#e5e5e5">
+    <text x="44" y="126"><tspan fill="#ff8a5c">$</tspan> mars --version</text>
+    <text x="44" y="158" fill="#c9a06a">mars 0.0.1</text>
+    <text x="44" y="190"><tspan fill="#ff8a5c">$</tspan> mars new analysis.mars</text>
+    <text x="44" y="222" fill="#9ca3af">Created analysis.mars — 3 cells</text>
+    <text x="44" y="254"><tspan fill="#ff8a5c">$</tspan> mars run analysis.mars</text>
+    <text x="44" y="286"><tspan fill="#7dd3a8">[1]</tspan> <tspan fill="#e5e5e5">let greeting = "Hello from Mars!";</tspan></text>
+    <text x="44" y="318"><tspan fill="#7dd3a8">[2]</tspan> <tspan fill="#e5e5e5">greeting → "Hello from Mars!"</tspan></text>
+    <text x="44" y="350"><tspan fill="#7dd3a8">[3]</tspan> <tspan fill="#e5e5e5">2 + 2 → 4</tspan></text>
+    <text x="44" y="384" fill="#9ca3af">Executed 3 cells in 1.24s · kernel: Idle</text>
+    <text x="44" y="416"><tspan fill="#ff8a5c">$</tspan> mars inspect analysis.mars</text>
+    <text x="44" y="448" fill="#9ca3af">format v1 · language: rust · 3 cells</text>
+    <text x="44" y="480"><tspan fill="#ff8a5c">$</tspan> mars export analysis.mars html out/</text>
+    <text x="44" y="512" fill="#9ca3af">Wrote out/analysis.html (24 KB)</text>
+    <text x="44" y="548"><tspan fill="#ff8a5c">$</tspan> mars kernel restart</text>
+    <text x="44" y="580" fill="#9ca3af">Kernel restarted — variables cleared</text>
+  </g>
+</svg>

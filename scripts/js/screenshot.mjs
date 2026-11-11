@@ -1,8 +1,8 @@
-// Capture Mars desktop UI screenshots into assets/screenshots/.
+// Capture Mars desktop UI screenshots into assets/demo/png/.
 //
 // Driven by scripts/sh/screenshot.sh, which starts the Vite dev server first.
 // Usage: node scripts/js/screenshot.mjs [baseUrl] [outDir]
-// Defaults: http://127.0.0.1:4173 and <repo>/assets/screenshots
+// Defaults: http://127.0.0.1:4173 and <repo>/assets/demo/png
 //
 // Captures at a 1280x640 ratio (viewport 1280x640 CSS px at 2x DPR,
 // producing 2560x1280 PNGs).
@@ -17,7 +17,7 @@ const require = createRequire(path.join(desktop, 'package.json'));
 const { chromium } = require('@playwright/test');
 
 const base = process.argv[2] ?? 'http://127.0.0.1:4173';
-const out = process.argv[3] ?? path.join(root, 'assets', 'screenshots');
+const out = process.argv[3] ?? path.join(root, 'assets', 'demo', 'png');
 const VIEW_W = 1280;
 const VIEW_H = 640;
 const DSF = 2;

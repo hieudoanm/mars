@@ -106,3 +106,65 @@ fn initialize_fails_when_server_exits_or_speaks_garbage() {
         .expect("spawn");
     assert!(client.initialize().is_err());
 }
+
+const BLANK_LINE_SERVER: &str = r#"
+import sys, json
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        msg = json.loads(line)
+    except Exception:
+        continue
+    mid = msg.get("id")
+    if mid is None:
+        continue
+    sys.stdout.write("\n")
+    sys.stdout.write("   \n")
+    sys.stdout.flush()
+    if msg.get("method") == "initialize":
+        result = {"protocolVersion": "2025-06-18", "capabilities": {}, "serverInfo": {"name": "mock", "version": "0"}}
+    else:
+        result = {"tools": []}
+    sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": mid, "result": result}) + "\n")
+    sys.stdout.flush()
+"#;
+
+#[test]
+fn client_skips_blank_lines_while_waiting() {
+    let Some(python) = python3() else {
+        eprintln!("python3 unavailable; skipping");
+        return;
+    };
+    let mut client = McpClient::spawn(&[
+        python,
+        "-u".to_owned(),
+        "-c".to_owned(),
+        BLANK_LINE_SERVER.to_owned(),
+    ])
+    .expect("spawn mock server");
+    client.initialize().expect("initialize");
+    let tools = client.list_tools().expect("list tools");
+    assert!(tools.is_empty());
+}
+
+#[test]
+fn client_reports_server_closed_connection() {
+    let Some(python) = python3() else {
+        eprintln!("python3 unavailable; skipping");
+        return;
+    };
+    // Server exits immediately without responding.
+    let mut client = McpClient::spawn(&[
+        python,
+        "-c".to_owned(),
+        "import sys; sys.exit(0)".to_owned(),
+    ])
+    .expect("spawn mock server");
+    let err = client.initialize().expect_err("initialize must fail");
+    assert!(
+        err.contains("closed") || err.contains("response"),
+        "err: {err}"
+    );
+}

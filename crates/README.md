@@ -19,37 +19,37 @@ Mars is organized as a modular Cargo workspace with crates for:
 
 ### Core Crates
 
-| Crate | Purpose |
-| --- | --- |
-| [`mars-core`](./mars-core/) | Shared domain types, IDs, metadata, errors, execution status |
+| Crate                               | Purpose                                                         |
+| ----------------------------------- | --------------------------------------------------------------- |
+| [`mars-core`](./mars-core/)         | Shared domain types, IDs, metadata, errors, execution status    |
 | [`mars-document`](./mars-document/) | Notebook representation, serialization, validation, persistence |
-| [`mars-protocol`](./mars-protocol/) | Communication between frontend and backend (kernel protocol) |
-| [`mars-renderer`](./mars-renderer/) | Markdown, HTML, LaTeX, tables, images, charts rendering |
+| [`mars-protocol`](./mars-protocol/) | Communication between frontend and backend (kernel protocol)    |
+| [`mars-renderer`](./mars-renderer/) | Markdown, HTML, LaTeX, tables, images, charts rendering         |
 
 ### Execution Crates
 
-| Crate | Purpose |
-| --- | --- |
-| [`mars-runtime`](./mars-runtime/) | Rust execution (replay and Evcxr backends) |
-| [`mars-runtime-evcxr`](./mars-runtime-evcxr/) | Experimental Evcxr Rust backend |
-| [`mars-runtime-python`](./mars-runtime-python/) | Python execution backend |
-| [`mars-runtime-r`](./mars-runtime-r/) | R execution backend |
-| [`mars-runtime-julia`](./mars-runtime-julia/) | Julia execution backend |
-| [`mars-runtime-cpp`](./mars-runtime-cpp/) | C++ execution backend |
+| Crate                                           | Purpose                                    |
+| ----------------------------------------------- | ------------------------------------------ |
+| [`mars-runtime`](./mars-runtime/)               | Rust execution (replay and Evcxr backends) |
+| [`mars-runtime-evcxr`](./mars-runtime-evcxr/)   | Experimental Evcxr Rust backend            |
+| [`mars-runtime-python`](./mars-runtime-python/) | Python execution backend                   |
+| [`mars-runtime-r`](./mars-runtime-r/)           | R execution backend                        |
+| [`mars-runtime-julia`](./mars-runtime-julia/)   | Julia execution backend                    |
+| [`mars-runtime-cpp`](./mars-runtime-cpp/)       | C++ execution backend                      |
 
 ### Integration Crates
 
-| Crate | Purpose |
-| --- | --- |
-| [`mars-kernel`](./mars-kernel/) | Kernel lifecycle, execution requests, runtime dispatch |
-| [`mars-jupyter`](./mars-jupyter/) | Jupyter `.ipynb` import/export |
-| [`mars-lsp`](./mars-lsp/) | rust-analyzer LSP client for code editing |
-| [`mars-mcp`](./mars-mcp/) | Model Context Protocol server for AI assistants |
+| Crate                             | Purpose                                                |
+| --------------------------------- | ------------------------------------------------------ |
+| [`mars-kernel`](./mars-kernel/)   | Kernel lifecycle, execution requests, runtime dispatch |
+| [`mars-jupyter`](./mars-jupyter/) | Jupyter `.ipynb` import/export                         |
+| [`mars-lsp`](./mars-lsp/)         | rust-analyzer LSP client for code editing              |
+| [`mars-mcp`](./mars-mcp/)         | Model Context Protocol server for AI assistants        |
 
 ### Application Crates
 
-| Crate | Purpose |
-| --- | --- |
+| Crate                     | Purpose                         |
+| ------------------------- | ------------------------------- |
 | [`mars-cli`](./mars-cli/) | Command-line interface for Mars |
 
 ## Architecture

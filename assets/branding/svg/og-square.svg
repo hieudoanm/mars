@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Mars social card (square)</title>
+  <desc id="desc">Square Open Graph card for Mars with the planet mark and tagline.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1018"/>
+      <stop offset=".6" stop-color="#151b27"/>
+      <stop offset="1" stop-color="#241721"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#e95643" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#e95643" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="planet" cx="34%" cy="28%" r="78%">
+      <stop offset="0" stop-color="#ff8a5c"/>
+      <stop offset=".48" stop-color="#e34d3d"/>
+      <stop offset="1" stop-color="#9f2631"/>
+    </radialGradient>
+    <clipPath id="planetClip">
+      <circle cx="600" cy="430" r="190"/>
+    </clipPath>
+  </defs>
+  <rect width="1200" height="1200" rx="64" fill="url(#background)"/>
+  <circle cx="600" cy="430" r="380" fill="url(#glow)"/>
+  <g opacity=".28" fill="#ffb36b">
+    <circle cx="140" cy="160" r="4"/>
+    <circle cx="220" cy="90" r="6"/>
+    <circle cx="1020" cy="140" r="5"/>
+    <circle cx="1090" cy="260" r="3"/>
+    <circle cx="90" cy="420" r="4"/>
+    <circle cx="180" cy="700" r="5"/>
+    <circle cx="1060" cy="760" r="4"/>
+    <circle cx="960" cy="1010" r="6"/>
+    <circle cx="300" cy="1080" r="4"/>
+  </g>
+  <g>
+    <circle cx="600" cy="430" r="190" fill="url(#planet)"/>
+    <g clip-path="url(#planetClip)" fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
+      <path d="M380 500c108-60 235-74 414-20" stroke-width="24"/>
+      <path d="M400 616c97-52 227-72 381-41" stroke-width="17"/>
+      <path d="M500 240c-33 73-33 164 15 261s128 156 232 176" stroke-width="15"/>
+      <path d="M386 568c67 23 148 25 235 4 82-19 153-60 201-117" stroke-width="11"/>
+    </g>
+    <path d="M497 558V358l93 97 93-97v200" fill="none" stroke="#fff7ed" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M497 558V358l93 97 93-97v200" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="600" y="790" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="150" font-weight="700" letter-spacing="4" fill="#f5f0ea">Mars</text>
+  <text x="600" y="880" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="38" fill="#9aa3b2">A Rust-powered interactive notebook</text>
+  <text x="600" y="950" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="30" fill="#6b7280">Explore ideas. Execute code. Discover possibilities.</text>
+</svg>

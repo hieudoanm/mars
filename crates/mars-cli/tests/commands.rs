@@ -481,3 +481,190 @@ fn command_error_paths() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn open_loads_and_hands_off_to_system() {
+    let dir = temp_dir("open");
+    let path = dir.join("open.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    let result = run_cli(args(&["open", &path.to_string_lossy()]));
+    // `open`/`xdg-open` may be absent on minimal CI images; only assert the
+    // command reached the system-opener stage.
+    if let Err(error) = result {
+        assert!(error.contains("failed to open"), "unexpected: {error}");
+    }
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn run_forwards_stdin_to_python_input_prompt() {
+    if std::process::Command::new("python3")
+        .arg("--version")
+        .output()
+        .is_err()
+    {
+        return;
+    }
+    let dir = temp_dir("run-stdin");
+    let path = dir.join("prompt.mars");
+    let mut notebook = Notebook::new();
+    notebook.metadata.language = "python".to_owned();
+    notebook
+        .add_cell(Cell::new(
+            CellType::Code,
+            "name = input('Name? ')\nprint('hello', name)",
+        ))
+        .expect("cell");
+    write_notebook(&path, &notebook);
+
+    // Drive the real binary so the process-stdin pump in run_notebook runs.
+    let mut child = std::process::Command::new(env!("CARGO_BIN_EXE_mars"))
+        .args([
+            "run",
+            &path.to_string_lossy(),
+            "--no-save",
+            "--timeout-ms",
+            "30000",
+        ])
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .expect("spawn mars");
+    use std::io::Write;
+    child
+        .stdin
+        .as_mut()
+        .expect("stdin")
+        .write_all(b"Alice\n")
+        .expect("write stdin");
+    drop(child.stdin.take());
+    let output = child.wait_with_output().expect("wait");
+    assert!(output.status.success(), "stderr suppressed; status failed");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("hello Alice"), "stdout: {stdout}");
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn run_prints_rich_outputs_from_python_cells() {
+    if std::process::Command::new("python3")
+        .arg("--version")
+        .output()
+        .is_err()
+    {
+        return;
+    }
+    let dir = temp_dir("run-rich");
+    let path = dir.join("rich.mars");
+    let mut notebook = Notebook::new();
+    notebook.metadata.language = "python".to_owned();
+    notebook
+        .add_cell(Cell::new(
+            CellType::Code,
+            "display({\"text/html\": \"<b>bold</b>\", \"image/png\": \"aGk=\"})",
+        ))
+        .expect("cell");
+    write_notebook(&path, &notebook);
+
+    let result = run_cli(args(&[
+        "run",
+        &path.to_string_lossy(),
+        "--no-save",
+        "--timeout-ms",
+        "30000",
+    ]));
+    assert!(result.is_ok(), "run failed: {:?}", result.err());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn export_supports_markdown_and_html_formats() {
+    let dir = temp_dir("export-formats");
+    let path = dir.join("book.mars");
+    write_notebook(&path, &markdown_only_notebook());
+
+    for format in ["md", "html"] {
+        let out = dir.join(format!("book.{format}"));
+        run_cli(args(&[
+            "export",
+            &path.to_string_lossy(),
+            format,
+            &out.to_string_lossy(),
+        ]))
+        .unwrap_or_else(|error| panic!("export {format}: {error}"));
+        assert!(out.exists(), "{format} output missing");
+    }
+    assert!(
+        run_cli(args(&[
+            "export",
+            &path.to_string_lossy(),
+            "bogus",
+            &dir.join("book.bogus").to_string_lossy(),
+        ]))
+        .is_err()
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn run_report_flag_prints_summary() {
+    let dir = temp_dir("run-report");
+    let path = dir.join("report.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    run_cli(args(&[
+        "run",
+        &path.to_string_lossy(),
+        "--no-save",
+        "--report",
+    ]))
+    .expect("run with report");
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn tools_list_and_call_against_real_mcp_server() {
+    let server = format!("{} mcp serve", env!("CARGO_BIN_EXE_mars"));
+    run_cli(args(&["tools", "list", "--server", &server])).expect("tools list");
+
+    let dir = temp_dir("tools-call");
+    let nb = dir.join("tool.mars");
+    let call_args = json!({ "path": nb.to_string_lossy(), "language": "rust" });
+    run_cli(args(&[
+        "tools",
+        "call",
+        "mars_notebook_new",
+        &call_args.to_string(),
+        "--server",
+        &server,
+    ]))
+    .expect("tools call");
+    assert!(nb.exists(), "notebook not created by tool call");
+
+    // Error surfaces: unknown tool reports isError -> Err.
+    assert!(
+        run_cli(args(&[
+            "tools",
+            "call",
+            "mars_notebook_open",
+            "{\"path\":\"/nonexistent/nope.mars\"}",
+            "--server",
+            &server,
+        ]))
+        .is_err()
+    );
+    // Bad JSON arguments and extra positionals are rejected.
+    assert!(
+        run_cli(args(&[
+            "tools",
+            "call",
+            "mars_notebook_new",
+            "not-json",
+            "--server",
+            &server,
+        ]))
+        .is_err()
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+}

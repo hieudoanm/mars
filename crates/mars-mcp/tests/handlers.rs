@@ -225,3 +225,65 @@ fn document_tools_report_errors() {
 
     let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
 }
+
+#[test]
+fn read_defaults_to_include_outputs_and_strips_on_request() {
+    let path = temp_notebook_path("read-defaults");
+    let path_string = path.to_string_lossy().to_string();
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+
+    call(
+        &mut session,
+        "mars_notebook_new",
+        json!({ "path": path_string, "language": "rust" }),
+    )
+    .expect("new notebook");
+    call(
+        &mut session,
+        "mars_cell_add",
+        json!({
+            "path": path_string,
+            "cell_type": "code",
+            "source": "1 + 1",
+            "index": 1
+        }),
+    )
+    .expect("add cell");
+
+    // Omitting include_outputs defaults to true.
+    let read = call(
+        &mut session,
+        "mars_notebook_read",
+        json!({ "path": path_string }),
+    )
+    .expect("read notebook");
+    assert!(read["notebook"]["cells"].is_array());
+
+    // Single-cell read with include_outputs=false strips outputs.
+    let cell = call(
+        &mut session,
+        "mars_notebook_read",
+        json!({ "path": path_string, "cell_index": 1, "include_outputs": false }),
+    )
+    .expect("read cell");
+    assert_eq!(cell["cell"]["outputs"], json!([]));
+    assert!(cell["cell"]["language"].is_string());
+
+    // Add at an out-of-range index errors; update with cell_type works.
+    assert!(
+        call(
+            &mut session,
+            "mars_cell_add",
+            json!({ "path": path_string, "cell_type": "code", "index": 99 })
+        )
+        .is_err()
+    );
+    call(
+        &mut session,
+        "mars_cell_update",
+        json!({ "path": path_string, "index": 1, "cell_type": "markdown" }),
+    )
+    .expect("update cell type");
+
+    let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
+}
