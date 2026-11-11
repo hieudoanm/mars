@@ -4,17 +4,15 @@ on:
   push:
     branches: [master]
   pull_request:
+    branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  NODE_VERSION: "26.13.0"
-  PNPM_VERSION: "12.18.0"
 
 jobs:
   cli-build:
@@ -34,14 +32,7 @@ jobs:
           components: rustfmt, clippy
 
       - name: Cache Cargo dependencies and build outputs
-        uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-cli-${{ hashFiles('Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-cli-
+        uses: Swatinem/rust-cache@v2.9.3
 
       - name: Build release binary
         run: cargo build --release -p mars --locked
@@ -77,13 +68,11 @@ jobs:
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.1.1
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7.1.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -91,14 +80,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache Cargo dependencies and build outputs
-        uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-desktop-${{ hashFiles('Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-desktop-
+        uses: Swatinem/rust-cache@v2.9.3
 
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
@@ -171,13 +153,11 @@ jobs:
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.1.1
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7.1.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -226,13 +206,11 @@ jobs:
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6.1.1
-        with:
-          version: ${{ env.PNPM_VERSION }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7.1.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -274,14 +252,7 @@ jobs:
           components: rustfmt, clippy
 
       - name: Cache Cargo dependencies and build outputs
-        uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-zed-${{ hashFiles('Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-zed-
+        uses: Swatinem/rust-cache@v2.9.3
 
       - name: Format
         run: cargo fmt -p mars-zed -- --check
