@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/18-mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
 
-keywords: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
+Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
 
 <p align="center">
