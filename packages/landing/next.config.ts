@@ -12,11 +12,11 @@ const nextConfig: NextConfig = {
   },
 
   output: 'export',
-  basePath: NODE_ENV === 'production' ? '/mars' : '',
   trailingSlash: true,
-  images: {
-    unoptimized: true,
-  },
+  // GitHub Pages project site lives under /mars/
+  basePath: NODE_ENV === 'production' ? '/mars' : '',
+  assetPrefix: NODE_ENV === 'production' ? '/mars' : '',
+  images: { unoptimized: true },
 };
 
 export default nextConfig;
