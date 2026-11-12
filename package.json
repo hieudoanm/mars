@@ -1,16 +1,26 @@
 {
   "name": "@mars/workspace",
-  "private": true,
   "version": "0.0.1",
+  "private": true,
+  "description": "Mars",
+  "license": "MIT",
+  "author": {
+    "name": "Hieu Doan",
+    "email": "hieu.doan.professional@gmail.com",
+    "url": "https://hieudoanm.github.io"
+  },
   "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": "26.13.1"
+  },
   "scripts": {
-    "format": "turbo run format",
+    "dev": "turbo run dev --parallel",
     "build": "turbo run build",
-    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
-    "lint": "turbo run lint",
-    "dev": "turbo run dev --parallel",
+    "typecheck": "turbo run typecheck",
+    "format": "turbo run format",
     "landing:build": "turbo run build --filter=@mars/landing",
     "landing:check": "turbo run check --filter=@mars/landing",
     "landing:dev": "turbo run dev --filter @mars/landing",
