@@ -1,25 +1,26 @@
-<p align="center">
-  <img src="assets/branding/svg/logo.svg" alt="Mars logo" width="128">
-</p>
+# mars
 
-<h1 align="center">Mars</h1>
+[![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/18-mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
 
-<p align="center">
-  Explore ideas. Execute code. Discover possibilities.
-</p>
-
-<p align="center">
-  <a href="https://github.com/hieudoanm/mars/actions/workflows/ci.yaml"><img src="https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license"></a>
-  <a href="rust-toolchain.toml"><img src="https://img.shields.io/badge/rust-1.85%2B-orange.svg" alt="Rust 1.85+"></a>
-  <a href="packages/desktop"><img src="https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg" alt="Tauri 2 desktop"></a>
-  <a href="docs/18-mcp.md"><img src="https://img.shields.io/badge/MCP-supported-8b5cf6.svg" alt="MCP support"></a>
-  <a href="Makefile"><img src="https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg" alt="Rust coverage: 89% lines, 80% functions"></a>
-</p>
 
 <p align="center">
   <img src="assets/branding/png/og.png" alt="Mars — a Rust-powered interactive notebook platform" width="720">
 </p>
+
+**Mars** — Explore ideas. Execute code. Discover possibilities.
+
+## Table of Contents
+
+- [Features](#features)
+- [Get Started](#get-started)
+  - [CLI](#cli)
+  - [Node workspace](#node-workspace)
+  - [Desktop application](#desktop-application)
+- [Demo](#demo)
+- [VS Code extension](#vs-code-extension)
+- [Documentation](#documentation)
+- [Landing site](#landing-site)
+- [License](#license)
 
 - Rust-first interactive notebook platform.
 - Supports executable code, Markdown, mathematics, and rich output.
@@ -30,7 +31,7 @@
 
 <img src="assets/icons/languages/svg/rust.svg" width="28" alt="Rust">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/python.svg" width="28" alt="Python">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/r.svg" width="28" alt="R">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/julia.svg" width="28" alt="Julia">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/cpp.svg" width="28" alt="C++">
 
-## Status
+## Features
 
 - Multi-language notebook platform supporting Rust, Python, R, Julia, and C++.
 - Typed notebook documents, validation, and atomic persistence.
@@ -46,7 +47,7 @@
 - Functional Tauri desktop editor with multi-notebook workspace, LSP integration, and rich UI.
 - Next.js landing site with comprehensive documentation and VS Code/Zed/JetBrains extensions.
 
-## Quick start
+## Get Started
 
 ### CLI
 
@@ -191,7 +192,7 @@ Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG e
 - Tauri desktop app remains canonical notebook experience.
 - Extension reuses Mars CLI rather than duplicating runtime or persistence layer.
 
-## Documentation map
+## Documentation
 
 | Document                                                     | Purpose                                                      |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -224,3 +225,7 @@ The Next.js landing site (`packages/landing`) provides:
 - Blog posts on language choices and ecosystem comparisons
 
 Visit the documentation at [`packages/landing/md/docs/`](packages/landing/md/docs/).
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
