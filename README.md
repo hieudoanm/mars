@@ -2,10 +2,14 @@
 
 [![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/18-mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
 
+keywords: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
+
 
 <p align="center">
   <img src="assets/branding/png/og.png" alt="Mars — a Rust-powered interactive notebook platform" width="720">
 </p>
+
+**Live demo:** <https://hieudoanm.github.io/mars/>
 
 **Mars** — Explore ideas. Execute code. Discover possibilities.
 
@@ -175,6 +179,8 @@ Mars fits into a real workflow — start in the terminal, then move to the deskt
 
 ![Mars CLI session: mars new, run, inspect, --version, export, and kernel restart](assets/demo/png/terminal.png)
 
+Or watch it run: [`assets/demo/gif/demo.gif`](assets/demo/gif/demo.gif) animates the same session line by line.
+
 **Into the desktop app.** Launch `mars-desktop` (or the Tauri build) and pick up where the CLI left off — same `.mars` files, same kernel semantics.
 
 ![Mars desktop welcome screen](assets/demo/png/desktop-welcome.png)
@@ -183,7 +189,7 @@ Mars fits into a real workflow — start in the terminal, then move to the deskt
 
 ![Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-overview.png)
 
-Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG exports in `png/`). Regenerate the app captures with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which records the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright. The social preview card is [`assets/branding/png/og.png`](assets/branding/png/og.png).
+Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG exports in `png/`, animated captures in `gif/`). Regenerate the terminal SVG/PNG/GIF with [`assets/demo/svg-to-gif.sh`](assets/demo/svg-to-gif.sh) (requires `rsvg-convert` and `ffmpeg`). Regenerate the app captures with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which records the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright. The social preview card is [`assets/branding/png/og.png`](assets/branding/png/og.png).
 
 ## VS Code extension
 

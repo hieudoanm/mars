@@ -1,0 +1,8 @@
+{"blocks": [
+ {"cmd": "mars --version", "out": [["acc", "mars 0.0.1"]]},
+ {"cmd": "mars new analysis.mars", "out": [["out", "Created analysis.mars — 3 cells"]]},
+ {"cmd": "mars run analysis.mars", "out": [["hi", "[1] let greeting = \"Hello from Mars!\";"], ["hi", "[2] greeting → \"Hello from Mars!\""], ["hi", "[3] 2 + 2 → 4"], ["out", "Executed 3 cells in 1.24s · kernel: Idle"]]},
+ {"cmd": "mars inspect analysis.mars", "out": [["out", "format v1 · language: rust · 3 cells"]]},
+ {"cmd": "mars export analysis.mars html out/", "out": [["ok", "Wrote out/analysis.html (24 KB)"]]},
+ {"cmd": "mars kernel restart", "out": [["out", "Kernel restarted — variables cleared"]]}
+]}
