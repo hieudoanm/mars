@@ -60,7 +60,7 @@ The plugin targets the 2024.3 IntelliJ Platform (`IC`); adjust
 
 ## Layout
 
-```
+```text
 src/main/
 ├── resources/META-INF/plugin.xml     # extensions, actions, tool window
 └── kotlin/com/mars/idea/

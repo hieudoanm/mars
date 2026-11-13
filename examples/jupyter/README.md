@@ -99,19 +99,19 @@ mars export mars/python/01-getting-started/getting-started.mars ipynb notebook.i
 
 Mars supports Jupyter import/export with the following mappings:
 
-| Jupyter Feature | Mars Equivalent |
-| --- | --- |
-| Code cells | Code cells |
-| Markdown cells | Markdown cells |
-| Raw cells | Raw cells |
-| Outputs (text) | Text outputs |
-| Outputs (error) | Error outputs |
-| Outputs (HTML) | HTML outputs |
-| Outputs (images) | Image outputs (PNG, JPEG, SVG) |
-| Outputs (LaTeX) | LaTeX outputs |
-| Execution counts | Execution counts |
-| Cell metadata | Cell metadata (preserved) |
-| Notebook metadata | Notebook metadata (preserved) |
+| Jupyter Feature   | Mars Equivalent                |
+| ----------------- | ------------------------------ |
+| Code cells        | Code cells                     |
+| Markdown cells    | Markdown cells                 |
+| Raw cells         | Raw cells                      |
+| Outputs (text)    | Text outputs                   |
+| Outputs (error)   | Error outputs                  |
+| Outputs (HTML)    | HTML outputs                   |
+| Outputs (images)  | Image outputs (PNG, JPEG, SVG) |
+| Outputs (LaTeX)   | LaTeX outputs                  |
+| Execution counts  | Execution counts               |
+| Cell metadata     | Cell metadata (preserved)      |
+| Notebook metadata | Notebook metadata (preserved)  |
 
 ## Limitations
 
@@ -146,14 +146,14 @@ Mars supports Jupyter import/export with the following mappings:
 
 ### Key Differences
 
-| Feature | Jupyter | Mars |
-| --- | --- | --- |
-| Native format | `.ipynb` | `.mars` |
-| Primary language | Python | Rust (with multi-language support) |
-| Dependency management | pip / conda | Cargo (Rust), pip (Python), etc. |
-| Kernel persistence | Per-language | Per-language persistent sessions |
-| VS Code support | Native | Via Mars extension |
-| Desktop app | None | Native Tauri app |
+| Feature               | Jupyter      | Mars                               |
+| --------------------- | ------------ | ---------------------------------- |
+| Native format         | `.ipynb`     | `.mars`                            |
+| Primary language      | Python       | Rust (with multi-language support) |
+| Dependency management | pip / conda  | Cargo (Rust), pip (Python), etc.   |
+| Kernel persistence    | Per-language | Per-language persistent sessions   |
+| VS Code support       | Native       | Via Mars extension                 |
+| Desktop app           | None         | Native Tauri app                   |
 
 ## Python → Mars Translation
 
@@ -274,7 +274,7 @@ When adding new Jupyter examples:
 
 Example structure:
 
-```
+```text
 jupyter/
 ├── python/
 │   ├── notebook.ipynb

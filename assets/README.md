@@ -6,7 +6,7 @@ documentation, and applications.
 
 ## Structure
 
-```
+```text
 assets/
 ├── branding/
 │   ├── svg/          # SVG vector sources

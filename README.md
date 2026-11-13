@@ -5,9 +5,7 @@
 Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
 
-<p align="center">
-  <img src="assets/branding/png/og.png" alt="Mars — a Rust-powered interactive notebook platform" width="720">
-</p>
+![Mars — a Rust-powered interactive notebook platform](assets/branding/png/og.png)
 
 **Live demo:** <https://hieudoanm.github.io/mars/>
 
@@ -15,25 +13,20 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
 ## Table of Contents
 
-- [Features](#features)
-- [Get Started](#get-started)
-  - [CLI](#cli)
-  - [Node workspace](#node-workspace)
-  - [Desktop application](#desktop-application)
-- [Demo](#demo)
-- [VS Code extension](#vs-code-extension)
-- [Documentation](#documentation)
-- [Landing site](#landing-site)
-- [License](#license)
+- [mars](#mars)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Get Started](#get-started)
+    - [CLI](#cli)
+    - [Node workspace](#node-workspace)
+    - [Desktop application](#desktop-application)
+  - [Demo](#demo)
+  - [VS Code extension](#vs-code-extension)
+  - [Documentation](#documentation)
+  - [Landing site](#landing-site)
+  - [License](#license)
 
-- Rust-first interactive notebook platform.
-- Supports executable code, Markdown, mathematics, and rich output.
-- Uses an independent `.mars` document format.
-- Supports Jupyter import/export without being a Jupyter frontend.
-
-**Supported languages:**
-
-<img src="assets/icons/languages/svg/rust.svg" width="28" alt="Rust">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/python.svg" width="28" alt="Python">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/r.svg" width="28" alt="R">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/julia.svg" width="28" alt="Julia">&nbsp;·&nbsp;<img src="assets/icons/languages/svg/cpp.svg" width="28" alt="C++">
+**Supported languages:** Rust · Python · R · Julia · C++
 
 ## Features
 

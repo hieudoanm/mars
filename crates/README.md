@@ -66,7 +66,7 @@ The crate architecture follows these principles:
 
 ### Dependency Graph
 
-```
+```text
 mars-core (shared types)
     ↓
 mars-document (notebook format)

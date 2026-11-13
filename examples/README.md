@@ -15,7 +15,7 @@ Native Mars notebook examples demonstrating multi-language support and various f
 
 ### Structure
 
-```
+```text
 mars/
 ├── rust/              # Rust notebook examples
 │   ├── 01-getting-started/
@@ -134,7 +134,7 @@ Jupyter `.ipynb` notebooks for testing Mars import/export compatibility and demo
 
 ### Structure
 
-```
+```text
 jupyter/
 ├── python/            # Python Jupyter notebooks
 │   ├── notebook.ipynb
@@ -222,7 +222,7 @@ When adding new examples:
 
 Example structure:
 
-```
+```text
 mars/rust/04-data-visualization/
 ├── data-visualization.mars
 ├── data-visualization.html
