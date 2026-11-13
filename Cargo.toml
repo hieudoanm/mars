@@ -33,5 +33,5 @@ thiserror = "=2.0.21"
 libc = "=0.2.191"
 uuid = { version = "=1.29.2", features = ["serde", "v4"] }
 pulldown-cmark = "=0.13.6"
-ammonia = "=4.2.4"
+ammonia = "=4.2.5"
 base64 = "=0.23.1"
