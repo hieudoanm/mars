@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img">
+  <rect width="1280" height="640" fill="#0b0b0b"/>
+  <rect x="12" y="12" width="1256" height="616" rx="28" fill="#141414" stroke="#2e2e2e" stroke-width="2"/>
+  <path d="M12 68V40a28 28 0 0 1 28-28h1200a28 28 0 0 1 28 28v28H12Z" fill="#1c1c1c"/>
+  <circle cx="56" cy="40" r="8" fill="#ff5f57"/>
+  <circle cx="84" cy="40" r="8" fill="#febc2e"/>
+  <circle cx="112" cy="40" r="8" fill="#28c840"/>
+  <text x="640" y="47" text-anchor="middle" font-family="'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, Consolas, monospace" font-size="17" fill="#8a8a8a">mars — zsh</text>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="0.80s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="126"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars --version</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="1.35s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="158" fill="#c9a06a">mars 0.0.1</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="1.90s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="190"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars new analysis.mars</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="2.45s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="222" fill="#9ca3af">Created analysis.mars — 3 cells</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="3.00s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="254"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars run analysis.mars</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="3.55s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="286" fill="#e5e5e5">[1] let greeting = "Hello from Mars!";</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="4.10s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="318" fill="#e5e5e5">[2] greeting → "Hello from Mars!"</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="4.65s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="350" fill="#e5e5e5">[3] 2 + 2 → 4</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="5.20s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="382" fill="#9ca3af">Executed 3 cells in 1.24s · kernel: Idle</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="5.75s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="414"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars inspect analysis.mars</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="6.30s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="446" fill="#9ca3af">format v1 · language: rust · 3 cells</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="6.85s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="478"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars export analysis.mars html out/</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="7.40s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="510" fill="#7dd3a8">Wrote out/analysis.html (24 KB)</text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="7.95s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="542"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars kernel restart</tspan></text>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="8.50s" dur="0.25s" fill="freeze"/>
+    <text x="44" y="574" fill="#9ca3af">Kernel restarted — variables cleared</text>
+  </g>
+  <rect x="476" y="555" width="12" height="24" rx="2" fill="#e5e5e5">
+    <animate attributeName="opacity" values="1;0;1" keyTimes="0;0.5;1" dur="1.1s" begin="9.35s" repeatCount="indefinite"/>
+  </rect>
+</svg>

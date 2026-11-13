@@ -1,19 +1,19 @@
 {
   "iconDefinitions": {
     "mars": {
-      "iconPath": "../assets/images/mars-file-logo.png"
+      "iconPath": "../assets/png/mars-file-logo.png"
     },
     "_folder": {
-      "iconPath": "../assets/images/mars-logo-folder-close.png"
+      "iconPath": "../assets/png/mars-logo-folder-close.png"
     },
     "_folder_open": {
-      "iconPath": "../assets/images/mars-logo-folder-open.png"
+      "iconPath": "../assets/png/mars-logo-folder-open.png"
     },
     "_root_folder": {
-      "iconPath": "../assets/images/mars-logo-folder-close.png"
+      "iconPath": "../assets/png/mars-logo-folder-close.png"
     },
     "_root_folder_open": {
-      "iconPath": "../assets/images/mars-logo-folder-open.png"
+      "iconPath": "../assets/png/mars-logo-folder-open.png"
     }
   },
   "fileExtensions": {

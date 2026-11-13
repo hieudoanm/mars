@@ -4,7 +4,7 @@
   "description": "Language support and preview commands for .mars notebooks.",
   "version": "0.0.1",
   "publisher": "project-mars",
-  "icon": "assets/images/mars-logo.png",
+  "icon": "assets/png/mars-logo.png",
   "license": "MIT",
   "packageManager": "pnpm@12.18.0",
   "repository": {
@@ -65,8 +65,8 @@
         ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./assets/images/mars-file-logo.png",
-          "dark": "./assets/images/mars-file-logo.png"
+          "light": "./assets/png/mars-file-logo.png",
+          "dark": "./assets/png/mars-file-logo.png"
         }
       }
     ],
@@ -144,7 +144,7 @@
         {
           "id": "mars",
           "title": "Mars",
-          "icon": "assets/images/mars-logo.png"
+          "icon": "assets/png/mars-logo.png"
         }
       ]
     },
