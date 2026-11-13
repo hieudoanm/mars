@@ -251,7 +251,7 @@
     "@types/node": "26.6.6",
     "@types/vscode": "1.146.0",
     "@vitest/coverage-v8": "5.1.0",
-    "@vscode/vsce": "4.1.0",
+    "@vscode/vsce": "4.1.1",
     "eslint": "10.14.0",
     "globals": "17.14.0",
     "prettier": "3.10.1",
