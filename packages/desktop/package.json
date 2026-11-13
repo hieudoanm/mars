@@ -64,7 +64,7 @@
     "daisyui": "5.8.0",
     "eslint": "10.14.0",
     "globals": "17.14.0",
-    "jsdom": "31.0.0",
+    "jsdom": "31.0.1",
     "kill-port": "2.0.1",
     "prettier": "3.10.1",
     "prettier-plugin-tailwindcss": "0.8.1",
