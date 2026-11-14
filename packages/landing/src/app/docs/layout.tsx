@@ -9,6 +9,18 @@ export const metadata: Metadata = {
   title: 'Documentation',
   description:
     'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
+  openGraph: {
+    title: 'Mars Documentation',
+    description:
+      'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Mars Documentation',
+    description:
+      'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
+  },
 };
 
 const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';

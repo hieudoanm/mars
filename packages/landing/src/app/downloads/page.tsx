@@ -1,8 +1,28 @@
 import type { FC } from 'react';
 import type { NextPage } from 'next';
+import type { Metadata } from 'next';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
-import { repositoryUrl } from '@/lib/site';
+import { repositoryUrl, siteUrl } from '@/lib/site';
+
+export const metadata: Metadata = {
+  title: 'Downloads',
+  description: 'Download Mars desktop app for macOS, Windows, and Linux. Install VS Code, Zed, and JetBrains extensions.',
+  alternates: {
+    canonical: `${siteUrl}/downloads`,
+  },
+  openGraph: {
+    title: 'Download Mars',
+    description: 'Get the Mars desktop application and editor extensions for your platform.',
+    url: `${siteUrl}/downloads`,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Download Mars',
+    description: 'Get the Mars desktop application and editor extensions for your platform.',
+  },
+};
 
 const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 
@@ -61,8 +81,31 @@ const extensionDownloads = [
 ];
 
 const DownloadsPage: FC & NextPage = () => {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Downloads',
+        item: `${siteUrl}/downloads`,
+      },
+    ],
+  };
+
   return (
     <div className='bg-bg-alt text-ink-2 min-h-screen'>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Navbar
         className='max-w-shell max-sm-nav:px-4 mx-auto flex w-full items-center justify-between px-6 py-7'
         showHome

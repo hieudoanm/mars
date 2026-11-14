@@ -13,14 +13,14 @@ Jupyter kernels enable interactive computing in multiple languages within the sa
 
 ## Kernel Overview
 
-|| Kernel | Language | Execution Model | Key Strengths | Mars Differentiator |
-||--------|----------|-----------------|---------------|---------------------|
-|| evcxr_jupyter | Rust | REPL-based | Rust performance, Cargo integration | Native compilation, multi-language |
-|| IJulia | Julia | REPL-based | Julia performance, multiple dispatch | MarsKernel module, MIME bundles |
-|| xeus-cling | C++ | Interpreter (Cling) | C++ performance, modern C++ | Full compilation, dependency management |
-|| IRkernel | R | REPL-based | Statistical computing, tidyverse | Plot capture, warnings streaming |
-|| matlab_kernel | MATLAB | REPL-based | Matrix operations, toolboxes, plotting | Multi-language, desktop app |
-|| Mars | Multi-language | Native runtimes | Rust-first, multi-language, CLI | Independent platform, desktop app |
+| Kernel        | Language       | Execution Model     | Key Strengths                          | Mars Differentiator                     |
+| ------------- | -------------- | ------------------- | -------------------------------------- | --------------------------------------- |
+| evcxr_jupyter | Rust           | REPL-based          | Rust performance, Cargo integration    | Native compilation, multi-language      |
+| IJulia        | Julia          | REPL-based          | Julia performance, multiple dispatch   | MarsKernel module, MIME bundles         |
+| xeus-cling    | C++            | Interpreter (Cling) | C++ performance, modern C++            | Full compilation, dependency management |
+| IRkernel      | R              | REPL-based          | Statistical computing, tidyverse       | Plot capture, warnings streaming        |
+| matlab_kernel | MATLAB         | REPL-based          | Matrix operations, toolboxes, plotting | Multi-language, desktop app             |
+| Mars          | Multi-language | Native runtimes     | Rust-first, multi-language, CLI        | Independent platform, desktop app       |
 
 ## Why evcxr_jupyter?
 

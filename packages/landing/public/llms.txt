@@ -1,0 +1,110 @@
+# Mars - AI-Readable Site Index
+
+Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.
+
+## Site Overview
+
+- **Name**: Mars
+- **Tagline**: Explore ideas. Execute code. Discover possibilities.
+- **Type**: Interactive notebook platform
+- **Primary Language**: Rust
+- **Native Format**: .mars files
+- **Repository**: https://github.com/hieudoanm/mars
+
+## Key Features
+
+- Multi-language support: Rust, Python, R, Julia, C++
+- Desktop application (Tauri-based)
+- CLI for headless execution
+- Rich output rendering (text, images, tables, charts, LaTeX)
+- Jupyter compatibility (import/export .ipynb)
+- MCP integration for AI assistants
+- VS Code, Zed, JetBrains extensions
+
+## Documentation
+
+- Getting Started: https://hieudoanm.github.io/mars/docs/01-getting-started/
+- CLI Reference: https://hieudoanm.github.io/mars/docs/02-cli/
+- Notebook Format: https://hieudoanm.github.io/mars/docs/03-notebook-format/
+- Rust Runtime: https://hieudoanm.github.io/mars/docs/04-runtime-rust/
+- Python Runtime: https://hieudoanm.github.io/mars/docs/05-runtime-python/
+- R Runtime: https://hieudoanm.github.io/mars/docs/06-runtime-r/
+- Julia Runtime: https://hieudoanm.github.io/mars/docs/07-runtime-julia/
+- C++ Runtime: https://hieudoanm.github.io/mars/docs/08-runtime-cpp/
+- MCP Integration: https://hieudoanm.github.io/mars/docs/09-mcp/
+
+## Blog Series
+
+### Programming Languages
+- Overview: https://hieudoanm.github.io/mars/blog/languages/
+- Rust: https://hieudoanm.github.io/mars/blog/language-rust/
+- Julia: https://hieudoanm.github.io/mars/blog/language-julia/
+- Python: https://hieudoanm.github.io/mars/blog/language-python/
+- R: https://hieudoanm.github.io/mars/blog/language-r/
+- C++: https://hieudoanm.github.io/mars/blog/language-cpp/
+
+### Notebook Platforms
+- Overview: https://hieudoanm.github.io/mars/blog/notebooks/
+- Mars: https://hieudoanm.github.io/mars/blog/notebook-mars/
+- Jupyter: https://hieudoanm.github.io/mars/blog/notebook-jupyter/
+- Deepnote: https://hieudoanm.github.io/mars/blog/notebook-deepnote/
+- Observable: https://hieudoanm.github.io/mars/blog/notebook-observable/
+- Hex: https://hieudoanm.github.io/mars/blog/notebook-hex/
+
+### Jupyter Kernels
+- Overview: https://hieudoanm.github.io/mars/blog/kernels/
+- evcxr_jupyter (Rust): https://hieudoanm.github.io/mars/blog/kernel-evcxr-jupyter/
+- IJulia (Julia): https://hieudoanm.github.io/mars/blog/kernel-ijulia/
+- xeus-cling (C++): https://hieudoanm.github.io/mars/blog/kernel-xeus-cling/
+- IRkernel (R): https://hieudoanm.github.io/mars/blog/kernel-irkernel/
+- matlab_kernel: https://hieudoanm.github.io/mars/blog/kernel-matlab/
+
+### Data Science Libraries
+- Overview: https://hieudoanm.github.io/mars/blog/data-science-libraries/
+- NumPy vs ndarray: https://hieudoanm.github.io/mars/blog/data-science-library-numpy-vs-ndarray/
+- pandas vs Polars: https://hieudoanm.github.io/mars/blog/data-science-library-pandas-vs-polars/
+- SciPy vs faer: https://hieudoanm.github.io/mars/blog/data-science-library-scipy-vs-faer/
+- Statsmodels vs statrs: https://hieudoanm.github.io/mars/blog/data-science-library-statsmodels-vs-statrs/
+- Matplotlib vs plotters: https://hieudoanm.github.io/mars/blog/data-science-library-matplotlib-vs-plotters/
+- Seaborn vs charming: https://hieudoanm.github.io/mars/blog/data-science-library-seaborn-vs-charming/
+- Plotly vs plotly.rs: https://hieudoanm.github.io/mars/blog/data-science-library-plotly-python-vs-rust/
+- Jupyter vs Mars: https://hieudoanm.github.io/mars/blog/data-science-library-jupyter-vs-mars/
+- NetworkX vs petgraph: https://hieudoanm.github.io/mars/blog/data-science-library-networkx-vs-petgraph/
+- xarray vs ndarray: https://hieudoanm.github.io/mars/blog/data-science-library-xarray-vs-ndarray/
+
+### Machine Learning Libraries
+- Overview: https://hieudoanm.github.io/mars/blog/machine-learning-libraries/
+- scikit-learn vs linfa: https://hieudoanm.github.io/mars/blog/machine-learning-library-scikit-learn-vs-linfa/
+- PyTorch vs tch-rs: https://hieudoanm.github.io/mars/blog/machine-learning-library-pytorch-vs-tch-rs/
+- TensorFlow vs tensorflow: https://hieudoanm.github.io/mars/blog/machine-learning-library-tensorflow-vs-tensorflow/
+- Keras vs burn: https://hieudoanm.github.io/mars/blog/machine-learning-library-keras-vs-burn/
+- XGBoost vs xgboost-rs: https://hieudoanm.github.io/mars/blog/machine-learning-library-xgboost-vs-xgboost-rs/
+- LightGBM vs lightgbm: https://hieudoanm.github.io/mars/blog/machine-learning-library-lightgbm-vs-lightgbm/
+- CatBoost vs catboost-rs: https://hieudoanm.github.io/mars/blog/machine-learning-library-catboost-vs-catboost-rs/
+- JAX vs dfdx: https://hieudoanm.github.io/mars/blog/machine-learning-library-jax-vs-dfdx/
+- Transformers vs rust-bert: https://hieudoanm.github.io/mars/blog/machine-learning-library-transformers-vs-rust-bert/
+- OpenCV vs opencv: https://hieudoanm.github.io/mars/blog/machine-learning-library-opencv-vs-opencv/
+
+### Machine Learning Projects
+- Overview: https://hieudoanm.github.io/mars/blog/machine-learning-projects/
+- Iris Classification: https://hieudoanm.github.io/mars/blog/machine-learning-project-iris-classification/
+- House Price Prediction: https://hieudoanm.github.io/mars/blog/machine-learning-project-house-price-prediction/
+- MNIST Digit Recognition: https://hieudoanm.github.io/mars/blog/machine-learning-project-mnist-digit-recognition/
+- Spam Classifier: https://hieudoanm.github.io/mars/blog/machine-learning-project-spam-classifier/
+- Movie Recommendation: https://hieudoanm.github.io/mars/blog/machine-learning-project-movie-recommendation/
+- Customer Churn Prediction: https://hieudoanm.github.io/mars/blog/machine-learning-project-customer-churn-prediction/
+- Demand Forecasting: https://hieudoanm.github.io/mars/blog/machine-learning-project-demand-forecasting/
+- Sentiment Analysis: https://hieudoanm.github.io/mars/blog/machine-learning-project-sentiment-analysis/
+- Credit Card Fraud Detection: https://hieudoanm.github.io/mars/blog/machine-learning-project-credit-card-fraud-detection/
+- Image Classification: https://hieudoanm.github.io/mars/blog/machine-learning-project-image-classification/
+
+## Downloads
+
+- Desktop App: https://hieudoanm.github.io/mars/downloads/
+- GitHub Releases: https://github.com/hieudoanm/mars/releases
+
+## Contact & Community
+
+- GitHub: https://github.com/hieudoanm/mars
+- Issues: https://github.com/hieudoanm/mars/issues
+- Discussions: https://github.com/hieudoanm/mars/discussions

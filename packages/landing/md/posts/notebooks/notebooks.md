@@ -13,13 +13,13 @@ The notebook ecosystem has evolved beyond Jupyter to include specialized platfor
 
 ## Notebook Platform Overview
 
-|| Platform | Primary Focus | Key Strengths | Mars Differentiator |
-||----------|---------------|---------------|---------------------|
-|| Jupyter | General-purpose notebooks | Mature ecosystem, wide adoption | Mars is independent, not Jupyter-based |
-|| Deepnote | Collaborative data science | Real-time collaboration, cloud-native | Mars is desktop-first, Rust-native |
-|| Observable | Reactive JavaScript | Live updates, web-native, visualization | Mars is multi-language, performance-focused |
-|| Hex | Modern data science | SQL-first, collaboration, cloud-native | Mars is multi-language, Rust-first |
-|| Mars | Multi-language notebooks | Rust-first, multi-language, CLI automation | Unique combination of features |
+| Platform   | Primary Focus              | Key Strengths                              | Mars Differentiator                         |
+| ---------- | -------------------------- | ------------------------------------------ | ------------------------------------------- |
+| Jupyter    | General-purpose notebooks  | Mature ecosystem, wide adoption            | Mars is independent, not Jupyter-based      |
+| Deepnote   | Collaborative data science | Real-time collaboration, cloud-native      | Mars is desktop-first, Rust-native          |
+| Observable | Reactive JavaScript        | Live updates, web-native, visualization    | Mars is multi-language, performance-focused |
+| Hex        | Modern data science        | SQL-first, collaboration, cloud-native     | Mars is multi-language, Rust-first          |
+| Mars       | Multi-language notebooks   | Rust-first, multi-language, CLI automation | Unique combination of features              |
 
 ## Why Deepnote?
 

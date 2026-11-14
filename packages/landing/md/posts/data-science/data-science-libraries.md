@@ -13,18 +13,18 @@ Data science workflows have long relied on a mature Python ecosystem. Rust now o
 
 ## Python to Rust at a glance
 
-|| Python library | Rust equivalent | What it does                                                        |
-|| -------------- | --------------- | ------------------------------------------------------------------- |
-|| NumPy          | `ndarray`       | N-dimensional arrays and numerical computing                        |
-|| pandas         | `polars`        | DataFrames, tabular data manipulation, and analytics                |
-|| SciPy          | `faer`          | Linear algebra and scientific computing primitives                  |
-|| Statsmodels    | `statrs`        | Statistical distributions, tests, and models                        |
-|| Matplotlib     | `plotters`      | 2D plotting and chart rendering                                     |
-|| Seaborn        | `charming`      | High-level statistical visualizations                               |
-|| Plotly         | `plotly`        | Interactive, publication-quality charts                             |
-|| Jupyter        | Mars            | Multi-language notebook platform with Rust-first design               |
-|| xarray         | `ndarray`       | Labeled multi-dimensional array workflows (via `ndarray` ecosystem) |
-|| NetworkX       | `petgraph`      | Graph data structures and network algorithms                        |
+| Python library | Rust equivalent | What it does                                                        |
+| -------------- | --------------- | ------------------------------------------------------------------- |
+| NumPy          | `ndarray`       | N-dimensional arrays and numerical computing                        |
+| pandas         | `polars`        | DataFrames, tabular data manipulation, and analytics                |
+| SciPy          | `faer`          | Linear algebra and scientific computing primitives                  |
+| Statsmodels    | `statrs`        | Statistical distributions, tests, and models                        |
+| Matplotlib     | `plotters`      | 2D plotting and chart rendering                                     |
+| Seaborn        | `charming`      | High-level statistical visualizations                               |
+| Plotly         | `plotly`        | Interactive, publication-quality charts                             |
+| Jupyter        | Mars            | Multi-language notebook platform with Rust-first design             |
+| xarray         | `ndarray`       | Labeled multi-dimensional array workflows (via `ndarray` ecosystem) |
+| NetworkX       | `petgraph`      | Graph data structures and network algorithms                        |
 
 ## 1. NumPy → `ndarray`
 

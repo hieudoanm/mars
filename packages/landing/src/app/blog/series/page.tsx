@@ -38,25 +38,26 @@ const series = [
     slug: 'languages',
     title: 'Programming Languages',
     description: 'Explore why Rust, Python, R, Julia, and C++ are essential for modern data science and how Mars supports them all.',
-    posts: ['language-rust', 'language-python', 'language-r', 'language-julia', 'language-cpp'],
+    posts: ['languages', 'language-rust', 'language-python', 'language-r', 'language-julia', 'language-cpp'],
   },
   {
     slug: 'notebooks',
     title: 'Notebook Platforms',
     description: 'Compare Deepnote, Observable, Jupyter, and Mars to understand different approaches to interactive computing.',
-    posts: ['notebook-jupyter', 'notebook-mars', 'deepnote', 'observable'],
+    posts: ['notebooks', 'notebook-mars', 'notebook-jupyter', 'notebook-deepnote', 'notebook-observable', 'notebook-hex'],
   },
   {
     slug: 'kernels',
     title: 'Jupyter Kernels',
     description: 'Explore language-specific Jupyter kernels and how they compare to Mars\'s native multi-language approach.',
-    posts: ['evcxr-jupyter', 'ijulia', 'xeus-cling', 'irkernel'],
+    posts: ['kernels', 'kernel-evcxr-jupyter', 'kernel-ijulia', 'kernel-xeus-cling', 'kernel-irkernel', 'kernel-matlab'],
   },
   {
     slug: 'data-science',
     title: 'Data Science Libraries',
     description: 'Compare Python and Rust data science libraries side-by-side, from NumPy to pandas to Polars.',
     posts: [
+      'data-science-libraries',
       'data-science-library-numpy-vs-ndarray',
       'data-science-library-pandas-vs-polars',
       'data-science-library-scipy-vs-faer',
@@ -64,9 +65,9 @@ const series = [
       'data-science-library-matplotlib-vs-plotters',
       'data-science-library-seaborn-vs-charming',
       'data-science-library-plotly-python-vs-rust',
-      'data-science-library-xarray-vs-ndarray',
-      'data-science-library-networkx-vs-petgraph',
       'data-science-library-jupyter-vs-mars',
+      'data-science-library-networkx-vs-petgraph',
+      'data-science-library-xarray-vs-ndarray',
     ],
   },
   {
@@ -74,6 +75,7 @@ const series = [
     title: 'Machine Learning Libraries',
     description: 'Compare Python and Rust machine learning libraries from scikit-learn to PyTorch to XGBoost.',
     posts: [
+      'machine-learning-libraries',
       'machine-learning-library-scikit-learn-vs-linfa',
       'machine-learning-library-pytorch-vs-tch-rs',
       'machine-learning-library-tensorflow-vs-tensorflow',
@@ -91,6 +93,7 @@ const series = [
     title: 'Machine Learning Projects',
     description: 'Hands-on tutorials for 10 essential ML projects every beginner should know.',
     posts: [
+      'machine-learning-projects',
       'machine-learning-project-iris-classification',
       'machine-learning-project-mnist-digit-recognition',
       'machine-learning-project-spam-classifier',
@@ -109,8 +112,37 @@ export default function SeriesPage() {
   const posts = getPosts();
   const postMap = new Map(posts.map((post) => [post.slug, post]));
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: `${siteUrl}/blog`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'Series',
+        item: `${siteUrl}/blog/series`,
+      },
+    ],
+  };
+
   return (
     <div>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <div className='mb-10'>
         <h1 className='text-ink text-3xl font-bold tracking-tight'>Series</h1>
         <p className='text-muted mt-2'>

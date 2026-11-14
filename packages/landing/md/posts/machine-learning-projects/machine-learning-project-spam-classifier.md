@@ -224,11 +224,11 @@ Reasons:
 Accuracy alone is misleading when classes are imbalanced (~13% spam).
 The metrics that matter:
 
-| Metric | Question it answers |
-| ------ | ------------------- |
+| Metric        | Question it answers                                                  |
+| ------------- | -------------------------------------------------------------------- |
 | **Precision** | Of messages flagged spam, how many really are? (false-positive cost) |
-| **Recall** | Of real spam, how much did we catch? (false-negative cost) |
-| **F1** | Harmonic mean — balances both |
+| **Recall**    | Of real spam, how much did we catch? (false-negative cost)           |
+| **F1**        | Harmonic mean — balances both                                        |
 
 For a spam filter, **precision > recall** is usually right: marking a
 real email as spam is worse than letting one spam through.
@@ -256,11 +256,11 @@ fn precision_recall(preds: &[bool], labels: &[bool])
 
 Typical SMS-spam results:
 
-| Model | Accuracy | Precision | Recall | F1 |
-| ----- | -------- | --------- | ------ | -- |
-| Multinomial NB | ~97% | ~0.93 | ~0.92 | ~0.92 |
-| Linear SVM (TF-IDF) | ~98% | ~0.95 | ~0.94 | ~0.94 |
-| Logistic regression | ~97% | ~0.94 | ~0.93 | ~0.93 |
+| Model               | Accuracy | Precision | Recall | F1    |
+| ------------------- | -------- | --------- | ------ | ----- |
+| Multinomial NB      | ~97%     | ~0.93     | ~0.92  | ~0.92 |
+| Linear SVM (TF-IDF) | ~98%     | ~0.95     | ~0.94  | ~0.94 |
+| Logistic regression | ~97%     | ~0.94     | ~0.93  | ~0.93 |
 
 **Next steps:**
 

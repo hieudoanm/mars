@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Markdown from "@/components/shared/Markdown";
 import { getDoc, getDocs } from "@/lib/docs";
+import { siteName, siteUrl } from "@/lib/site";
 
 export const dynamicParams = false;
 
@@ -17,7 +18,31 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const { slug } = await params;
   const doc = getDoc(slug);
-  return doc ? { title: `${doc.title} | Mars` } : {};
+  if (!doc) return {};
+
+  const title = `${doc.title} | Mars Documentation`;
+  const description = doc.description || `Learn about ${doc.title} in Mars documentation.`;
+  const url = `${siteUrl}/docs/${doc.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName,
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
+  };
 };
 
 type DocPageProps = Readonly<{
@@ -34,8 +59,67 @@ const DocPage = async ({ params }: DocPageProps) => {
   const previous = currentIndex > 0 ? docs[currentIndex - 1] : undefined;
   const next = currentIndex >= 0 && currentIndex < docs.length - 1 ? docs[currentIndex + 1] : undefined;
 
+  const techArticleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: doc.title,
+    description: doc.description || `Learn about ${doc.title} in Mars documentation.`,
+    author: {
+      '@type': 'Organization',
+      name: siteName,
+      url: siteUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+      url: siteUrl,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/docs/${doc.slug}`,
+    },
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Mars Documentation',
+      url: `${siteUrl}/docs`,
+    },
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Documentation',
+        item: `${siteUrl}/docs`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: doc.title,
+        item: `${siteUrl}/docs/${doc.slug}`,
+      },
+    ],
+  };
+
   return (
     <div>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleSchema) }}
+      />
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Markdown content={doc.content} />
       <nav className="mt-12 flex items-center justify-between gap-4 border-t border-line pt-6">
         <div className="flex-1">

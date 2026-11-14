@@ -98,11 +98,83 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
     keywords: post.tags.join(', '),
   };
 
+  const isTutorial = post.slug.includes('project') || post.slug.includes('tutorial');
+  const howToSchema = isTutorial
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'HowTo',
+        name: post.title,
+        description: post.description,
+        step: [
+          {
+            '@type': 'HowToStep',
+            name: 'Setup Environment',
+            text: 'Install Mars and set up your development environment for the tutorial.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Load Data',
+            text: 'Load the dataset and explore the data structure.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Preprocess Data',
+            text: 'Clean and preprocess the data for machine learning.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Train Model',
+            text: 'Train the machine learning model on the prepared data.',
+          },
+          {
+            '@type': 'HowToStep',
+            name: 'Evaluate Results',
+            text: 'Evaluate model performance and visualize results.',
+          },
+        ],
+      }
+    : null;
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: `${siteUrl}/blog`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: post.title,
+        item: `${siteUrl}/blog/${post.slug}`,
+      },
+    ],
+  };
+
   return (
     <div>
       <script
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      {howToSchema && (
+        <script
+          type='application/ld+json'
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+        />
+      )}
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <div className='text-muted mb-8 flex items-center gap-3 text-xs'>
         <Link href='/blog' className='hover:text-ink'>

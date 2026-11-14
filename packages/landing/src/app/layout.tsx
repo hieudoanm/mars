@@ -13,6 +13,23 @@ export const metadata: Metadata = {
     'Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
   applicationName: 'Mars',
   manifest: '/manifest.json',
+  alternates: {
+    languages: {
+      'en': 'https://hieudoanm.github.io/mars',
+      'x-default': 'https://hieudoanm.github.io/mars',
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: [
       { url: '/icons/mars-logo.svg', type: 'image/svg+xml' },
