@@ -1,8 +1,4 @@
 import { markdown } from '@codemirror/lang-markdown';
-import { rust } from '@codemirror/lang-rust';
-import { python } from '@codemirror/lang-python';
-import { r as rMode } from '@codemirror/legacy-modes/mode/r';
-import { julia as juliaMode } from '@codemirror/legacy-modes/mode/julia';
 import {
   autocompletion,
   closeBrackets,
@@ -17,7 +13,6 @@ import {
   foldGutter,
   foldKeymap,
   indentOnInput,
-  StreamLanguage,
   syntaxHighlighting,
 } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
@@ -41,11 +36,11 @@ import { setDiagnostics } from '@codemirror/lint';
 import { type FC, useEffect, useRef } from 'react';
 import type { CellType } from '../../types/types';
 import type { Diagnostic } from '@codemirror/lint';
-import { rustCompletionSource } from '../../lib/rustCompletions';
 import { csvSnippet } from '../../lib/cellCsv';
 import { inlayHintsField, setHintsEffect } from '../../lib/inlayHints';
 import { semanticTokensField, setTokensEffect } from '../../lib/semanticTokens';
 import { stickyScroll } from '../../lib/stickyScroll';
+import { languageDescriptor } from '../../lib/languages';
 import { bracketColorizer } from '../../lib/bracketColors';
 
 type CodeEditorProps = {
@@ -191,6 +186,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
         onFocusRef.current();
       }
     });
+    const language = languageDescriptor(codeLanguage);
     const view = new EditorView({
       state: EditorState.create({
         doc: valueRef.current,
@@ -199,11 +195,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
           EditorState.allowMultipleSelections.of(true),
           inlayHintsField,
           semanticTokensField,
-          ...(cellType === 'code' &&
-          (codeLanguage === 'rust' ||
-            codeLanguage === 'python' ||
-            codeLanguage === 'r' ||
-            codeLanguage === 'julia')
+          ...(cellType === 'code' && language?.editorAssist
             ? [bracketColorizer(), stickyScroll()]
             : []),
           drawSelection(),
@@ -213,11 +205,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
           highlightSpecialChars(),
           highlightSelectionMatches(),
           rectangularSelection(),
-          ...(cellType === 'code' &&
-          (codeLanguage === 'rust' ||
-            codeLanguage === 'python' ||
-            codeLanguage === 'r' ||
-            codeLanguage === 'julia')
+          ...(cellType === 'code' && language?.editorAssist
             ? indentationMarkers({
                 markerType: 'codeOnly',
                 hideFirstIndent: true,
@@ -244,10 +232,10 @@ const CodeEditor: FC<CodeEditorProps> = ({
           autocompleteEnabled
             ? autocompletion({
                 activateOnTyping: true,
-                ...(cellType === 'code' && codeLanguage === 'rust'
+                ...(cellType === 'code' && language?.completionSource
                   ? {
                       override: [
-                        rustCompletionSource,
+                        language.completionSource,
                         ...(extraCompletionSource ? [extraCompletionSource] : []),
                       ],
                     }
@@ -436,15 +424,9 @@ const CodeEditor: FC<CodeEditorProps> = ({
             : [],
           cellType === 'markdown'
             ? markdown()
-            : cellType === 'code' && codeLanguage === 'rust'
-              ? rust()
-              : cellType === 'code' && codeLanguage === 'python'
-                ? python()
-                : cellType === 'code' && codeLanguage === 'r'
-                  ? StreamLanguage.define(rMode)
-                  : cellType === 'code' && codeLanguage === 'julia'
-                    ? StreamLanguage.define(juliaMode)
-                    : [],
+            : cellType === 'code'
+              ? (language?.syntax?.() ?? [])
+              : [],
         ],
       }),
       parent: containerRef.current,

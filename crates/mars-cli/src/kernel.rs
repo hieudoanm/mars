@@ -34,6 +34,7 @@ fn wire_event(event: StreamEvent) -> KernelStreamEvent {
             data,
         },
         StreamEvent::Prompt { message } => KernelStreamEvent::Prompt { message },
+        StreamEvent::Comm { message } => KernelStreamEvent::Comm { message },
     }
 }
 
@@ -41,7 +42,21 @@ fn build_kernel(
     notebook: &Option<Notebook>,
     backend: RuntimeBackendKind,
     language: &str,
+    request_options: Option<&serde_json::Value>,
 ) -> Result<Kernel, String> {
+    if language == "python" {
+        let options = request_options
+            .and_then(|options| options.get("python"))
+            .and_then(|value| serde_json::from_value(value.clone()).ok())
+            .or_else(|| {
+                notebook.as_ref().map(|notebook| {
+                    mars_kernel::python_options_from_metadata(&notebook.metadata.extra)
+                })
+            })
+            .unwrap_or_default();
+        return Kernel::for_language_with_python_options(language, backend, options)
+            .map_err(|error| error.to_string());
+    }
     if let Some(notebook) = notebook {
         Kernel::for_language_with_configuration(
             language,
@@ -83,10 +98,11 @@ fn kernel_for_language<'a>(
     notebook: &Option<Notebook>,
     backend: RuntimeBackendKind,
     language: &str,
+    options: Option<&serde_json::Value>,
     writers: &Mutex<HashMap<String, StdinWriter>>,
 ) -> Result<&'a mut Kernel, String> {
     if !kernels.contains_key(language) {
-        let kernel = build_kernel(notebook, backend, language)?;
+        let kernel = build_kernel(notebook, backend, language, options)?;
         kernels.insert(language.to_owned(), kernel);
     }
     let kernel = kernels
@@ -156,6 +172,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                         source,
                         timeout_millis,
                         language,
+                        options,
                     } => {
                         exec_cancellation.store(false, Ordering::Relaxed);
                         let language = language.unwrap_or_else(|| {
@@ -172,6 +189,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                             &exec_notebook,
                             backend,
                             &language,
+                            options.as_ref(),
                             &exec_writers,
                         ) {
                             Err(message) => ResponseEnvelope {
@@ -280,6 +298,45 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                             },
                         }
                     }
+                    KernelRequest::Comm {
+                        comm_id,
+                        comm_type,
+                        data,
+                        language,
+                    } => {
+                        let language = language.unwrap_or_else(|| {
+                            exec_language
+                                .lock()
+                                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                .clone()
+                        });
+                        *exec_language
+                            .lock()
+                            .unwrap_or_else(|poisoned| poisoned.into_inner()) = language.clone();
+                        let request = KernelRequest::Comm {
+                            comm_id,
+                            comm_type,
+                            data,
+                            language: None,
+                        };
+                        match kernel_for_language(
+                            &mut kernels,
+                            &exec_notebook,
+                            backend,
+                            &language,
+                            None,
+                            &exec_writers,
+                        ) {
+                            Err(message) => ResponseEnvelope {
+                                id,
+                                response: KernelResponse::Error { message },
+                            },
+                            Ok(kernel) => kernel.handle_with_cancellation(
+                                RequestEnvelope { id, request },
+                                Arc::clone(&exec_cancellation),
+                            ),
+                        }
+                    }
                     other => {
                         let language = exec_language
                             .lock()
@@ -290,6 +347,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                             &exec_notebook,
                             backend,
                             &language,
+                            None,
                             &exec_writers,
                         ) {
                             Err(message) => ResponseEnvelope {

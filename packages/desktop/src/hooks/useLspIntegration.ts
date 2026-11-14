@@ -18,6 +18,7 @@ import {
 } from '../lib/kernelService';
 import { lspHoverText, signatureHelpText } from '../lib/lsp';
 import { cellLanguage, isRunnableCodeCell } from '../lib/cellLanguage';
+import { languageDescriptor } from '../lib/languages';
 import { updateCompletionSources } from '../lib/rustCompletions';
 
 export type LspHandlers = {
@@ -55,7 +56,7 @@ export const useLspIntegration = ({
   const isRustCell = useCallback(
     (cell: NotebookCell) =>
       isRunnableCodeCell(cell, notebookLanguage) &&
-      cellLanguage(cell, notebookLanguage) === 'rust',
+      languageDescriptor(cellLanguage(cell, notebookLanguage))?.lsp === true,
     [notebookLanguage],
   );
   const codeSources = useMemo(

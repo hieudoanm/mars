@@ -66,12 +66,14 @@ The following are deliberately **out of scope** for now:
 
 - **Remote/collaborative editing** — real-time multi-user documents need an
   OT/CRDT layer and conflict semantics that do not exist yet.
-- **Widget protocol** — Jupyter's `ipywidgets`-style front-end↔kernel state
-  channel. The output model is extensible enough to add later.
+- ~~Widget protocol~~ — implemented for Python: the driver bridges the
+  `comm` package, `KernelRequest::Comm` delivers front-end widget updates,
+  and `KernelStreamEvent::Comm` streams widget traffic during `Execute`.
 - **Extension ecosystem** — no plugin API is planned until the kernel
   transport stabilizes.
-- **Second language runtime** — `metadata.language` plumbing exists, but a
-  second runtime is a product decision, not a gap.
+- **Second language runtime** — implemented: `rust`, `python`, `r`,
+  `julia`, and `cpp` backends are registered in `mars-kernel`'s language
+  registry; `kernel serve` multiplexes one kernel per language.
 - **Debugger/breakpoints** — Rust debugging integration is a separate large
   project.
 

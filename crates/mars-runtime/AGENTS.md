@@ -17,7 +17,7 @@ Two execution backends implement `RuntimeBackend` (`backend.rs`):
 - `expression.rs` — wraps cells in `fn main()`, strips trailing `;`, detects final expressions (`split_final_expression`), emits `__MARS_RESULT__=` marker for display output. Only the *last* cell auto-displays — replayed cells discard final expressions to avoid duplicate output.
 - `compilation.rs` — `compile_command` picks rustc vs cargo; writes `Cargo.toml`/`Cargo.lock` for dependency builds.
 - `diagnostics.rs` — parses rustc JSON diagnostics into readable messages with spans.
-- `output.rs` — `ExecutionResult`, `ExpressionOutput` (Debug/Display/Discard), `BinaryOutput`, stdout marker normalization, Evcxr content-block parsing.
+- `output.rs` — `ExecutionResult`, `ExpressionOutput` (Debug/Display/Discard), `BinaryOutput`, stdout marker normalization, Evcxr content-block parsing. `StreamEvent::Comm` carries `mars_core::CommMessage` widget traffic; `RuntimeBackend::handle_comm` delivers inbound comm messages (default: ignored).
 - `cancellation.rs` — `CancellationToken` wrapping `Arc<AtomicBool>`.
 
 ## Rules

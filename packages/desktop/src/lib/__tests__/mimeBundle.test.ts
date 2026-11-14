@@ -176,3 +176,25 @@ describe('imageDataUri', () => {
     expect(uri).toBe('data:image/png;base64,iVBORw0KG');
   });
 });
+
+describe('selectMime widget-view', () => {
+  it('selects widget-view+json model id', () => {
+    const selected = selectMime({
+      'application/vnd.jupyter.widget-view+json': {
+        version_major: 2,
+        version_minor: 0,
+        model_id: 'abc123',
+      },
+      'text/plain': 'IntSlider(value=3)',
+    });
+    expect(selected).toEqual({ kind: 'widget', value: 'abc123' });
+  });
+
+  it('selects javascript mime', () => {
+    const selected = selectMime({
+      'application/javascript': 'console.log(1)',
+      'text/plain': 'fallback',
+    });
+    expect(selected).toEqual({ kind: 'javascript', value: 'console.log(1)' });
+  });
+});

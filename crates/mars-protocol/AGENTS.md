@@ -13,8 +13,14 @@ Serde-typed wire protocol between clients (CLI, desktop) and the kernel. Depends
   - `Variables` — live session bindings (`VariableInfo` wire struct).
   - `Diagnose { source }` — compile-check a candidate cell without committing it (`CellDiagnostic` wire struct).
   - `Input { text }` — one line to the running cell's stdin.
-- `KernelResponse`: `Execution { outputs, execution_count, duration_millis }`, `Status { status, execution_count }`, `Reset { status }`, `Cancelled`, `Variables { variables }`, `Diagnostics { diagnostics }`, `Input`, `Error { message }`.
+  - `Execute.options` — optional per-language runtime options JSON
+    (e.g. `{"python": {...}}`), applied at kernel creation.
+  - `Comm { comm_id, comm_type, data, language? }` — Jupyter-style comm
+    delivery (`comm_msg`/`comm_close`) for widget state sync.
+- `KernelResponse`: `Execution { outputs, execution_count, duration_millis }`, `Status { status, execution_count }`, `Reset { status }`, `Cancelled`, `Variables { variables }`, `Diagnostics { diagnostics }`, `Input`, `Comm { comms }`, `Error { message }`.
 - `KernelEvent`: `StatusChanged`, `Output` — for future streaming/event channels.
+`KernelStreamEvent` (emitted as `EventEnvelope` during `Execute`) covers
+`Phase`, `Chunk`, `Prompt`, and `Comm` (widget comm traffic).
 
 ## Rules
 

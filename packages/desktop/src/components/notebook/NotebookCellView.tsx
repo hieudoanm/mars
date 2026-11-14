@@ -5,6 +5,7 @@ import type { KernelStream } from '../../hooks/useKernelExecution';
 import type { Diagnostic } from '@codemirror/lint';
 import { diagnosticsForCell } from '../../lib/diagnostics';
 import { cellLanguage as languageOf } from '../../lib/cellLanguage';
+import { languageDescriptor } from '../../lib/languages';
 import { createLspCompletionSource } from '../../lib/lspCompletions';
 import { offsetToLineChar } from '../../lib/cellTextEdit';
 import { getCellAttachments } from '../../lib/cellAttachments';
@@ -153,6 +154,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   revealRequest = null,
 }) => {
   const cellLanguage = languageOf(cell, notebookLanguage);
+  const language = languageDescriptor(cellLanguage);
   const editorViewRef = useRef<EditorView | null>(null);
   const [showMarkdownPreview, setShowMarkdownPreview] = useState(true);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -162,7 +164,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   const cellDiagnostics = [...diagnosticsForCell(cell), ...(liveDiagnostics ?? [])];
   const canQuickFix =
     cell.cell_type === 'code' &&
-    cellLanguage === 'rust' &&
+    language?.lsp === true &&
     lsp?.codeActions !== undefined &&
     cellDiagnostics.length > 0;
 
@@ -179,7 +181,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   };
   const completionSource = useMemo(
     () =>
-      lsp && cell.cell_type === 'code' && cellLanguage === 'rust'
+      lsp && cell.cell_type === 'code' && language?.lsp === true
         ? createLspCompletionSource((line, character) => lsp.completion(cell.id, line, character))
         : undefined,
     [lsp, cell.id, cell.cell_type, cellLanguage],
@@ -370,7 +372,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
                     ? 'Write Markdown...'
                     : cell.cell_type === 'raw'
                       ? 'Write raw content...'
-                      : `Write ${cellLanguage === 'rust' ? 'Rust' : cellLanguage} code...`
+                      : `Write ${language?.label ?? cellLanguage} code...`
                 }
                 cellType={cell.cell_type}
                 codeLanguage={cellLanguage}
@@ -383,23 +385,23 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
                 semanticTokens={semanticTokens}
                 diagnostics={[...diagnosticsForCell(cell), ...(liveDiagnostics ?? [])]}
                 onHoverRequest={
-                  cell.cell_type === 'code' && cellLanguage === 'rust' && onLspHover
+                  cell.cell_type === 'code' && language?.lsp === true && onLspHover
                     ? onLspHover
                     : undefined
                 }
                 extraCompletionSource={completionSource}
                 onSignatureRequest={
-                  cell.cell_type === 'code' && cellLanguage === 'rust' && lsp
+                  cell.cell_type === 'code' && language?.lsp === true && lsp
                     ? (line, character) => lsp.signature(cell.id, line, character)
                     : undefined
                 }
                 onDefinitionRequest={
-                  cell.cell_type === 'code' && cellLanguage === 'rust' && lsp
+                  cell.cell_type === 'code' && language?.lsp === true && lsp
                     ? (line, character) => lsp.definition(cell.id, line, character)
                     : undefined
                 }
                 onDefinitionResult={
-                  cellLanguage === 'rust' ? lsp?.onDefinitionResult : undefined
+                  language?.lsp === true ? lsp?.onDefinitionResult : undefined
                 }
                 onImageAttachment={
                   cell.cell_type === 'markdown' && onAddAttachment ? onAddAttachment : undefined

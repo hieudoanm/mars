@@ -6,7 +6,9 @@ export type SelectedMime =
   | { kind: 'latex'; value: string }
   | { kind: 'markdown'; value: string }
   | { kind: 'text'; value: string }
-  | { kind: 'chart'; value: string };
+  | { kind: 'chart'; value: string }
+  | { kind: 'javascript'; value: string }
+  | { kind: 'widget'; value: string };
 
 const IMAGE_MIME_TYPES = ['image/svg+xml', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
 
@@ -34,6 +36,12 @@ export const isImageMime = (mimeType: string): boolean => {
 };
 
 export const selectMime = (data: MimeBundleData): SelectedMime | null => {
+  const widgetView = data['application/vnd.jupyter.widget-view+json'];
+  if (typeof widgetView === 'object' && widgetView !== null && !Array.isArray(widgetView)) {
+    const modelId = (widgetView as Record<string, unknown>).model_id;
+    if (typeof modelId === 'string') return { kind: 'widget', value: modelId };
+  }
+
   for (const mimeType of IMAGE_MIME_TYPES) {
     const value = mimeValueToString(data[mimeType]);
     if (value !== null) return { kind: 'image', mimeType, value };
@@ -48,6 +56,11 @@ export const selectMime = (data: MimeBundleData): SelectedMime | null => {
       };
     }
   }
+
+  const javascript =
+    mimeValueToString(data['application/javascript']) ??
+    mimeValueToString(data['text/javascript']);
+  if (javascript !== null) return { kind: 'javascript', value: javascript };
 
   const html = mimeValueToString(data['text/html']);
   if (html !== null) return { kind: 'html', value: html };

@@ -124,30 +124,20 @@ def split_source(source):
 def display_value(value):
     if value is None:
         return
+    bundle, metadata = mime_bundle_for(value)
     parts = []
-    for method, mime in (
-        ("_repr_html_", "text/html"),
-        ("_repr_png_", "image/png"),
-        ("_repr_jpeg_", "image/jpeg"),
-        ("_repr_svg_", "image/svg+xml"),
-    ):
-        method_fn = getattr(value, method, None)
-        if method_fn is None:
-            continue
-        try:
-            data = method_fn()
-        except Exception:
-            continue
-        if not data:
-            continue
-        if mime in ("image/png", "image/jpeg"):
-            data = base64.b64encode(data).decode("ascii")
-        parts.append([mime, data])
-    try:
-        parts.append(["text/plain", repr(value)])
-    except Exception:
-        parts.append(["text/plain", "<unrepresentable>"])
-    emit({"type": "display", "data": parts})
+    extra = {}
+    for mime, data in bundle.items():
+        if isinstance(data, str):
+            parts.append([mime, data])
+        else:
+            extra[mime] = data
+    if parts:
+        emit({"type": "display", "data": parts})
+    # Non-string mime payloads and formatter metadata cannot ride the
+    # display-pairs channel; forward them as a full mime bundle instead.
+    if extra or metadata:
+        emit({"type": "mime", "data": extra, "metadata": metadata or {}})
     NAMESPACE["Out"] = value
     NAMESPACE["_"] = value
 
@@ -175,6 +165,19 @@ def flush_figures():
             continue
         encoded = base64.b64encode(buffer.getvalue()).decode("ascii")
         emit({"type": "display", "data": [["image/png", encoded]]})
+
+
+def encode_image_data(data):
+    """Normalise ``_repr_png_``/``_repr_jpeg_`` payloads to base64 text.
+
+    The IPython contract is ``bytes``; a ``str`` is treated as already
+    base64-encoded (a common user mistake) rather than crashing the cell.
+    """
+    if isinstance(data, str):
+        return data
+    if isinstance(data, (bytes, bytearray, memoryview)):
+        return base64.b64encode(bytes(data)).decode("ascii")
+    return None
 
 
 def mime_bundle_for(value):
@@ -211,13 +214,18 @@ def mime_bundle_for(value):
             continue
         if not data:
             continue
-        if mime in ("image/png", "image/jpeg") and isinstance(data, (bytes, bytearray)):
-            data = base64.b64encode(bytes(data)).decode("ascii")
+        if mime in ("image/png", "image/jpeg"):
+            data = encode_image_data(data)
+            if data is None:
+                continue
         bundle[mime] = data
-    try:
-        bundle["text/plain"] = repr(value)
-    except Exception:
-        bundle["text/plain"] = "<unrepresentable>"
+    # A ``_repr_mimebundle_`` may supply its own ``text/plain``; only fall
+    # back to ``repr`` when nothing provided one.
+    if "text/plain" not in bundle:
+        try:
+            bundle["text/plain"] = repr(value)
+        except Exception:
+            bundle["text/plain"] = "<unrepresentable>"
     return bundle, {}
 
 
@@ -255,6 +263,97 @@ def mars_display(*objs, raw=False, include=None, exclude=None, metadata=None, **
         if bundle:
             emit({"type": "mime", "data": bundle, "metadata": merged_metadata})
 
+
+
+
+
+
+def setup_comms():
+    """Bridge the ``comm`` package to Mars's protocol so widget libraries
+    (ipywidgets et al.) get real front-end comms instead of DummyComms.
+
+    Outbound comm traffic is emitted as ``{"type": "comm", ...}`` lines;
+    inbound ``comm_msg``/``comm_close`` requests are dispatched to the comm
+    manager and acknowledged with ``comm_ack``.
+    """
+    try:
+        import comm as _comm_pkg
+        from comm.base_comm import BaseComm
+    except Exception:
+        return
+
+    class MarsComm(BaseComm):
+        def publish_msg(self, msg_type, data=None, metadata=None,
+                        buffers=None, **keys):
+            payload = {
+                "type": "comm",
+                "comm_type": msg_type,
+                "comm_id": self.comm_id,
+                "target_name": self.target_name,
+            }
+            if data is not None:
+                payload["data"] = data
+            if metadata:
+                payload["metadata"] = metadata
+            for key in ("target_module",):
+                value = keys.get(key, getattr(self, key, None))
+                if value is not None:
+                    payload[key] = value
+            emit(payload)
+
+    def mars_create_comm(*args, **kwargs):
+        return MarsComm(*args, **kwargs)
+
+    _comm_pkg.create_comm = mars_create_comm
+    # ipywidgets resolves comms through ipywidgets.comm -> comm.create_comm,
+    # which we just replaced; also cover the manager lookup used by
+    # comm.open_data-style helpers.
+    try:
+        import ipywidgets.comm as _ipyw_comm
+        _ipyw_comm.create_comm = mars_create_comm
+    except Exception:
+        pass
+
+
+def dispatch_comm(request):
+    """Route an inbound comm_msg/comm_close to the registered comm."""
+    try:
+        import comm as _comm_pkg
+    except Exception:
+        return
+    manager = _comm_pkg.get_comm_manager()
+    if manager is None:
+        return
+    comm_id = request.get("comm_id")
+    comm_obj = manager.get_comm(comm_id) if comm_id else None
+    if comm_obj is None:
+        return
+    content = {
+        "comm_id": comm_id,
+        "data": request.get("data") or {},
+    }
+    msg = {"header": {}, "content": content, "buffers": []}
+    try:
+        if request.get("type") == "comm_close":
+            comm_obj.handle_close(msg)
+        else:
+            comm_obj.handle_msg(msg)
+    except Exception:
+        pass
+
+def patch_ipython_display():
+    """Route ``IPython.display.display`` to our builtin when IPython is
+    importable, so ``from IPython.display import display`` and
+    ``ipd.display(...)`` publish mime bundles instead of printing reprs.
+    """
+    try:
+        import IPython.display as ipython_display
+    except Exception:
+        return
+    try:
+        ipython_display.display = mars_display
+    except Exception:
+        pass
 
 def mars_input(prompt=""):
     """input() backed by the kernel's stdin-response channel."""
@@ -409,6 +508,11 @@ def stdin_reader():
         request_type = request.get("type")
         if request_type == "input_response":
             PENDING_INPUT.put(request.get("text"))
+        elif request_type in ("comm_msg", "comm_close"):
+            dispatch_comm(request)
+            request_id = request.get("id")
+            if request_id is not None:
+                emit({"type": "comm_ack", "id": request_id})
         elif request_type == "shutdown":
             REQUESTS.put(None)
             return
@@ -416,12 +520,51 @@ def stdin_reader():
             REQUESTS.put(request)
 
 
+def install_packages():
+    """Install ``metadata.python.packages`` requirements before serving.
+
+    Requirements arrive via ``MARS_PYTHON_PACKAGES`` (JSON list). Failures are
+    reported on the stream channel but never abort the session.
+    """
+    raw = os.environ.get("MARS_PYTHON_PACKAGES")
+    if not raw:
+        return
+    try:
+        packages = json.loads(raw)
+    except ValueError:
+        return
+    if not isinstance(packages, list) or not packages:
+        return
+    args = [sys.executable, "-m", "pip", "install", "--quiet"] + [
+        str(package) for package in packages
+    ]
+    emit({"type": "stream", "stream": "stdout",
+          "data": f"Installing Python packages: {', '.join(map(str, packages))}\n"})
+    try:
+        completed = subprocess.run(
+            args, capture_output=True, text=True, timeout=600
+        )
+    except Exception as exc:  # noqa: BLE001
+        emit({"type": "stream", "stream": "stderr",
+              "data": f"package install failed: {exc}\n"})
+        return
+    if completed.returncode != 0:
+        emit({"type": "stream", "stream": "stderr",
+              "data": (completed.stderr or completed.stdout or "pip install failed")
+              + "\n"})
+    else:
+        emit({"type": "stream", "stream": "stdout", "data": "Packages installed.\n"})
+
+
 def main():
+    install_packages()
     writer = threading.Thread(target=protocol_writer, daemon=True)
     writer.start()
     threading.Thread(target=stdin_reader, daemon=True).start()
     NAMESPACE["input"] = mars_input
     NAMESPACE["display"] = mars_display
+    patch_ipython_display()
+    setup_comms()
     while True:
         request = REQUESTS.get()
         if request is None:

@@ -14,6 +14,7 @@ import {
   LuSearch,
   LuTrash2,
 } from 'react-icons/lu';
+import { LANGUAGES } from '../../lib/languages';
 import type { CellType } from '../../types/types';
 import { IconButton } from '../shared';
 import { TagsEditor } from './TagsEditor';
@@ -154,10 +155,11 @@ const NotebookCellHeader: FC<NotebookCellHeaderProps> = ({
           value={cellLanguage}
           onClick={stop}
           onChange={(event) => onChangeLanguage(event.target.value)}>
-          <option value='rust'>rust</option>
-          <option value='python'>python</option>
-          <option value='r'>r</option>
-          <option value='julia'>julia</option>
+          {LANGUAGES.filter((language) => language.runnable).map((language) => (
+            <option key={language.id} value={language.id}>
+              {language.id}
+            </option>
+          ))}
           <option value='text'>text</option>
         </select>
       ) : null}

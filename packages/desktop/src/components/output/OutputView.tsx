@@ -4,11 +4,13 @@ import vegaEmbed from 'vega-embed';
 import type { Output } from '../../types/types';
 import { imageDataUri, selectMime, type MimeBundleData } from '../../lib/mimeBundle';
 import { sanitizeHtml } from '../../lib/sanitizeHtml';
+import { evalNotebookScript } from '../../lib/kernelService';
 import { cn, CodeBlock } from '../shared';
 import 'katex/dist/katex.min.css';
 
 import { OUTPUT_SURFACE } from './outputStyles';
 import TableOutput from './TableOutput';
+import WidgetOutput from './WidgetOutput';
 import MarkdownPreview from './MarkdownPreview';
 
 const SOURCE_ANNOTATION = /\[mars:cell=(\d+),line=(\d+)\]/g;
@@ -118,6 +120,10 @@ const MimeBundleOutput: FC<{ data: MimeBundleData }> = ({ data }) => {
     }
     case 'chart':
       return <ChartSpec value={selected.value} />;
+    case 'javascript':
+      return <JavascriptOutput source={selected.value} />;
+    case 'widget':
+      return <WidgetOutput modelId={selected.value} />;
     case 'markdown':
       return <MarkdownPreview source={selected.value} />;
     case 'text':
@@ -228,3 +234,21 @@ const ChartOutput: FC<{ spec: Record<string, unknown> }> = ({ spec }) => {
   );
 };
 ChartOutput.displayName = 'ChartOutput';
+
+const JavascriptOutput: FC<{ source: string }> = ({ source }) => {
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    setError(null);
+    evalNotebookScript(source).catch((reason: unknown) => {
+      if (!cancelled)
+        setError(reason instanceof Error ? reason.message : 'JavaScript execution failed');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [source]);
+  if (error) return <CodeBlock tone='danger'>JavaScript failed: {error}</CodeBlock>;
+  return null;
+};
+JavascriptOutput.displayName = 'JavascriptOutput';

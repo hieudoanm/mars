@@ -12,6 +12,7 @@ fn request_round_trips_as_json() {
             source: "println!(\"hello\");".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         },
     };
     let json = serde_json::to_string(&envelope).expect("serializes");
@@ -30,6 +31,7 @@ fn older_execute_requests_default_to_no_timeout() {
             source: "println!(\"hello\");".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         }
     );
 }
@@ -50,6 +52,7 @@ fn kernel_requests_round_trip_all_variants() {
             source: "let x = 1;".to_owned(),
             timeout_millis: Some(1_000),
             language: Some("python".to_owned()),
+            options: None,
         },
         KernelRequest::Reset,
         KernelRequest::Status,

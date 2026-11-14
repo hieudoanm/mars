@@ -2,7 +2,7 @@ use mars_core::{ExecutionStatus, Output};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RequestEnvelope {
     pub id: String,
     pub request: KernelRequest,
@@ -17,7 +17,7 @@ impl RequestEnvelope {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum KernelRequest {
     Execute {
@@ -29,6 +29,12 @@ pub enum KernelRequest {
         /// cell; single-runtime kernels ignore it.
         #[serde(default)]
         language: Option<String>,
+        /// Optional per-language runtime options as JSON (e.g.
+        /// `{"python": {"interpreter": "...", "version": "3.12",
+        /// "packages": [...]}}`). Applied when the kernel for `language` is
+        /// created; ignored afterwards.
+        #[serde(default)]
+        options: Option<serde_json::Value>,
     },
     Reset,
     Status,
@@ -47,15 +53,29 @@ pub enum KernelRequest {
     Input {
         text: String,
     },
+    /// Deliver a Jupyter-style comm message (`comm_msg`/`comm_close`) to the
+    /// language runtime (widget state updates from the front end). The
+    /// response carries any comm messages the runtime publishes while
+    /// handling it.
+    Comm {
+        comm_id: String,
+        comm_type: String,
+        #[serde(default)]
+        data: serde_json::Value,
+        /// Language whose runtime owns the comm; defaults to the most
+        /// recently executed language in `mars kernel serve`.
+        #[serde(default)]
+        language: Option<String>,
+    },
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ResponseEnvelope {
     pub id: String,
     pub response: KernelResponse,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum KernelResponse {
     Execution {
@@ -78,6 +98,11 @@ pub enum KernelResponse {
         diagnostics: Vec<CellDiagnostic>,
     },
     Input,
+    /// Comm messages published by the runtime while handling a
+    /// `KernelRequest::Comm` (e.g. widget `update_states` echoes).
+    Comm {
+        comms: Vec<mars_core::CommMessage>,
+    },
     Error {
         message: String,
     },
@@ -131,7 +156,7 @@ pub enum KernelChunkStream {
 /// Wire representation of a runtime `StreamEvent`, emitted by
 /// `mars kernel serve` as `EventEnvelope` lines while an `Execute` request
 /// is in flight, before the final `ResponseEnvelope`.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum KernelStreamEvent {
     Phase {
@@ -144,9 +169,14 @@ pub enum KernelStreamEvent {
     Prompt {
         message: String,
     },
+    /// Jupyter-style comm traffic published while an `Execute` is in flight
+    /// (widget open/state-sync messages).
+    Comm {
+        message: mars_core::CommMessage,
+    },
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EventEnvelope {
     pub id: String,
     pub event: KernelStreamEvent,

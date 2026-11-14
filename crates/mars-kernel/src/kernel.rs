@@ -90,14 +90,57 @@ impl Kernel {
         locked: bool,
         backend: RuntimeBackendKind,
     ) -> Result<Self, KernelError> {
+        Self::build(
+            language,
+            dependencies,
+            cargo_lock,
+            offline,
+            locked,
+            backend,
+            mars_runtime_python::PythonOptions::default(),
+        )
+    }
+
+    /// Builds a kernel with Python interpreter/version/package options
+    /// (parsed from notebook `metadata.python`). Other languages ignore
+    /// them; Rust-specific options stay at their defaults.
+    pub fn for_language_with_python_options(
+        language: &str,
+        backend: RuntimeBackendKind,
+        python_options: mars_runtime_python::PythonOptions,
+    ) -> Result<Self, KernelError> {
+        Self::build(
+            language,
+            BTreeMap::new(),
+            None,
+            false,
+            false,
+            backend,
+            python_options,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn build(
+        language: &str,
+        dependencies: BTreeMap<String, String>,
+        cargo_lock: Option<String>,
+        offline: bool,
+        locked: bool,
+        backend: RuntimeBackendKind,
+        python_options: mars_runtime_python::PythonOptions,
+    ) -> Result<Self, KernelError> {
         Ok(Self {
-            runtime: crate::runtime::create_runtime(
+            runtime: crate::runtime::create_runtime_with_config(
                 language,
-                backend,
-                dependencies,
-                cargo_lock,
-                offline,
-                locked,
+                crate::runtime::RuntimeConfig {
+                    backend,
+                    dependencies,
+                    cargo_lock,
+                    offline,
+                    locked,
+                    python_options,
+                },
             )
             .map_err(KernelError::Runtime)?,
             status: ExecutionStatus::Idle,
@@ -121,6 +164,17 @@ impl Kernel {
 
     pub fn write_stdin(&mut self, text: &str) -> Result<(), RuntimeError> {
         self.runtime.write_stdin(text)
+    }
+
+    /// Forwards a Jupyter-style comm message to the runtime and returns the
+    /// comm traffic it publishes in response.
+    pub fn handle_comm(
+        &mut self,
+        comm_id: &str,
+        comm_type: &str,
+        data: &serde_json::Value,
+    ) -> Result<Vec<mars_core::CommMessage>, RuntimeError> {
+        self.runtime.handle_comm(comm_id, comm_type, data)
     }
 
     /// Returns a handle for answering interactive prompts while a cell is
@@ -153,6 +207,9 @@ impl Kernel {
                 source,
                 timeout_millis,
                 language: _,
+                // Runtime options apply at kernel construction; a live
+                // Kernel cannot swap interpreters mid-session.
+                options: _,
             } => self.execute(
                 &source,
                 timeout_millis.map(Duration::from_millis),
@@ -218,6 +275,17 @@ impl Kernel {
             },
             KernelRequest::Input { text } => match self.runtime.write_stdin(&text) {
                 Ok(()) => KernelResponse::Input,
+                Err(error) => KernelResponse::Error {
+                    message: error.to_string(),
+                },
+            },
+            KernelRequest::Comm {
+                comm_id,
+                comm_type,
+                data,
+                language: _,
+            } => match self.runtime.handle_comm(&comm_id, &comm_type, &data) {
+                Ok(comms) => KernelResponse::Comm { comms },
                 Err(error) => KernelResponse::Error {
                     message: error.to_string(),
                 },

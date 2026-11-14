@@ -6,7 +6,7 @@ Bridges the protocol layer and runtime backends. Depends on `mars-core`, `mars-p
 
 - `Kernel` — owns a `Box<dyn RuntimeBackend>` and an `ExecutionStatus`. Constructed via `new` / `with_dependencies` / `with_backend` / `with_configuration`.
 - `RuntimeBackendKind` — `Replay` (default) | `Evcxr`. `from_environment()` reads `MARS_EXPERIMENTAL_RUNTIME=evcxr`.
-- `runtime.rs::create_runtime` — factory selecting the backend per notebook language: `rust` (Replay/Evcxr), `python`, `r`, `julia` (interpreter driver subprocesses). Evcxr is gated behind the `experimental-evcxr` feature and rejects `cargo_lock`/`locked`; Rust-specific options are ignored by non-Rust backends.
+- `runtime.rs` — language backend registry (`BACKENDS` table + `supported_languages()`); `create_runtime`/`create_runtime_with_config` build the backend per notebook language: `rust` (Replay/Evcxr), `cpp`, `julia`, `python`, `r`. `RuntimeConfig.python_options` carries notebook `metadata.python` settings (interpreter/version/packages); `python_options_from_metadata` parses them. Evcxr is gated behind the `experimental-evcxr` feature and rejects `cargo_lock`/`locked`; Rust-specific options are ignored by non-Rust backends.
 - `handle(RequestEnvelope) -> ResponseEnvelope` — dispatches `KernelRequest::{Execute, Reset, Status}` to `KernelResponse`. Updates `status` to `Running` before execution and maps results: `interrupted` → `Interrupted`, any `Output::Error` → `Failed`, else `Succeeded`.
 - `runtime_hook()` — forwards to `mars_runtime_evcxr::runtime_hook` when the feature is enabled; must run before any Evcxr use.
 

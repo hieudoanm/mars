@@ -1,3 +1,3 @@
 mod session;
 
-pub use session::PythonSession;
+pub use session::{PythonOptions, PythonSession};

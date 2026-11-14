@@ -11,7 +11,7 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
 };
 use std::time::Duration;
-use tauri::Emitter;
+use tauri::{Emitter, Manager};
 
 mod lsp;
 mod notebook_files;
@@ -19,6 +19,7 @@ mod notebook_files;
 struct AppState {
     kernels: Mutex<HashMap<(String, String), Kernel>>,
     input_writers: Mutex<HashMap<(String, String), mars_runtime::StdinWriter>>,
+    python_options: Mutex<HashMap<String, mars_kernel::PythonOptions>>,
     cancellations: Mutex<HashMap<String, Arc<AtomicBool>>>,
     lsp: lsp::LspSessions,
     backend: RuntimeBackendKind,
@@ -27,16 +28,22 @@ struct AppState {
 #[derive(Clone, Serialize)]
 struct StreamMessage<'a> {
     session: &'a str,
+    language: &'a str,
     #[serde(flatten)]
     event: &'a StreamEvent,
 }
 
-fn stream_sink<'a>(app: &'a tauri::AppHandle, session: &'a str) -> impl FnMut(StreamEvent) + 'a {
+fn stream_sink<'a>(
+    app: &'a tauri::AppHandle,
+    session: &'a str,
+    language: &'a str,
+) -> impl FnMut(StreamEvent) + 'a {
     move |event| {
         let _ = app.emit(
             "kernel-stream",
             StreamMessage {
                 session,
+                language,
                 event: &event,
             },
         );
@@ -48,6 +55,7 @@ fn kernel_key(session: &str, language: &str) -> (String, String) {
 }
 
 fn kernel_for<'a>(
+    state: &'a AppState,
     kernels: &'a mut HashMap<(String, String), Kernel>,
     session: &str,
     language: &str,
@@ -55,7 +63,19 @@ fn kernel_for<'a>(
 ) -> Result<&'a mut Kernel, String> {
     let key = kernel_key(session, language);
     if !kernels.contains_key(&key) {
-        let kernel = Kernel::for_language(language, backend).map_err(|error| error.to_string())?;
+        let kernel = if language == "python" {
+            let options = state
+                .python_options
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                .get(session)
+                .cloned()
+                .unwrap_or_default();
+            Kernel::for_language_with_python_options(language, backend, options)
+        } else {
+            Kernel::for_language(language, backend)
+        }
+        .map_err(|error| error.to_string())?;
         kernels.insert(key.clone(), kernel);
     }
     kernels
@@ -97,11 +117,11 @@ fn execute_cell(
         .kernels
         .lock()
         .map_err(|_| "kernel lock poisoned".to_owned())?;
-    let kernel = kernel_for(&mut kernels, &session, &language, state.backend)?;
+    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
     register_input_writer(&state, &session, &language, kernel);
     let cancellation = cancellation_for(&state, &session);
     cancellation.store(false, Ordering::Relaxed);
-    let mut sink = stream_sink(&app, &session);
+    let mut sink = stream_sink(&app, &session, &language);
     Ok(kernel.execute_with_events(&source, None, cancellation, &mut sink))
 }
 
@@ -121,11 +141,11 @@ fn execute_cell_with_timeout(
         .kernels
         .lock()
         .map_err(|_| "kernel lock poisoned".to_owned())?;
-    let kernel = kernel_for(&mut kernels, &session, &language, state.backend)?;
+    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
     register_input_writer(&state, &session, &language, kernel);
     let cancellation = cancellation_for(&state, &session);
     cancellation.store(false, Ordering::Relaxed);
-    let mut sink = stream_sink(&app, &session);
+    let mut sink = stream_sink(&app, &session, &language);
     Ok(kernel.execute_with_events(
         &source,
         Some(Duration::from_millis(timeout_millis)),
@@ -150,7 +170,7 @@ fn reset_kernel(
         .kernels
         .lock()
         .map_err(|_| "kernel lock poisoned".to_owned())?;
-    let kernel = kernel_for(&mut kernels, &session, &language, state.backend)?;
+    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
     Ok(kernel
         .handle(RequestEnvelope::new(KernelRequest::Reset))
         .response)
@@ -166,7 +186,7 @@ fn inspect_variables(
         .kernels
         .lock()
         .map_err(|_| "kernel lock poisoned".to_owned())?;
-    let kernel = kernel_for(&mut kernels, &session, &language, state.backend)?;
+    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
     kernel
         .inspect_variables()
         .map_err(|error| error.to_string())
@@ -183,7 +203,7 @@ fn diagnose_cell(
         .kernels
         .lock()
         .map_err(|_| "kernel lock poisoned".to_owned())?;
-    let kernel = kernel_for(&mut kernels, &session, &language, state.backend)?;
+    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
     kernel.diagnose(&source).map_err(|error| error.to_string())
 }
 
@@ -216,6 +236,27 @@ fn send_kernel_input(
 }
 
 #[tauri::command]
+fn send_kernel_comm(
+    state: tauri::State<'_, AppState>,
+    session: String,
+    comm_id: String,
+    comm_type: String,
+    data: serde_json::Value,
+    language: String,
+) -> Result<Vec<mars_core::CommMessage>, String> {
+    let mut kernels = state
+        .kernels
+        .lock()
+        .map_err(|_| "kernel lock poisoned".to_owned())?;
+    let kernel = kernels
+        .get_mut(&kernel_key(&session, &language))
+        .ok_or_else(|| "kernel session unavailable".to_owned())?;
+    kernel
+        .handle_comm(&comm_id, &comm_type, &data)
+        .map_err(|error| error.to_string())
+}
+
+#[tauri::command]
 fn kernel_status(
     state: tauri::State<'_, AppState>,
     session: String,
@@ -225,7 +266,7 @@ fn kernel_status(
         .kernels
         .lock()
         .map_err(|_| "kernel lock poisoned".to_owned())?;
-    let kernel = kernel_for(&mut kernels, &session, &language, state.backend)?;
+    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
     Ok(kernel
         .handle(RequestEnvelope::new(KernelRequest::Status))
         .response)
@@ -238,14 +279,26 @@ fn configure_kernel(
     content: String,
 ) -> Result<(), String> {
     let notebook = from_json(&content).map_err(|error| error.to_string())?;
-    let kernel = Kernel::for_language_with_configuration(
-        &notebook.metadata.language,
-        notebook.metadata.dependencies,
-        notebook.metadata.cargo_lock,
-        false,
-        false,
-        state.backend,
-    )
+    let python_options = mars_kernel::python_options_from_metadata(&notebook.metadata.extra);
+    if let Ok(mut options) = state.python_options.lock() {
+        options.insert(session.clone(), python_options.clone());
+    }
+    let kernel = if notebook.metadata.language == "python" {
+        Kernel::for_language_with_python_options(
+            &notebook.metadata.language,
+            state.backend,
+            python_options,
+        )
+    } else {
+        Kernel::for_language_with_configuration(
+            &notebook.metadata.language,
+            notebook.metadata.dependencies,
+            notebook.metadata.cargo_lock,
+            false,
+            false,
+            state.backend,
+        )
+    }
     .map_err(|error| error.to_string())?;
     let mut kernels = state
         .kernels
@@ -491,12 +544,23 @@ fn lsp_diagnostics(
     state.lsp.diagnostics(&session)
 }
 
+#[tauri::command]
+fn eval_output_script(app: tauri::AppHandle, script: String) -> Result<(), String> {
+    let window = app
+        .webview_windows()
+        .into_values()
+        .next()
+        .ok_or_else(|| "no webview window available".to_owned())?;
+    window.eval(&script).map_err(|error| error.to_string())
+}
+
 pub fn run() -> tauri::Result<()> {
     let backend = RuntimeBackendKind::from_environment();
     tauri::Builder::default()
         .manage(AppState {
             kernels: Mutex::new(HashMap::new()),
             input_writers: Mutex::new(HashMap::new()),
+            python_options: Mutex::new(HashMap::new()),
             cancellations: Mutex::new(HashMap::new()),
             lsp: lsp::LspSessions::new(),
             backend,
@@ -511,6 +575,7 @@ pub fn run() -> tauri::Result<()> {
             inspect_variables,
             diagnose_cell,
             send_kernel_input,
+            send_kernel_comm,
             lsp_sync,
             lsp_hover,
             lsp_completion,
@@ -520,6 +585,7 @@ pub fn run() -> tauri::Result<()> {
             lsp_inlay_hints,
             lsp_semantic_tokens,
             lsp_diagnostics,
+            eval_output_script,
             configure_kernel,
             open_notebook,
             save_notebook,

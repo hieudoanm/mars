@@ -6,11 +6,31 @@
 
 ## Discovery
 
-Python runtime discovers the interpreter via:
+Interpreter resolution order:
 
-1. The `MARS_PYTHON` environment variable (takes precedence)
-2. The `python3` command on PATH
-3. The `python` command on PATH (fallback)
+1. Notebook `metadata.python.interpreter` (explicit path or executable name)
+2. The `MARS_PYTHON` environment variable
+3. Notebook `metadata.python.version` discovery (`python<x.y>` probes, then
+   pyenv `~/.pyenv/versions` and uv `~/.local/share/uv/python` installs)
+4. `python3`, `python`, `py` on PATH
+
+Example `.mars` metadata:
+
+```json
+"metadata": {
+  "language": "python",
+  "python": {
+    "version": "3.12",
+    "interpreter": "/path/to/python",
+    "packages": ["pandas>=2", "matplotlib"]
+  }
+}
+```
+
+`packages` are installed into the resolved interpreter at driver startup via
+`pip install` (failures are reported on the stream channel but never abort
+the session). `mars kernel serve` clients pass the same shape via
+`Execute.options.python`.
 
 Verify installation:
 
@@ -29,7 +49,9 @@ The Python runtime uses a persistent driver process that:
 - Streams stdout/stderr live
 - Captures matplotlib figures as PNG (Agg backend)
 - Supports `_repr_html_`/`_repr_png_`/`_repr_jpeg_`/`_repr_svg_` for rich display
-- Supports `display()` for publishing MIME bundles
+- Supports `display()` (and `IPython.display.display` when IPython is
+  importable) for publishing MIME bundles
+- Supports Jupyter widget comms for ipywidgets (see below)
 - Supports `!command` shell escapes
 - Supports `%pip` magic for package installation
 - Supports top-level `await` for async code
@@ -172,3 +194,15 @@ pip install numpy pandas matplotlib ipython
 ## Architecture rules
 
 See `crates/mars-runtime-python/AGENTS.md` for architecture rules and implementation details.
+
+## Widget comms
+
+When the `comm` package is importable (it ships with ipywidgets), the driver
+replaces `comm.create_comm` with a bridge that publishes Jupyter-style comm
+messages (`comm_open`/`comm_msg`/`comm_close`) to the front end. Widget state
+updates flow back through `KernelRequest::Comm`. This makes `ipywidgets`
+controls (sliders, buttons, dropdowns, progress bars, …) interactive in the
+desktop app; unsupported widget models render a state placeholder.
+
+Comm delivery is rejected while a cell is executing — front-end widget
+events queue until the cell finishes.

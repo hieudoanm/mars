@@ -2314,6 +2314,7 @@ dependencies = [
  "mars-runtime-julia",
  "mars-runtime-python",
  "mars-runtime-r",
+ "serde_json",
  "thiserror 2.0.21",
 ]
 
@@ -2416,6 +2417,7 @@ version = "0.0.1"
 dependencies = [
  "mars-core",
  "mars-runtime",
+ "serde",
  "serde_json",
  "uuid",
 ]

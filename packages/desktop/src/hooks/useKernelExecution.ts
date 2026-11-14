@@ -151,6 +151,7 @@ export const useKernelExecution = ({
           setStatus('Waiting for input');
           return;
         }
+        if (message.type === 'comm') return;
         if (message.stream === 'stdout') stdout += message.data;
         else stderr += message.data;
         setStream({ cellId: cell.id, stdout, stderr });

@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import type { CommMessage } from '../types/types';
 import type {
   CellDiagnostic,
   KernelResponse,
@@ -35,7 +36,13 @@ export const executeSource = async (
           language,
         });
   if (response.type !== 'execution') {
-    throw new Error(response.type === 'error' ? response.message : response.status);
+    throw new Error(
+      response.type === 'error'
+        ? response.message
+        : response.type === 'status' || response.type === 'reset'
+          ? response.status
+          : 'unexpected kernel response',
+    );
   }
   return response;
 };
@@ -318,4 +325,31 @@ export type LspSemanticToken = {
 
 export const lspSemanticTokens = async (session: string): Promise<LspSemanticToken[]> => {
   return invoke<LspSemanticToken[]>('lsp_semantic_tokens', { session });
+};
+
+/// Evaluates `application/javascript` notebook output in the webview,
+/// mirroring Jupyter's execute-and-display semantics. Routed through the
+/// native webview eval so the page CSP stays restrictive.
+export const evalNotebookScript = async (script: string): Promise<void> => {
+  await invoke('eval_output_script', { script });
+};
+
+/// Delivers a Jupyter-style comm message (`comm_msg`/`comm_close`) to the
+/// kernel owning `commId` and returns the comm traffic published in reply.
+export const sendKernelComm = async (
+  session: string,
+  commId: string,
+  commType: string,
+  data: Record<string, unknown>,
+  language: string,
+): Promise<CommMessage[]> => {
+  const response = await invoke<KernelResponse>('send_kernel_comm', {
+    session,
+    commId,
+    commType,
+    data,
+    language,
+  });
+  if (response.type === 'comm') return response.comms;
+  return [];
 };

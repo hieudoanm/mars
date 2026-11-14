@@ -64,6 +64,19 @@ pub trait RuntimeBackend: Send {
     }
 
     /// Writes a line to the running cell program's stdin (`mars_prompt` answers).
+    /// Delivers a Jupyter-style comm message (`comm_msg`/`comm_close`) to
+    /// the runtime (widget state updates). Returns any comm messages the
+    /// runtime publishes while handling it. Backends without comm support
+    /// return an empty list.
+    fn handle_comm(
+        &mut self,
+        _comm_id: &str,
+        _comm_type: &str,
+        _data: &serde_json::Value,
+    ) -> Result<Vec<mars_core::CommMessage>, crate::error::RuntimeError> {
+        Ok(Vec::new())
+    }
+
     fn write_stdin(&mut self, _text: &str) -> Result<(), crate::error::RuntimeError> {
         Err(crate::error::RuntimeError::Backend(
             "kernel input is not supported by this backend".to_owned(),

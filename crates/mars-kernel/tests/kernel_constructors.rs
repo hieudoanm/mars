@@ -86,6 +86,7 @@ fn kernel_executes_and_reports_status() {
         source: "let kernel_test_value = 1;".to_owned(),
         timeout_millis: Some(120_000),
         language: None,
+        options: None,
     }));
     match response.response {
         mars_protocol::KernelResponse::Execution {

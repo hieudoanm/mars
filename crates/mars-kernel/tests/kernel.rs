@@ -11,6 +11,7 @@ fn executes_and_reports_status() {
             source: "println!(\"hello\");".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         },
     });
     assert!(matches!(
@@ -87,6 +88,7 @@ fn executes_python_cells() {
             source: "value = 6\nvalue * 7".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         },
     });
     assert!(matches!(
@@ -110,6 +112,7 @@ fn executes_r_cells() {
             source: "value <- 6\nvalue * 7".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         },
     });
     assert!(matches!(
@@ -133,6 +136,7 @@ fn executes_julia_cells() {
             source: "value = 6\nvalue * 7".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         },
     });
     assert!(matches!(
@@ -242,6 +246,7 @@ fn empty_execute_source_returns_error_response() {
             source: "   ".to_owned(),
             timeout_millis: None,
             language: None,
+            options: None,
         },
     });
     assert!(matches!(response.response, KernelResponse::Error { .. }));
@@ -284,6 +289,7 @@ fn reports_interrupted_status_for_timed_out_execution() {
             source: "std::thread::sleep(std::time::Duration::from_millis(100));".to_owned(),
             timeout_millis: Some(10),
             language: None,
+            options: None,
         },
     });
 

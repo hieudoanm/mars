@@ -24,21 +24,37 @@ Executes Python code interactively with shared state across cells. Depends on
   value raises `EOFError` (headless runs).
 - `display()` is an IPython-style builtin publishing `mime` messages
   (`Output::MimeBundle`), honouring `raw=True` dicts, `include`/`exclude`,
-  `metadata`, and `_repr_mimebundle_`.
+  `metadata`, and `_repr_mimebundle_`. When IPython is importable the driver
+  patches `IPython.display.display` so `from IPython.display import display`
+  routes to the same builtin.
 - Cell sources starting with `!` run as shell commands; `%pip`/`%pip3` run
   `sys.executable -m pip`. Other `%` magics are rejected with a clear error.
-- The last expression of a cell is `eval`'d and its value sent as display
-  data; `_repr_html_`/`_repr_png_`/`_repr_jpeg_`/`_repr_svg_` are honoured,
-  with `text/plain` `repr` as fallback. Matplotlib figures are flushed as PNG
+- The last expression of a cell is `eval`'d and formatted via
+  `_repr_mimebundle_` first, then `_repr_html_`/`_repr_png_`/`_repr_jpeg_`/
+  `_repr_svg_`; image reprs accept `bytes` (base64-encoded) or an
+  already-encoded `str`. Non-string mime payloads and formatter metadata are
+  forwarded as `mime` messages so nothing is silently dropped, with
+  `text/plain` `repr` as fallback. Matplotlib figures are flushed as PNG
   mime outputs (the driver is spawned with `MPLBACKEND=Agg` unless the user
   set `MPLBACKEND` already); each figure is shown once per session.
 - Top-level `await`/`async for`/`async with` are supported via
   `ast.PyCF_ALLOW_TOP_LEVEL_AWAIT` and a persistent event loop.
+- Widget comms: the driver replaces `comm.create_comm` with a `MarsComm`
+  bridge, so ipywidgets gets real front-end comms. Outbound traffic is
+  emitted as `comm` protocol messages; inbound `comm_msg`/`comm_close`
+  requests dispatch through the comm manager and are acknowledged with
+  `comm_ack`. `handle_comm` rejects delivery while a cell executes.
 
-## Interpreter resolution
+## Interpreter resolution & packages
 
-`MARS_PYTHON` env var wins; otherwise probes `python3`, `python`, `py` with
-`--version`.
+`PythonOptions` (from notebook `metadata.python`: `interpreter`, `version`,
+`packages`) configures the session. Resolution order: explicit
+`interpreter`, then `MARS_PYTHON`, then `version` discovery (`python<x.y>`
+probes plus pyenv/uv install dirs), then `python3`/`python`/`py` PATH
+probing. `packages` are installed by the driver at startup via
+`sys.executable -m pip install` (non-fatal; streamed as `[stderr]` on
+failure). `kernel serve` clients pass the same shape via
+`Execute.options.python`.
 
 ## Rules
 

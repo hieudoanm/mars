@@ -93,3 +93,11 @@ fn rejects_unknown_language() {
     };
     assert!(error.to_string().contains("cobol"));
 }
+
+#[test]
+fn supported_languages_lists_registered_backends() {
+    let languages: Vec<&str> = mars_kernel::supported_languages().collect();
+    for expected in ["rust", "cpp", "julia", "python", "r"] {
+        assert!(languages.contains(&expected), "missing {expected}");
+    }
+}

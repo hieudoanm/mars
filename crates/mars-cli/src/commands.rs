@@ -3,7 +3,8 @@ use mars::options::RunOptions;
 use mars_core::{CellType, Output};
 use mars_document::{Cell, Notebook, load, save_atomic};
 use mars_jupyter::{export_ipynb, import_ipynb};
-use mars_kernel::create_runtime;
+use mars_kernel::runtime::RuntimeConfig;
+use mars_kernel::{create_runtime_with_config, python_options_from_metadata};
 use mars_renderer::{render_markdown_notebook, render_notebook, render_pdf_notebook};
 use std::fs;
 use std::io::BufRead;
@@ -279,13 +280,16 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
         }
         let language = cell_language(&notebook, &notebook.cells[index]);
         if !sessions.contains_key(&language) {
-            let session = create_runtime(
+            let session = create_runtime_with_config(
                 &language,
-                options.runtime,
-                notebook.metadata.dependencies.clone(),
-                notebook.metadata.cargo_lock.clone(),
-                options.offline,
-                options.locked,
+                RuntimeConfig {
+                    backend: options.runtime,
+                    dependencies: notebook.metadata.dependencies.clone(),
+                    cargo_lock: notebook.metadata.cargo_lock.clone(),
+                    offline: options.offline,
+                    locked: options.locked,
+                    python_options: python_options_from_metadata(&notebook.metadata.extra),
+                },
             )
             .map_err(|error| error.to_string())?;
             if let Some(writer) = session.stdin_writer() {

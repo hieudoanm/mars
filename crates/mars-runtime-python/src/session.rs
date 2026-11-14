@@ -4,6 +4,7 @@ use mars_runtime::{
     CellDiagnostic, ChunkStream, ExecutionResult, RuntimeBackend, RuntimeError, StdinWriter,
     StreamEvent, StreamPhase, VariableInfo,
 };
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::ffi::OsString;
 use std::fs;
@@ -20,6 +21,24 @@ const DRIVER_SOURCE: &str = include_str!("driver.py");
 const STDERR_TAIL_LIMIT: usize = 64 * 1024;
 const CONTROL_TIMEOUT: Duration = Duration::from_secs(30);
 
+/// Per-notebook Python configuration, typically parsed from the notebook
+/// metadata `python` section (`metadata.python` in `.mars`/`.ipynb`).
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct PythonOptions {
+    /// Explicit interpreter path or executable name. Wins over `MARS_PYTHON`
+    /// and version discovery.
+    #[serde(default)]
+    pub interpreter: Option<String>,
+    /// Version hint such as `"3.12"` used to discover a matching interpreter
+    /// (`python3.12`, pyenv/uv installs) when no explicit interpreter is set.
+    #[serde(default)]
+    pub version: Option<String>,
+    /// Requirements installed into the resolved interpreter on driver
+    /// startup (equivalent to `pip install` before the first cell).
+    #[serde(default)]
+    pub packages: Vec<String>,
+}
+
 /// Persistent Python execution session backed by a long-lived driver
 /// subprocess speaking newline-delimited JSON. Variables persist in the
 /// driver's module namespace across cells.
@@ -32,6 +51,7 @@ const CONTROL_TIMEOUT: Duration = Duration::from_secs(30);
 ///   fresh interpreter and loses all state.
 pub struct PythonSession {
     python: OsString,
+    options: PythonOptions,
     workdir: PathBuf,
     driver_path: PathBuf,
     child: Option<Child>,
@@ -40,11 +60,16 @@ pub struct PythonSession {
     stderr_tail: Arc<Mutex<String>>,
     next_id: u64,
     execution_count: u64,
+    executing: Arc<AtomicBool>,
 }
 
 impl PythonSession {
     pub fn new() -> Result<Self, RuntimeError> {
-        let python = find_python().ok_or_else(|| {
+        Self::with_options(PythonOptions::default())
+    }
+
+    pub fn with_options(options: PythonOptions) -> Result<Self, RuntimeError> {
+        let python = find_python(&options).ok_or_else(|| {
             RuntimeError::Backend(
                 "no Python interpreter found; install python3 or set MARS_PYTHON".to_owned(),
             )
@@ -61,6 +86,7 @@ impl PythonSession {
         })?;
         Ok(Self {
             python,
+            options,
             workdir,
             driver_path,
             child: None,
@@ -69,6 +95,7 @@ impl PythonSession {
             stderr_tail: Arc::new(Mutex::new(String::new())),
             next_id: 1,
             execution_count: 0,
+            executing: Arc::new(AtomicBool::new(false)),
         })
     }
 
@@ -93,6 +120,11 @@ impl PythonSession {
             .stderr(Stdio::piped());
         if std::env::var_os("MPLBACKEND").is_none() {
             command.env("MPLBACKEND", "Agg");
+        }
+        if !self.options.packages.is_empty()
+            && let Ok(encoded) = serde_json::to_string(&self.options.packages)
+        {
+            command.env("MARS_PYTHON_PACKAGES", encoded);
         }
         let mut child = command.spawn().map_err(|source| {
             RuntimeError::Backend(format!("failed to start Python driver: {source}"))
@@ -243,6 +275,8 @@ impl PythonSession {
         if source.trim().is_empty() {
             return Err(RuntimeError::EmptySource);
         }
+        self.executing.store(true, Ordering::Relaxed);
+        let _executing_guard = ExecutingGuard(Arc::clone(&self.executing));
         self.ensure_spawn()?;
         let id = self.next_request_id();
         let started = Instant::now();
@@ -350,6 +384,13 @@ impl PythonSession {
                                 sink(StreamEvent::Prompt { message: prompt });
                             }
                         }
+                        Some("comm") => {
+                            if let Some(message) = parse_comm_message(&message) {
+                                if let Some(sink) = events.as_deref_mut() {
+                                    sink(StreamEvent::Comm { message });
+                                }
+                            }
+                        }
                         Some("result") => {
                             let ok = message.get("ok").and_then(Value::as_bool).unwrap_or(false);
                             if !ok {
@@ -440,6 +481,14 @@ impl PythonSession {
     }
 }
 
+struct ExecutingGuard(Arc<AtomicBool>);
+
+impl Drop for ExecutingGuard {
+    fn drop(&mut self) {
+        self.0.store(false, Ordering::Relaxed);
+    }
+}
+
 fn read_stdout_lines(stdout: ChildStdout, sender: mpsc::Sender<String>) {
     for line in BufReader::new(stdout).lines() {
         match line {
@@ -468,6 +517,23 @@ fn drain_stderr(mut stderr: impl std::io::Read, tail: Arc<Mutex<String>>) {
             }
         }
     }
+}
+
+fn parse_comm_message(message: &Value) -> Option<mars_core::CommMessage> {
+    Some(mars_core::CommMessage {
+        comm_id: message.get("comm_id")?.as_str()?.to_owned(),
+        comm_type: message
+            .get("comm_type")
+            .and_then(Value::as_str)
+            .unwrap_or("comm_msg")
+            .to_owned(),
+        target_name: message
+            .get("target_name")
+            .and_then(Value::as_str)
+            .map(str::to_owned),
+        data: message.get("data").cloned().unwrap_or(Value::Null),
+        metadata: message.get("metadata").cloned().unwrap_or(Value::Null),
+    })
 }
 
 fn display_output(parts: &[(String, String)]) -> Option<Output> {
@@ -499,19 +565,83 @@ fn display_output(parts: &[(String, String)]) -> Option<Output> {
     })
 }
 
-fn find_python() -> Option<OsString> {
-    if let Some(custom) = std::env::var_os("MARS_PYTHON") {
-        return Some(custom);
-    }
-    for candidate in ["python3", "python", "py"] {
-        let probe = configured_command(candidate)
+fn probe_python(candidate: &OsString) -> bool {
+    matches!(
+        configured_command(candidate)
             .arg("--version")
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
-            .status();
-        if matches!(probe, Ok(status) if status.success()) {
-            return Some(OsString::from(candidate));
+            .status(),
+        Ok(status) if status.success()
+    )
+}
+
+/// Interpreter resolution order: explicit `interpreter` option, then
+/// `MARS_PYTHON`, then version discovery, then PATH probing.
+fn find_python(options: &PythonOptions) -> Option<OsString> {
+    if let Some(interpreter) = options.interpreter.as_deref()
+        && !interpreter.is_empty()
+    {
+        let candidate = OsString::from(interpreter);
+        return probe_python(&candidate).then_some(candidate);
+    }
+    if let Some(custom) = std::env::var_os("MARS_PYTHON") {
+        return Some(custom);
+    }
+    if let Some(version) = options.version.as_deref()
+        && let Some(found) = find_python_version(version)
+    {
+        return Some(found);
+    }
+    for candidate in ["python3", "python", "py"] {
+        let candidate = OsString::from(candidate);
+        if probe_python(&candidate) {
+            return Some(candidate);
+        }
+    }
+    None
+}
+
+/// Finds an interpreter matching a version hint like `"3.12"` by probing
+/// `python<version>` executables and scanning pyenv/uv install directories.
+fn find_python_version(version: &str) -> Option<OsString> {
+    let normalized = version.trim().trim_start_matches('v');
+    if normalized.is_empty() {
+        return None;
+    }
+    for name in [
+        format!("python{normalized}"),
+        format!("python{}", normalized.replace('.', "")),
+    ] {
+        let candidate = OsString::from(name);
+        if probe_python(&candidate) {
+            return Some(candidate);
+        }
+    }
+    let mut roots = Vec::new();
+    if let Some(home) = std::env::var_os("HOME").map(PathBuf::from) {
+        roots.push(home.join(".pyenv/versions"));
+        roots.push(home.join(".local/share/uv/python"));
+    }
+    for root in roots {
+        let Ok(entries) = fs::read_dir(&root) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let dir_name = entry.file_name().to_string_lossy().into_owned();
+            if !dir_name.contains(normalized) {
+                continue;
+            }
+            for bin_name in ["bin/python3", "bin/python"] {
+                let candidate = entry.path().join(bin_name);
+                if candidate.is_file() {
+                    let candidate_os = candidate.into_os_string();
+                    if probe_python(&candidate_os) {
+                        return Some(candidate_os);
+                    }
+                }
+            }
         }
     }
     None
@@ -608,6 +738,73 @@ impl RuntimeBackend for PythonSession {
                 .unwrap_or_default()
                 .to_owned(),
         }])
+    }
+
+    fn handle_comm(
+        &mut self,
+        comm_id: &str,
+        comm_type: &str,
+        data: &serde_json::Value,
+    ) -> Result<Vec<mars_core::CommMessage>, RuntimeError> {
+        if self.executing.load(Ordering::Relaxed) {
+            return Err(RuntimeError::Backend(
+                "cannot deliver comm while a cell is executing".to_owned(),
+            ));
+        }
+        self.ensure_spawn()?;
+        let id = self.next_request_id();
+        let request_type = if comm_type == "comm_close" {
+            "comm_close"
+        } else {
+            "comm_msg"
+        };
+        self.send(&json!({
+            "type": request_type,
+            "id": id,
+            "comm_id": comm_id,
+            "data": data,
+        }))?;
+        let receiver = self
+            .lines
+            .as_ref()
+            .ok_or_else(|| RuntimeError::Backend("python driver stdout unavailable".to_owned()))?;
+        let started = Instant::now();
+        let mut comms = Vec::new();
+        loop {
+            if started.elapsed() >= CONTROL_TIMEOUT {
+                return Err(RuntimeError::Backend("comm request timed out".to_owned()));
+            }
+            match receiver.recv_timeout(Duration::from_millis(20)) {
+                Ok(line) => {
+                    let Ok(message) = serde_json::from_str::<Value>(&line) else {
+                        continue;
+                    };
+                    match message.get("type").and_then(Value::as_str) {
+                        Some("comm") => {
+                            if let Some(comm) = parse_comm_message(&message) {
+                                comms.push(comm);
+                            }
+                        }
+                        Some("comm_ack")
+                            if message.get("id").and_then(Value::as_u64) == Some(id) =>
+                        {
+                            return Ok(comms);
+                        }
+                        _ => {}
+                    }
+                }
+                Err(mpsc::RecvTimeoutError::Timeout) => {
+                    if let Some(child) = self.child.as_mut()
+                        && !matches!(child.try_wait(), Ok(None))
+                    {
+                        return Err(self.driver_exit_error());
+                    }
+                }
+                Err(mpsc::RecvTimeoutError::Disconnected) => {
+                    return Err(self.driver_exit_error());
+                }
+            }
+        }
     }
 
     fn write_stdin(&mut self, text: &str) -> Result<(), RuntimeError> {

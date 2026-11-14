@@ -173,6 +173,7 @@ fn cell_execute(session: &mut MarsSession, args: ExecArgs) -> Result<Value, Stri
     let kernel = session.kernel_for(Some(&path), &language)?;
     let response = kernel
         .handle(RequestEnvelope::new(KernelRequest::Execute {
+            options: None,
             source,
             timeout_millis: args.timeout_ms,
             language: Some(language.clone()),
@@ -235,6 +236,7 @@ fn notebook_execute(session: &mut MarsSession, args: RunArgs) -> Result<Value, S
         let kernel = session.kernel_for(Some(&path), &language)?;
         let response = kernel
             .handle(RequestEnvelope::new(KernelRequest::Execute {
+                options: None,
                 source,
                 timeout_millis: args.timeout_ms,
                 language: Some(language.clone()),

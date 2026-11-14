@@ -16,12 +16,24 @@ pub enum ChunkStream {
     Stderr,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum StreamEvent {
-    Phase { phase: StreamPhase },
-    Chunk { stream: ChunkStream, data: String },
-    Prompt { message: String },
+    Phase {
+        phase: StreamPhase,
+    },
+    Chunk {
+        stream: ChunkStream,
+        data: String,
+    },
+    Prompt {
+        message: String,
+    },
+    /// Jupyter-style comm traffic (widget state sync) published while a
+    /// cell executes. Only interpreter backends with comm support emit this.
+    Comm {
+        message: mars_core::CommMessage,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

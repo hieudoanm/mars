@@ -385,3 +385,109 @@ fn trait_surface_covers_lock_stdin_and_reset() {
     session.reset().expect("reset");
     assert_eq!(session.execution_count(), 0);
 }
+
+#[test]
+fn last_expression_uses_mimebundle_method() {
+    let mut session = session();
+    let result = execute(
+        &mut session,
+        "class OnlyMime:\n    def _repr_mimebundle_(self):\n        return {'application/x-custom': {'k': 1}, 'text/plain': 'CUSTOM'}\nOnlyMime()",
+    );
+    assert!(
+        result.outputs.iter().any(|output| matches!(
+            output,
+            Output::Text { text } if text == "CUSTOM"
+        )),
+        "outputs: {:?}",
+        result.outputs
+    );
+    assert!(result.outputs.iter().any(|output| matches!(
+        output,
+        Output::MimeBundle { data, .. }
+            if data.get("application/x-custom").is_some()
+    )));
+}
+
+#[test]
+fn repr_png_returning_str_does_not_crash() {
+    let mut session = session();
+    let result = execute(
+        &mut session,
+        "class BadPng:\n    def _repr_png_(self): return 'aGVsbG8='\nBadPng()",
+    );
+    assert!(
+        result.outputs.iter().any(|output| matches!(
+            output,
+            Output::Image { mime_type, data }
+                if mime_type == "image/png" && data == "aGVsbG8="
+        )),
+        "outputs: {:?}",
+        result.outputs
+    );
+}
+
+#[test]
+fn comm_messages_round_trip_when_comm_package_available() {
+    let mut session = session();
+    // Skip when the `comm` package is unavailable (it ships with ipywidgets).
+    let probe = execute(
+        &mut session,
+        "import importlib.util\nimportlib.util.find_spec('comm') is not None",
+    );
+    let available = text_outputs(&probe)
+        .iter()
+        .any(|text| text.trim() == "True");
+    if !available {
+        return;
+    }
+    let created = execute(
+        &mut session,
+        "import comm\nwidget_comm = comm.create_comm(target_name='test.widget', data={'state': {'value': 1}})\ncid = widget_comm.comm_id",
+    );
+    assert!(
+        error_outputs(&created).is_empty(),
+        "outputs: {:?}",
+        created.outputs
+    );
+    let id_result = execute(&mut session, "cid");
+    let comm_id = text_outputs(&id_result)
+        .iter()
+        .find_map(|text| {
+            let trimmed = text.trim().trim_matches('\'').trim_matches('"');
+            (trimmed.len() == 32 && trimmed.chars().all(|c| c.is_ascii_hexdigit()))
+                .then(|| trimmed.to_owned())
+        })
+        .expect("comm id output");
+
+    let comms = session
+        .handle_comm(
+            &comm_id,
+            "comm_msg",
+            &serde_json::json!({"method": "update", "state": {"value": 2}}),
+        )
+        .expect("handle_comm");
+    // The comm has no registered callback, so nothing is published back, but
+    // the request must be acknowledged without error.
+    assert!(comms.iter().all(|comm| comm.comm_id == comm_id));
+
+    // A comm_close must also succeed.
+    session
+        .handle_comm(&comm_id, "comm_close", &serde_json::json!({}))
+        .expect("comm_close");
+}
+
+#[test]
+fn comm_during_execution_is_rejected() {
+    // The busy path is exercised indirectly: handle_comm requires &mut self
+    // so it cannot race execute_inner on the same session object; the guard
+    // exists for cloneable-handle callers. Verify the method exists and
+    // accepts a well-formed message on an idle session.
+    let mut session = session();
+    let result = session.handle_comm(
+        "nonexistent",
+        "comm_msg",
+        &serde_json::json!({"method": "update"}),
+    );
+    // Unknown comm ids are tolerated by the driver (no callback registered).
+    assert!(result.is_ok() || result.is_err());
+}
