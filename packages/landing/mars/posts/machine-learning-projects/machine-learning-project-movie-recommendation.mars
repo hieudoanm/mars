@@ -1,0 +1,83 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Movie Recommendation System",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Movie Recommendation System\n\nRecommender systems power Netflix, Spotify, and Amazon. The classic\napproach \u2014 **collaborative filtering** \u2014 needs no knowledge of what movies\n*are*; it only needs the pattern of who watched what and how they rated it.\n\nWe'll use **MovieLens-100K**: 100,000 ratings from ~1,000 users on ~1,700\nmovies, each rated 1\u20135 stars.\n\nIn this project you will:\n\n1. Frame recommendation as a **matrix completion** problem.\n2. Implement **user-based** and **item-based** collaborative filtering.\n3. Train **matrix factorization** (SVD-style latent factors) with ALS.\n4. Evaluate with RMSE and ranking metrics.\n\n> Rust ML note: `ndarray` for the sparse rating matrix,\n> `linfa` or hand-rolled ALS for factorization.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## The rating matrix\n\nRatings form a sparse matrix `R[user, movie] \u2192 rating`:\n\n```\n        m1   m2   m3   m4\nu1      5    ?    3    ?\nu2      ?    4    ?    2\nu3      4    ?    ?    5\n```\n\n`?` means \"not rated\". The goal: fill in the missing entries well enough\nto rank unseen movies for each user. This is **collaborative filtering** \u2014\nusers who agreed in the past tend to agree in the future.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep csv = \"1\"\n// :dep serde = { version = \"1\", features = [\"derive\"] }\n// :dep ndarray = \"0.16\"\n// :dep sprs = \"0.11\"   // sparse matrices\n\nuse sprs::CsMat;\nuse std::collections::HashMap;\n\n// MovieLens u.data format: user_id::movie_id::rating::timestamp\n#[derive(serde::Deserialize)]\nstruct Rating {\n    user_id:  u32,\n    movie_id: u32,\n    rating:   f32,\n}\n\nfn load_ratings(path: &str) -> (CsMat<f32>, HashMap<u32,u32>, HashMap<u32,u32>) {\n    let mut users = HashMap::new();\n    let mut movies = HashMap::new();\n    let mut entries = Vec::new();\n\n    let rdr = csv::ReaderBuilder::new()\n        .delimiter(b':')\n        .has_headers(false)\n        .from_path(path).unwrap();\n\n    for rec in rdr.deserialize::<Rating>() {\n        let r = rec.unwrap();\n        let u = *users.entry(r.user_id).or_insert(users.len() as u32);\n        let m = *movies.entry(r.movie_id).or_insert(movies.len() as u32);\n        entries.push(((u as usize, m as usize), r.rating));\n    }\n    let shape = (users.len(), movies.len());\n    let mat = CsMat::new(shape, entries);\n    (mat, users, movies)\n}\n\nlet (ratings, user_map, movie_map) = load_ratings(\"u.data\");\nprintln!(\"ratings matrix: {} users \u00d7 {} movies, {} nonzeros\",\n         ratings.rows(), ratings.cols(), ratings.nnz());",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Baseline \u2014 popularity\n\nBefore any real model, compute the dumbest baseline: recommend the\nglobally most-rated movies to everyone. It scores surprisingly well on\nRMSE but has zero personalization \u2014 every user gets the same list.\nThis is the baseline your real model must beat.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "// Item popularity = mean rating \u00d7 log(count) \u2014 a simple hybrid\nlet mut item_sum = vec![0.0f32; ratings.cols()];\nlet mut item_cnt = vec![0usize; ratings.cols()];\n\nfor ((_, m), v) in ratings.iter() {\n    item_sum[m] += v;\n    item_cnt[m] += 1;\n}\n\nlet popularity: Vec<f32> = (0..ratings.cols())\n    .map(|m| {\n        let mean = item_sum[m] / item_cnt[m].max(1) as f32;\n        mean * (item_cnt[m] as f32).ln().max(1.0)   // dampen one-hit wonders\n    })\n    .collect();\n\n// Top-10 global recommendations\nlet mut ranked: Vec<usize> = (0..ratings.cols()).collect();\nranked.sort_by(|&a, &b| popularity[b].partial_cmp(&popularity[a]).unwrap());\nprintln!(\"top-10 popular movies: {:?}\", &ranked[..10]);",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## User-based collaborative filtering\n\nFind users *similar* to you (correlation or cosine similarity of rating\nvectors), then predict your rating for a movie as the weighted average of\nsimilar users' ratings for that movie.\n\nThis works but doesn't scale \u2014 comparing every pair of users is O(n\u00b2).\nReal systems switched to item-based CF, then to matrix factorization.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "fn cosine_sim(a: &[(usize,f32)], b: &[(usize,f32)]) -> f64 {\n    // sparse dot product of two rating vectors\n    let mut dot = 0.0; let mut na = 0.0; let mut nb = 0.0;\n    for &(_, v) in a { na += (v as f64).powi(2); }\n    for &(_, v) in b { nb += (v as f64).powi(2); }\n    // intersection via merge\n    let (mut i, mut j) = (0, 0);\n    while i < a.len() && j < b.len() {\n        match a[i].0.cmp(&b[j].0) {\n            std::cmp::Ordering::Equal => {\n                dot += a[i].1 as f64 * b[j].1 as f64; i += 1; j += 1;\n            }\n            std::cmp::Ordering::Less => i += 1,\n            std::cmp::Ordering::Greater => j += 1,\n        }\n    }\n    dot / (na.sqrt() * nb.sqrt()).max(1e-9)\n}\n\n// predict(user u, movie m):\n//   neighbors = top-k users by cosine_sim(u, \u00b7)\n//   pred = \u03a3 sim(u,v)\u00b7R[v,m] / \u03a3 |sim(u,v)|\n// Only users who rated m contribute \u2014 this is why CF needs overlap.",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Matrix factorization \u2014 the Netflix prize approach\n\nInstead of comparing users directly, learn **latent factors**: each user\nand each movie gets a k-dimensional vector such that\n\n```\nR[u,m] \u2248 U[u] \u00b7 V[m]\u1d40  +  bias_u  +  bias_m  +  global_mean\n```\n\nThe dot product captures taste: if a user's vector aligns with a movie's\nvector, they'll like it. Train by minimizing squared error with\n**alternating least squares (ALS)** \u2014 fix U, solve for V; fix V, solve for U.\nEach step is a small ridge-regression problem with a closed-form solution.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "fn als_step(\n    fixed: &ndarray::Array2<f64>,   // user or item factors [n, k]\n    ratings: &CsMat<f32>,\n    lam: f64,\n) -> ndarray::Array2<f64> {\n    let k = fixed.ncols();\n    let n = fixed.nrows();\n    let mut out = ndarray::Array2::zeros((n, k));\n\n    for i in 0..n {\n        // gather this entity's observed ratings\n        let obs: Vec<(usize, f32)> = ratings\n            .outer_iterator()\n            .nth(i).map(|row| {\n                row.iter().map(|(j, v)| (j, v)).collect()\n            }).unwrap_or_default();\n\n        // A = \u03a3 V_j V_j\u1d40 + \u03bbI ;  b = \u03a3 r_ij V_j\n        let mut a = ndarray::Array2::zeros((k, k));\n        let mut b = ndarray::Array1::zeros(k);\n        for (j, r) in &obs {\n            let vj = fixed.row(*j);\n            for p in 0..k {\n                b[p] += *r as f64 * vj[p];\n                for q in 0..k {\n                    a[[p, q]] += vj[p] * vj[q];\n                }\n            }\n        }\n        for p in 0..k { a[[p, p]] += lam; }\n        out.row_mut(i).assign(&ndarray_linalg::solve::Inverse::inv(&a)\n            .unwrap().dot(&b));\n    }\n    out\n}\n\n// Iterate: U = als_step(V); V = als_step(U);  ~10-20 iterations\n// k=50 latent factors, \u03bb=0.1 regularization are good starting points.",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Evaluation\n\nFor rating prediction, **RMSE** on held-out ratings:\n\n| Model | RMSE |\n| ----- | ---- |\n| Global mean | ~1.0 |\n| Popularity baseline | ~0.95 |\n| Matrix factorization (k=50) | ~0.90 |\n| SVD++ / biased MF | ~0.88 |\n\nFor the *real* task \u2014 ranking \u2014 RMSE is a proxy. Production systems measure\n**precision@k** and **recall@k**: did the top-10 list contain movies the\nuser actually rated highly?",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **Recommendation is matrix completion**, not classification.\n2. **Popularity is the baseline** \u2014 always compute it first.\n3. **User-based CF doesn't scale**; matrix factorization is the scalable\n   version of the same idea.\n4. **RMSE \u2260 ranking quality** \u2014 a model can predict ratings well but rank\n   badly; evaluate both.\n\n**Next steps:**\n\n- Add **time-decay** weights (recent ratings matter more) and **bias**\n  terms (some users rate everything 5\u2605).\n- For content-rich domains, combine CF with content features \u2014 see the\n  sentiment-analysis project for text embeddings.\n- Real systems (Netflix, YouTube) use two-tower neural retrieval +\n  ranking models; ALS is the classical foundation they replaced.",
+      "metadata": {}
+    }
+  ]
+}

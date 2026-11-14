@@ -1,9 +1,9 @@
 ---
-title: "Why R?"
+title: "R: Statistical Computing and Graphics"
 description: "R was built by statisticians, for statisticians. It still owns a huge share of academic research and data analysis — and it has real strengths worth respecting."
 author: "Mars Team"
 date: "2026-11-07"
-order: 7
+order: 5
 tags: ["r", "statistics", "data-science", "tidyverse", "mars"]
 ---
 

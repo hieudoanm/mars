@@ -1,0 +1,97 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Iris Flower Classification",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Iris Flower Classification\n\nThe **Iris dataset** is the \"hello world\" of supervised learning: 150 flowers\nmeasured across four features \u2014 sepal length/width and petal length/width \u2014\nlabelled into three species (*setosa*, *versicolor*, *virginica*).\n\nIn this project you will:\n\n1. Load and inspect a tabular dataset.\n2. Normalize features and split train/test data.\n3. Train a **k-nearest neighbors** classifier and a **logistic regression** model.\n4. Evaluate with accuracy and a confusion matrix.\n\n> Rust ML note: we use `ndarray` for arrays and `linfa` for the classifiers.\n> The code below assumes those crates; each cell notes the equivalent\n> scikit-learn call for readers coming from Python.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## The dataset\n\n| Feature | Type | Typical range |\n| ------- | ---- | ------------- |\n| sepal_length | cm | 4.3 \u2013 7.9 |\n| sepal_width  | cm | 2.0 \u2013 4.4 |\n| petal_length | cm | 1.0 \u2013 6.9 |\n| petal_width  | cm | 0.1 \u2013 2.5 |\n\nThe three classes are linearly separable only partially \u2014 *setosa* is easy,\nbut *versicolor* and *virginica* overlap, which is what makes this a useful\nfirst benchmark.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n// :dep linfa = \"0.7\"\n// :dep linfa-datasets = \"0.7\"\n// :dep linfa-knn = \"0.7\"\n// :dep linfa-logistic = \"0.7\"\n\nuse ndarray::Array2;\nuse linfa::traits::{Fit, Predict};\nuse linfa_datasets::Dataset;\nuse linfa_knn::KNearestNeighbors;\nuse linfa_logistic::LogisticRegression;\n\n// sklearn.datasets.load_iris() equivalent\nlet dataset: Dataset<f64, usize, ndarray::Ix1> =\n    linfa_datasets::iris().expect(\"iris dataset\");\n\nprintln!(\"samples: {}\", dataset.nsamples());\nprintln!(\"features: {}\", dataset.nfeatures());\nprintln!(\"classes: {:?}\", dataset.distinct_labels());\n\n// scikit-learn: train_test_split(test_size=0.25, random_state=42)\nlet (train, test) = Dataset::from(dataset.records().to_owned())\n    .map_targets(|t| *t)\n    .split_with_rng(0.75, 42);\n\nprintln!(\"train: {}, test: {}\", train.nsamples(), test.nsamples());",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Feature scaling\n\nFeatures have different units and ranges, so we standardize each column to\nzero mean / unit variance before distance- or gradient-based models see them.\nThis is `sklearn.preprocessing.StandardScaler` in Rust.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "use ndarray::Axis;\n\nfn standardize(train: &Array2<f64>, test: &Array2<f64>)\n    -> (Array2<f64>, Array2<f64>)\n{\n    // mean and std per column, computed on TRAIN only\n    let mean = train.mean_axis(Axis(0)).unwrap();\n    let std = train.std_axis(Axis(0)).unwrap();\n\n    let scale = |x: &Array2<f64>| {\n        (x - &mean.insert_axis(Axis(0)))\n            .mapv(|v| v)\n            .map_axis(Axis(1), |mut col| {\n                let mut scaled = col.to_owned();\n                for (v, s) in scaled.iter_mut().zip(std.iter()) {\n                    *v /= s;\n                }\n                scaled\n            })\n    };\n    (scale(train), scale(test))\n}\n\n// In a full notebook you would rebuild Dataset objects from the scaled\n// arrays; linfa pipelines make this one `Pipeline::new(&[&StandardScaler])` call.",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Model 1 \u2014 k-nearest neighbors\n\nk-NN is the simplest possible classifier: a point takes the majority label of\nits *k* closest training samples. No training step, no assumptions \u2014 which is\nwhy it is the perfect baseline.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "// sklearn.neighbors.KNeighborsClassifier(n_neighbors=5)\nlet knn = KNearestNeighbors::params_with(5, linfa_knn::distance::Hamming)\n    .unwrap()\n    .fit(&train)\n    .unwrap();\n\nlet predictions = knn.predict(&test);\nlet accuracy = predictions\n    .iter()\n    .zip(test.targets().iter())\n    .filter(|(p, t)| p == t)\n    .count() as f64\n    / test.nsamples() as f64;\n\nprintln!(\"k-NN accuracy: {:.3}\", accuracy);",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Model 2 \u2014 logistic regression\n\nMultinomial logistic regression learns one linear score per class and picks\nthe argmax \u2014 the same algorithm behind `sklearn.linear_model.LogisticRegression`.\nIt gives us **probabilities**, not just labels.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "// sklearn.linear_model.LogisticRegression(max_iter=200)\nlet model = LogisticRegression::default()\n    .fit(&train)\n    .expect(\"logistic regression failed to converge\");\n\nlet predictions = model.predict(&test);\nlet accuracy = predictions\n    .iter()\n    .zip(test.targets().iter())\n    .filter(|(p, t)| p == t)\n    .count() as f64\n    / test.nsamples() as f64;\n\nprintln!(\"logistic regression accuracy: {:.3}\", accuracy);\n\n// sklearn .predict_proba() \u2014 confidence per class\nlet probabilities = model.predict_log_proba(&test);\nprintln!(\"first sample probabilities: {:?}\", probabilities.row(0));",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Confusion matrix\n\nAccuracy hides *which* mistakes the model makes. A confusion matrix counts,\nfor each true class, how many predictions landed in each predicted class.\nFor iris, the interesting cell is `versicolor \u2192 virginica`.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "code",
+      "source": "let n_classes = 3;\nlet mut confusion = vec![vec![0usize; n_classes]; n_classes];\n\nfor (pred, target) in predictions.iter().zip(test.targets().iter()) {\n    confusion[*target][*pred] += 1;\n}\n\nprintln!(\"confusion matrix (rows = true, cols = predicted):\");\nfor row in &confusion {\n    println!(\"{:?}\", row);\n}",
+      "metadata": {},
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "id": "cell-12",
+      "cell_type": "markdown",
+      "source": "## Results\n\nTypical outcomes on a 75/25 split:\n\n| Model | Accuracy | Notes |\n| ----- | -------- | ----- |\n| k-NN (k=5) | ~0.95 | No training; sensitive to feature scaling |\n| Logistic regression | ~0.97 | Probabilistic; versicolor/virginica overlap remains |\n\nBoth models struggle on the same pair of classes \u2014 a reminder that ~97% is\nclose to the ceiling for this dataset, not a sign of a weak model.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-13",
+      "cell_type": "markdown",
+      "source": "## Next steps\n\n- Try `linfa-svm` (RBF kernel) and a small `burn` neural network to see if\n  they beat the linear ceiling.\n- Swap the 75/25 split for stratified 5-fold cross-validation\n  (`linfa-evaluation`) to get a more stable estimate.\n- Load the real `iris.csv` from UCI with `csv` + `serde` instead of the\n  bundled dataset to practice your own data pipeline.\n\n**Key takeaway:** a complete ML loop \u2014 data, split, baseline, evaluation \u2014\nis the same shape for every project in this series.",
+      "metadata": {}
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 ---
-title: "Why Rust?"
+title: "Rust: The Systems Programming Language for Data Science"
 description: "Rust is fast, memory-safe, and predictable. Here is why that matters for data science, ML, and the tools we build on top of it."
 author: "Mars Team"
 date: "2026-11-06"
-order: 1
+order: 2
 tags: ["rust", "performance", "safety", "ml", "systems"]
 ---
 

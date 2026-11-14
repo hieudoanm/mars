@@ -1,0 +1,83 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Spam Message Classifier",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Spam Message Classifier\n\nSpam filtering is one of the most commercially important ML applications in\nhistory \u2014 and one of the simplest to implement. The **SMS Spam Collection**\ndataset has ~5,500 labeled text messages; your job is to predict `spam` vs\n`ham` (not spam) from the message text alone.\n\nIn this project you will:\n\n1. Turn raw text into numbers \u2014 the core NLP preprocessing pipeline.\n2. Build a **TF-IDF** representation and a **Naive Bayes** classifier.\n3. Understand why Naive Bayes still beats fancy models on small text data.\n4. Evaluate with precision/recall \u2014 where spam filtering actually lives.\n\n> Rust ML note: `tokenizers`/`regex` for text processing, `ndarray` for\n> vectors, `linfa-bayes` or a hand-rolled multinomial NB.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## From text to numbers\n\nComputers don't read text \u2014 you must convert each message into a vector.\nThe classic pipeline:\n\n```\n\"FREE!!! Claim your prize NOW\" \n  \u2192 lowercase, strip punctuation\n  \u2192 tokenize: [\"free\", \"claim\", \"your\", \"prize\", \"now\"]\n  \u2192 count words \u2192 TF-IDF vector\n  \u2192 Naive Bayes predicts P(spam | words)\n```\n\n**TF-IDF** (term frequency \u00d7 inverse document frequency) downweights words\nthat appear everywhere (\"the\", \"you\") and upweights distinctive ones\n(\"prize\", \"viagra\", \"winner\").",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep regex = \"1\"\n// :dep ndarray = \"0.16\"\n\nuse regex::Regex;\nuse std::collections::HashMap;\n\nfn tokenize(text: &str) -> Vec<String> {\n    // lowercase, replace non-alphanumeric with space, split\n    let re = Regex::new(r\"[^a-z0-9\\s]\").unwrap();\n    re.replace_all(&text.to_lowercase(), \" \")\n        .split_whitespace()\n        .map(|s| s.to_string())\n        .collect()\n}\n\nlet messages = vec![\n    \"FREE entry in 2 a wkly comp to win FA Cup final tkts\",\n    \"Hey are we still on for lunch tomorrow?\",\n    \"URGENT! Your account has been suspended. Call now\",\n];\n\nfor msg in &messages {\n    println!(\"{:?} -> {:?}\", &msg[..20], tokenize(msg));\n}",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## TF-IDF vectorization\n\nBuild a vocabulary of all words, then represent each document as a vector.\nNaive Bayes actually only needs word **counts** \u2014 but TF-IDF vectors work\nwith any linear model, so we compute them anyway.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "use ndarray::{s, Array2, Axis};\nuse std::collections::HashSet;\n\nstruct Tfidf {\n    vocab: HashMap<String, usize>,\n    idf:   Vec<f64>,\n}\n\nimpl Tfidf {\n    fn fit(documents: &[Vec<String>]) -> Self {\n        // vocabulary: every unique word, sorted for determinism\n        let vocab_set: HashSet<&String> =\n            documents.iter().flatten().collect();\n        let mut vocab: Vec<String> =\n            vocab_set.into_iter().cloned().collect();\n        vocab.sort();\n        let vocab_map: HashMap<String, usize> = vocab\n            .iter().enumerate()\n            .map(|(i, w)| (w.clone(), i))\n            .collect();\n\n        // idf[w] = ln(N / df[w]) + 1, df = # docs containing w\n        let n = documents.len() as f64;\n        let mut df = vec![0.0f64; vocab.len()];\n        for doc in documents {\n            let mut seen = HashSet::new();\n            for w in doc {\n                if seen.insert(w) {\n                    if let Some(&i) = vocab_map.get(w) { df[i] += 1.0; }\n                }\n            }\n        }\n        let idf: Vec<f64> = df.iter().map(|&d| (n / d).ln() + 1.0).collect();\n\n        Self { vocab: vocab_map, idf }\n    }\n\n    fn transform(&self, doc: &[String]) -> Vec<f64> {\n        let mut tf = vec![0.0f64; self.vocab.len()];\n        let mut counts = HashMap::new();\n        for w in doc { *counts.entry(w).or_insert(0) += 1; }\n        let total = doc.len() as f64;\n        for (w, c) in counts {\n            if let Some(&i) = self.vocab.get(w) {\n                tf[i] = (c as f64 / total) * self.idf[i];\n            }\n        }\n        tf\n    }\n}",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Multinomial Naive Bayes\n\nNaive Bayes makes one strong (naive) assumption: **words are independent\ngiven the class**. It's wrong \u2014 \"free\" and \"win\" are correlated \u2014 but it\nworks shockingly well in practice, especially on small datasets.\n\nFor each class, it learns `P(word | class)` from training counts, then\nscores a new message with Bayes' rule and picks the class with the highest\nposterior probability.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "struct MultinomialNB {\n    class_log_prior: HashMap<String, f64>,\n    feature_log_prob: HashMap<String, HashMap<String, f64>>,\n    class_totals: HashMap<String, f64>,\n    vocab_size: usize,\n    alpha: f64,   // Laplace smoothing\n}\n\nimpl MultinomialNB {\n    fn fit(texts: &[Vec<String>], labels: &[String]) -> Self {\n        let vocab_size = texts.iter().flatten()\n            .collect::<HashSet<_>>().len();\n        let alpha = 1.0;\n\n        // count words per class\n        let mut class_counts: HashMap<String, usize> = HashMap::new();\n        let mut word_counts: HashMap<String, HashMap<String, f64>> = HashMap::new();\n        let mut totals: HashMap<String, f64> = HashMap::new();\n\n        for (doc, label) in texts.iter().zip(labels.iter()) {\n            *class_counts.entry(label.clone()).or_insert(0) += 1;\n            for w in doc {\n                *word_counts.entry(label.clone())\n                    .or_default().entry(w.clone()).or_insert(0.0) += 1.0;\n                *totals.entry(label.clone()).or_insert(0.0) += 1.0;\n            }\n        }\n\n        let n = texts.len() as f64;\n        let class_log_prior: HashMap<String, f64> = class_counts\n            .iter().map(|(c, &n_c)| {\n                (c.clone(), (n_c as f64 / n).ln())\n            }).collect();\n\n        let feature_log_prob = word_counts.iter().map(|(c, wc)| {\n            let total = totals[c] + alpha * vocab_size as f64;\n            let probs = wc.iter().map(|(w, &count)| {\n                // log P(w|c) with Laplace smoothing\n                (w.clone(), ((count + alpha) / total).ln())\n            }).collect();\n            (c.clone(), probs)\n        }).collect();\n\n        Self { class_log_prior, feature_log_prob,\n               class_totals: totals, vocab_size, alpha }\n    }\n\n    fn predict_log_proba(&self, doc: &[String]) -> HashMap<String, f64> {\n        self.class_log_prior.iter().map(|(c, &prior)| {\n            let mut score = prior;\n            if let Some(probs) = self.feature_log_prob.get(c) {\n                let total = self.class_totals.get(c).copied().unwrap_or(0.0)\n                    + self.alpha * self.vocab_size as f64;\n                for w in doc {\n                    // unseen word: floor probability\n                    score += probs.get(w).copied().unwrap_or_else(|| {\n                        (self.alpha / total).ln()\n                    });\n                }\n            }\n            (c.clone(), score)\n        }).collect()\n    }\n}",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Why Naive Bayes beats fancy models here\n\nOn the SMS Spam dataset (~5.5k short messages), a multinomial NB trained\non raw word counts typically hits **~97% accuracy** \u2014 competitive with\nSVMs and neural nets, at a fraction of the compute.\n\nReasons:\n\n- **Small data**: deep models need millions of examples; NB is robust\n  with thousands.\n- **Short texts**: word independence is less wrong for 1\u20132 sentence\n  messages than for paragraphs.\n- **Calibrated-ish probabilities**: the spam score can double as a\n  \"how confident\" dial for filtering thresholds.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## Evaluation \u2014 precision and recall\n\nAccuracy alone is misleading when classes are imbalanced (~13% spam).\nThe metrics that matter:\n\n| Metric | Question it answers |\n| ------ | ------------------- |\n| **Precision** | Of messages flagged spam, how many really are? (false-positive cost) |\n| **Recall** | Of real spam, how much did we catch? (false-negative cost) |\n| **F1** | Harmonic mean \u2014 balances both |\n\nFor a spam filter, **precision > recall** is usually right: marking a\nreal email as spam is worse than letting one spam through.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "code",
+      "source": "fn precision_recall(preds: &[bool], labels: &[bool])\n    -> (f64, f64, f64)\n{\n    let tp = preds.iter().zip(labels).filter(|(&p, &l)| p && l).count();\n    let fp = preds.iter().zip(labels).filter(|(&p, &l)| p && !l).count();\n    let fn_ = preds.iter().zip(labels).filter(|(&p, &l)| !p && l).count();\n\n    let precision = tp as f64 / (tp + fp).max(1) as f64;\n    let recall    = tp as f64 / (tp + fn_).max(1) as f64;\n    let f1 = 2.0 * precision * recall / (precision + recall).max(1e-9);\n    (precision, recall, f1)\n}\n\n// Threshold tuning: NB gives a spam probability; you choose the cutoff.\n// cutoff=0.5 \u2192 balanced; cutoff=0.7 \u2192 higher precision, lower recall.\n// In production you'd pick the cutoff on a validation set, not test.",
+      "metadata": {},
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "markdown",
+      "source": "## Results and next steps\n\nTypical SMS-spam results:\n\n| Model | Accuracy | Precision | Recall | F1 |\n| ----- | -------- | --------- | ------ | -- |\n| Multinomial NB | ~97% | ~0.93 | ~0.92 | ~0.92 |\n| Linear SVM (TF-IDF) | ~98% | ~0.95 | ~0.94 | ~0.94 |\n| Logistic regression | ~97% | ~0.94 | ~0.93 | ~0.93 |\n\n**Next steps:**\n\n- Add **bigrams** (\"free entry\", \"call now\") \u2014 captures phrases unigrams miss.\n- Try `linfa-svm` or logistic regression on the same TF-IDF matrix.\n- For real email, add HTML stripping, URL/domain features, and sender\n  reputation \u2014 text alone isn't enough.\n\n**Key takeaway:** TF-IDF + Naive Bayes is the 80/20 of text classification.\nMaster this baseline before reaching for transformers.",
+      "metadata": {}
+    }
+  ]
+}

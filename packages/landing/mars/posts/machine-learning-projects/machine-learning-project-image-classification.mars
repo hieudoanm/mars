@@ -1,0 +1,105 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Image Classification with Transfer Learning",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Image Classification with Transfer Learning\n\nThe **cats vs. dogs** problem is the classic computer vision tutorial:\ndistinguish two animal classes from photos. The naive approach \u2014 training\na CNN from scratch \u2014 needs millions of images and days of GPU time.\n\n**Transfer learning** flips this: take a model pretrained on ImageNet\n(1.2M images, 1000 classes) and fine-tune just the last layer for your\ntask. You get 95%+ accuracy on cats-vs-dogs in minutes on a laptop.\n\nIn this project you will:\n\n1. Understand **why transfer learning works** \u2014 learned features transfer.\n2. Load a pretrained **ResNet-18** via `tch-rs` (Rust PyTorch bindings).\n3. Fine-tune the classifier head on a small dataset.\n4. Compare from-scratch vs. transfer learning \u2014 the modern ML workflow.\n\n> Rust ML note: `tch-rs` wraps libtorch \u2014 the same PyTorch you'd use in\n> Python, from Rust. `image` crate for loading/augmenting images.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## Why transfer learning changed everything\n\nA CNN trained on ImageNet learns **generic visual features** in its early\nlayers:\n\n- Layer 1: edges, colors, gradients\n- Layer 2: textures, simple shapes\n- Layer 3: object parts (ears, eyes, fur patterns)\n- Layer 4+: object concepts (animal faces, bodies)\n\nThese features transfer to *any* vision task. You only need to retrain\nthe final classification layer \u2014 which has just 2 outputs (cat/dog)\ninstead of 1000.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep tch = \"0.20\"\n// :dep image = \"0.25\"\n// :dep walkdir = \"2\"\n\nuse tch::{nn, Device, Tensor};\nuse image::{DynamicImage, GenericImageView};\n\nlet device = Device::cuda_if_available();\n\n// Load pretrained ResNet-18 \u2014 automatically downloads weights\n// Equivalent: torchvision.models.resnet18(pretrained=True)\nlet vs = nn::VarStore::new(Device::Cpu);   // pretrained on CPU, move to GPU\nlet resnet = tch::vision::resnet::ResNet::new(\n    &vs.root(), ResNetVariant::ResNet18, Some(1000),\n).unwrap();\n\n// Load ImageNet-pretrained weights\nlet weights_path = \"resnet18-bc5d3300.pth\";   // download once\nvs.load(weights_path).unwrap();\n\nresnet.to_device(&device);\nprintln!(\"ResNet-18 loaded on {:?}\", device);",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Image preprocessing \u2014 the unglamorous critical step\n\nCNNs expect fixed-size, normalized inputs. The pipeline:\n\n1. **Resize** to 224\u00d7224 (ResNet's input size)\n2. **Center-crop** if aspect ratio differs\n3. **Normalize** with ImageNet mean/std: `mean=[0.485,0.456,0.406]`,\n   `std=[0.229,0.224,0.225]`\n4. **Convert** to tensor [C,H,W] \u2192 batch [N,C,H,W]",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "fn load_image(path: &str) -> Tensor {\n    let img = image::open(path).unwrap().to_rgb8();\n    let (w, h) = img.dimensions();\n\n    // Resize to 256\u00d7256, center-crop 224\u00d7224\n    let resized = image::imageops::resize(&img, 256, 256,\n        image::imageops::FilterType::Triangle);\n    let x0 = (256 - 224) / 2;\n    let y0 = (256 - 224) / 2;\n    let cropped = image::imageops::crop_imm(&resized, x0, y0, 224, 224)\n        .to_image();\n\n    // HWC u8 \u2192 CHW f32, normalized\n    let mut data = Vec::with_capacity(3 * 224 * 224);\n    for c in 0..3 {\n        for y in 0..224 {\n            for x in 0..224 {\n                let px = cropped.get_pixel(x, y)[c] as f32 / 255.0;\n                let mean = [0.485, 0.456, 0.406][c];\n                let std  = [0.229, 0.224, 0.225][c];\n                data.push((px - mean) / std);\n            }\n        }\n    }\n\n    Tensor::from_slice(&data)\n        .reshape([1, 3, 224, 224])\n        .to_device(device)\n}",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Replace the classifier head\n\nResNet-18's final layer outputs 1000 ImageNet classes. For cats-vs-dogs,\nreplace it with a 2-class linear layer. Everything else stays frozen \u2014\nwe're only learning \"cat vs dog\", not relearning vision.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "use tch::nn::{LinearConfig, Module};\n\n// Access ResNet's penultimate features (before final FC)\n// ResNet-18: avgpool \u2192 [512] \u2192 fc(512\u21921000)\n// We replace fc with fc(512\u21922)\n\nlet mut vs_head = nn::VarStore::new(Device::Cpu);\nlet head = nn::linear(&vs_head.root(), 512, 2, Default::default());\n\n// Forward pass: features \u2192 head\nfn forward(resnet: &tch::vision::resnet::ResNet, head: &nn::Linear,\n           img: &Tensor) -> Tensor {\n    let features = resnet.forward_features(img);   // [N, 512, 7, 7]\n    let pooled = tch::Tensor::avg_pool2d(&features,\n        [7, 7], [1, 1], [0, 0], false);            // [N, 512, 1, 1]\n    let flat = pooled.flatten(1, -1);               // [N, 512]\n    head.forward(&flat)                             // [N, 2]\n}",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Data augmentation \u2014 the secret sauce\n\nWith only ~25k cats-vs-dogs images, overfitting is the enemy. **Data\naugmentation** artificially expands the dataset by applying random\ntransformations:\n\n- Random horizontal flip (cats/dogs face both ways)\n- Random crop + resize (simulates different framing)\n- Color jitter (lighting variation)\n- Random rotation \u00b110\u00b0",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "// image crate has basic ops; for serious augmentation use\n// the `imageproc` crate or `fast_image_resize`\n\nfn augment(img: &DynamicImage, rng: &mut impl Rng) -> DynamicImage {\n    let mut img = img.clone();\n\n    // random horizontal flip (50% chance)\n    if rng.gen_bool(0.5) {\n        img = image::imageops::flip_horizontal(&img);\n    }\n\n    // random rotation \u00b110\u00b0\n    let angle = rng.gen_range(-10.0..10.0);\n    img = image::imageops::rotate(&img, angle);\n\n    // random brightness \u00b110%\n    let factor = rng.gen_range(0.9..1.1);\n    img = adjust_brightness(&img, factor);\n\n    img\n}\n\n// Apply augmentation during training, not validation\n// sklearn equivalent: ImageDataGenerator(rotation_range=10, ...)",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Fine-tuning strategy\n\nTwo approaches:\n\n1. **Feature extraction**: freeze ResNet, train only the head.\n   Fast, works with tiny datasets, but limited accuracy.\n\n2. **Fine-tuning**: unfreeze last few ResNet layers + train head.\n   Better accuracy, needs more data, slower.\n\nFor cats-vs-dogs (~25k images), **fine-tuning the last block** is the\nsweet spot \u2014 you adapt the features to animals without catastrophic\nforgetting of general vision.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "code",
+      "source": "// Fine-tune: unfreeze last ResNet block, lower LR for backbone\nlet mut params_head = head.params();\nlet mut params_backbone = resnet.layer4().params();   // last block only\n\nlet optimizer = nn::Adam::default()\n    .build(&[&params_head, &params_backbone], 1e-4);\n\n// Training loop\nfor epoch in 1..=epochs {\n    for (imgs, labels) in train_batches {\n        let logits = forward(&resnet, &head, &imgs);\n        let loss = logits.cross_entropy_for_logits(&labels);\n        optimizer.set_learning_rate(if epoch < 5 { 1e-3 } else { 1e-4 });\n        // backward + step\n    }\n    evaluate(&resnet, &head, &val_loader);\n}",
+      "metadata": {},
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "id": "cell-12",
+      "cell_type": "markdown",
+      "source": "## Evaluation\n\n| Approach | Accuracy | Training time | Data needed |\n| -------- | -------- | ------------- | ----------- |\n| From scratch CNN | ~85% | hours (GPU) | 100k+ images |\n| Transfer learning (head only) | ~95% | minutes | 1k+ images |\n| Fine-tuned ResNet | ~97% | ~30 min | 10k+ images |\n| Pretrained + linear probe | ~96% | seconds | 100+ images |\n\nThe last row is the modern extreme: **frozen features + logistic\nregression on top** \u2014 sometimes called \"linear probing\" \u2014 matches\nfine-tuning with a fraction of the compute.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-13",
+      "cell_type": "code",
+      "source": "// Linear probe: freeze ResNet entirely, train only head\n// This is shockingly effective \u2014 ResNet features are that good\n\nfor param in resnet.parameters() {\n    param.set_requires_grad(false);   // freeze backbone\n}\n\n// Train only head \u2014 converges in seconds, not hours\n// Use sklearn-style LogisticRegression on extracted features:\n// features = resnet.forward_features(all_images).flatten()\n// labels = [0,1,0,1,...]\n\nlet train_acc = evaluate_linear_probe(&features_train, &labels_train);\nlet test_acc  = evaluate_linear_probe(&features_test,  &labels_test);\nprintln!(\"linear probe: train {:.2}%, test {:.2}%\", train_acc*100.0, test_acc*100.0);",
+      "metadata": {},
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "id": "cell-14",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **Transfer learning is the default for vision ML** \u2014 never train\n   from scratch unless you have massive data and compute.\n2. **Pretrained features are remarkably general** \u2014 ResNet trained on\n   ImageNet transfers to medical imaging, satellite photos, and yes,\n   cats vs dogs.\n3. **Fine-tune progressively**: head first, then last block, then\n   deeper \u2014 with decreasing learning rates.\n4. **Linear probing is the new baseline** \u2014 frozen features + simple\n   classifier often matches full fine-tuning at a fraction of cost.\n\n**This completes the 10-project series.** You've now covered:\nclassification (iris, spam, sentiment, fraud, image), regression\n(house prices), time series (demand), and recommender systems\n(movies) \u2014 the canonical ML project taxonomy in Rust.",
+      "metadata": {}
+    }
+  ]
+}

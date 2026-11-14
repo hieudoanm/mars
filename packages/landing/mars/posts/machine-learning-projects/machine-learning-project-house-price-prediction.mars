@@ -1,0 +1,119 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: House Price Prediction",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: House Price Prediction\n\n**House Prices: Advanced Regression Techniques** is the most famous\nregression competition on Kaggle: predict final sale prices for ~1,460 houses\nin Ames, Iowa from ~80 mixed features \u2014 square footage, neighborhood, year\nbuilt, quality ratings, and more.\n\nIn this project you will:\n\n1. Handle mixed numeric/categorical features \u2014 the core tabular ML skill.\n2. Engineer features (ratios, binned categories, missing-value flags).\n3. Train **linear regression** and a **gradient-boosted tree** model.\n4. Evaluate with RMSE and learn why boosting wins on tabular data.\n\n> Rust ML note: `polars` for dataframes, `ndarray` for arrays,\n> `smartcore`/`linfa` or `xgboost-rs` for models.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## Why this project matters\n\nTabular data is what most real ML jobs look like \u2014 not images, not text.\nHouse prices teach the unglamorous 80% of ML work: missing values,\ncategorical encodings, skewed targets, and feature engineering. Every trick\nhere transfers directly to churn, fraud, demand, and revenue projects.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep polars = { version = \"0.44\", features = [\"lazy\", \"ndarray\"] }\n// :dep ndarray = \"0.16\"\n\nuse polars::prelude::*;\n\n// Load the Ames housing CSV (Kaggle 'House Prices' competition)\nlet df = CsvReadOptions::default()\n    .with_has_header(true)\n    .try_into_reader_with_file_path(Some(\"train.csv\".into()))\n    .unwrap()\n    .finish()\n    .unwrap();\n\nprintln!(\"shape: {:?}\", df.shape());\nprintln!(\"columns: {}\", df.width());\n\n// Missing-value audit \u2014 the first thing you do on any tabular dataset\nlet missing: Vec<_> = df\n    .get_column_names()\n    .iter()\n    .map(|name| {\n        let nulls = df.column(name).unwrap().null_count();\n        (*name, nulls)\n    })\n    .filter(|(_, n)| *n > 0)\n    .collect();\n\nprintln!(\"columns with missing values: {}\", missing.len());\nfor (name, n) in missing.iter().take(10) {\n    println!(\"  {}: {}\", name, n);\n}",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Target inspection\n\n`SalePrice` is heavily right-skewed \u2014 a few mansion outliers stretch the\ndistribution. Models predict better on `log(SalePrice)`, so we train on the\nlog and exponentiate predictions back. This single trick often halves RMSE.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "use polars::prelude::col;\n\nlet df = df.lazy()\n    .with_column(\n        (col(\"SalePrice\").cast(DataType::Float64).log())\n            .alias(\"log_price\"),\n    )\n    .collect()\n    .unwrap();\n\n// sklearn: df['SalePrice'].describe()\nlet stats = df\n    .column(\"log_price\")\n    .unwrap()\n    .f64()\n    .unwrap()\n    .describe(None)\n    .unwrap();\nprintln!(\"log_price stats:\\n{:?}\", stats);",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Categorical encoding\n\nColumns like `Neighborhood`, `Exterior1st`, and `SaleCondition` are strings.\nLinear models need numbers, so we **one-hot encode** them \u2014 one binary\ncolumn per category. High-cardinality columns (e.g. `Neighborhood` with 25\nvalues) stay manageable; truly free-text columns would need hashing instead.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "// sklearn: OneHotEncoder(handle_unknown='ignore') + ColumnTransformer\nlet categorical = [\n    \"MSSubClass\", \"MSZoning\", \"Neighborhood\", \"Exterior1st\",\n    \"Exterior2nd\", \"SaleType\", \"SaleCondition\",\n];\n\nlet df = df.lazy()\n    .with_columns([\n        // Fill missing categoricals with a sentinel, then one-hot\n        col(\"GarageType\").fill_null(lit(\"None\")).alias(\"GarageType\"),\n        col(\"FireplaceQuarts\").fill_null(lit(0)).alias(\"FireplaceQuarts\"),\n    ])\n    .collect()\n    .unwrap();\n\n// polars get_dummies ~ pandas.get_dummies\nlet encoded = df\n    .lazy()\n    .select([\n        all().exclude(categorical.iter().copied()),\n        categorical\n            .iter()\n            .map(|c| col(*c).cast(DataType::String))\n            .collect::<Vec<_>>(),\n    ])\n    .collect()\n    .unwrap();\n\nprintln!(\"encoded shape: {:?}\", encoded.shape());",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Feature engineering\n\nThe best models on this dataset come from domain features, not algorithms:\n\n- `TotalSF = TotalBsmtSF + 1stFlrSF + 2ndFlrSF` \u2014 total living area\n- `HouseAge = YrSold - YearBuilt`\n- `IsRemodeled = YearRemodAdd != YearBuilt`\n- `QualCond = OverallQual * OverallCond` \u2014 interaction term",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "let df = df.lazy()\n    .with_columns([\n        (col(\"TotalBsmtSF\") + col(\"1stFlrSF\") + col(\"2ndFlrSF\"))\n            .alias(\"TotalSF\"),\n        (col(\"YrSold\") - col(\"YearBuilt\")).alias(\"HouseAge\"),\n        (col(\"YearRemodAdd\") - col(\"YearBuilt\"))\n            .gt_eq(lit(1))\n            .cast(DataType::Int32)\n            .alias(\"IsRemodeled\"),\n    ])\n    .collect()\n    .unwrap();\n\n// sklearn: PolynomialFeatures / manual interactions\n// xgboost does NOT need these \u2014 trees find interactions themselves.\n// That is the key practical difference between linear and GBM models.",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Model 1 \u2014 ridge regression\n\nRidge regression is linear regression with L2 regularization: it shrinks\ncoefficients toward zero, which stabilizes predictions when features are\ncorrelated (square footage and room counts usually are).",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "code",
+      "source": "// smartcore::linear::ridge_regression::RidgeRegressor\n// or linfa-linear with L2 penalty\nuse ndarray::Array2;\n\n// X: (n_samples, n_features) standardized features\n// y: log_price target\n// Solve (X'X + lambda*I) w = X'y  \u2014 the ridge normal equation\nfn ridge_fit(x: &Array2<f64>, y: &ndarray::Array1<f64>, lambda: f64)\n    -> ndarray::Array1<f64>\n{\n    let n_features = x.ncols();\n    let xt_x = x.t().dot(x);\n    let mut a = xt_x;\n    for i in 0..n_features {\n        a[[i, i]] += lambda;\n    }\n    let xt_y = x.t().dot(y);\n    // In production: a.solve(xt_y) via ndarray-linalg\n    ndarray_linalg::solve::Inverse::inv(&a).unwrap().dot(&xt_y)\n}\n\n// RMSE on log scale, then convert back:\n// rmse_price = sqrt(mean((exp(pred_log) - exp(y_log))^2))",
+      "metadata": {},
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "id": "cell-12",
+      "cell_type": "markdown",
+      "source": "## Model 2 \u2014 gradient boosting\n\n**XGBoost/LightGBM-style** gradient boosting builds trees sequentially,\neach correcting the residuals of the ensemble. It dominates tabular\nbenchmarks because it:\n\n- handles non-linear relationships automatically,\n- needs no feature scaling or one-hot encoding for categoricals,\n- is robust to outliers and missing values.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-13",
+      "cell_type": "code",
+      "source": "// xgboost-rs or lightgbm crate\n// DMatrix is XGBoost's internal columnar format\n//\n// let dtrain = DMatrix::from_dense_matrix(x_train)?;\n// let params = [\n//     (\"objective\", \"reg:squarederror\"),\n//     (\"max_depth\", \"6\"),\n//     (\"eta\", \"0.05\"),       // learning rate\n//     (\"subsample\", \"0.8\"),\n// ];\n// let booster = TrainParams::new(params).fit(&dtrain, &dvalid)?;\n//\n// Typical Kaggle scores (log-RMSE):\n//   ridge regression ......... ~0.13\n//   XGBoost default .......... ~0.12\n//   tuned XGBoost ............ ~0.11\n//\n// The winning margin comes from hyperparameter search\n// (max_depth, eta, subsample, colsample) via cross-validation \u2014\n// not from a cleverer algorithm.",
+      "metadata": {},
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "id": "cell-14",
+      "cell_type": "markdown",
+      "source": "## Evaluation \u2014 RMSE\n\nKaggle scores this competition on **RMSE of log-price**. We report both\nscales because exp-space RMSE is what dollars actually cost you.\n\n| Model | Log-RMSE | Approx. $ RMSE |\n| ----- | -------- | -------------- |\n| Mean predictor (baseline) | ~0.40 | ~$55k |\n| Ridge regression | ~0.13 | ~$18k |\n| Tuned XGBoost | ~0.11 | ~$15k |\n\nA good sanity check: your model should beat the mean baseline by 3x or more.\nIf it doesn't, suspect a data-leakage bug or an encoding mistake \u2014 not the\nalgorithm.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-15",
+      "cell_type": "code",
+      "source": "// Baseline: predict the training mean for every house\nlet mean_log = y_train.mean().unwrap();\nlet baseline_rmse = {\n    let se: f64 = y_test\n        .iter()\n        .map(|t| (mean_log - t).powi(2))\n        .sum::<f64>()\n        / y_test.len() as f64;\n    se.sqrt()\n};\nprintln!(\"baseline log-RMSE: {:.4}\", baseline_rmse);\n\n// Model: predict log_price, exponentiate, compute dollar RMSE\nlet preds_log = ridge_predict(&weights, &x_test);\nlet dollar_rmse = preds_log\n    .iter()\n    .zip(y_test.iter())\n    .map(|(p, t)| (p.exp() - t.exp()).powi(2))\n    .sum::<f64>()\n    .sqrt()\n    / (y_test.len() as f64).sqrt();\nprintln!(\"model $ RMSE: {:.0}\", dollar_rmse);",
+      "metadata": {},
+      "execution_count": 14,
+      "outputs": []
+    },
+    {
+      "id": "cell-16",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **Tabular ML is 80% data work.** Encoding, missing values, and feature\n   engineering matter more than model choice.\n2. **Log-transform skewed targets** \u2014 cheap, huge win.\n3. **Linear models need feature engineering; trees don't.** That is why\n   gradient boosting dominates Kaggle tabular competitions.\n4. **Always build the mean-predictor baseline first.** It tells you whether\n   your pipeline works at all.\n\n**Next project:** the same pipeline \u2014 load, clean, encode, split, baseline,\nmodel, evaluate \u2014 applied to customer churn, where the target is a class\ninstead of a price.",
+      "metadata": {}
+    }
+  ]
+}

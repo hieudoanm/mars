@@ -1,9 +1,9 @@
 ---
-title: "Why C++?"
+title: "C++: High-Performance Computing for Scientific Applications"
 description: "C++ was born for systems programming. It is still the default when performance, control, and zero-cost abstractions matter. Here is why it endures."
 author: "Mars Team"
 date: "2026-11-07"
-order: 7
+order: 6
 tags: ["cpp", "performance", "systems", "history", "mars"]
 ---
 

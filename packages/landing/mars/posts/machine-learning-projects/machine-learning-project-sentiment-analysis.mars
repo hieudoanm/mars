@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Sentiment Analysis",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Sentiment Analysis\n\n**Sentiment analysis** classifies text as expressing a positive, negative,\nor neutral opinion. The IMDb movie review dataset (50,000 reviews labeled\npositive/negative) is the standard benchmark \u2014 it's also the dataset that\nmade deep learning for NLP famous.\n\nIn this project you will:\n\n1. Reuse the TF-IDF pipeline from the spam project \u2014 the same machinery\n   works for any text classification.\n2. Train **logistic regression** on bag-of-words features.\n3. Compare classical ML vs. the transformer approach (BERT).\n4. Understand when deep learning actually helps for text.\n\n> Rust ML note: same text pipeline as spam classification. For the\n> transformer version, `rust-bert` or `candle` provides BERT inference.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## Why sentiment analysis is different from spam\n\nSpam detection looks for *known bad patterns* \u2014 specific words, phrases,\nurgency markers. Sentiment is subtler:\n\n- **Negation**: \"not bad\" is positive, \"not good\" is negative\n- **Sarcasm**: \"Great, another delay\" is negative\n- **Intensifiers**: \"absolutely loved it\" vs. \"liked it\"\n- **Domain words**: \"unputdownable\" is positive for books, meaningless\n  for products\n\nBag-of-words captures *which* words appear but not *how* they combine \u2014\nthat's the limitation transformers solve.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep regex = \"1\"\n// :dep ndarray = \"0.16\"\n// :dep linfa = \"0.7\"\n// :dep linfa-logistic = \"0.7\"\n\nuse regex::Regex;\n\nfn tokenize(text: &str) -> Vec<String> {\n    // same pipeline as spam: lowercase, strip punct, split\n    // plus: simple negation handling \u2014 prepend NOT_ to words after \"not\"\n    let re = Regex::new(r\"[^a-z0-9\\s]\").unwrap();\n    let clean = re.replace_all(&text.to_lowercase(), \" \");\n    let words: Vec<String> = clean.split_whitespace()\n        .map(|s| s.to_string()).collect();\n\n    // bigram-ish negation: \"not good\" \u2192 \"not_good\" as single token\n    let mut out = Vec::new();\n    let mut prev_neg = false;\n    for w in words {\n        if prev_neg {\n            out.push(format!(\"NOT_{}\", w));\n            prev_neg = false;\n        } else if w == \"not\" || w == \"never\" || w == \"no\" {\n            prev_neg = true;\n        } else {\n            out.push(w);\n        }\n    }\n    out\n}\n\nlet reviews = vec![\n    (\"An absolute masterpiece, I loved every minute\", 1),\n    (\"Terrible film, a complete waste of time\", 0),\n    (\"Not bad at all, surprisingly enjoyable\", 1),\n    (\"I did not enjoy this movie\", 0),\n];\n\nfor (text, label) in &reviews {\n    println!(\"label={} {:?}\", label, tokenize(text));\n}",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## TF-IDF + logistic regression\n\nSame vectorization as spam, but on longer documents (full reviews).\nLogistic regression on TF-IDF features is the **classical baseline** \u2014\nit's fast, interpretable, and hard to beat on medium-sized data.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "// Reuse Tfidf vectorizer from the spam project\nlet docs: Vec<Vec<String>> = train_texts.iter()\n    .map(|t| tokenize(t)).collect();\nlet vectorizer = Tfidf::fit(&docs);\n\n// Build feature matrix [n_samples, vocab_size]\nlet x = Array2::from_shape_fn((docs.len(), vectorizer.vocab.len()),\n    |(i, _)| 0.0);   // fill via transform\nfor (i, doc) in docs.iter().enumerate() {\n    let v = vectorizer.transform(doc);\n    for (j, val) in v.iter().enumerate() {\n        x[[i, j]] = *val;\n    }\n}\n\n// sklearn: LogisticRegression(C=1.0, max_iter=1000)\nlet model = LogisticRegression::default()\n    .fit(&Dataset::from(x).map_targets(|t| *t))\n    .expect(\"fit failed\");\n\n// predict_proba \u2192 P(positive)",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Evaluation\n\n| Model | Accuracy | Notes |\n| ----- | -------- | ----- |\n| Majority class | ~50% | useless baseline |\n| Logistic regression (TF-IDF) | ~88% | fast, interpretable |\n| Linear SVM (TF-IDF) | ~89% | slightly better, less interpretable |\n| BERT-base fine-tuned | ~93% | state-of-the-art for this dataset |\n| DistilBERT | ~92% | 40% smaller, ~97% of BERT's accuracy |\n\nThe 5-point gap between classical and transformer models is real but\nmodest \u2014 for many production use-cases, logistic regression on TF-IDF\nis the right cost/accuracy trade-off.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "// Inspect top positive/negative words \u2014 model interpretability\nlet mut coef_sorted: Vec<(usize, f64)> = model\n    .params().feature_weights().iter().enumerate()\n    .map(|(i, &c)| (i, c))\n    .collect();\ncoef_sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());\n\nprintln!(\"top positive words:\");\nfor (i, c) in coef_sorted.iter().take(10) {\n    println!(\"  {} ({:+.2})\", vocab_name(*i), c);\n}\nprintln!(\"top negative words:\");\nfor (i, c) in coef_sorted.iter().rev().take(10) {\n    println!(\"  {} ({:+.2})\", vocab_name(*i), c);\n}",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## When to use transformers\n\n**Use classical ML (TF-IDF + logistic) when:**\n- Dataset is < 100k examples\n- Latency/cost matters (no GPU, edge deployment)\n- You need interpretability (which words drove the decision)\n- Text is short and formulaic (reviews, support tickets)\n\n**Use transformers (BERT, DistilBERT) when:**\n- Dataset is large (> 500k examples)\n- Text is long and complex (documents, conversations)\n- Nuance matters (sarcasm, context, domain-specific language)\n- You have GPU budget for fine-tuning",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## The transformer alternative\n\nFor comparison, here's what the BERT approach looks like in Rust\nusing the `rust-bert` crate:\n\n```rust\n// rust-bert provides pretrained BERT models\n// pip install equivalent: from transformers import pipeline\n// classifier = pipeline(\"sentiment-analysis\")\n// result = classifier(\"I loved this movie!\")\n// \u2192 {'label': 'POSITIVE', 'score': 0.999}\n```\n\nThe pipeline is simpler (pretrained model does everything), but you\ngive up interpretability and pay inference costs per request.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **TF-IDF + logistic regression is the 80/20 of sentiment analysis** \u2014\n   88% accuracy with zero deep learning complexity.\n2. **Negation handling** (simple \"not\" \u2192 \"NOT_\" prefixing) is a cheap\n   win that bag-of-words otherwise misses.\n3. **Transformers buy ~5% accuracy** at the cost of GPU inference \u2014\n   worth it for high-stakes or high-volume applications.\n4. **Interpretability matters in production** \u2014 knowing *why* a review\n   was flagged helps debug and build trust.\n\n**Next project:** credit card fraud detection \u2014 extreme class imbalance\nwhere the minority class is < 1% of data.",
+      "metadata": {}
+    }
+  ]
+}

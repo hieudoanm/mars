@@ -71,9 +71,10 @@ const parseTags = (value: string | undefined): string[] => {
   );
 };
 
-const readPost = (fileName: string): Post => {
+const readPost = (filePath: string): Post => {
+  const fileName = path.basename(filePath);
   const slug = fileName.replace(/\.md$/i, '');
-  const raw = fs.readFileSync(path.join(postsDirectory, fileName), 'utf8');
+  const raw = fs.readFileSync(filePath, 'utf8');
   const { data, body } = parseFrontmatter(raw);
   const heading = body.match(/^#\s+(.+)$/m)?.[1]?.trim();
   const title =
@@ -98,11 +99,25 @@ const readPost = (fileName: string): Post => {
   };
 };
 
+const getPostFiles = (dir: string): string[] => {
+  const files: string[] = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...getPostFiles(fullPath));
+    } else if (entry.isFile() && postFilePattern.test(entry.name)) {
+      files.push(fullPath);
+    }
+  }
+  
+  return files;
+};
+
 export const getPosts = (): Post[] => {
   if (!fs.existsSync(postsDirectory)) return [];
-  return fs
-    .readdirSync(postsDirectory)
-    .filter((fileName) => postFilePattern.test(fileName))
+  return getPostFiles(postsDirectory)
     .map(readPost)
     .sort((left, right) => {
       if (left.order !== undefined && right.order !== undefined) {
@@ -118,6 +133,8 @@ export const getPosts = (): Post[] => {
 export const getPost = (slug: string): Post | undefined => {
   if (!/^[a-z0-9-]+$/.test(slug)) return undefined;
   const fileName = `${slug}.md`;
-  if (!fs.existsSync(path.join(postsDirectory, fileName))) return undefined;
-  return readPost(fileName);
+  const files = getPostFiles(postsDirectory);
+  const found = files.find((file) => path.basename(file) === fileName);
+  if (!found) return undefined;
+  return readPost(found);
 };

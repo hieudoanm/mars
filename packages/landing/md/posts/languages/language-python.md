@@ -1,9 +1,9 @@
 ---
-title: "Why Python?"
+title: "Python: The Data Science Standard"
 description: "Python became the language of data science almost by accident. Here is why it won, what it costs, and why it still matters."
 author: "Mars Team"
 date: "2026-11-07"
-order: 6
+order: 4
 tags: ["python", "data-science", "ecosystem", "history", "mars"]
 ---
 

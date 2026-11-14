@@ -1,9 +1,9 @@
 ---
-title: "Why Julia?"
+title: "Julia: High-Performance Computing for Data Science"
 description: "Julia walks like Python, runs like C, and makes scientific computing feel fast. Here is why it matters for interactive programming."
 author: " Mars Team"
 date: "2026-11-07"
-order: 4
+order: 3
 tags: ["julia", "data-science", "performance", "multiple-dispatch", "mars"]
 ---
 

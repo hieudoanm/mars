@@ -1,0 +1,97 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Customer Churn Prediction",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Customer Churn Prediction\n\n**Churn prediction** is the canonical business ML project: given customer\nusage data, predict who will cancel next month so the retention team can\nintervene. The Telco Customer Churn dataset (~7,000 customers, ~20\nfeatures) is the standard benchmark.\n\nIn this project you will:\n\n1. Frame churn as **binary classification on imbalanced data**.\n2. Handle the class imbalance that breaks naive accuracy.\n3. Train **logistic regression** and read its coefficients as business\n   insights.\n4. Tune the decision threshold for the actual business cost.\n\n> Rust ML note: `polars` for the dataframe, `linfa-logistic` for the model,\n> `linfa` evaluation helpers for metrics.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## Why churn is the perfect ML teaching project\n\nIt combines everything real ML work involves:\n\n- **Imbalanced classes** \u2014 only ~26% of customers churn; accuracy is\n  meaningless without precision/recall.\n- **Mixed features** \u2014 tenure (numeric), contract type (categorical),\n  monthly charges, support calls.\n- **Business interpretation** \u2014 \"why\" matters as much as \"how accurate\".\n  A model that says \"contract_type=month-to-month \u2192 3x churn risk\" is\n  actionable; a black box is not.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep polars = { version = \"0.44\", features = [\"lazy\"] }\n// :dep linfa = \"0.7\"\n// :dep linfa-logistic = \"0.7\"\n// :dep linfa-datasets = \"0.7\"\n\nuse polars::prelude::*;\n\n// Telco Customer Churn (Kaggle)\nlet df = CsvReadOptions::default()\n    .with_has_header(true)\n    .try_into_reader_with_file_path(Some(\"WA_Fn-UseC_-Telco-Customer-Churn.csv\".into()))\n    .unwrap()\n    .finish()\n    .unwrap();\n\nprintln!(\"shape: {:?}\", df.shape());\n\n// Target: Churn \u2208 {Yes, No} \u2192 encode as 1/0\nlet churn_rate = df\n    .column(\"Churn\").unwrap()\n    .str().unwrap()\n    .into_iter()\n    .filter(|s| s.map(|v| v == \"Yes\").unwrap_or(false))\n    .count() as f64\n    / df.height() as f64;\n\nprintln!(\"churn rate: {:.1}%\", churn_rate * 100.0);",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Feature engineering for churn\n\nRaw columns aren't enough \u2014 churn has strong **interaction effects**:\n\n- `IsNewCustomer = (tenure < 6)` \u2014 new customers churn at 2-3x the rate\n- `HasSupportIssues = (TechSupport == \"No\")` \u2014 no support \u2192 higher churn\n- `ContractRisk = contract_type == \"month-to-month\"` \u2014 the single\n  strongest predictor (~40% of churners are month-to-month)",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "let df = df.lazy()\n    .with_columns([\n        (col(\"tenure\").lt(lit(6)))\n            .cast(DataType::Int8).alias(\"IsNewCustomer\"),\n        (col(\"Contract\").eq(lit(\"Month-to-month\")))\n            .cast(DataType::Int8).alias(\"IsMonthToMonth\"),\n        (col(\"tenure\") * col(\"MonthlyCharges\"))\n            .alias(\"TenureCharges\"),   // total spend proxy\n    ])\n    .collect()\n    .unwrap();\n\n// One-hot encode categoricals (same as house-price project)\n// then standardize numeric features for logistic regression",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Why accuracy fails on imbalanced data\n\nWith 26% churn, a model that predicts \"no churn\" for *everyone* gets\n**74% accuracy** \u2014 and is useless. The metrics that matter:\n\n| Metric | Meaning for churn |\n| ------ | ----------------- |\n| **Precision** | Of customers flagged \"will churn\", how many actually do? (retention spend efficiency) |\n| **Recall** | Of actual churners, how many did we catch? (revenue saved) |\n| **F1 / PR-AUC** | Balanced view; PR-AUC is the gold standard for imbalanced data |\n\nYou'd rather flag 100 customers and save 60 than flag 1,000 and annoy 940\nloyal ones \u2014 precision matters, but so does catching enough churners.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "// sklearn: class_weight='balanced' \u2014 upweights minority class in loss\n// linfa: sample weights via Dataset::with_weights\n\nlet pos_weight = (1.0 - churn_rate) / churn_rate;   // \u2248 2.8\nlet weights: Vec<f64> = y_train.iter()\n    .map(|&t| if t == 1 { pos_weight } else { 1.0 })\n    .collect();\n\n// Train logistic regression on weighted samples\nlet model = LogisticRegression::default()\n    .fit_with_weights(&train, &weights)\n    .expect(\"fit failed\");\n\n// predict_proba gives P(churn) \u2014 the raw material for threshold tuning",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Threshold tuning \u2014 where the business value lives\n\nLogistic regression outputs a probability, not a label. The default 0.5\nthreshold is almost never optimal for imbalanced business problems.\n\nSweep the threshold and plot precision/recall:\n\n| Threshold | Precision | Recall | Interpretation |\n| --------- | --------- | ------ | -------------- |\n| 0.3 | lower | higher | aggressive retention, more false alarms |\n| 0.5 | balanced | balanced | default |\n| 0.7 | higher | lower | only flag high-confidence churners |\n\nThe right threshold depends on the cost of a retention offer vs. the cost\nof losing a customer \u2014 a business decision, not a technical one.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "fn sweep_thresholds(probs: &[f64], labels: &[u8],\n                     thresholds: &[f64]) -> Vec<(f64,f64,f64)> {\n    thresholds.iter().map(|&t| {\n        let preds: Vec<bool> = probs.iter().map(|&p| p >= t).collect();\n        let labels_b: Vec<bool> = labels.iter().map(|&l| l == 1).collect();\n        let (p, r, f1) = precision_recall(&preds, &labels_b);\n        (t, p, r)\n    }).collect()\n}\n\n// Find the threshold maximizing F1 (or precision at fixed recall)\nlet results = sweep_thresholds(&val_probs, &val_labels,\n                               &(0.1..0.9).step_by(0.05).collect::<Vec<_>>());\nlet best = results.iter()\n    .max_by(|a, b| (a.1 * a.2).partial_cmp(&(b.1 * b.2)).unwrap())\n    .unwrap();\nprintln!(\"best threshold: {:.2} \u2192 precision {:.2}, recall {:.2}\",\n         best.0, best.1, best.2);",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Reading the coefficients \u2014 the \"why\"\n\nLogistic regression is interpretable: each coefficient is the log-odds\ncontribution of that feature. Exponentiate for odds ratios:\n\n```\ncontract_type = month-to-month  \u2192  odds_ratio \u2248 3.5\n                   (month-to-month customers are ~3.5x more likely to churn,\n                    holding everything else constant)\n\ntotal_charges (per $1000)       \u2192  odds_ratio \u2248 0.95\n                   (higher spend slightly *reduces* churn \u2014 invested customers)\n```\n\nThis is why logistic regression remains the go-to for churn: the business\ncan act on \"push annual contracts\" because the model *told them why*.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "code",
+      "source": "// Inspect learned coefficients\nfor (name, coef) in model.params().feature_weights().iter()\n    .zip(feature_names.iter()) {\n    let odds_ratio = coef.exp();\n    println!(\"{:<25} coef={:+.3}  odds_ratio={:.2}\",\n             name, coef, odds_ratio);\n}\n\n// Sort by |coef| to find the top churn drivers",
+      "metadata": {},
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "id": "cell-12",
+      "cell_type": "markdown",
+      "source": "## Results\n\n| Model | ROC-AUC | PR-AUC | Best-F1 threshold |\n| ----- | ------- | ------ | ----------------- |\n| Logistic regression | ~0.85 | ~0.75 | ~0.45 |\n| Gradient boosting (XGBoost) | ~0.88 | ~0.80 | ~0.40 |\n| Random forest | ~0.87 | ~0.78 | ~0.42 |\n\nLogistic regression is within 3 points of boosting \u2014 and interpretable.\nFor a churn use-case where the retention team needs to *understand* the\nrisk factors, that's the right trade-off.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-13",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **Imbalanced data breaks accuracy** \u2014 use precision/recall/PR-AUC.\n2. **Class weighting** fixes the imbalance without throwing away data.\n3. **Threshold \u2260 0.5** \u2014 tune it on validation data for the business cost.\n4. **Interpretable models win in business ML** \u2014 churn teams need reasons,\n   not just scores.\n\n**Next project:** demand forecasting \u2014 where the target is a continuous\nnumber varying over time, not a binary label.",
+      "metadata": {}
+    }
+  ]
+}

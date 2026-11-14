@@ -1,9 +1,9 @@
 ---
-title: "Why Mars?"
+title: "Mars: The Multi-Language Notebook Platform"
 description: "Mars is a Rust-first interactive notebook. Here is how it compares to Jupyter, and why we built it."
 author: "Mars Team"
 date: "2026-11-06"
-order: 2
+order: 8
 tags: ["mars", "notebooks", "jupyter", "rust", "product"]
 ---
 

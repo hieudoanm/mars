@@ -1,0 +1,111 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Sales & Demand Forecasting",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Sales & Demand Forecasting\n\nDemand forecasting answers: *how much of each product will we sell next\nweek?* It's the ML problem behind inventory planning, staffing, and\npricing \u2014 and it looks deceptively simple until you meet real data with\nseasonality, trends, and promotions.\n\nWe'll use a classic retail sales dataset (store \u00d7 item \u00d7 date \u00d7 units)\nand forecast daily sales.\n\nIn this project you will:\n\n1. Understand **time series components**: trend, seasonality, noise.\n2. Build **moving averages** and **exponential smoothing** baselines.\n3. Implement a simple **ARIMA-style** model (AR + I + MA).\n4. Evaluate with RMSE and MASE \u2014 the honest time-series metrics.\n\n> Rust ML note: `ndarray` for windows, `chrono` for dates, or the\n> `smartcore` time-series helpers.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## Time series anatomy\n\nEvery sales series decomposes into:\n\n```\nsales(t) = trend(t) + seasonal(t) + residual(t)\n```\n\n- **Trend**: long-term growth or decline\n- **Seasonality**: repeating weekly/yearly patterns (weekend spikes,\n  holiday rushes)\n- **Residual**: promotions, weather, one-off events \u2014 the unpredictable part",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n// :dep chrono = { version = \"0.4\", features = [\"serde\"] }\n// :dep csv = \"1\"\n\nuse ndarray::{s, Array1};\nuse chrono::NaiveDate;\n\n// Load daily sales: date,store,item,units\n#[derive(serde::Deserialize)]\nstruct Sale {\n    date: NaiveDate,\n    #[serde(rename = \"store\")] _store: u32,\n    #[serde(rename = \"item\")]  _item: u32,\n    units: f64,\n}\n\nfn load_daily(path: &str) -> Vec<(NaiveDate, f64)> {\n    let mut by_date: std::collections::BTreeMap<NaiveDate, f64> =\n        Default::default();\n    let rdr = csv::Reader::from_path(path).unwrap();\n    for rec in rdr.deserialize::<Sale>() {\n        let s = rec.unwrap();\n        *by_date.entry(s.date).or_insert(0.0) += s.units;\n    }\n    by_date.into_iter().collect()\n}\n\nlet series = load_daily(\"sales.csv\");\nlet dates: Vec<NaiveDate> = series.iter().map(|(d,_)| *d).collect();\nlet y = Array1::from_vec(series.iter().map(|(_,u)| *u).collect());\n\nprintln!(\"{} days, mean {:.0} units/day\", y.len(), y.mean().unwrap());",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Visualize before modeling\n\nAlways plot the series first. Look for:\n\n- **Trend**: is sales growing/declining over months?\n- **Seasonality**: weekly dips (Mondays), annual peaks (December)?\n- **Outliers**: promotion days, stockouts, data errors.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "// ASCII sparkline of weekly totals \u2014 no plotting lib needed\nfn sparkline(values: &[f64], width: usize) -> String {\n    let chars = ['\u2581','\u2582','\u2583','\u2584','\u2585','\u2586','\u2587','\u2588'];\n    let min = values.iter().cloned().fold(f64::INFINITY, f64::min);\n    let max = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);\n    let range = (max - min).max(1e-9);\n    values.iter().take(width).map(|&v| {\n        let idx = ((v - min) / range * 7.0) as usize;\n        chars[idx.min(7)]\n    }).collect()\n}\n\n// Resample to weekly totals\nlet weekly: Vec<f64> = y\n    .chunks(7)\n    .map(|w| w.iter().sum())\n    .collect();\nprintln!(\"weekly sales: {}\", sparkline(&weekly, 60));",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Baseline 1 \u2014 moving average\n\nThe simplest forecaster: predict tomorrow = mean of last *k* days.\n\n- **SMA(7)**: smooths noise, lags on trends\n- **EMA(\u03b1)**: exponentially weighted \u2014 recent days count more\n\nThese are your baselines. Any fancy model must beat them.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "fn moving_average(y: &Array1<f64>, window: usize) -> Vec<f64> {\n    (window..y.len()).map(|i| {\n        y.slice(s![i-window..i]).mean().unwrap()\n    }).collect()\n}\n\nfn ema(y: &Array1<f64>, alpha: f64) -> Vec<f64> {\n    let mut out = vec![y[0]];\n    for i in 1..y.len() {\n        out.push(alpha * y[i] + (1.0 - alpha) * out[i-1]);\n    }\n    out[1..].to_vec()\n}\n\n// One-step-ahead predictions on the last 30 days\nlet test_start = y.len() - 30;\nlet actual: Vec<f64> = (test_start..y.len()).map(|i| y[i]).collect();\n\nlet sma7 = moving_average(&y.slice(s![..test_start]), 7);\nlet sma_preds: Vec<f64> = (0..30).map(|i| sma7[sma7.len()-30+i]).collect();\n\nlet ema_preds = ema(&y.slice(s![..test_start]), 0.3);\nlet ema_last30: Vec<f64> = ema_preds[ema_preds.len()-30..].to_vec();\n\nfn rmse(preds: &[f64], actual: &[f64]) -> f64 {\n    (preds.iter().zip(actual).map(|(p,a)| (p-a).powi(2)).sum::<f64>()\n     / actual.len() as f64).sqrt()\n}\nprintln!(\"SMA-7 RMSE: {:.1}\", rmse(&sma_preds, &actual));\nprintln!(\"EMA   RMSE: {:.1}\", rmse(&ema_last30, &actual));",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Baseline 2 \u2014 seasonal naive\n\nIf your data has weekly seasonality, the best simple forecast is often\n**\"same day last week\"**: predict Monday = last Monday's sales. This\ncaptures the weekly pattern that moving averages smooth away.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "// Seasonal naive: forecast t as y[t-7]\nlet seasonal_preds: Vec<f64> = (test_start..y.len())\n    .map(|i| y[i - 7])\n    .collect();\n\nprintln!(\"seasonal-naive RMSE: {:.1}\", rmse(&seasonal_preds, &actual));\n\n// For daily retail data, seasonal-naive usually beats SMA/EMA\n// because it preserves the day-of-week pattern.",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## ARIMA-style model\n\n**ARIMA(p,d,q)** decomposes forecasting into three parts:\n\n- **AR(p)**: predict from *p* past values \u2014 `y_t = c + \u03c6\u2081y_{t-1} + ...`\n- **I(d)**: integrate *d* times to remove trend \u2014 work on differences\n- **MA(q)**: model shocks from *q* past forecast errors\n\nA full ARIMA fit is complex (requires MLE for coefficients). We'll use a\nsimplified **AR(p) on differenced data** \u2014 good enough for weekly\nseasonality removed.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "code",
+      "source": "// Deseasonalize: subtract weekly seasonal component\nlet seasonal: Vec<f64> = (0..7).map(|dow| {\n    y.iter().skip(dow).step_by(7)\n        .cloned().sum::<f64>() / (y.len() / 7) as f64\n}).collect();\n\nlet deseasonalized: Vec<f64> = y.iter().enumerate()\n    .map(|(i, &v)| v - seasonal[i % 7])\n    .collect();\n\n// AR(2) on differenced deseasonalized series:\n// \u0394y_t = c + \u03c6\u2081\u0394y_{t-1} + \u03c6\u2082\u0394y_{t-2} + \u03b5_t\n// Fit by least squares \u2014 build lag matrix and solve\nfn ar_fit(series: &[f64], p: usize) -> Vec<f64> {\n    let n = series.len() - p;\n    // X[i] = [1, y_{i+p-1}-y_{i+p-2}, ..., y_{i+1}-y_{i}]\n    // target = y_{i+p} - y_{i+p-1}\n    let mut x = ndarray::Array2::zeros((n, p + 1));\n    let mut target = ndarray::Array1::zeros(n);\n    for i in 0..n {\n        x[[i, 0]] = 1.0;\n        for lag in 1..=p {\n            x[[i, lag]] = series[i + p - lag] - series[i + p - lag - 1];\n        }\n        target[i] = series[i + p] - series[i + p - 1];\n    }\n    // least squares: \u03b2 = (X'X)\u207b\u00b9X'y\n    let xt_x = x.t().dot(&x);\n    let xt_y = x.t().dot(&target);\n    ndarray_linalg::solve::Inverse::inv(&xt_x).unwrap().dot(&xt_y).to_vec()\n}\n\nlet coefs = ar_fit(&deseasonalized, 2);\nprintln!(\"AR(2) coefficients: {:?}\", coefs);",
+      "metadata": {},
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "id": "cell-12",
+      "cell_type": "markdown",
+      "source": "## Forecasting with the AR model\n\nOnce you have coefficients, forecast iteratively:\n\n```\n\u0177_{t+1} = \u0177_t + c + \u03c6\u2081(\u0177_t - \u0177_{t-1}) + \u03c6\u2082(\u0177_{t-1} - \u0177_{t-2})\n```\n\nThen **re-seasonalize**: add back the day-of-week component.\nFor multi-step forecasts, errors compound \u2014 that's why horizon matters.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-13",
+      "cell_type": "code",
+      "source": "fn ar_forecast(history: &[f64], coefs: &[f64], horizon: usize) -> Vec<f64> {\n    let p = coefs.len() - 1;\n    let mut buf = history.to_vec();\n    let mut preds = Vec::with_capacity(horizon);\n\n    for _ in 0..horizon {\n        let n = buf.len();\n        let mut pred = coefs[0];   // intercept\n        for lag in 1..=p {\n            pred += coefs[lag] * (buf[n - lag] - buf[n - lag - 1]);\n        }\n        let next = buf[n - 1] + pred;   // integrated: add back level\n        preds.push(next);\n        buf.push(next);\n    }\n    preds\n}\n\n// Forecast next 7 days, reseasonalize\nlet history: Vec<f64> = deseasonalized.iter()\n    .rev().take(30).cloned().collect::<Vec<_>>().into_iter().rev().collect();\nlet mut fc = ar_forecast(&history, &coefs, 7);\nfor (i, f) in fc.iter_mut().enumerate() {\n    *f += seasonal[(history.len() + i) % 7];\n}\nprintln!(\"next-7-day forecast: {:?}\", fc.iter()\n    .map(|v| format!(\"{:.0}\", v)).collect::<Vec<_>>());",
+      "metadata": {},
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "id": "cell-14",
+      "cell_type": "markdown",
+      "source": "## Evaluation \u2014 MASE, not just RMSE\n\nFor intermittent demand (many zeros), RMSE can be misleading. **MASE**\n(Mean Absolute Scaled Error) compares your model to the seasonal-naive\nbaseline:\n\n```\nMASE = MAE(model) / MAE(seasonal_naive)\n```\n\n- MASE < 1 \u2192 your model beats the baseline\n- MASE > 1 \u2192 the baseline was better; don't deploy\n\nThis is the honest metric for time series \u2014 it answers \"is my model\nactually adding value?",
+      "metadata": {}
+    },
+    {
+      "id": "cell-15",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **Plot first, model second** \u2014 seasonality and outliers change everything.\n2. **Baselines are mandatory**: seasonal-naive, SMA, EMA \u2014 beat them or\n   don't ship.\n3. **ARIMA is interpretable** but real-world forecasting often uses\n   gradient boosting on lag features (LightGBM) or deep models (N-BEATS,\n   TFT) for production accuracy.\n4. **MASE > RMSE** for comparing forecasters across series.\n\n**Next project:** sentiment analysis \u2014 text classification where the\ntarget is an opinion, not a number.",
+      "metadata": {}
+    }
+  ]
+}

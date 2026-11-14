@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Markdown from '@/components/shared/Markdown';
 import { getPost, getPosts } from '@/lib/blog';
+import { siteName, siteUrl } from '@/lib/site';
 
 export const dynamicParams = false;
 
@@ -17,7 +18,46 @@ export const generateMetadata = async ({
 }): Promise<Metadata> => {
   const { slug } = await params;
   const post = getPost(slug);
-  return post ? { title: `${post.title} | Mars Blog`, description: post.description } : {};
+  if (!post) return {};
+
+  const title = `${post.title} | ${siteName} Blog`;
+  const description = post.description || `Read ${post.title} on the ${siteName} blog. Explore insights on Rust, notebooks, data science, and machine learning.`;
+  const url = `${siteUrl}/blog/${post.slug}`;
+  const imageUrl = `${siteUrl}/og-image.png`;
+
+  return {
+    title,
+    description,
+    keywords: post.tags.join(', '),
+    authors: [{ name: post.author || 'Mars Team' }],
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      type: 'article',
+      publishedTime: post.date,
+      authors: [post.author || 'Mars Team'],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
 };
 
 type BlogPostPageProps = Readonly<{
@@ -35,8 +75,35 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
   const next =
     currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : undefined;
 
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.description,
+    author: {
+      '@type': 'Person',
+      name: post.author || 'Mars Team',
+    },
+    datePublished: post.date,
+    dateModified: post.date,
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+      url: siteUrl,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/blog/${post.slug}`,
+    },
+    keywords: post.tags.join(', '),
+  };
+
   return (
     <div>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <div className='text-muted mb-8 flex items-center gap-3 text-xs'>
         <Link href='/blog' className='hover:text-ink'>
           ← All posts

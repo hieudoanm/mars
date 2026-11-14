@@ -1,9 +1,9 @@
 ---
-title: "Why Jupyter?"
+title: "Jupyter: The Original Interactive Computing Platform"
 description: "Jupyter turned code into documents and documents into code. Here is why the notebook format won, and what it taught the tools that came after it."
 author: "Mars Team"
 date: "2026-11-07"
-order: 5
+order: 9
 tags: ["jupyter", "notebooks", "literate-programming", "history", "mars"]
 ---
 

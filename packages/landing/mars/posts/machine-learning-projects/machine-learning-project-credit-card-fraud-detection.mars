@@ -1,0 +1,83 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Machine Learning Project: Credit Card Fraud Detection",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Machine Learning Project: Credit Card Fraud Detection\n\nCredit card fraud detection is the hardest classical ML problem in\nproduction: **0.172% of transactions are fraud** \u2014 roughly 1 in 580.\nAt this imbalance, accuracy is completely meaningless; a model that\npredicts \"legitimate\" for everything gets 99.83% accuracy and catches\nzero fraud.\n\nThe Kaggle Credit Card Fraud dataset has 284,807 transactions with\nanonymized PCA features (V1\u2013V28) plus `Amount` and `Time`.\n\nIn this project you will:\n\n1. Understand **extreme class imbalance** and why accuracy fails.\n2. Use **anomaly detection** \u2014 train on legitimate transactions only.\n3. Build an **autoencoder** reconstruction-error detector in Rust.\n4. Tune thresholds for the precision/recall trade-off real fraud teams face.\n\n> Rust ML note: `burn` for the autoencoder neural net, `ndarray` for\n> preprocessing. The PCA features are already anonymized \u2014 no raw card data.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "markdown",
+      "source": "## Why fraud detection breaks standard ML\n\n| Problem | Why it matters |\n| ------- | -------------- |\n| **Extreme imbalance** | 99.83% legitimate \u2014 accuracy is useless |\n| **Concept drift** | Fraud patterns evolve; yesterday's model fails today |\n| **Adversarial** | Fraudsters adapt to evade detection |\n| **Cost asymmetry** | False positive = angry customer; false negative = fraud loss |\n| **Anonymized features** | V1\u2013V28 are PCA components \u2014 no interpretable fields |\n\nThis is why production fraud systems use **anomaly detection** (learn\nwhat \"normal\" looks like) rather than supervised classification.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "code",
+      "source": "// :dep polars = { version = \"0.44\", features = [\"lazy\"] }\n// :dep ndarray = \"0.16\"\n\nuse polars::prelude::*;\n\nlet df = CsvReadOptions::default()\n    .with_has_header(true)\n    .try_into_reader_with_file_path(Some(\"creditcard.csv\".into()))\n    .unwrap()\n    .finish()\n    .unwrap();\n\nprintln!(\"shape: {:?}\", df.shape());\n\n// Class distribution \u2014 the imbalance problem in numbers\nlet fraud_count = df.column(\"Class\").unwrap()\n    .u8().unwrap().into_iter()\n    .filter(|v| v.map(|x| *x == 1).unwrap_or(false))\n    .count();\nlet legit_count = df.height() - fraud_count;\n\nprintln!(\"legitimate: {} ({:.2}%)\", legit_count,\n         legit_count as f64 / df.height() as f64 * 100.0);\nprintln!(\"fraud:      {} ({:.4}%)\", fraud_count,\n         fraud_count as f64 / df.height() as f64 * 100.0);",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Anomaly detection \u2014 train on \"normal\" only\n\nInstead of learning fraud patterns (which are rare and evolving), learn\nwhat **legitimate** transactions look like. Anything that deviates is\nsuspicious.\n\nTwo approaches:\n\n1. **Isolation Forest**: random splits isolate anomalies quickly \u2014\n   fraud takes fewer splits to isolate than normal points.\n2. **Autoencoder**: compress transactions to a bottleneck, then\n   reconstruct. Legitimate transactions reconstruct well; fraud\n   reconstructs poorly \u2192 high reconstruction error = anomaly.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "// Isolation Forest \u2014 simpler, faster, good baseline\n// sklearn: IsolationForest(contamination=0.01, random_state=42)\n//\n// linfa-anomaly or hand-rolled:\n//   for each tree: randomly pick feature + split value\n//   anomaly score = avg path length to isolate the point\n//   shorter path = more anomalous\n\n// Autoencoder approach \u2014 more powerful, captures non-linear patterns\nuse burn::module::Module;\nuse burn::nn::{Linear, LinearConfig, Relu};\nuse burn::tensor::{Tensor, backend::Backend};\n\ntype B = NdArray<f32>;\n\n#[derive(Module, Debug)]\nstruct Autoencoder<B: Backend> {\n    encoder: Vec<Linear<B>>,\n    decoder: Vec<Linear<B>>,\n}\n\nimpl<B: Backend> Autoencoder<B> {\n    fn new(input_dim: usize, bottleneck: usize, device: &B::Device) -> Self {\n        Self {\n            encoder: vec![\n                LinearConfig::new(input_dim, 64).init(device),\n                LinearConfig::new(64, bottleneck).init(device),\n            ],\n            decoder: vec![\n                LinearConfig::new(bottleneck, 64).init(device),\n                LinearConfig::new(64, input_dim).init(device),\n            ],\n        }\n    }\n\n    fn forward(&self, x: Tensor<B, 2>) -> Tensor<B, 2> {\n        let mut h = x;\n        for (i, layer) in self.encoder.iter().enumerate() {\n            h = layer.forward(h);\n            if i < self.encoder.len() - 1 { h = h.relu(); }\n        }\n        for (i, layer) in self.decoder.iter().enumerate() {\n            h = layer.forward(h);\n            if i < self.decoder.len() - 1 { h = h.relu(); }\n        }\n        h\n    }\n}",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Training the autoencoder\n\nTrain **only on legitimate transactions** \u2014 the model learns to compress\nand reconstruct \"normal\" spending patterns. Fraud transactions, being\ndifferent, will have higher reconstruction error.\n\n```\nreconstruction_error(x) = mean((x - autoencoder(x))\u00b2)\n```\n\nThreshold on this error: above threshold \u2192 flag as fraud.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "// Split: train on legitimate only, validate on held-out legitimate + all fraud\nlet legit: Vec<_> = /* filter Class == 0 */;\nlet fraud: Vec<_>  = /* filter Class == 1 */;\n\nlet (train_legit, val_legit) = legit.split_at(legit.len() * 9 / 10);\n\n// Standardize features using train stats only\nlet mean = column_means(&train_legit);\nlet std  = column_stds(&train_legit);\n\n// Training loop \u2014 MSE loss on reconstruction\nfor epoch in 1..=epochs {\n    for batch in train_legit.chunks(batch_size) {\n        let x = batch_tensor::<B>(batch, &mean, &std, &device);\n        let reconstructed = model.forward(x.clone());\n        let loss = mse_loss(reconstructed, x);\n        // backprop + optimizer step (same as MNIST project)\n    }\n}\n\n// Reconstruction error on validation set\nlet errors_legit: Vec<f64> = val_legit.iter()\n    .map(|t| reconstruction_error(&model, t, &mean, &std))\n    .collect();\nlet errors_fraud: Vec<f64> = fraud.iter()\n    .map(|t| reconstruction_error(&model, t, &mean, &std))\n    .collect();\n\nprintln!(\"legit error: mean {:.4}, p95 {:.4}\",\n         mean(&errors_legit), percentile(&errors_legit, 95));\nprintln!(\"fraud error: mean {:.4}\", mean(&errors_fraud));",
+      "metadata": {},
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Threshold selection \u2014 the business trade-off\n\nThe threshold determines the operating point:\n\n| Threshold | Precision | Recall | Business meaning |\n| --------- | --------- | ------ | ---------------- |\n| Low | low | high | Catch most fraud, but many false alarms \u2192 angry customers |\n| Medium | balanced | balanced | Typical operating point |\n| High | high | low | Only flag obvious fraud \u2192 miss sophisticated attacks |\n\nReal fraud teams start with **high precision** (don't annoy customers)\nand lower the threshold as they gather feedback.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "// Choose threshold at a target precision (e.g., 80%)\nfn threshold_for_precision(errors_legit: &[f64], errors_fraud: &[f64],\n                          target_precision: f64) -> f64 {\n    let mut sorted: Vec<f64> = errors_legit.iter().cloned().collect();\n    sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());\n\n    // binary search for threshold achieving target precision\n    let mut lo = sorted[0];\n    let mut hi = sorted[sorted.len() - 1];\n    for _ in 0..50 {\n        let mid = (lo + hi) / 2.0;\n        let tp = errors_fraud.iter().filter(|&&e| e > mid).count();\n        let fp = errors_legit.iter().filter(|&&e| e > mid).count();\n        let precision = tp as f64 / (tp + fp).max(1) as f64;\n        if precision < target_precision { lo = mid; } else { hi = mid; }\n    }\n    hi\n}\n\nlet threshold = threshold_for_precision(&errors_legit, &errors_fraud, 0.80);\nprintln!(\"threshold for 80% precision: {:.4}\", threshold);",
+      "metadata": {},
+      "execution_count": 8,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "markdown",
+      "source": "## Evaluation under extreme imbalance\n\n| Model | ROC-AUC | PR-AUC | Precision@80%recall |\n| ----- | ------- | ------ | ------------------- |\n| Isolation Forest | ~0.90 | ~0.55 | ~0.30 |\n| Autoencoder | ~0.92 | ~0.60 | ~0.35 |\n| Supervised (XGBoost) | ~0.95 | ~0.70 | ~0.45 |\n| Ensemble + rules | ~0.97 | ~0.80 | ~0.60 |\n\n**Key insight**: supervised models outperform anomaly detection *when you\nhave labeled fraud data*. The Kaggle dataset has labels \u2014 production\nsystems collect them over time. Start with anomaly detection for cold\nstart, then switch to supervised once you have enough fraud examples.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "markdown",
+      "source": "## Key takeaways\n\n1. **Accuracy is meaningless at 0.17% fraud rate** \u2014 use PR-AUC and\n   precision/recall at fixed operating points.\n2. **Anomaly detection handles cold start** \u2014 no fraud labels needed.\n3. **Autoencoders capture non-linear anomalies** better than isolation\n   forests, but need careful threshold tuning.\n4. **Production fraud is a system, not a model** \u2014 rules + ML + human\n   review + feedback loops.\n\n**Final project:** image classification with transfer learning \u2014 the\nmodern approach to vision ML.",
+      "metadata": {}
+    }
+  ]
+}
