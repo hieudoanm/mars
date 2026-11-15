@@ -11,6 +11,18 @@ export const metadata: Metadata = {
   },
   description:
     'Project Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
+  keywords: [
+    'interactive notebook',
+    'Jupyter alternative',
+    'Rust',
+    'reproducible computing',
+    'data science',
+    'machine learning',
+    'notebook format',
+    'MCP server',
+  ],
+  authors: [{ name: 'hieudoan', url: 'https://github.com/hieudoanm/mars' }],
+  category: 'software',
   applicationName: 'Project Mars',
   manifest: '/manifest.json',
   alternates: {
@@ -54,12 +66,41 @@ export const metadata: Metadata = {
   },
 };
 
+const JSON_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'Project Mars',
+      url: 'https://hieudoanm.github.io/mars',
+      description:
+        'Project Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: 'Project Mars',
+      applicationCategory: 'DeveloperApplication',
+      description:
+        'Rust-powered interactive notebook with isolated execution, rich output, and a native .mars document format.',
+      url: 'https://hieudoanm.github.io/mars',
+      codeRepository: 'https://github.com/hieudoanm/mars',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+  ],
+};
+
 type RootLayoutProps = Readonly<{ children: ReactNode }>;
 
 const RootLayout: FC<RootLayoutProps> = ({ children }) => {
   return (
     <html lang='en'>
-      <body>{children}</body>
+      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        />
+        {children}
+      </body>
     </html>
   );
 };
