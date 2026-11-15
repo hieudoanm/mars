@@ -1,8 +1,9 @@
 # 13 — MCP (Model Context Protocol)
 
-Project Mars exposes its notebook and kernel capabilities over MCP so external agents
-(Claude Desktop, IDE assistants, custom tooling) can inspect, edit, execute,
-and save `.mars` notebooks.
+Project Mars exposes its notebook, kernel, and Mars Lab capabilities over MCP
+so external agents (Claude Desktop, IDE assistants, custom tooling) can
+inspect, edit, execute, and save `.mars` notebooks and manage datasets and
+training jobs.
 
 ## Server
 
@@ -54,6 +55,24 @@ Kernel tools (per notebook+language session, kernels persist across calls):
 
 `path` is optional on kernel tools; omitting it uses a notebook-independent
 kernel session keyed by `language`.
+
+Mars Lab tools (datasets, training jobs, and artefacts backed by the Lab
+SQLite database — same data as `mars lab`):
+
+| Tool                     | Purpose                                                        |
+| ------------------------ | -------------------------------------------------------------- |
+| `mars_lab_algorithms`    | List the algorithm catalogue, optional `task` filter           |
+| `mars_lab_dataset_upload`| Upload a CSV file as a dataset (`path`)                        |
+| `mars_lab_datasets`      | List stored datasets                                           |
+| `mars_lab_dataset`       | Dataset record + stored insight + computed profile             |
+| `mars_lab_train`         | Train a model (`dataset_id`, `task`, `algorithm`, `features`, optional `label`, `hyperparameters`, `split_ratio`, `seed`) and export ONNX |
+| `mars_lab_jobs`          | List training jobs (`limit`)                                   |
+| `mars_lab_job`           | Job record + metrics + artefacts                               |
+| `mars_lab_export`        | Copy a job artefact (`onnx`/`pkl`/`joblib`) to `output`        |
+
+Lab tools share the `mars-lab` settings (`DATABASE_URL`, `MARS_LAB_DATA_DIR`),
+so MCP clients see the same datasets and jobs as the CLI and desktop app.
+Training runs synchronously inside the tool call.
 
 ## Client
 

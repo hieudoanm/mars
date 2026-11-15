@@ -18,6 +18,7 @@ pub mod client;
 pub mod exec;
 pub mod handlers;
 pub mod jsonrpc;
+pub mod lab;
 pub mod mcp;
 pub mod server;
 pub mod session;

@@ -9,14 +9,15 @@ tags: [mcp, model-context-protocol, tools, ai, automation]
 # Model Context Protocol (MCP)
 
 Project Mars ships an MCP server and client so AI assistants, IDEs, and automation
-tools can inspect, edit, execute, and save `.mars` notebooks through the
-standardized Model Context Protocol.
+tools can inspect, edit, execute, and save `.mars` notebooks — and manage Mars
+Lab datasets, training jobs, and model artefacts — through the standardized
+Model Context Protocol.
 
 ## What is MCP?
 
 The Model Context Protocol is an open standard that lets AI assistants and
 tools interact with external systems through a unified interface. Project Mars
-implements it to expose notebook operations as callable tools over a
+implements it to expose notebook and Mars Lab operations as callable tools over a
 newline-delimited JSON-RPC 2.0 transport on stdio — the same framing as
 `mars kernel serve`.
 
@@ -81,6 +82,26 @@ per `(notebook, language)` pair and pick up the notebook's declared
 dependencies and `cargo_lock` snapshot, so Rust, Python, R, and Julia
 sessions behave like `mars kernel serve`.
 
+### Mars Lab tools
+
+The server also exposes Mars Lab — datasets, training jobs, and model
+artefacts backed by the same SQLite database as `mars lab`:
+
+| Tool | Purpose |
+| --- | --- |
+| `mars_lab_algorithms` | List the algorithm catalogue (`task` filter) |
+| `mars_lab_dataset_upload` | Upload a CSV file as a dataset (`path`) |
+| `mars_lab_datasets` | List stored datasets |
+| `mars_lab_dataset` | Dataset record, stored insight, and computed profile |
+| `mars_lab_train` | Train a model and export ONNX (`dataset_id`, `task`, `algorithm`, `features`, optional `label`, `hyperparameters`, `split_ratio`, `seed`) |
+| `mars_lab_jobs` | List training jobs (`limit`) |
+| `mars_lab_job` | Job record, metrics, and artefacts |
+| `mars_lab_export` | Copy an artefact (`onnx`/`pkl`/`joblib`) to `output` |
+
+Lab tools share the `mars-lab` configuration (`DATABASE_URL`,
+`MARS_LAB_DATA_DIR`), so agents see the same data as the CLI and desktop
+app. Training runs synchronously inside the tool call.
+
 ## Client
 
 ```bash
@@ -119,6 +140,7 @@ The implementation lives in `crates/mars-mcp`:
 - `session` — open notebooks with dirty tracking and per-language kernels
 - `tools` — the `tools/list` catalog with JSON schemas
 - `handlers` / `exec` — document and execution tool handlers
+- `lab` — Mars Lab tool handlers with a lazily opened database
 - `server` / `client` — stdio serve loop and client primitives
 
 No MCP SDK is used; the required subset is implemented directly on the

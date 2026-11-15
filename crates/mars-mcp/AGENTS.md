@@ -1,7 +1,7 @@
 # mars-mcp — MCP Server & Client
 
 Model Context Protocol integration. Depends on `mars-core`, `mars-document`,
-`mars-kernel`, `mars-protocol`. No MCP SDK — the required subset is
+`mars-kernel`, `mars-lab`, `mars-protocol`. No MCP SDK — the required subset is
 hand-rolled JSON-RPC 2.0 over newline-delimited JSON (same framing as
 `mars kernel serve`).
 
@@ -17,6 +17,9 @@ hand-rolled JSON-RPC 2.0 over newline-delimited JSON (same framing as
 - `handlers` — document/cell tool handlers.
 - `exec` — execution and kernel tool handlers; maps `KernelResponse` onto
   cell `outputs`/`execution_count`.
+- `lab` — Mars Lab tool handlers (`mars_lab_*`): datasets, training jobs,
+  artefacts. `LabBackend` owns a current-thread tokio runtime and a lazily
+  opened `mars_lab::db::Database` shared with `mars lab` settings.
 - `server` — `MarsMcpServer` dispatch (`initialize`, `ping`, `tools/list`,
   `tools/call`, notifications ignored) and `serve`/`serve_stdio` loops.
 - `client` — `McpClient`: spawn a stdio MCP server, `initialize` handshake,

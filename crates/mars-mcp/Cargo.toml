@@ -9,6 +9,9 @@ rust-version.workspace = true
 mars-core = { path = "../mars-core" }
 mars-document = { path = "../mars-document" }
 mars-kernel = { path = "../mars-kernel" }
+mars-lab = { path = "../mars-lab" }
 mars-protocol = { path = "../mars-protocol" }
 serde.workspace = true
 serde_json.workspace = true
+tokio.workspace = true
+uuid.workspace = true

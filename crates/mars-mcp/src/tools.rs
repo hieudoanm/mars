@@ -189,5 +189,80 @@ pub fn definitions() -> Vec<Tool> {
                 &[],
             ),
         ),
+        tool(
+            "mars_lab_algorithms",
+            "List Mars Lab algorithms, optionally filtered by task type.",
+            object_schema(
+                json!({
+                    "task": { "type": "string", "enum": ["classification", "regression", "semi_supervised", "clustering", "anomaly_detection", "reinforcement_learning"], "description": "Filter by task type" },
+                }),
+                &[],
+            ),
+        ),
+        tool(
+            "mars_lab_dataset_upload",
+            "Upload a CSV file as a Mars Lab dataset.",
+            object_schema(
+                json!({ "path": str_prop("Path to the .csv file") }),
+                &["path"],
+            ),
+        ),
+        tool(
+            "mars_lab_datasets",
+            "List datasets stored in the Mars Lab database.",
+            object_schema(json!({}), &[]),
+        ),
+        tool(
+            "mars_lab_dataset",
+            "Inspect a dataset: record, stored insight, and computed profile.",
+            object_schema(
+                json!({ "dataset_id": str_prop("Dataset UUID") }),
+                &["dataset_id"],
+            ),
+        ),
+        tool(
+            "mars_lab_train",
+            "Train a model on a dataset and export an ONNX artefact.",
+            object_schema(
+                json!({
+                    "dataset_id": str_prop("Dataset UUID"),
+                    "task": { "type": "string", "enum": ["classification", "regression", "semi_supervised", "clustering", "anomaly_detection", "reinforcement_learning"] },
+                    "algorithm": str_prop("Algorithm ID from mars_lab_algorithms"),
+                    "features": { "type": "array", "items": { "type": "string" }, "description": "Feature column names" },
+                    "label": str_prop("Label column (required for supervised tasks)"),
+                    "hyperparameters": { "type": "object", "description": "Algorithm hyperparameters (defaults applied)" },
+                    "split_ratio": { "type": "number", "description": "Train/validation split ratio (default: 0.2)" },
+                    "seed": { "type": "integer", "description": "Random seed (default: 42)" },
+                }),
+                &["dataset_id", "task", "algorithm", "features"],
+            ),
+        ),
+        tool(
+            "mars_lab_jobs",
+            "List Mars Lab training jobs.",
+            object_schema(
+                json!({
+                    "limit": { "type": "integer", "description": "Maximum jobs to return (default: 100, max: 500)" },
+                }),
+                &[],
+            ),
+        ),
+        tool(
+            "mars_lab_job",
+            "Inspect a training job: record, metrics, and artefacts.",
+            object_schema(json!({ "job_id": str_prop("Job UUID") }), &["job_id"]),
+        ),
+        tool(
+            "mars_lab_export",
+            "Export a job artefact (onnx|pkl|joblib) to a file path.",
+            object_schema(
+                json!({
+                    "job_id": str_prop("Job UUID"),
+                    "output": str_prop("Destination file path"),
+                    "format": { "type": "string", "enum": ["onnx", "pkl", "joblib"], "description": "Artefact format (default: onnx)" },
+                }),
+                &["job_id", "output"],
+            ),
+        ),
     ]
 }

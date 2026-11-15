@@ -3230,9 +3230,12 @@ dependencies = [
  "mars-core",
  "mars-document",
  "mars-kernel",
+ "mars-lab",
  "mars-protocol",
  "serde",
  "serde_json",
+ "tokio",
+ "uuid",
 ]
 
 [[package]]

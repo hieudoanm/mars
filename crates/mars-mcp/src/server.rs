@@ -3,6 +3,7 @@
 use crate::exec::call_exec_tool;
 use crate::handlers::call_document_tool;
 use crate::jsonrpc::{self, INVALID_PARAMS, METHOD_NOT_FOUND, PARSE_ERROR, Request, Response};
+use crate::lab::{self, LabBackend};
 use crate::mcp::{self, CallToolResult};
 use crate::session::MarsSession;
 use crate::tools;
@@ -12,6 +13,7 @@ use std::io::{self, BufRead, Write};
 
 pub struct MarsMcpServer {
     session: MarsSession,
+    lab: Option<LabBackend>,
 }
 
 impl MarsMcpServer {
@@ -22,6 +24,29 @@ impl MarsMcpServer {
     ) -> Self {
         Self {
             session: MarsSession::new(backend, offline, default_language),
+            lab: None,
+        }
+    }
+
+    fn lab_backend(&mut self) -> Result<&mut LabBackend, String> {
+        if self.lab.is_none() {
+            self.lab = Some(LabBackend::new()?);
+        }
+        self.lab
+            .as_mut()
+            .ok_or_else(|| "lab backend unavailable".to_owned())
+    }
+
+    fn call_lab_tool(&mut self, name: &str, arguments: &Value) -> Option<Result<Value, String>> {
+        if !name.starts_with("mars_lab_") {
+            return None;
+        }
+        match self.lab_backend() {
+            Ok(backend) => Some(
+                lab::call_lab_tool(backend, name, arguments)
+                    .unwrap_or_else(|| Err(format!("tool not implemented: {name}"))),
+            ),
+            Err(error) => Some(Err(error)),
         }
     }
 
@@ -64,7 +89,8 @@ impl MarsMcpServer {
             return Response::ok(id, serde_json::to_value(result).unwrap_or_default());
         }
         let outcome = call_document_tool(&mut self.session, name, &arguments)
-            .or_else(|| call_exec_tool(&mut self.session, name, &arguments));
+            .or_else(|| call_exec_tool(&mut self.session, name, &arguments))
+            .or_else(|| self.call_lab_tool(name, &arguments));
         let result = match outcome {
             Some(Ok(value)) => CallToolResult::ok_json(&value),
             Some(Err(message)) => CallToolResult::error(message),
