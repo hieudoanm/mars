@@ -439,5 +439,5 @@ jobs:
         with:
           tag_name: latest
           name: Project Mars (latest)
-          body_path: README.md
+          body_path: RELEASE.md
           files: dist/**
