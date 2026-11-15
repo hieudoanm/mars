@@ -81,3 +81,35 @@ pub fn mime_value_to_string(value: &Value) -> Option<String> {
         _ => None,
     }
 }
+
+/// Rewrites `attachment:<name>` references in markdown/HTML source to the
+/// data URLs stored in `cell.metadata.attachments`. Covers markdown image
+/// syntax `![](attachment:name)`, `<img src="attachment:name">`, and
+/// `<a href="attachment:name">`.
+pub fn resolve_attachment_refs(
+    source: &str,
+    metadata: &serde_json::Map<String, serde_json::Value>,
+) -> String {
+    let Some(attachments) = metadata.get("attachments").and_then(|v| v.as_object()) else {
+        return source.to_owned();
+    };
+    let mut resolved = source.to_owned();
+    for (name, value) in attachments {
+        let Some(data_url) = value.as_str().filter(|s| s.starts_with("data:")) else {
+            continue;
+        };
+        for wrapper in [
+            format!("](attachment:{name})"),
+            format!("src=\"attachment:{name}\""),
+            format!("href=\"attachment:{name}\""),
+        ] {
+            let replacement = if wrapper.starts_with("](") {
+                format!("]({data_url})")
+            } else {
+                wrapper.replacen(&format!("attachment:{name}"), data_url, 1)
+            };
+            resolved = resolved.replace(&wrapper, &replacement);
+        }
+    }
+    resolved
+}

@@ -121,7 +121,7 @@ As Rust continues to grow in data science and systems programming, both approach
 
 ## Get Started
 
-- [Project Mars Rust Runtime](docs/07-rust-runtime.md) - Rust execution documentation
+- [Project Mars Rust Runtime](docs/07-runtime-rust.md) - Rust execution documentation
 - [Project Mars Desktop App](packages/desktop) - Native application
 - [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

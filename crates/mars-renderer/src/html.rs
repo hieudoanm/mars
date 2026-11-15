@@ -1,7 +1,7 @@
 use crate::highlight::highlight_rust;
 use crate::markdown::render_markdown;
 use crate::output::render_output;
-use crate::util::escape_html;
+use crate::util::{escape_html, resolve_attachment_refs};
 use mars_core::CellType;
 use mars_document::Notebook;
 
@@ -13,30 +13,7 @@ pub fn render_notebook(notebook: &Notebook) -> String {
         .unwrap_or("Project Mars notebook");
     let mut body = String::new();
     for cell in &notebook.cells {
-        let cell_class = match cell.cell_type {
-            CellType::Markdown => "markdown",
-            CellType::Code => "code",
-            CellType::Raw => "raw",
-        };
-        body.push_str(&format!("<article class=\"cell cell-{cell_class}\">"));
-        match cell.cell_type {
-            CellType::Markdown => body.push_str(&render_markdown(&cell.source)),
-            CellType::Code => {
-                body.push_str(&format!(
-                    "<div class=\"cell-label\">In [{}]</div><pre class=\"code\"><code class=\"language-rust\">{}</code></pre>",
-                    cell.execution_count.map_or_else(|| " ".to_owned(), |count| count.to_string()),
-                    highlight_rust(&cell.source)
-                ));
-                for output in &cell.outputs {
-                    body.push_str(&render_output(output));
-                }
-            }
-            CellType::Raw => body.push_str(&format!(
-                "<pre class=\"raw\"><code>{}</code></pre>",
-                escape_html(&cell.source)
-            )),
-        }
-        body.push_str("</article>");
+        body.push_str(&render_cell_html(cell));
     }
 
     let css = r#"
@@ -87,4 +64,37 @@ a { color: #fb923c; }
         escape_html(title),
         body
     )
+}
+
+/// Renders one cell to the same markup used by `render_notebook`, shared
+/// with the slides exporter.
+pub(crate) fn render_cell_html(cell: &mars_document::Cell) -> String {
+    let cell_class = match cell.cell_type {
+        CellType::Markdown => "markdown",
+        CellType::Code => "code",
+        CellType::Raw => "raw",
+    };
+    let mut body = format!("<article class=\"cell cell-{cell_class}\">");
+    match cell.cell_type {
+        CellType::Markdown => body.push_str(&render_markdown(&resolve_attachment_refs(
+            &cell.source,
+            &cell.metadata,
+        ))),
+        CellType::Code => {
+            body.push_str(&format!(
+                "<div class=\"cell-label\">In [{}]</div><pre class=\"code\"><code class=\"language-rust\">{}</code></pre>",
+                cell.execution_count.map_or_else(|| " ".to_owned(), |count| count.to_string()),
+                highlight_rust(&cell.source)
+            ));
+            for output in &cell.outputs {
+                body.push_str(&render_output(output));
+            }
+        }
+        CellType::Raw => body.push_str(&format!(
+            "<pre class=\"raw\"><code>{}</code></pre>",
+            escape_html(&cell.source)
+        )),
+    }
+    body.push_str("</article>");
+    body
 }

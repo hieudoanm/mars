@@ -13,13 +13,13 @@ The notebook ecosystem has evolved beyond Jupyter to include specialized platfor
 
 ## Notebook Platform Overview
 
-| Platform   | Primary Focus              | Key Strengths                              | Project Mars Differentiator                         |
-| ---------- | -------------------------- | ------------------------------------------ | ------------------------------------------- |
-| Jupyter    | General-purpose notebooks  | Mature ecosystem, wide adoption            | Project Mars is independent, not Jupyter-based      |
-| Deepnote   | Collaborative data science | Real-time collaboration, cloud-native      | Project Mars is desktop-first, Rust-native          |
-| Observable | Reactive JavaScript        | Live updates, web-native, visualization    | Project Mars is multi-language, performance-focused |
-| Hex        | Modern data science        | SQL-first, collaboration, cloud-native     | Project Mars is multi-language, Rust-first          |
-| Project Mars       | Multi-language notebooks   | Rust-first, multi-language, CLI automation | Unique combination of features              |
+| Platform     | Primary Focus              | Key Strengths                              | Project Mars Differentiator                         |
+| ------------ | -------------------------- | ------------------------------------------ | --------------------------------------------------- |
+| Jupyter      | General-purpose notebooks  | Mature ecosystem, wide adoption            | Project Mars is independent, not Jupyter-based      |
+| Deepnote     | Collaborative data science | Real-time collaboration, cloud-native      | Project Mars is desktop-first, Rust-native          |
+| Observable   | Reactive JavaScript        | Live updates, web-native, visualization    | Project Mars is multi-language, performance-focused |
+| Hex          | Modern data science        | SQL-first, collaboration, cloud-native     | Project Mars is multi-language, Rust-first          |
+| Project Mars | Multi-language notebooks   | Rust-first, multi-language, CLI automation | Unique combination of features                      |
 
 ## Why Deepnote?
 
@@ -105,18 +105,21 @@ Project Mars occupies a unique niche in the notebook ecosystem:
 ## When to Choose Each Platform
 
 ### Choose Deepnote if:
+
 - Team collaboration is essential
 - Cloud-first workflow preferred
 - Integrated data infrastructure needed
 - Enterprise features required
 
 ### Choose Observable if:
+
 - JavaScript/TypeScript is primary language
 - Data visualization is the focus
 - Reactive programming model appeals
 - Web-native publishing important
 
 ### Choose Hex if:
+
 - SQL+Python workflows are common
 - Team collaboration is essential
 - Modern interface and user experience preferred
@@ -124,6 +127,7 @@ Project Mars occupies a unique niche in the notebook ecosystem:
 - Cloud-first workflow preferred
 
 ### Choose Project Mars if:
+
 - Rust performance is important
 - Multi-language notebooks needed
 - Offline capability required

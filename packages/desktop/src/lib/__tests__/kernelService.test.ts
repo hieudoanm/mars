@@ -90,7 +90,7 @@ describe('kernelService', () => {
     expect(invoke.mock.calls).toEqual([
       ['cancel_execution', { session: 's' }],
       ['reset_kernel', { session: 's', language: 'rust' }],
-      ['configure_kernel', { session: 's', content: 'cargo content' }],
+      ['configure_kernel', { session: 's', content: 'cargo content', baseDir: null }],
       ['save_notebook', { path: '/book.mars', content: '{}' }],
       ['rename_notebook_file', { oldPath: '/book.mars', newPath: '/renamed.mars' }],
       ['export_notebook_markdown', { path: '/book.md', content: '{}' }],
@@ -166,6 +166,7 @@ describe('kernelService', () => {
     expect(invoke).toHaveBeenLastCalledWith('configure_kernel', {
       session: 's1',
       content: 'content',
+      baseDir: null,
     });
   });
 

@@ -8,6 +8,7 @@ import {
   LuFolderOpen,
   LuPanelRight,
   LuPlay,
+  LuPresentation,
   LuRotateCcw,
   LuSave,
   LuTerminal,
@@ -26,6 +27,7 @@ export type NotebookHeaderActionsProps = {
   onExportPdf: () => void;
   onImportIpynb: () => void;
   onExportIpynb: () => void;
+  onPresent?: () => void;
   onRestart: () => void;
   onRestartRunAll: () => void;
   onOpenTerminal?: () => void;
@@ -61,6 +63,7 @@ const NotebookHeaderActions: FC<NotebookHeaderActionsProps> = ({
   onExportPdf,
   onImportIpynb,
   onExportIpynb,
+  onPresent,
   onRestart,
   onRestartRunAll,
   onOpenTerminal,
@@ -112,6 +115,13 @@ const NotebookHeaderActions: FC<NotebookHeaderActionsProps> = ({
           icon={<LuFileOutput aria-hidden='true' className={iconClassName} />}
           onClick={onExportIpynb}
         />
+        {onPresent ? (
+          <IconButton
+            label='Present as slides'
+            icon={<LuPresentation aria-hidden='true' className={iconClassName} />}
+            onClick={onPresent}
+          />
+        ) : null}
         {onOpenTerminal ? (
           <IconButton
             label='Open containing folder in terminal'

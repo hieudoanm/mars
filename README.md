@@ -225,11 +225,11 @@ Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG e
 | [`docs/04-architecture.md`](docs/04-architecture.md)         | Crate boundaries, application boundaries, and data flow      |
 | [`docs/03-notebook-format.md`](docs/03-notebook-format.md)   | `.mars` schema, validation, migrations, and Jupyter mapping  |
 | [`docs/06-runtime.md`](docs/06-runtime.md)                   | Runtime architecture overview                                |
-| [`docs/07-rust-runtime.md`](docs/07-rust-runtime.md)         | Rust replay and Evcxr backends                               |
-| [`docs/08-python-runtime.md`](docs/08-python-runtime.md)     | Python persistent driver                                     |
-| [`docs/09-r-runtime.md`](docs/09-r-runtime.md)               | R .GlobalEnv persistence                                     |
-| [`docs/10-julia-runtime.md`](docs/10-julia-runtime.md)       | Julia MarsKernel module                                      |
-| [`docs/11-cpp-runtime.md`](docs/11-cpp-runtime.md)           | C++ replay compilation                                       |
+| [`docs/07-runtime-rust.md`](docs/07-runtime-rust.md)         | Rust replay and Evcxr backends                               |
+| [`docs/08-runtime-python.md`](docs/08-runtime-python.md)     | Python persistent driver                                     |
+| [`docs/09-runtime-r.md`](docs/09-runtime-r.md)               | R .GlobalEnv persistence                                     |
+| [`docs/10-runtime-julia.md`](docs/10-runtime-julia.md)       | Julia MarsKernel module                                      |
+| [`docs/11-runtime-cpp.md`](docs/11-runtime-cpp.md)           | C++ replay compilation                                       |
 | [`docs/12-cli.md`](docs/12-cli.md)                           | CLI commands, options, exit behavior, and examples           |
 | [`docs/05-protocol.md`](docs/05-protocol.md)                 | Typed kernel messages and JSONL transport                    |
 | [`docs/17-kernel-protocol.md`](docs/17-kernel-protocol.md)   | Detailed kernel protocol and transport options               |

@@ -46,4 +46,4 @@ cargo clippy -p mars-lsp --all-targets -- -D warnings
 
 - [Architecture documentation](../../docs/04-architecture.md)
 - [Development documentation](../../docs/13-development.md)
-- [Runtime documentation](../../docs/07-rust-runtime.md)
+- [Runtime documentation](../../docs/07-runtime-rust.md)

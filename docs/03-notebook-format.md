@@ -129,3 +129,24 @@ Jupyter metadata such as kernelspec, language information, display metadata,
 and unknown notebook/cell fields are retained where the Project Mars model can
 represent them. Import/export aims for safe, useful interoperability rather
 than claiming complete equivalence with every Jupyter frontend extension.
+
+## Optional cell/notebook metadata conventions
+
+The format preserves arbitrary metadata, and a few keys have defined
+meanings across the CLI, desktop app, and runtimes:
+
+- `cell.metadata.language` — per-cell language override (e.g. `python`
+  inside a `rust` notebook).
+- `cell.metadata.attachments` — map of attachment name → `data:` URL.
+  Markdown cells reference them as `![](attachment:name)`; HTML/Markdown
+  export resolves them to data URIs and `.ipynb` export maps them to
+  Jupyter cell attachments.
+- `cell.metadata.preview` — path to a CSV file. The desktop app renders a
+  lazy tabular preview under the cell (no execution required).
+- `cell.metadata.comments` — array of `{ text, created_at }` review
+  comments shown in the desktop app.
+- `cell.metadata.tags` — free-form labels shown in the cell header.
+- `metadata.sql.tables` — map of table name → CSV path (relative to the
+  notebook file or absolute). `sql` language cells get these tables
+  pre-loaded into an in-memory SQLite database; arbitrary SQLite SQL is
+  supported, including `ATTACH DATABASE`.

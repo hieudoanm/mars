@@ -321,7 +321,7 @@ Follow the phases outlined in the original specification, but the project is cur
 
 Project Mars is a mature, feature-rich notebook platform with:
 
-- **Multi-language support**: Rust (replay + Evcxr), Python, R, Julia, C++
+- **Multi-language support**: Rust (replay + Evcxr), Python, R, Julia, C++, SQL
 - **Rich desktop editor**: Tauri-based with CodeMirror 6, LSP integration, multi-notebook workspace
 - **Developer tools**: rust-analyzer LSP, variable inspector, problems panel, checkpoints
 - **Runtime helpers**: mars_table, mars_csv, mars_display_*, mars_chart, mars_prompt

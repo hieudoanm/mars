@@ -19,11 +19,11 @@ No runtime provides instruction-level interruption inside arbitrary code. Once u
 
 Supported languages:
 
-- **Rust** — See [Rust runtime](./07-rust-runtime.md)
-- **Python** — See [Python runtime](./08-python-runtime.md)
-- **R** — See [R runtime](./09-r-runtime.md)
-- **Julia** — See [Julia runtime](./10-julia-runtime.md)
-- **C++** — See [C++ runtime](./11-cpp-runtime.md)
+- **Rust** — See [Rust runtime](./07-runtime-rust.md)
+- **Python** — See [Python runtime](./08-runtime-python.md)
+- **R** — See [R runtime](./09-runtime-r.md)
+- **Julia** — See [Julia runtime](./10-runtime-julia.md)
+- **C++** — See [C++ runtime](./11-runtime-cpp.md)
 
 ## Display output
 
@@ -57,8 +57,8 @@ See individual runtime documentation for specific performance characteristics an
 
 For detailed information about each runtime, see:
 
-- [Rust runtime](./07-rust-runtime.md) — Replay and Evcxr backends, Cargo dependencies
-- [Python runtime](./08-python-runtime.md) — Persistent driver, matplotlib, top-level await
-- [R runtime](./09-r-runtime.md) — `.GlobalEnv` persistence, plot capture, jsonlite
-- [Julia runtime](./10-julia-runtime.md) — MarsKernel module, MIME bundles, interactive input
-- [C++ runtime](./11-cpp-runtime.md) — Replay compilation, Conan/vcpkg, clang++/g++ support
+- [Rust runtime](./07-runtime-rust.md) — Replay and Evcxr backends, Cargo dependencies
+- [Python runtime](./08-runtime-python.md) — Persistent driver, matplotlib, top-level await
+- [R runtime](./09-runtime-r.md) — `.GlobalEnv` persistence, plot capture, jsonlite
+- [Julia runtime](./10-runtime-julia.md) — MarsKernel module, MIME bundles, interactive input
+- [C++ runtime](./11-runtime-cpp.md) — Replay compilation, Conan/vcpkg, clang++/g++ support

@@ -668,3 +668,105 @@ fn tools_list_and_call_against_real_mcp_server() {
     );
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn new_with_template_and_example() {
+    let dir = temp_dir("new-template");
+
+    let template_path = dir.join("py.mars");
+    run_cli(args(&[
+        "notebook",
+        "new",
+        &template_path.to_string_lossy(),
+        "--template",
+        "python",
+    ]))
+    .expect("new --template python");
+    let notebook = load(&template_path).expect("load template");
+    assert_eq!(notebook.metadata.language, "python");
+    assert!(
+        notebook
+            .cells
+            .iter()
+            .any(|cell| cell.cell_type == CellType::Code)
+    );
+
+    // Positional language still works and combines with --language flag.
+    let flag_path = dir.join("flag.mars");
+    run_cli(args(&[
+        "notebook",
+        "new",
+        &flag_path.to_string_lossy(),
+        "--language",
+        "julia",
+    ]))
+    .expect("new --language julia");
+    assert_eq!(load(&flag_path).expect("load").metadata.language, "julia");
+
+    // Unknown template and conflicting flags are rejected.
+    assert!(
+        run_cli(args(&[
+            "notebook",
+            "new",
+            &dir.join("bad.mars").to_string_lossy(),
+            "--template",
+            "nope",
+        ]))
+        .is_err()
+    );
+    assert!(
+        run_cli(args(&[
+            "notebook",
+            "new",
+            &dir.join("conflict.mars").to_string_lossy(),
+            "--template",
+            "rust",
+            "--example",
+            "rust/01-getting-started/getting-started",
+        ]))
+        .is_err()
+    );
+
+    // Examples resolve from the repo checkout (tests run inside the repo).
+    let example_path = dir.join("example.mars");
+    run_cli(args(&[
+        "notebook",
+        "new",
+        &example_path.to_string_lossy(),
+        "--example",
+        "rust/01-getting-started/getting-started",
+    ]))
+    .expect("new --example");
+    let example = load(&example_path).expect("load example");
+    assert!(!example.cells.is_empty());
+
+    assert!(run_cli(args(&["notebook", "templates"])).is_ok());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn inspect_json_flag_is_accepted() {
+    let dir = temp_dir("inspect-json");
+    let path = dir.join("demo.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    run_cli(args(&[
+        "notebook",
+        "inspect",
+        &path.to_string_lossy(),
+        "--json",
+    ]))
+    .expect("inspect --json");
+    run_cli(args(&["notebook", "inspect", &path.to_string_lossy()])).expect("inspect");
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn doctor_runs_and_reports() {
+    run_cli(args(&["notebook", "doctor"])).expect("doctor without notebook");
+    let dir = temp_dir("doctor");
+    let path = dir.join("demo.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    // Markdown-only notebook needs no external runtime -> Ok.
+    run_cli(args(&["notebook", "doctor", &path.to_string_lossy()])).expect("doctor notebook");
+    let _ = std::fs::remove_dir_all(&dir);
+}

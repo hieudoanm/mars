@@ -8,6 +8,7 @@ members = [
     "crates/mars-runtime-python",
     "crates/mars-runtime-r",
     "crates/mars-runtime-cpp",
+    "crates/mars-runtime-sql",
     "crates/mars-protocol",
     "crates/mars-kernel",
     "crates/mars-mcp",

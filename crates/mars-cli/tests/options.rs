@@ -45,6 +45,21 @@ fn run_options_parse_all_flags() {
 }
 
 #[test]
+fn run_options_parse_watch_flags() {
+    let options = parse_run_options(&args(&["--watch", "--watch-ms", "500"])).expect("parse");
+    assert!(options.watch);
+    assert_eq!(options.watch_ms, 500);
+
+    let defaults = parse_run_options(&args(&[])).expect("parse");
+    assert!(!defaults.watch);
+    assert_eq!(defaults.watch_ms, 1000);
+
+    assert!(parse_run_options(&args(&["--watch-ms"])).is_err());
+    assert!(parse_run_options(&args(&["--watch-ms", "0"])).is_err());
+    assert!(parse_run_options(&args(&["--watch-ms", "abc"])).is_err());
+}
+
+#[test]
 fn run_options_use_replay_defaults() {
     let options = parse_run_options(&args(&[])).expect("parse");
     assert_eq!(options.runtime, RuntimeBackendKind::Replay);

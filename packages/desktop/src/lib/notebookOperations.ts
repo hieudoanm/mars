@@ -280,6 +280,17 @@ export const updateCellTags = (notebook: Notebook, id: string, tags: string[]): 
   ),
 });
 
+export const updateCellComments = (
+  notebook: Notebook,
+  id: string,
+  comments: unknown[],
+): Notebook => ({
+  ...notebook,
+  cells: notebook.cells.map((cell) =>
+    cell.id === id ? { ...cell, metadata: { ...cell.metadata, comments } } : cell,
+  ),
+});
+
 export const updateCellMetadata = (
   notebook: Notebook,
   id: string,

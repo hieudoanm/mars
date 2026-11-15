@@ -95,6 +95,6 @@ cargo clippy -p mars-runtime-python --all-targets -- -D warnings
 
 ## Related Documentation
 
-- [Python runtime documentation](../../docs/08-python-runtime.md)
+- [Python runtime documentation](../../docs/08-runtime-python.md)
 - [Runtime architecture](../../docs/06-runtime.md)
 - [AGENTS.md](./AGENTS.md) — Architecture rules and implementation details

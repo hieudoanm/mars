@@ -12,6 +12,7 @@ import { useSessionRestore } from './hooks/useSessionRestore';
 import { useNotebookInspection } from './hooks/useNotebookInspection';
 import NotebookCellList from './components/notebook/NotebookCellList';
 import CellMetadataDialog from './components/notebook/CellMetadataDialog';
+import RunSummaryDialog from './components/notebook/RunSummaryDialog';
 import NotebookExplorer from './components/notebook/NotebookExplorer';
 import NotebookStatusBar from './components/notebook/NotebookStatusBar';
 import NotebookEditorToolbar from './components/notebook/NotebookEditorToolbar';
@@ -130,6 +131,7 @@ const NotebookSession: FC<NotebookSessionProps> = ({
   const { collapsedCellIds, setCollapsedCellIds, dialogs, setDialogOpen } = ui;
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [metadataCell, setMetadataCell] = useState<NotebookCell | null>(null);
+  const [showRunSummary, setShowRunSummary] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const toggleCellCollapse = (id: string) => {
     setCollapsedCellIds((current) => {
@@ -357,6 +359,7 @@ const NotebookSession: FC<NotebookSessionProps> = ({
         onExportPdf={() => void persistence.exportPdf()}
         onImportIpynb={() => void persistence.importIpynb()}
         onExportIpynb={() => void persistence.exportIpynb()}
+        onPresent={() => void persistence.presentSlides()}
         onRestart={() => void execution.restart()}
         onRestartRunAll={() => void restartAndRunAll()}
         onOpenTerminal={
@@ -447,6 +450,8 @@ const NotebookSession: FC<NotebookSessionProps> = ({
                   shiftSelectCell,
                   deleteCellOrRange,
                   onRunAllCells: () => void commands.executeAll(),
+                  onRunFromCell: (index: number) =>
+                    void execution.executeCells(editor.cells.slice(index)),
                   onEditMetadata: setMetadataCell,
                   onCellClipboard: handleCellClipboard,
                 }}
@@ -486,6 +491,8 @@ const NotebookSession: FC<NotebookSessionProps> = ({
         isExecuting={execution.isExecuting}
         sessionId={sessionId}
         queueLength={execution.queueLength}
+        runSummary={execution.lastRun}
+        onShowRunSummary={() => setShowRunSummary(true)}
         mode={editor.mode}
       />
       <NotebookSessionOverlays
@@ -506,6 +513,13 @@ const NotebookSession: FC<NotebookSessionProps> = ({
         setShowRename={(open) => setDialogOpen('rename', open)}
         setStatus={ui.setStatus}
         onRevealMatch={(cellId, line, character) => revealLspTarget({ cellId, line, character })}
+      />
+      <RunSummaryDialog
+        open={showRunSummary}
+        summary={execution.lastRun}
+        cells={editor.cells}
+        notebookLanguage={editor.notebook.metadata.language ?? 'rust'}
+        onClose={() => setShowRunSummary(false)}
       />
       <CellMetadataDialog
         cell={metadataCell}

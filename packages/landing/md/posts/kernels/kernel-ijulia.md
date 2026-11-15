@@ -125,7 +125,7 @@ As Julia continues to grow in scientific computing and data science, both approa
 
 ## Get Started
 
-- [Project Mars Julia Runtime](docs/10-julia-runtime.md) - Julia execution documentation
+- [Project Mars Julia Runtime](docs/10-runtime-julia.md) - Julia execution documentation
 - [Project Mars Desktop App](packages/desktop) - Native application
 - [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

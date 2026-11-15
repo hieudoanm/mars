@@ -9,6 +9,11 @@ pub struct RunOptions {
     pub save: bool,
     pub report: bool,
     pub runtime: RuntimeBackendKind,
+    pub changed_only: bool,
+    pub since: Option<String>,
+    pub json_report: bool,
+    pub watch: bool,
+    pub watch_ms: u64,
 }
 
 pub struct ServeOptions {
@@ -28,6 +33,11 @@ pub fn parse_run_options(args: &[String]) -> Result<RunOptions, String> {
         save: true,
         report: false,
         runtime: RuntimeBackendKind::Replay,
+        changed_only: false,
+        since: None,
+        json_report: false,
+        watch: false,
+        watch_ms: 1000,
     };
     let mut index = 0;
     while index < args.len() {
@@ -40,6 +50,29 @@ pub fn parse_run_options(args: &[String]) -> Result<RunOptions, String> {
             }
             "--no-save" => options.save = false,
             "--report" => options.report = true,
+            "--json-report" => {
+                options.json_report = true;
+                options.report = true;
+            }
+            "--changed-only" => options.changed_only = true,
+            "--since" => {
+                let value = args.get(index + 1).ok_or("missing --since ref")?;
+                options.since = Some(value.clone());
+                options.changed_only = true;
+                index += 1;
+            }
+            "--watch" => options.watch = true,
+            "--watch-ms" => {
+                let value = args.get(index + 1).ok_or("missing --watch-ms value")?;
+                let milliseconds = value
+                    .parse::<u64>()
+                    .map_err(|_| "--watch-ms must be an integer")?;
+                if milliseconds == 0 {
+                    return Err("--watch-ms must be greater than zero".to_owned());
+                }
+                options.watch_ms = milliseconds;
+                index += 1;
+            }
             "--runtime" => {
                 let backend = args.get(index + 1).ok_or("missing runtime backend")?;
                 options.runtime = parse_backend(backend)?;

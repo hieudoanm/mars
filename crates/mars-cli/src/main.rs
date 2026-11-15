@@ -2,11 +2,14 @@ use mars_kernel::runtime_hook;
 use std::env;
 use std::process::ExitCode;
 
+mod changes;
 mod commands;
+mod doctor;
 mod kernel;
 mod lab;
 mod mcp;
 mod output;
+mod templates;
 mod util;
 
 fn main() -> ExitCode {

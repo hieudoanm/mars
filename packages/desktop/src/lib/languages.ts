@@ -6,6 +6,7 @@ import { StreamLanguage } from '@codemirror/language';
 import { r as rMode } from '@codemirror/legacy-modes/mode/r';
 import { julia as juliaMode } from '@codemirror/legacy-modes/mode/julia';
 import { cpp as cppMode } from '@codemirror/legacy-modes/mode/clike';
+import { sqlite as sqlMode } from '@codemirror/legacy-modes/mode/sql';
 import { rustCompletionSource } from './rustCompletions';
 
 /// Single source of truth for notebook languages. Mirrors the backend
@@ -61,6 +62,13 @@ export const LANGUAGES: readonly LanguageDescriptor[] = [
     label: 'C++',
     runnable: true,
     syntax: () => StreamLanguage.define(cppMode),
+  },
+  {
+    id: 'sql',
+    label: 'SQL',
+    runnable: true,
+    syntax: () => StreamLanguage.define(sqlMode),
+    editorAssist: true,
   },
 ];
 

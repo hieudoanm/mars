@@ -14,6 +14,8 @@ pub struct RuntimeConfig {
     pub locked: bool,
     /// Python interpreter/version/package options; ignored by other backends.
     pub python_options: PythonOptions,
+    /// CSV tables pre-loaded into `sql` sessions; ignored by other backends.
+    pub sql_sources: Vec<mars_runtime::SqlSource>,
 }
 
 type BackendFactory = fn(&RuntimeConfig) -> Result<Box<dyn RuntimeBackend>, RuntimeError>;
@@ -27,6 +29,7 @@ static BACKENDS: &[(&str, BackendFactory)] = &[
     ("julia", create_julia_runtime),
     ("python", create_python_runtime),
     ("r", create_r_runtime),
+    ("sql", create_sql_runtime),
 ];
 
 /// Languages with a registered execution backend.
@@ -57,6 +60,7 @@ pub fn create_runtime(
             offline,
             locked,
             python_options: PythonOptions::default(),
+            sql_sources: Vec::new(),
         },
     )
 }
@@ -141,6 +145,11 @@ fn create_r_runtime(_config: &RuntimeConfig) -> Result<Box<dyn RuntimeBackend>, 
     mars_runtime_r::RSession::new().map(|session| Box::new(session) as Box<dyn RuntimeBackend>)
 }
 
+fn create_sql_runtime(config: &RuntimeConfig) -> Result<Box<dyn RuntimeBackend>, RuntimeError> {
+    mars_runtime_sql::SqlSession::new(config.sql_sources.clone())
+        .map(|session| Box::new(session) as Box<dyn RuntimeBackend>)
+}
+
 /// Route Evcxr's re-executed runtime process into its user-code loop.
 pub fn runtime_hook() {
     #[cfg(feature = "experimental-evcxr")]
@@ -156,4 +165,36 @@ pub fn python_options_from_metadata(
         .get("python")
         .and_then(|value| serde_json::from_value(value.clone()).ok())
         .unwrap_or_default()
+}
+
+/// Parses the `sql` section of notebook metadata (`metadata.sql`) into
+/// pre-loaded CSV table sources. `base_dir` resolves relative CSV paths —
+/// pass the notebook's parent directory. Shape:
+/// `{"tables": {"name": "data.csv", ...}}`.
+pub fn sql_sources_from_metadata(
+    extra: &serde_json::Map<String, serde_json::Value>,
+    base_dir: &std::path::Path,
+) -> Vec<mars_runtime::SqlSource> {
+    let Some(tables) = extra
+        .get("sql")
+        .and_then(|sql| sql.get("tables"))
+        .and_then(|tables| tables.as_object())
+    else {
+        return Vec::new();
+    };
+    tables
+        .iter()
+        .filter_map(|(name, value)| {
+            let path = value.as_str()?;
+            let resolved = base_dir.join(path);
+            Some(mars_runtime::SqlSource {
+                name: name.clone(),
+                path: if resolved.is_absolute() {
+                    resolved
+                } else {
+                    base_dir.join(path)
+                },
+            })
+        })
+        .collect()
 }

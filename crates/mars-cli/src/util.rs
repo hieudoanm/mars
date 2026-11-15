@@ -1,11 +1,11 @@
 use std::process::Command;
 
 pub fn usage() -> String {
-    "usage: mars notebook <new|inspect|open|run|import|export> ... | mars kernel [list|restart|serve] | mars mcp serve ... | mars lab <algorithms|dataset|datasets|train|job|jobs|export> ... | mars tools [list|call <name> [json] [--server <cmd>]]".to_owned()
+    "usage: mars notebook <new|templates|doctor|inspect|open|run|import|export|diff> ... | mars kernel [list|restart|serve] | mars mcp serve ... | mars lab <algorithms|dataset|datasets|train|job|jobs|export> ... | mars tools [list|call <name> [json] [--server <cmd>]]".to_owned()
 }
 
 pub fn notebook_usage() -> String {
-    "usage: mars notebook new <file.mars> [language] | mars notebook inspect <file.mars> | mars notebook open <file.mars> | mars notebook run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars notebook import <file.ipynb> [file.mars] | mars notebook export <file.mars> [ipynb|html|md|pdf] [--page-size=<a4|letter|legal|...>] [output]".to_owned()
+    "usage: mars notebook new <file.mars> [language] [--template rust|python|ml|dashboard] [--example <name>] [--language <lang>] | mars notebook templates | mars notebook doctor [file.mars] | mars notebook inspect <file.mars> [--json] | mars notebook open <file.mars> | mars notebook run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] [--changed-only] [--since <git-ref>] [--watch] [--watch-ms <ms>] | mars notebook import <file.ipynb> [file.mars] | mars notebook export <file.mars> [ipynb|html|md|pdf|slides] [--page-size=<a4|letter|legal|...>] [output] | mars notebook diff <file.mars> [git-ref|other.mars]".to_owned()
 }
 
 pub fn open_with_system(path: &str) -> Result<(), String> {
@@ -36,7 +36,7 @@ pub fn default_ipynb_path(input: &str) -> std::path::PathBuf {
 
 pub fn default_export_path(input: &str, format: &str) -> std::path::PathBuf {
     match format {
-        "html" => std::path::Path::new(input).with_extension("html"),
+        "html" | "slides" => std::path::Path::new(input).with_extension("html"),
         "md" | "markdown" => std::path::Path::new(input).with_extension("md"),
         "pdf" => std::path::Path::new(input).with_extension("pdf"),
         _ => default_ipynb_path(input),

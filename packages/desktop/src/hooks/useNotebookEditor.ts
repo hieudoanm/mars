@@ -18,6 +18,7 @@ import {
   updateCellSource,
   updateCellAttachments,
   updateCellLanguage,
+  updateCellComments,
   updateCellMetadata as updateNotebookCellMetadata,
   updateCellTags,
   updateNotebookDependencies,
@@ -208,6 +209,10 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     setNotebook((current) => updateCellTags(current, cellId, tags));
   };
 
+  const updateComments = (cellId: string, comments: unknown[]) => {
+    setNotebook((current) => updateCellComments(current, cellId, comments));
+  };
+
   const setCellLanguage = (cellId: string, language: string) => {
     setNotebook((current) => updateCellLanguage(current, cellId, language));
   };
@@ -275,6 +280,7 @@ export const useNotebookEditor = (initialNotebook: Notebook) => {
     splitSelectedAt,
     updateCellMetadata,
     updateTags,
+    updateComments,
     setCellLanguage,
     updateAttachments,
     setDependencies,

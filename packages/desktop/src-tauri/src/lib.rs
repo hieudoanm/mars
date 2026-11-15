@@ -1,12 +1,15 @@
 use crate::lab::{
     lab_algorithms, lab_dataset_insights, lab_dataset_preview, lab_export_artefact, lab_get_job,
     lab_list_datasets, lab_list_jobs, lab_list_jobs_page, lab_train, lab_upload_dataset,
+    read_table_preview,
 };
 use mars_core::CellType;
 use mars_document::{Cell, Notebook, from_json, load, save_atomic, to_json_pretty};
 use mars_kernel::{Kernel, RuntimeBackendKind};
 use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
-use mars_renderer::{render_markdown_notebook, render_notebook, render_pdf_notebook};
+use mars_renderer::{
+    render_markdown_notebook, render_notebook, render_pdf_notebook, render_slides_notebook,
+};
 use mars_runtime::StreamEvent;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -25,6 +28,7 @@ struct AppState {
     kernels: Mutex<HashMap<(String, String), Kernel>>,
     input_writers: Mutex<HashMap<(String, String), mars_runtime::StdinWriter>>,
     python_options: Mutex<HashMap<String, mars_kernel::PythonOptions>>,
+    sql_sources: Mutex<HashMap<String, Vec<mars_runtime::SqlSource>>>,
     cancellations: Mutex<HashMap<String, Arc<AtomicBool>>>,
     lsp: lsp::LspSessions,
     backend: RuntimeBackendKind,
@@ -77,6 +81,15 @@ fn kernel_for<'a>(
                 .cloned()
                 .unwrap_or_default();
             Kernel::for_language_with_python_options(language, backend, options)
+        } else if language == "sql" {
+            let sources = state
+                .sql_sources
+                .lock()
+                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                .get(session)
+                .cloned()
+                .unwrap_or_default();
+            Kernel::for_language_with_sql_sources(language, backend, sources)
         } else {
             Kernel::for_language(language, backend)
         }
@@ -282,11 +295,20 @@ fn configure_kernel(
     state: tauri::State<'_, AppState>,
     session: String,
     content: String,
+    base_dir: Option<String>,
 ) -> Result<(), String> {
     let notebook = from_json(&content).map_err(|error| error.to_string())?;
     let python_options = mars_kernel::python_options_from_metadata(&notebook.metadata.extra);
     if let Ok(mut options) = state.python_options.lock() {
         options.insert(session.clone(), python_options.clone());
+    }
+    let base = base_dir
+        .map(std::path::PathBuf::from)
+        .or_else(|| std::env::current_dir().ok())
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    let sql_sources = mars_kernel::sql_sources_from_metadata(&notebook.metadata.extra, &base);
+    if let Ok(mut sources) = state.sql_sources.lock() {
+        sources.insert(session.clone(), sql_sources);
     }
     let kernel = if notebook.metadata.language == "python" {
         Kernel::for_language_with_python_options(
@@ -410,6 +432,31 @@ fn export_notebook_markdown(path: String, content: String) -> Result<(), String>
 fn export_notebook_html(path: String, content: String) -> Result<(), String> {
     let notebook = from_json(&content).map_err(|error| error.to_string())?;
     std::fs::write(&path, render_notebook(&notebook)).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+fn export_notebook_slides(path: String, content: String) -> Result<(), String> {
+    let notebook = from_json(&content).map_err(|error| error.to_string())?;
+    std::fs::write(&path, render_slides_notebook(&notebook)).map_err(|error| error.to_string())
+}
+
+/// Renders the notebook as a slides deck, writes it to a temp file, and opens
+/// it in the system browser for presenting.
+#[tauri::command]
+fn present_notebook_slides(content: String) -> Result<String, String> {
+    let notebook = from_json(&content).map_err(|error| error.to_string())?;
+    let html = render_slides_notebook(&notebook);
+    let path = std::env::temp_dir().join(format!(
+        "mars-present-{}-{}.html",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis())
+            .unwrap_or(0)
+    ));
+    std::fs::write(&path, html).map_err(|error| error.to_string())?;
+    notebook_files::open_path_external(path.to_string_lossy().as_ref())?;
+    Ok(path.to_string_lossy().into_owned())
 }
 
 #[tauri::command]
@@ -566,6 +613,7 @@ pub fn run() -> tauri::Result<()> {
             kernels: Mutex::new(HashMap::new()),
             input_writers: Mutex::new(HashMap::new()),
             python_options: Mutex::new(HashMap::new()),
+            sql_sources: Mutex::new(HashMap::new()),
             cancellations: Mutex::new(HashMap::new()),
             lsp: lsp::LspSessions::new(),
             backend,
@@ -606,6 +654,8 @@ pub fn run() -> tauri::Result<()> {
             export_notebook_markdown,
             export_notebook_html,
             export_notebook_pdf,
+            export_notebook_slides,
+            present_notebook_slides,
             import_notebook_ipynb,
             export_notebook_ipynb,
             create_notebook_checkpoint,
@@ -621,6 +671,7 @@ pub fn run() -> tauri::Result<()> {
             lab_train,
             lab_list_jobs_page,
             lab_dataset_preview,
+            read_table_preview,
             lab_export_artefact
         ])
         .run(tauri::generate_context!())

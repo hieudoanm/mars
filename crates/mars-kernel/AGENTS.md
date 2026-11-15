@@ -1,12 +1,14 @@
 # mars-kernel — Kernel Lifecycle & Request Handling
 
-Bridges the protocol layer and runtime backends. Depends on `mars-core`, `mars-protocol`, `mars-runtime`, `mars-runtime-python`, `mars-runtime-r`, `mars-runtime-julia` (and optionally `mars-runtime-evcxr`).
+Bridges the protocol layer and runtime backends. Depends on `mars-core`, `mars-protocol`, `mars-runtime`, `mars-runtime-python`, `mars-runtime-r`, `mars-runtime-julia`, `mars-runtime-sql` (and optionally `mars-runtime-evcxr`).
 
 ## Responsibilities
 
 - `Kernel` — owns a `Box<dyn RuntimeBackend>` and an `ExecutionStatus`. Constructed via `new` / `with_dependencies` / `with_backend` / `with_configuration`.
 - `RuntimeBackendKind` — `Replay` (default) | `Evcxr`. `from_environment()` reads `MARS_EXPERIMENTAL_RUNTIME=evcxr`.
-- `runtime.rs` — language backend registry (`BACKENDS` table + `supported_languages()`); `create_runtime`/`create_runtime_with_config` build the backend per notebook language: `rust` (Replay/Evcxr), `cpp`, `julia`, `python`, `r`. `RuntimeConfig.python_options` carries notebook `metadata.python` settings (interpreter/version/packages); `python_options_from_metadata` parses them. Evcxr is gated behind the `experimental-evcxr` feature and rejects `cargo_lock`/`locked`; Rust-specific options are ignored by non-Rust backends.
+- `runtime.rs` — language backend registry (`BACKENDS` table + `supported_languages()`); `create_runtime`/`create_runtime_with_config` build the backend per notebook language: `rust` (Replay/Evcxr), `cpp`, `julia`, `python`, `r`, `sql`. `RuntimeConfig.python_options` carries notebook `metadata.python` settings (interpreter/version/packages); `python_options_from_metadata` parses them. `sql_sources_from_metadata` parses
+  notebook `metadata.sql.tables` (name → CSV path) into `SqlSource`s for the
+  SQL backend. Evcxr is gated behind the `experimental-evcxr` feature and rejects `cargo_lock`/`locked`; Rust-specific options are ignored by non-Rust backends.
 - `handle(RequestEnvelope) -> ResponseEnvelope` — dispatches `KernelRequest::{Execute, Reset, Status}` to `KernelResponse`. Updates `status` to `Running` before execution and maps results: `interrupted` → `Interrupted`, any `Output::Error` → `Failed`, else `Succeeded`.
 - `runtime_hook()` — forwards to `mars_runtime_evcxr::runtime_hook` when the feature is enabled; must run before any Evcxr use.
 

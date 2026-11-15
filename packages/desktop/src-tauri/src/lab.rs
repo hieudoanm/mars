@@ -316,6 +316,18 @@ pub async fn lab_dataset_preview(
     })
 }
 
+/// Preview arbitrary CSV/Parquet-adjacent tabular files for notebook
+/// `metadata.preview` cells — returns up to `limit` rows (default 50, max 500).
+#[tauri::command]
+pub fn read_table_preview(path: String, limit: Option<usize>) -> Result<LabDatasetPreview, String> {
+    let df = DataFrame::from_csv_path(Path::new(&path))
+        .map_err(|e| format!("failed to read {path}: {e}"))?;
+    Ok(LabDatasetPreview {
+        columns: df.column_names(),
+        rows: insights::preview_rows(&df, 0, limit.unwrap_or(50).min(500)),
+    })
+}
+
 #[tauri::command]
 pub async fn lab_get_job(job_id: String) -> Result<Option<LabJobDetail>, String> {
     let id = Uuid::parse_str(&job_id).map_err(|e| format!("invalid job ID: {e}"))?;

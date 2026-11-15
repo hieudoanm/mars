@@ -33,16 +33,16 @@ tags: ["kernels", "xeus-cling", "cpp", "jupyter", "notebook", "mars"]
 
 ## xeus-cling vs Project Mars C++ Runtime
 
-| Feature | xeus-cling | Project Mars C++ Runtime |
-|---------|------------|------------------|
-| Platform | Jupyter kernel | Native C++ runtime |
-| Execution model | Interpreter-based (Cling) | Replay-based compilation |
-| Performance | Good (interpreted) | Excellent (compiled) |
-| Dependencies | Cling + Jupyter | Conan/vcpkg + clang++/g++ |
-| Multi-language | C++ only | Rust, Python, R, Julia, C++ |
-| Document format | .ipynb | .mars (native format) |
-| Desktop app | No | Yes (Tauri-based) |
-| CLI | Limited | Full CLI with automation |
+| Feature         | xeus-cling                | Project Mars C++ Runtime    |
+| --------------- | ------------------------- | --------------------------- |
+| Platform        | Jupyter kernel            | Native C++ runtime          |
+| Execution model | Interpreter-based (Cling) | Replay-based compilation    |
+| Performance     | Good (interpreted)        | Excellent (compiled)        |
+| Dependencies    | Cling + Jupyter           | Conan/vcpkg + clang++/g++   |
+| Multi-language  | C++ only                  | Rust, Python, R, Julia, C++ |
+| Document format | .ipynb                    | .mars (native format)       |
+| Desktop app     | No                        | Yes (Tauri-based)           |
+| CLI             | Limited                   | Full CLI with automation    |
 
 ## When to Use xeus-cling
 
@@ -152,7 +152,7 @@ As C++ continues to be important for high-performance computing and systems prog
 
 ## Get Started
 
-- [Project Mars C++ Runtime](docs/11-cpp-runtime.md) - C++ execution documentation
+- [Project Mars C++ Runtime](docs/11-runtime-cpp.md) - C++ execution documentation
 - [Project Mars Desktop App](packages/desktop) - Native application
 - [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

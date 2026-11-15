@@ -15,11 +15,11 @@ reading order.
 | 04  | [04-architecture.md](./04-architecture.md)         | Repository layout and layering           |
 | 05  | [05-protocol.md](./05-protocol.md)                 | Frontend↔kernel protocol                 |
 | 06  | [06-runtime.md](./06-runtime.md)                   | Runtime architecture overview            |
-| 07  | [07-rust-runtime.md](./07-rust-runtime.md)         | Rust replay and Evcxr backends           |
-| 08  | [08-python-runtime.md](./08-python-runtime.md)     | Python persistent driver                 |
-| 09  | [09-r-runtime.md](./09-r-runtime.md)               | R .GlobalEnv persistence                 |
-| 10  | [10-julia-runtime.md](./10-julia-runtime.md)       | Julia MarsKernel module                  |
-| 11  | [11-cpp-runtime.md](./11-cpp-runtime.md)           | C++ replay compilation                   |
+| 07  | [07-runtime-rust.md](./07-runtime-rust.md)         | Rust replay and Evcxr backends           |
+| 08  | [08-runtime-python.md](./08-runtime-python.md)     | Python persistent driver                 |
+| 09  | [09-runtime-r.md](./09-runtime-r.md)               | R .GlobalEnv persistence                 |
+| 10  | [10-runtime-julia.md](./10-runtime-julia.md)       | Julia MarsKernel module                  |
+| 11  | [11-runtime-cpp.md](./11-runtime-cpp.md)           | C++ replay compilation                   |
 | 12  | [12-cli.md](./12-cli.md)                           | Command-line interface reference         |
 | 13  | [13-development.md](./13-development.md)           | Local development commands               |
 | 14  | [14-release.md](./14-release.md)                   | Release process and checks               |

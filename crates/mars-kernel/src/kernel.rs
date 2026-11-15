@@ -101,6 +101,15 @@ impl Kernel {
         )
     }
 
+    /// Builds a `sql` kernel with pre-loaded CSV table sources.
+    pub fn for_language_with_sql_sources(
+        language: &str,
+        backend: RuntimeBackendKind,
+        sql_sources: Vec<mars_runtime::SqlSource>,
+    ) -> Result<Self, KernelError> {
+        Self::build_with_sql(language, BTreeMap::new(), backend, sql_sources)
+    }
+
     /// Builds a kernel with Python interpreter/version/package options
     /// (parsed from notebook `metadata.python`). Other languages ignore
     /// them; Rust-specific options stay at their defaults.
@@ -118,6 +127,31 @@ impl Kernel {
             backend,
             python_options,
         )
+    }
+
+    /// Builds a kernel carrying SQL table sources (used by `sql` notebooks).
+    fn build_with_sql(
+        language: &str,
+        dependencies: BTreeMap<String, String>,
+        backend: RuntimeBackendKind,
+        sql_sources: Vec<mars_runtime::SqlSource>,
+    ) -> Result<Self, KernelError> {
+        Ok(Self {
+            runtime: crate::runtime::create_runtime_with_config(
+                language,
+                crate::runtime::RuntimeConfig {
+                    backend,
+                    dependencies,
+                    cargo_lock: None,
+                    offline: false,
+                    locked: false,
+                    python_options: mars_runtime_python::PythonOptions::default(),
+                    sql_sources,
+                },
+            )
+            .map_err(KernelError::Runtime)?,
+            status: ExecutionStatus::Idle,
+        })
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -140,6 +174,7 @@ impl Kernel {
                     offline,
                     locked,
                     python_options,
+                    sql_sources: Vec::new(),
                 },
             )
             .map_err(KernelError::Runtime)?,

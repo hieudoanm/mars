@@ -405,3 +405,23 @@ fn export_output_covers_every_variant() {
     assert!(value["metadata"].get("kernelspec").is_none());
     assert_eq!(value["metadata"]["language_info"]["name"], "cpp");
 }
+
+#[test]
+fn export_maps_metadata_attachments_to_jupyter() {
+    use mars_core::CellType;
+    use mars_document::{Cell, Notebook};
+    use mars_jupyter::export_ipynb;
+    use serde_json::Value;
+
+    let mut notebook = Notebook::new();
+    let mut cell = Cell::new(CellType::Markdown, "![p](attachment:p.png)");
+    cell.metadata.insert(
+        "attachments".to_owned(),
+        serde_json::json!({"p.png": "data:image/png;base64,QUJD"}),
+    );
+    notebook.add_cell(cell).expect("cell");
+    let json: Value =
+        serde_json::from_str(&export_ipynb(&notebook).expect("export")).expect("parse");
+    let attachments = &json["cells"][0]["attachments"];
+    assert_eq!(attachments["p.png"]["image/png"], "QUJD");
+}

@@ -16,6 +16,9 @@ import type {
   LspDefinitionTarget,
 } from '../../lib/kernelService';
 import NotebookCellHeader from './NotebookCellHeader';
+import { CellComments } from './CellComments';
+import { getCellComments } from '../../lib/cellComments';
+import { DataPreview } from './DataPreview';
 import CellContextMenu, { type ContextMenuItem } from './CellContextMenu';
 import LazyMount from '../shared/LazyMount';
 
@@ -57,6 +60,7 @@ export type NotebookCellViewProps = {
   onMergeNext?: () => void;
   onSplitCell?: (offset: number) => void;
   onUpdateTags?: (tags: string[]) => void;
+  onUpdateComments?: (comments: import('../../lib/cellComments').CellComment[]) => void;
   onEditMetadata?: () => void;
   onChangeLanguage?: (language: string) => void;
   onShiftSelect?: () => void;
@@ -68,6 +72,7 @@ export type NotebookCellViewProps = {
   onInsertAbove?: () => void;
   onInsertBelow?: () => void;
   onRunAll?: () => void;
+  onRunFromHere?: () => void;
   onStatus: (status: string) => void;
   onDragCellStart?: (id: string) => void;
   onDragCellEnd?: () => void;
@@ -132,6 +137,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   onMergeNext,
   onSplitCell,
   onUpdateTags,
+  onUpdateComments,
   onEditMetadata,
   onChangeLanguage,
   onShiftSelect,
@@ -143,6 +149,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
   onInsertAbove,
   onInsertBelow,
   onRunAll,
+  onRunFromHere,
   onStatus,
   onDragCellStart,
   onDragCellEnd,
@@ -214,6 +221,9 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
     const items: ContextMenuItem[] = [];
     if (cell.cell_type === 'code') {
       items.push({ label: 'Run cell', onSelect: onExecute });
+      if (onRunFromHere) {
+        items.push({ label: 'Run from this cell', onSelect: onRunFromHere });
+      }
     }
     if (onRunAll) {
       items.push({ label: 'Run all cells', onSelect: onRunAll });
@@ -480,6 +490,15 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
                 </Suspense>
               ))
             : null}
+          {onUpdateComments ? (
+            <CellComments
+              comments={getCellComments(cell.metadata)}
+              onChange={onUpdateComments}
+            />
+          ) : null}
+          {typeof cell.metadata?.preview === 'string' && cell.metadata.preview ? (
+            <DataPreview path={cell.metadata.preview} />
+          ) : null}
         </div>
       </div>
 

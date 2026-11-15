@@ -48,8 +48,8 @@ Project Mars is organized as a modular Cargo workspace with crates for:
 
 ### Application Crates
 
-| Crate                     | Purpose                         |
-| ------------------------- | ------------------------------- |
+| Crate                     | Purpose                                 |
+| ------------------------- | --------------------------------------- |
 | [`mars-cli`](./mars-cli/) | Command-line interface for Project Mars |
 
 ## Architecture

@@ -194,8 +194,12 @@ export const lspDiagnostics = async (session: string): Promise<LspCellDiagnostic
   return invoke<LspCellDiagnostic[]>('lsp_diagnostics', { session });
 };
 
-export const configureKernel = async (session: string, content: string): Promise<void> => {
-  await invoke('configure_kernel', { session, content });
+export const configureKernel = async (
+  session: string,
+  content: string,
+  baseDir?: string,
+): Promise<void> => {
+  await invoke('configure_kernel', { session, content, baseDir: baseDir ?? null });
 };
 
 export const loadNotebookFile = async (
@@ -222,6 +226,14 @@ export const exportHtmlFile = async (path: string, content: string): Promise<voi
 
 export const exportPdfFile = async (path: string, content: string): Promise<void> => {
   await invoke('export_notebook_pdf', { path, content });
+};
+
+export const exportSlidesFile = async (path: string, content: string): Promise<void> => {
+  await invoke('export_notebook_slides', { path, content });
+};
+
+export const presentNotebookSlides = async (content: string): Promise<string> => {
+  return invoke<string>('present_notebook_slides', { content });
 };
 
 export const listenKernelStream = async (
@@ -541,4 +553,16 @@ export const listenLabProgress = async (
 ): Promise<() => void> => {
   if (!('__TAURI_INTERNALS__' in window)) return () => {};
   return listen<LabJobProgress>('lab-job-progress', (event) => handler(event.payload));
+};
+
+export type TablePreview = {
+  columns: string[];
+  rows: (string | null)[][];
+};
+
+export const readTablePreview = async (
+  path: string,
+  limit = 50,
+): Promise<TablePreview> => {
+  return invoke<TablePreview>('read_table_preview', { path, limit });
 };

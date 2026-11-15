@@ -12,7 +12,7 @@ pub mod session;
 pub mod session_execution;
 pub mod toml;
 
-pub use backend::{RuntimeBackend, StdinWriter};
+pub use backend::{RuntimeBackend, SqlSource, StdinWriter};
 pub use cancellation::CancellationToken;
 pub use compilation::{cargo_manifest, format_compiler_diagnostics, validate_dependencies};
 pub use error::RuntimeError;

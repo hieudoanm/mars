@@ -182,7 +182,7 @@ describe('useNotebookPersistence', () => {
     loadFile.mockResolvedValue({ content: '{notebook}', notebook: loaded });
     const clean = setup();
     await act(async () => clean.result.current.openNotebook());
-    expect(configure).toHaveBeenCalledWith('s', '{notebook}');
+    expect(configure).toHaveBeenCalledWith('s', '{notebook}', '/books');
     expect(clean.setNotebook).toHaveBeenCalledWith(loaded);
     expect(clean.resetHistory).toHaveBeenCalledWith(loaded);
     expect(clean.result.current.filePath).toBe('/books/loaded.mars');

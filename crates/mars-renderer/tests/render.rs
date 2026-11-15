@@ -533,3 +533,68 @@ fn render_markdown_notebook_covers_output_variants() {
     assert!(markdown.contains("```text\nplain\n```"));
     assert!(markdown.contains("```json"));
 }
+
+#[test]
+fn html_export_resolves_attachment_references() {
+    use mars_core::CellType;
+    use mars_document::{Cell, Notebook};
+    use mars_renderer::render_notebook;
+    use serde_json::json;
+
+    let mut notebook = Notebook::new();
+    let mut cell = Cell::new(
+        CellType::Markdown,
+        "# Demo\n\n![plot](attachment:plot-1.png)",
+    );
+    cell.metadata.insert(
+        "attachments".to_owned(),
+        json!({"plot-1.png": "data:image/png;base64,QUJD"}),
+    );
+    notebook.add_cell(cell).expect("cell");
+    let html = render_notebook(&notebook);
+    assert!(
+        html.contains("data:image/png;base64,QUJD"),
+        "attachment not resolved"
+    );
+    assert!(!html.contains("attachment:plot-1.png"));
+}
+
+#[test]
+fn markdown_export_resolves_attachment_references() {
+    use mars_core::CellType;
+    use mars_document::{Cell, Notebook};
+    use mars_renderer::render_markdown_notebook;
+    use serde_json::json;
+
+    let mut notebook = Notebook::new();
+    let mut cell = Cell::new(CellType::Markdown, "![plot](attachment:a.png)");
+    cell.metadata.insert(
+        "attachments".to_owned(),
+        json!({"a.png": "data:image/png;base64,WFk="}),
+    );
+    notebook.add_cell(cell).expect("cell");
+    let md = render_markdown_notebook(&notebook);
+    assert!(md.contains("data:image/png;base64,WFk="));
+}
+
+#[test]
+fn slides_export_groups_cells_into_sections() {
+    use mars_core::CellType;
+    use mars_document::{Cell, Notebook};
+    use mars_renderer::render_slides_notebook;
+
+    let mut notebook = Notebook::new();
+    notebook
+        .add_cell(Cell::new(CellType::Markdown, "# Title slide"))
+        .expect("cell");
+    notebook
+        .add_cell(Cell::new(CellType::Code, "1 + 1"))
+        .expect("cell");
+    notebook
+        .add_cell(Cell::new(CellType::Markdown, "## Second slide"))
+        .expect("cell");
+    let html = render_slides_notebook(&notebook);
+    assert_eq!(html.matches("data-slide=").count(), 2);
+    assert!(html.contains("data-slide=\"0\""));
+    assert!(html.contains("data-slide=\"1\""));
+}

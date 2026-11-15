@@ -14,6 +14,7 @@ mars-runtime-julia = { path = "../mars-runtime-julia" }
 mars-runtime-python = { path = "../mars-runtime-python" }
 mars-runtime-r = { path = "../mars-runtime-r" }
 mars-runtime-cpp = { path = "../mars-runtime-cpp" }
+mars-runtime-sql = { path = "../mars-runtime-sql" }
 serde_json.workspace = true
 thiserror.workspace = true
 

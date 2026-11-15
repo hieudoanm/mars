@@ -17,6 +17,7 @@ const NotebookHeader: FC<NotebookHeaderProps> = ({
   onExportPdf,
   onImportIpynb,
   onExportIpynb,
+  onPresent,
   onRestart,
   onRestartRunAll,
   onOpenTerminal,
@@ -39,6 +40,7 @@ const NotebookHeader: FC<NotebookHeaderProps> = ({
         onExportPdf={onExportPdf}
         onImportIpynb={onImportIpynb}
         onExportIpynb={onExportIpynb}
+        onPresent={onPresent}
         onRestart={onRestart}
         onRestartRunAll={onRestartRunAll}
         onOpenTerminal={onOpenTerminal}

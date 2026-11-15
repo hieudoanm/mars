@@ -48,6 +48,22 @@ export type CellRunInfo = {
   durationMs: number;
 };
 
+export type RunSummaryEntry = {
+  cellId: string;
+  status: CellRunInfo['status'];
+  durationMs: number;
+};
+
+/// Aggregate of the most recent batch execution (`executeCells`).
+export type RunSummary = {
+  entries: RunSummaryEntry[];
+  /// Sum of per-cell kernel durations.
+  executionMs: number;
+  /// Wall-clock time for the whole batch.
+  wallMs: number;
+  finishedAt: number;
+};
+
 export const useKernelExecution = ({
   sessionId,
   setNotebook,
@@ -67,6 +83,9 @@ export const useKernelExecution = ({
   const syncQueuedCellIds = () =>
     setQueuedCellIds(new Set(queueRef.current.map((item) => item.cell.id)));
   const [runInfo, setRunInfo] = useState<Record<string, CellRunInfo>>({});
+  const [lastRun, setLastRun] = useState<RunSummary | null>(null);
+  const runInfoRef = useRef<Record<string, CellRunInfo>>({});
+  const runBatchRef = useRef<RunSummaryEntry[]>([]);
   const [lastLanguage, setLastLanguage] = useState(notebookLanguage);
   const languagesRef = useRef<Set<string>>(new Set([notebookLanguage]));
   const activeLanguageRef = useRef(notebookLanguage);
@@ -166,13 +185,12 @@ export const useKernelExecution = ({
       }
       const interrupted = hasInterruptedOutput(response.outputs);
       const errorOutput = firstErrorOutput(response.outputs);
-      setRunInfo((current) => ({
-        ...current,
-        [cell.id]: {
-          status: interrupted ? 'interrupted' : errorOutput ? 'error' : 'success',
-          durationMs: response.duration_millis,
-        },
-      }));
+      const info: CellRunInfo = {
+        status: interrupted ? 'interrupted' : errorOutput ? 'error' : 'success',
+        durationMs: response.duration_millis,
+      };
+      runInfoRef.current[cell.id] = info;
+      setRunInfo((current) => ({ ...current, [cell.id]: info }));
       setNotebook((current) => ({
         ...current,
         cells: current.cells.map((item) =>
@@ -229,16 +247,32 @@ export const useKernelExecution = ({
     }
     executionInFlight.current = true;
     setIsExecuting(true);
+    const startedAt = Date.now();
+    runBatchRef.current = [];
     try {
       const runnable = cells.filter((cell) => isRunnableCodeCell(cell, notebookLanguage));
       for (const [index, cell] of runnable.entries()) {
         const label = `cell ${index + 1} of ${runnable.length}`;
-        if (!(await executeCell(cell, false, label))) {
+        await executeCell(cell, false, label);
+        const info = runInfoRef.current[cell.id];
+        if (info) runBatchRef.current.push({ cellId: cell.id, ...info });
+        if (info?.status !== 'success') {
           onExecutionHalted?.(cell);
-          return;
+          break;
         }
       }
-      setStatus(`Executed ${runnable.length} code cells`);
+      const entries = runBatchRef.current;
+      setLastRun({
+        entries,
+        executionMs: entries.reduce((sum, entry) => sum + entry.durationMs, 0),
+        wallMs: Date.now() - startedAt,
+        finishedAt: Date.now(),
+      });
+      setStatus(
+        entries.length > 0 && entries.every((entry) => entry.status === 'success')
+          ? `Executed ${entries.length} code cells`
+          : `Run finished: ${entries.filter((entry) => entry.status === 'success').length}/${entries.length} cells succeeded`,
+      );
     } finally {
       executionInFlight.current = false;
       setActiveCellId(null);
@@ -260,6 +294,8 @@ export const useKernelExecution = ({
       cells: current.cells.map((cell) => ({ ...cell, execution_count: null, outputs: [] })),
     }));
     setRunInfo({});
+    runInfoRef.current = {};
+    setLastRun(null);
     setStatus('Idle');
     for (const language of languagesRef.current) {
       void kernelStatus(sessionId, language)
@@ -301,6 +337,7 @@ export const useKernelExecution = ({
     stream,
     kernelInfo,
     runInfo,
+    lastRun,
     executeCell,
     executeCells,
     restart,

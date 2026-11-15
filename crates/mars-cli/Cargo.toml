@@ -21,6 +21,7 @@ mars-protocol = { path = "../mars-protocol" }
 mars-lab = { path = "../mars-lab" }
 serde.workspace = true
 serde_json.workspace = true
+dissimilar = "1"
 tokio = { workspace = true, features = ["rt"] }
 uuid.workspace = true
 

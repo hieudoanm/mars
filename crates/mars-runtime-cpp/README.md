@@ -102,6 +102,6 @@ cargo clippy -p mars-runtime-cpp --all-targets -- -D warnings
 
 ## Related Documentation
 
-- [C++ runtime documentation](../../docs/11-cpp-runtime.md)
+- [C++ runtime documentation](../../docs/11-runtime-cpp.md)
 - [Runtime architecture](../../docs/06-runtime.md)
 - [AGENTS.md](./AGENTS.md) — Architecture rules and implementation details

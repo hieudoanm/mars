@@ -82,7 +82,7 @@ const NotebookCellHeader: FC<NotebookCellHeaderProps> = ({
   onDragCellStart,
   onDragCellEnd,
 }) => (
-  <div className='mb-1.5 flex items-center justify-between gap-3'>
+  <div className='sticky top-0 z-10 mb-1.5 flex items-center justify-between gap-3 rounded-md bg-neutral-900/95 px-1 py-0.5 backdrop-blur-sm'>
     <div className='flex items-center gap-2'>
       <span
         draggable

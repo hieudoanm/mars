@@ -44,7 +44,8 @@ pub fn render_markdown_notebook(notebook: &mars_document::Notebook) -> String {
     for cell in &notebook.cells {
         match cell.cell_type {
             CellType::Markdown => {
-                let source = cell.source.trim();
+                let resolved = crate::util::resolve_attachment_refs(&cell.source, &cell.metadata);
+                let source = resolved.trim();
                 if !source.is_empty() {
                     blocks.push(source.to_owned());
                 }

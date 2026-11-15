@@ -132,14 +132,24 @@ impl MarsSession {
             let kernel = match path {
                 Some(path) => {
                     let notebook = self.open_notebook(path)?;
-                    Kernel::for_language_with_configuration(
-                        language,
-                        notebook.metadata.dependencies.clone(),
-                        notebook.metadata.cargo_lock.clone(),
-                        self.offline,
-                        false,
-                        self.backend,
-                    )
+                    if language == "sql" {
+                        let base = path
+                            .parent()
+                            .map(std::path::Path::to_path_buf)
+                            .unwrap_or_else(|| std::path::PathBuf::from("."));
+                        let sources =
+                            mars_kernel::sql_sources_from_metadata(&notebook.metadata.extra, &base);
+                        Kernel::for_language_with_sql_sources(language, self.backend, sources)
+                    } else {
+                        Kernel::for_language_with_configuration(
+                            language,
+                            notebook.metadata.dependencies.clone(),
+                            notebook.metadata.cargo_lock.clone(),
+                            self.offline,
+                            false,
+                            self.backend,
+                        )
+                    }
                 }
                 None => Kernel::for_language(language, self.backend),
             }

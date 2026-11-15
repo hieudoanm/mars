@@ -16,9 +16,11 @@ supported.
 ## Command summary
 
 ```text
-mars notebook new <file.mars> [language]
+mars notebook new <file.mars> [language] [--template <name>] [--example <name>] [--language <lang>]
+mars notebook templates
+mars notebook doctor [file.mars]
 mars notebook open <file.mars>
-mars notebook inspect <file.mars>
+mars notebook inspect <file.mars> [--json]
 mars notebook run <file.mars> [options]
 mars notebook import <file.ipynb> [file.mars]
 mars notebook export <file.mars> [ipynb|html|md] [output]
@@ -33,12 +35,23 @@ mars tools [list|call <name> [json] [--server <cmd>]]
 mars notebook new analysis.mars rust    # Rust (default)
 mars notebook new analysis.mars python  # Python
 mars notebook new analysis.mars r       # R
+mars notebook new analysis.mars --template ml
+mars notebook new analysis.mars --example rust/02-machine-learning/machine-learning
 mars notebook inspect analysis.mars
+mars notebook inspect analysis.mars --json
 ```
 
-`mars notebook new` creates a `.mars` document with an initial Markdown cell.
-`mars notebook inspect` prints a summary of the notebook's metadata, cells, and stored
-outputs without executing it.
+`mars notebook new` creates a `.mars` document — a starter Markdown cell by
+default, or a full template with `--template rust|python|ml|dashboard`, or a
+copy of a shipped example with `--example <name>` (`mars notebook templates`
+lists them). `mars notebook inspect` prints a summary of the notebook's
+metadata, cells, and stored outputs without executing it; `--json` emits a
+machine-readable summary for scripts and CI.
+
+`mars notebook doctor [file.mars]` checks which language runtimes are
+installed (`cargo`, `python3`, `Rscript`, `julia`, `clang++`/`g++`) and
+prints versions or install hints — pass a notebook path to check only the
+languages it uses.
 
 ## Run a notebook
 
@@ -76,10 +89,24 @@ mars notebook run analysis.mars  # Runs all cells with their respective language
 || `--deterministic`  | Require a lockfile and apply locked execution policy           |
 || `--no-save`        | Do not write outputs or counts back to the notebook            |
 || `--report`         | Print a final execution summary                                |
+|| `--changed-only`   | Skip cells before the first code cell changed vs the git baseline |
+|| `--since <ref>`    | Diff base for `--changed-only` (implies it); default `HEAD`    |
+|| `--watch`         | Re-run the notebook whenever the file changes                 |
+|| `--watch-ms <n>`  | Watch poll interval in milliseconds (default `1000`)          |
 
 `--deterministic` implies `--locked` and rejects dependency-backed notebooks
 without `metadata.cargo_lock`. `--report` adds a final human-readable summary
 line; it is not a versioned machine-readable protocol.
+
+`--changed-only` diffs the notebook against `git show <ref>:<path>` using
+stable cell IDs, then resumes execution at the first new or modified code
+cell — everything from that point runs so downstream state stays consistent.
+The notebook must be tracked by git; use `--since <ref>` to pick a different
+base (`HEAD~3`, a branch, a tag).
+
+`--watch` runs the notebook once, then polls the file every `--watch-ms`
+milliseconds and re-runs on change — handy for live demos. Errors are
+reported without stopping the loop; Ctrl+C exits.
 
 ## Import and export
 
@@ -189,3 +216,51 @@ Run all examples:
 cd examples/mars
 ./run.sh
 ```
+
+## Diff, reports, and publishing
+
+```bash
+mars notebook diff analysis.mars HEAD~3   # cell-aware diff vs a git ref or .mars file
+mars notebook run analysis.mars --changed-only --report --json-report
+mars notebook export analysis.mars slides # self-contained slideshow HTML
+```
+
+`mars notebook diff` compares cells by stable IDs with line-level diffs.
+`--json-report` emits a machine-readable run summary for CI. `slides`
+exports a keyboard-navigable, print-friendly presentation. `html` export is
+fully self-contained (inline CSS, embedded images) — publish it anywhere.
+
+### SQL cells
+
+Any code cell can run SQL by setting `cell.metadata.language` to `"sql"`
+(the desktop language picker offers it directly). SQL cells execute in a
+persistent in-process SQLite session — no external database required — and
+support `SELECT`, DDL, and DML. Results render as notebook tables.
+
+Tables are pre-loaded from CSV files declared in notebook metadata:
+
+```json
+"metadata": {
+  "sql": {
+    "tables": {
+      "sales": "data/sales.csv",
+      "customers": "data/customers.csv"
+    }
+  }
+}
+```
+
+Paths resolve relative to the `.mars` file. Each named CSV becomes a SQL
+table, so `SELECT * FROM sales` works immediately. Sessions persist across
+cells (create tables, insert rows, query later); `mars notebook run` picks
+up `metadata.sql.tables` automatically, as do `mars kernel serve` and the
+MCP server.
+
+### Scheduled runs
+
+```cron
+0 3 * * * cd /srv/notebooks && mars notebook run analysis.mars --changed-only --locked --report --json-report >> run.log 2>&1
+```
+
+`--changed-only` exits successfully when nothing changed, so scheduled runs
+stay quiet until there is work to do.

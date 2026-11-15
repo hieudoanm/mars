@@ -87,6 +87,6 @@ cargo clippy -p mars-runtime-julia --all-targets -- -D warnings
 
 ## Related Documentation
 
-- [Julia runtime documentation](../../docs/10-julia-runtime.md)
+- [Julia runtime documentation](../../docs/10-runtime-julia.md)
 - [Runtime architecture](../../docs/06-runtime.md)
 - [AGENTS.md](./AGENTS.md) — Architecture rules and implementation details

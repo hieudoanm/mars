@@ -105,5 +105,5 @@ cargo clippy -p mars-runtime-r --all-targets -- -D warnings
 
 ## Related Documentation
 
-- [R runtime documentation](../../docs/09-r-runtime.md)
+- [R runtime documentation](../../docs/09-runtime-r.md)
 - [Runtime architecture](../../docs/06-runtime.md)

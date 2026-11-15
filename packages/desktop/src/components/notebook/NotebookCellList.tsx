@@ -55,6 +55,7 @@ export type NotebookCellListProps = {
     shiftSelectCell: (cell: NotebookCell) => void;
     deleteCellOrRange: (cell: NotebookCell) => void;
     onRunAllCells?: () => void;
+    onRunFromCell?: (index: number) => void;
     onEditMetadata?: (cell: NotebookCell) => void;
     onCellClipboard?: (
       cell: NotebookCell,
@@ -123,6 +124,7 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
     shiftSelectCell,
     deleteCellOrRange,
     onRunAllCells,
+    onRunFromCell,
     onEditMetadata,
     onCellClipboard,
   } = actions;
@@ -140,7 +142,7 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
   };
   return (
     <div className='flex flex-col gap-4'>
-      {cells.map((cell) => (
+      {cells.map((cell, cellIndex) => (
         <NotebookCellView
           key={cell.id}
           cell={cell}
@@ -188,6 +190,7 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
           onDelete={() => deleteCellOrRange(cell)}
           onSplitCell={(offset) => editor.splitCellById(cell.id, offset)}
           onUpdateTags={(tags) => editor.updateTags(cell.id, tags)}
+          onUpdateComments={(comments) => editor.updateComments(cell.id, comments)}
           onEditMetadata={onEditMetadata ? () => onEditMetadata(cell) : undefined}
           onChangeLanguage={(language) => editor.setCellLanguage(cell.id, language)}
           onToggleCollapse={() => toggleCellCollapse(cell.id)}
@@ -217,6 +220,9 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
             editor.insertCell(cells.findIndex((entry) => entry.id === cell.id) + 1, cell.cell_type)
           }
           onRunAll={onRunAllCells}
+          onRunFromHere={
+            onRunFromCell ? () => onRunFromCell(cellIndex) : undefined
+          }
           onStatus={setStatus}
         />
       ))}

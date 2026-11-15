@@ -193,3 +193,17 @@ Jupyter kernelspecs map to Project Mars languages:
 | `rust`             | `rust`                |
 | `ijulia`           | `julia`               |
 | *other*            | Preserved in metadata |
+
+## Optional metadata conventions
+
+The format preserves arbitrary metadata; these keys have defined meanings:
+
+- `cell.metadata.language` — per-cell language override.
+- `cell.metadata.attachments` — attachment name → `data:` URL, referenced
+  from Markdown as `![](attachment:name)`; resolved on export.
+- `cell.metadata.preview` — CSV path rendered as a lazy table preview in
+  the desktop app.
+- `cell.metadata.comments` — `{ text, created_at }` review comments.
+- `cell.metadata.tags` — free-form cell labels.
+- `metadata.sql.tables` — table name → CSV path pre-loaded into `sql`
+  cells' in-memory SQLite database.

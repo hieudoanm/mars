@@ -9,6 +9,7 @@ use mars_runtime::{StdinWriter, StreamEvent};
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::net::TcpListener;
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, mpsc};
 use std::thread;
@@ -43,7 +44,12 @@ fn build_kernel(
     backend: RuntimeBackendKind,
     language: &str,
     request_options: Option<&serde_json::Value>,
+    sql_sources: &[mars_runtime::SqlSource],
 ) -> Result<Kernel, String> {
+    if language == "sql" {
+        return Kernel::for_language_with_sql_sources(language, backend, sql_sources.to_vec())
+            .map_err(|error| error.to_string());
+    }
     if language == "python" {
         let options = request_options
             .and_then(|options| options.get("python"))
@@ -100,9 +106,10 @@ fn kernel_for_language<'a>(
     language: &str,
     options: Option<&serde_json::Value>,
     writers: &Mutex<HashMap<String, StdinWriter>>,
+    sql_sources: &[mars_runtime::SqlSource],
 ) -> Result<&'a mut Kernel, String> {
     if !kernels.contains_key(language) {
-        let kernel = build_kernel(notebook, backend, language, options)?;
+        let kernel = build_kernel(notebook, backend, language, options, sql_sources)?;
         kernels.insert(language.to_owned(), kernel);
     }
     let kernel = kernels
@@ -141,9 +148,19 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
     notebook_path: Option<String>,
     language_override: Option<String>,
 ) -> Result<(), String> {
+    let notebook_base = notebook_path
+        .as_ref()
+        .and_then(|path| Path::new(path).parent().map(Path::to_path_buf))
+        .unwrap_or_else(|| Path::new(".").to_path_buf());
     let notebook = notebook_path
         .map(|path| load(&path).map_err(|error| error.to_string()))
         .transpose()?;
+    let sql_sources = notebook
+        .as_ref()
+        .map(|notebook| {
+            mars_kernel::sql_sources_from_metadata(&notebook.metadata.extra, &notebook_base)
+        })
+        .unwrap_or_default();
     let default_language = language_override
         .or_else(|| notebook.as_ref().map(|n| n.metadata.language.clone()))
         .unwrap_or_else(|| "rust".to_owned());
@@ -159,6 +176,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
     let exec_writers = Arc::clone(&writers);
     let exec_language = Arc::clone(&current_language);
     let exec_notebook = notebook;
+    let exec_sql_sources = sql_sources;
     let reader_writers = Arc::clone(&writers);
     let reader_language = Arc::clone(&current_language);
 
@@ -191,6 +209,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                             &language,
                             options.as_ref(),
                             &exec_writers,
+                            &exec_sql_sources,
                         ) {
                             Err(message) => ResponseEnvelope {
                                 id,
@@ -326,6 +345,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                             &language,
                             None,
                             &exec_writers,
+                            &exec_sql_sources,
                         ) {
                             Err(message) => ResponseEnvelope {
                                 id,
@@ -349,6 +369,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                             &language,
                             None,
                             &exec_writers,
+                            &exec_sql_sources,
                         ) {
                             Err(message) => ResponseEnvelope {
                                 id,

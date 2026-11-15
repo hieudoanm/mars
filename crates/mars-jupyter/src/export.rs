@@ -20,6 +20,8 @@ pub struct ExportedCell {
     pub metadata: Map<String, Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub execution_count: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attachments: Option<Map<String, Value>>,
     pub outputs: Vec<ExportedOutput>,
 }
 
@@ -113,8 +115,33 @@ pub fn export_cell(cell: &Cell) -> Result<ExportedCell, JupyterError> {
         source: cell.source.clone(),
         metadata: cell.metadata.clone(),
         execution_count: cell.execution_count,
+        attachments: jupyter_attachments(cell),
         outputs,
     })
+}
+
+/// Maps `metadata.attachments` (`name` → `data:` URL) onto the Jupyter
+/// cell-level `attachments` field (`name` → `{mime: base64}`).
+fn jupyter_attachments(cell: &Cell) -> Option<Map<String, Value>> {
+    let attachments = cell.metadata.get("attachments")?.as_object()?;
+    let mut mapped = Map::new();
+    for (name, value) in attachments {
+        let Some(data_url) = value.as_str() else {
+            continue;
+        };
+        let Some((mime, payload)) = data_url.split_once(',') else {
+            continue;
+        };
+        let mime = mime.strip_prefix("data:").unwrap_or(mime);
+        let mut entry = Map::new();
+        entry.insert(mime.to_owned(), Value::String(payload.to_owned()));
+        mapped.insert(name.clone(), Value::Object(entry));
+    }
+    if mapped.is_empty() {
+        None
+    } else {
+        Some(mapped)
+    }
 }
 
 pub fn export_output(output: &Output) -> Result<ExportedOutput, JupyterError> {

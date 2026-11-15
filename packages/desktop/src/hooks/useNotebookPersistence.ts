@@ -8,6 +8,8 @@ import {
   exportIpynbFile,
   exportMarkdownFile,
   exportPdfFile,
+  exportSlidesFile,
+  presentNotebookSlides,
   importNotebookIpynb,
   loadNotebookFile,
   notebookFileMtime,
@@ -62,7 +64,8 @@ export const useNotebookPersistence = ({
     isIpynb: boolean,
     loadedFile: { content: string; notebook: Notebook },
   ) => {
-    await configureKernel(sessionId, loadedFile.content);
+    const baseDir = path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : undefined;
+    await configureKernel(sessionId, loadedFile.content, baseDir);
     setNotebook(loadedFile.notebook);
     resetHistory(loadedFile.notebook);
     setSavedSnapshot(isIpynb ? '' : serializeNotebook(loadedFile.notebook));
@@ -203,7 +206,7 @@ export const useNotebookPersistence = ({
   };
 
   const exportFile = async (
-    kind: 'markdown' | 'html' | 'pdf' | 'ipynb',
+    kind: 'markdown' | 'html' | 'pdf' | 'ipynb' | 'slides',
     extensions: string[],
     name: string,
     defaultPath: string,
@@ -214,6 +217,7 @@ export const useNotebookPersistence = ({
       if (kind === 'markdown') await exportMarkdownFile(path, snapshot);
       else if (kind === 'html') await exportHtmlFile(path, snapshot);
       else if (kind === 'pdf') await exportPdfFile(path, snapshot);
+      else if (kind === 'slides') await exportSlidesFile(path, snapshot);
       else await exportIpynbFile(path, snapshot);
       setStatus(`Exported ${name}`);
       return true;
@@ -252,6 +256,22 @@ export const useNotebookPersistence = ({
       'Jupyter',
       filePath ? filePath.replace(/\.mars$/i, '.ipynb') : 'Untitled.ipynb',
     );
+  const exportSlides = () =>
+    exportFile(
+      'slides',
+      ['html'],
+      'Slides',
+      filePath ? filePath.replace(/\.mars$/i, '.slides.html') : 'Untitled.slides.html',
+    );
+  const presentSlides = async () => {
+    try {
+      const path = await presentNotebookSlides(snapshot);
+      setStatus(`Presenting ${path}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Present failed');
+      notify?.(error instanceof Error ? error.message : 'Present failed', 'error');
+    }
+  };
 
   const autosave = (nextSnapshot: string) => {
     if (!filePath) return;
@@ -346,6 +366,8 @@ export const useNotebookPersistence = ({
     exportHtml,
     exportPdf,
     exportIpynb,
+    exportSlides,
+    presentSlides,
     importIpynb,
     trustAndLoad,
     cancelTrust,

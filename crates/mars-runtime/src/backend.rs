@@ -89,3 +89,11 @@ pub trait RuntimeBackend: Send {
         None
     }
 }
+
+/// A tabular data source pre-loaded into a `sql` runtime session: `name`
+/// becomes the SQL table name, `path` points at a CSV file.
+#[derive(Clone, Debug)]
+pub struct SqlSource {
+    pub name: String,
+    pub path: std::path::PathBuf,
+}
