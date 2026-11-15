@@ -43,7 +43,7 @@ ndarray = "=0.15.6"
 onnx-protobuf = "=0.2.3"
 polars = { version = "=0.55.2", features = ["lazy", "csv", "temporal", "strings", "dtype-full"] }
 polars-lazy = "=0.55.2"
-protobuf = "=3.4.0"
+protobuf = "=3.7.2"
 rand = "=0.10.3"
 rand08 = { package = "rand", version = "=0.8.6" }
 regex = "=1.13.1"
