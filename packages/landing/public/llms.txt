@@ -32,6 +32,10 @@ Project Mars is a Rust-powered interactive notebook platform for exploring ideas
 - Julia Runtime: https://hieudoanm.github.io/mars/docs/07-runtime-julia/
 - C++ Runtime: https://hieudoanm.github.io/mars/docs/08-runtime-cpp/
 - MCP Integration: https://hieudoanm.github.io/mars/docs/09-mcp/
+- Mars Lab Overview: https://hieudoanm.github.io/mars/docs/13-lab-overview/
+- Lab CLI: https://hieudoanm.github.io/mars/docs/14-lab-cli/
+- Lab Algorithms: https://hieudoanm.github.io/mars/docs/15-lab-algorithms/
+- Lab Workflows: https://hieudoanm.github.io/mars/docs/16-lab-workflows/
 
 ## Blog Series
 

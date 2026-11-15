@@ -40,6 +40,10 @@ Project Mars is a mature, feature-rich notebook platform with:
 - [VS Code extension](/docs/10-extension-vscode/) — use Project Mars from the VS Code notebook editor.
 - [Zed extension](/docs/11-extension-zed/) — Zed grammar support and usage.
 - [JetBrains extension](/docs/12-extension-jetbrains/) — JetBrains plugin status and future plans.
+- [Mars Lab](/docs/13-lab-overview/) — Machine learning training studio with ONNX export.
+- [Lab CLI](/docs/14-lab-cli/) — Command-line interface for Mars Lab training.
+- [Lab Algorithms](/docs/15-lab-algorithms/) — Complete algorithm catalogue and hyperparameters.
+- [Lab Workflows](/docs/16-lab-workflows/) — Common training workflows and examples.
 
 ## Design principles
 
