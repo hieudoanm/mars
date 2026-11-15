@@ -63,8 +63,8 @@ describe('VS Code commands', () => {
     });
     execFileAsync.mockResolvedValueOnce({ stdout: 'complete', stderr: 'warning' });
     await runNotebook();
-    expect(execFileAsync).toHaveBeenCalledWith('mars', ['run', '/work/book.mars']);
-    expect(output.appendLine).toHaveBeenCalledWith('$ mars run /work/book.mars');
+    expect(execFileAsync).toHaveBeenCalledWith('mars', ['notebook', 'run', '/work/book.mars']);
+    expect(output.appendLine).toHaveBeenCalledWith('$ mars notebook run /work/book.mars');
     expect(output.append).toHaveBeenCalledWith('complete');
     expect(output.append).toHaveBeenCalledWith('warning');
     expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('Project Mars notebook completed.');
@@ -77,6 +77,7 @@ describe('VS Code commands', () => {
     execFileAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     await exportHtml();
     expect(execFileAsync).toHaveBeenCalledWith('mars', [
+      'notebook',
       'export',
       '/work/Book.mars',
       'html',
@@ -90,6 +91,7 @@ describe('VS Code commands', () => {
     execFileAsync.mockRejectedValueOnce(new Error('export failed'));
     await exportMarkdown();
     expect(execFileAsync).toHaveBeenLastCalledWith('mars', [
+      'notebook',
       'export',
       '/work/Book.mars',
       'md',

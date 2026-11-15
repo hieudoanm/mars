@@ -43,7 +43,7 @@ Project Mars discovers the Python interpreter via:
 ## Creating a Python Notebook
 
 ```bash
-mars new analysis.mars python
+mars notebook new analysis.mars python
 ```
 
 Or set the language in notebook metadata:

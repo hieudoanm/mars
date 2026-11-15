@@ -36,7 +36,7 @@ runtime backend exists.
 ### Running individually
 
 ```bash
-mars run rust/01-getting-started/getting-started.mars --report
+mars notebook run rust/01-getting-started/getting-started.mars --report
 ```
 
 Or without the `--report` flag for default output.
@@ -46,7 +46,7 @@ The `01-getting-started` notebook merges the former `02-data-analysis` and `03-l
 Regenerate an example's Markdown export after editing it:
 
 ```bash
-mars export rust/01-getting-started/getting-started.mars md rust/01-getting-started/getting-started.md
+mars notebook export rust/01-getting-started/getting-started.mars md rust/01-getting-started/getting-started.md
 ```
 
 ## Requirements

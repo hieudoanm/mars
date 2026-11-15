@@ -325,7 +325,7 @@
     {
       "id": "next-steps",
       "cell_type": "markdown",
-      "source": "## Next steps\n\n- **Rich output**: `display(x)` publishes MIME bundles — `Markdown` and\n  `LaTeX` objects render richly, and plotting packages like Plots.jl produce\n  PNG/SVG outputs.\n- **Packages**: `using Pkg; Pkg.add(\"DataFrames\")` installs packages into\n  the default Julia environment.\n- **Interactive input**: `readline(\"prompt\")` asks the kernel for a line.\n- **Jupyter interop**: `mars import notebook.ipynb` and\n  `mars export notebook.mars ipynb` convert between formats.\n- Try the [Python](../python/01-getting-started/getting-started.mars) and\n  [R](../r/r-intro.mars) introductions, or the Rust tour in\n  `../rust/01-getting-started/`.",
+      "source": "## Next steps\n\n- **Rich output**: `display(x)` publishes MIME bundles — `Markdown` and\n  `LaTeX` objects render richly, and plotting packages like Plots.jl produce\n  PNG/SVG outputs.\n- **Packages**: `using Pkg; Pkg.add(\"DataFrames\")` installs packages into\n  the default Julia environment.\n- **Interactive input**: `readline(\"prompt\")` asks the kernel for a line.\n- **Jupyter interop**: `mars notebook import notebook.ipynb` and\n  `mars notebook export notebook.mars ipynb` convert between formats.\n- Try the [Python](../python/01-getting-started/getting-started.mars) and\n  [R](../r/r-intro.mars) introductions, or the Rust tour in\n  `../rust/01-getting-started/`.",
       "metadata": {},
       "outputs": []
     }

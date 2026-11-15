@@ -54,7 +54,7 @@ g++ --version
 ## Creating a C++ Notebook
 
 ```bash
-mars new analysis.mars cpp
+mars notebook new analysis.mars cpp
 ```
 
 Or set the language in notebook metadata:

@@ -80,7 +80,7 @@ Rust notebooks may declare registry dependencies in `metadata.dependencies`:
 Project Mars creates a temporary Cargo project for those notebooks. Dependency resolution uses Cargo's configured cache and registry and may require network access. For reproducible builds, use `--locked` and `--offline`:
 
 ```bash
-mars run analysis.mars --locked --offline
+mars notebook run analysis.mars --locked --offline
 ```
 
 This requires `metadata.cargo_lock` to be present (set after first successful run).
@@ -90,10 +90,10 @@ This requires `metadata.cargo_lock` to be present (set after first successful ru
 Project Mars includes an experimental Evcxr backend for faster re-execution without recompilation. Enable via:
 
 ```bash
-mars run analysis.mars --runtime evcxr
+mars notebook run analysis.mars --runtime evcxr
 # or
 export MARS_EXPERIMENTAL_RUNTIME=evcxr
-mars run analysis.mars
+mars notebook run analysis.mars
 ```
 
 **Limitations:**

@@ -78,12 +78,12 @@ Convert Jupyter notebooks to Project Mars format:
 
 ```bash
 # Import Python notebook
-mars import jupyter/python/notebook.ipynb mars-python.mars
-mars run mars-python.mars
+mars notebook import jupyter/python/notebook.ipynb mars-python.mars
+mars notebook run mars-python.mars
 
 # Import Rust notebook
-mars import jupyter/rust/notebook.ipynb mars-rust.mars
-mars run mars-rust.mars
+mars notebook import jupyter/rust/notebook.ipynb mars-rust.mars
+mars notebook run mars-rust.mars
 ```
 
 ## Exporting from Project Mars
@@ -92,7 +92,7 @@ Convert Project Mars notebooks to Jupyter format:
 
 ```bash
 # Export to Jupyter
-mars export mars/python/01-getting-started/getting-started.mars ipynb notebook.ipynb
+mars notebook export mars/python/01-getting-started/getting-started.mars ipynb notebook.ipynb
 ```
 
 ## Import/Export Compatibility
@@ -131,17 +131,17 @@ Project Mars supports Jupyter import/export with the following mappings:
 
 2. **Import your notebook**
    ```bash
-   mars import my-notebook.ipynb my-notebook.mars
+   mars notebook import my-notebook.ipynb my-notebook.mars
    ```
 
 3. **Run in Project Mars**
    ```bash
-   mars run my-notebook.mars
+   mars notebook run my-notebook.mars
    ```
 
 4. **Open in desktop app** (recommended)
    ```bash
-   mars open my-notebook.mars
+   mars notebook open my-notebook.mars
    ```
 
 ### Key Differences
@@ -240,7 +240,7 @@ mars --version
 
 ```bash
 # Check notebook is valid Project Mars format
-mars inspect my-notebook.mars
+mars notebook inspect my-notebook.mars
 ```
 
 ### Runtime not found

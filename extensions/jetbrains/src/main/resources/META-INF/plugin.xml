@@ -51,7 +51,7 @@
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt N"/>
             </action>
             <action id="Mars.RunNotebook" class="com.mars.idea.actions.RunNotebookAction"
-                    text="Run Notebook" description="Execute all cells with `mars run`">
+                    text="Run Notebook" description="Execute all cells with `mars notebook run`">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
             </action>
             <action id="Mars.ExecuteCell" class="com.mars.idea.actions.ExecuteCellAction"
@@ -87,7 +87,7 @@
             <action id="Mars.ExportIpynb" class="com.mars.idea.actions.ExportIpynbAction"
                     text="Export to Jupyter (.ipynb)" description="Export the notebook to .ipynb"/>
             <action id="Mars.InspectNotebook" class="com.mars.idea.actions.InspectNotebookAction"
-                    text="Inspect Notebook" description="Show notebook metadata via `mars inspect`"/>
+                    text="Inspect Notebook" description="Show notebook metadata via `mars notebook inspect`"/>
         </group>
     </actions>
 </idea-plugin>

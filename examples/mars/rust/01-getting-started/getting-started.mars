@@ -22,7 +22,7 @@
     {
       "id": "markdown-essentials",
       "cell_type": "markdown",
-      "source": "### Markdown essentials\n\nMarkdown cells support **bold**, *italic*, ~~strikethrough~~, `inline code`,\n[links](https://github.com/hieudoanm/mars), lists, tables, block quotes, and\nfenced code blocks.\n\n- unordered list item\n- another item\n  - nested item\n\n1. ordered item\n2. another item\n\n```bash\nmars run getting-started.mars --report\n```\n",
+      "source": "### Markdown essentials\n\nMarkdown cells support **bold**, *italic*, ~~strikethrough~~, `inline code`,\n[links](https://github.com/hieudoanm/mars), lists, tables, block quotes, and\nfenced code blocks.\n\n- unordered list item\n- another item\n  - nested item\n\n1. ordered item\n2. another item\n\n```bash\nmars notebook run getting-started.mars --report\n```\n",
       "metadata": {},
       "outputs": []
     },
@@ -124,7 +124,7 @@
       "outputs": [
         {
           "type": "text",
-          "text": "greeting = Hello, Project Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Project Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n"
+          "text": "greeting = Hello, Project Mars!\nshout = HELLO, PROJECT MARS!\nwords = [\"Hello,\", \"Project\", \"Mars!\"]\ncharacters = 20\nreplaced = Hello, notebooks!\n"
         }
       ]
     },
@@ -551,7 +551,7 @@
     {
       "id": "next-steps",
       "cell_type": "markdown",
-      "source": "## What comes next\n\nYou have now seen the core of a Project Mars notebook: Markdown and raw cells, Rust\ncode cells, persisted bindings, automatic output, and stored results.\n\nThis tour also maps onto a Rust syllabus. It covers basic syntax\n(statements, expressions, variables, mutability, constants, modules,\nmacros, and attributes), control flow (`if`, `if let`, `match`, loops),\nfunctions and closures, the type system (primitives, arrays, `Vec`,\n`&str`/`String`, tuples, structs, enums, `Option`, `Result`), and traits and\ngenerics (lifetimes, type aliasing, traits, generics). Two topics are\nintentionally left out of this tour: procedural macros, which need a separate\n`proc-macro` crate, and the Cargo toolchain (`cargo build`, `cargo test`,\n`cargo doc`, crates.io), which you run from a terminal rather than a notebook.\n\nContinue with:\n\n| Example | What it adds |\n| ------- | ------------ |\n| `04-machine-learning/machine-learning.mars` | A longer workflow with data generation, evaluation, and a plotters chart |\n| `05-plotting/plotting.mars` | Vector figures rendered as SVG output |\n\nUseful commands:\n\n```bash\nmars run getting-started.mars --report   # execute and save outputs\nmars run getting-started.mars --no-save  # check without writing\nmars export getting-started.mars md      # Markdown export\nmars export getting-started.mars html    # HTML export\nmars export getting-started.mars pdf     # PDF export\n```\n",
+      "source": "## What comes next\n\nYou have now seen the core of a Project Mars notebook: Markdown and raw cells, Rust\ncode cells, persisted bindings, automatic output, and stored results.\n\nThis tour also maps onto a Rust syllabus. It covers basic syntax\n(statements, expressions, variables, mutability, constants, modules,\nmacros, and attributes), control flow (`if`, `if let`, `match`, loops),\nfunctions and closures, the type system (primitives, arrays, `Vec`,\n`&str`/`String`, tuples, structs, enums, `Option`, `Result`), and traits and\ngenerics (lifetimes, type aliasing, traits, generics). Two topics are\nintentionally left out of this tour: procedural macros, which need a separate\n`proc-macro` crate, and the Cargo toolchain (`cargo build`, `cargo test`,\n`cargo doc`, crates.io), which you run from a terminal rather than a notebook.\n\nContinue with:\n\n| Example | What it adds |\n| ------- | ------------ |\n| `04-machine-learning/machine-learning.mars` | A longer workflow with data generation, evaluation, and a plotters chart |\n| `05-plotting/plotting.mars` | Vector figures rendered as SVG output |\n\nUseful commands:\n\n```bash\nmars notebook run getting-started.mars --report   # execute and save outputs\nmars notebook run getting-started.mars --no-save  # check without writing\nmars notebook export getting-started.mars md      # Markdown export\nmars notebook export getting-started.mars html    # HTML export\nmars notebook export getting-started.mars pdf     # PDF export\n```\n",
       "metadata": {},
       "outputs": []
     }

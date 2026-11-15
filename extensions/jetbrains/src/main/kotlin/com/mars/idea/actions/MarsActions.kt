@@ -60,9 +60,9 @@ internal fun runCli(project: Project, args: List<String>, onSuccess: ((String) -
             ApplicationManager.getApplication().invokeLater {
                 if (code == 0) {
                     onSuccess?.invoke(output)
-                    if (onSuccess == null) notifyInfo(project, "mars ${args.firstOrNull()} succeeded")
+                    if (onSuccess == null) notifyInfo(project, "mars ${args.take(2).joinToString(" ")} succeeded")
                 } else {
-                    notifyError(project, "mars ${args.firstOrNull()} failed (exit $code):\n${output.take(500)}")
+                    notifyError(project, "mars ${args.take(2).joinToString(" ")} failed (exit $code):\n${output.take(500)}")
                 }
             }
         } catch (e: Exception) {
@@ -126,30 +126,30 @@ abstract class MarsFileAction(text: String, desc: String) : AnAction(text, desc,
     }
 }
 
-class RunNotebookAction : MarsFileAction("Run Notebook", "Execute all cells with `mars run`") {
-    override fun argsFor(file: File) = listOf("run", file.absolutePath)
+class RunNotebookAction : MarsFileAction("Run Notebook", "Execute all cells with `mars notebook run`") {
+    override fun argsFor(file: File) = listOf("notebook", "run", file.absolutePath)
 }
 
 class ExportHtmlAction : MarsFileAction("Export to HTML", "Export the notebook to standalone HTML") {
-    override fun argsFor(file: File) = listOf("export", file.absolutePath, "html", htmlPath(file))
+    override fun argsFor(file: File) = listOf("notebook", "export", file.absolutePath, "html", htmlPath(file))
 }
 
 class ExportMarkdownAction : MarsFileAction("Export to Markdown", "Export the notebook to Markdown") {
-    override fun argsFor(file: File) = listOf("export", file.absolutePath, "markdown", file.absolutePath.removeSuffix(".mars") + ".md")
+    override fun argsFor(file: File) = listOf("notebook", "export", file.absolutePath, "markdown", file.absolutePath.removeSuffix(".mars") + ".md")
 }
 
 class ExportIpynbAction : MarsFileAction("Export to Jupyter (.ipynb)", "Export the notebook to .ipynb") {
-    override fun argsFor(file: File) = listOf("export", file.absolutePath, "ipynb", file.absolutePath.removeSuffix(".mars") + ".ipynb")
+    override fun argsFor(file: File) = listOf("notebook", "export", file.absolutePath, "ipynb", file.absolutePath.removeSuffix(".mars") + ".ipynb")
 }
 
-class InspectNotebookAction : MarsFileAction("Inspect Notebook", "Show notebook metadata via `mars inspect`") {
-    override fun argsFor(file: File) = listOf("inspect", file.absolutePath)
+class InspectNotebookAction : MarsFileAction("Inspect Notebook", "Show notebook metadata via `mars notebook inspect`") {
+    override fun argsFor(file: File) = listOf("notebook", "inspect", file.absolutePath)
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val file = currentMarsPath(e) ?: return
-        runCli(project, listOf("inspect", file.absolutePath)) { output ->
-            notifyInfo(project, "mars inspect:\n${output.take(1000)}")
+        runCli(project, listOf("notebook", "inspect", file.absolutePath)) { output ->
+            notifyInfo(project, "mars notebook inspect:\n${output.take(1000)}")
         }
     }
 }

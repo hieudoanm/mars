@@ -16,7 +16,7 @@
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="1.90s" dur="0.25s" fill="freeze"/>
-    <text x="44" y="190"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars new analysis.mars</tspan></text>
+    <text x="44" y="190"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars notebook new analysis.mars</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="2.45s" dur="0.25s" fill="freeze"/>
@@ -24,7 +24,7 @@
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="3.00s" dur="0.25s" fill="freeze"/>
-    <text x="44" y="254"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars run analysis.mars</tspan></text>
+    <text x="44" y="254"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars notebook run analysis.mars</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="3.55s" dur="0.25s" fill="freeze"/>
@@ -44,7 +44,7 @@
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="5.75s" dur="0.25s" fill="freeze"/>
-    <text x="44" y="414"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars inspect analysis.mars</tspan></text>
+    <text x="44" y="414"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars notebook inspect analysis.mars</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="6.30s" dur="0.25s" fill="freeze"/>
@@ -52,7 +52,7 @@
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="6.85s" dur="0.25s" fill="freeze"/>
-    <text x="44" y="478"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars export analysis.mars html out/</tspan></text>
+    <text x="44" y="478"><tspan fill="#ff8a5c">$</tspan> <tspan fill="#e5e5e5">mars notebook export analysis.mars html out/</tspan></text>
   </g>
   <g opacity="0">
     <animate attributeName="opacity" from="0" to="1" begin="7.40s" dur="0.25s" fill="freeze"/>

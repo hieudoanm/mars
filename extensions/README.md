@@ -116,7 +116,7 @@ The extension registers `mars` as a Zed context server that spawns the Project M
 For notebook execution in Zed, use the CLI:
 
 ```bash
-mars run notebook.mars --report
+mars notebook run notebook.mars --report
 ```
 
 Or configure an external tool in Zed to run `mars` on the current file.

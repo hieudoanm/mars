@@ -138,7 +138,7 @@ Conan lockfiles (`conan.lock`) can be embedded in notebook metadata for reproduc
 ### Reproducible execution
 
 ```bash
-mars run analysis.mars --locked --offline
+mars notebook run analysis.mars --locked --offline
 ```
 
 This requires `metadata.cpp_lockfile` to be present (set after first successful run).

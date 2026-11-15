@@ -16,12 +16,12 @@ supported.
 ## Command summary
 
 ```text
-mars new <file.mars> [language]
-mars open <file.mars>
-mars inspect <file.mars>
-mars run <file.mars> [options]
-mars import <file.ipynb> [file.mars]
-mars export <file.mars> [ipynb|html|md] [output]
+mars notebook new <file.mars> [language]
+mars notebook open <file.mars>
+mars notebook inspect <file.mars>
+mars notebook run <file.mars> [options]
+mars notebook import <file.ipynb> [file.mars]
+mars notebook export <file.mars> [ipynb|html|md] [output]
 mars kernel [list|restart|serve]
 mars mcp serve [--runtime replay|evcxr] [--offline] [--notebook <file.mars>] [--language <lang>]
 mars tools [list|call <name> [json] [--server <cmd>]]
@@ -30,22 +30,22 @@ mars tools [list|call <name> [json] [--server <cmd>]]
 ## Create and inspect notebooks
 
 ```bash
-mars new analysis.mars rust    # Rust (default)
-mars new analysis.mars python  # Python
-mars new analysis.mars r       # R
-mars inspect analysis.mars
+mars notebook new analysis.mars rust    # Rust (default)
+mars notebook new analysis.mars python  # Python
+mars notebook new analysis.mars r       # R
+mars notebook inspect analysis.mars
 ```
 
-`mars new` creates a `.mars` document with an initial Markdown cell.
-`mars inspect` prints a summary of the notebook's metadata, cells, and stored
+`mars notebook new` creates a `.mars` document with an initial Markdown cell.
+`mars notebook inspect` prints a summary of the notebook's metadata, cells, and stored
 outputs without executing it.
 
 ## Run a notebook
 
 ```bash
-mars run analysis.mars
-mars run analysis.mars --timeout-ms 5000
-mars run analysis.mars --locked --offline --deterministic --report
+mars notebook run analysis.mars
+mars notebook run analysis.mars --timeout-ms 5000
+mars notebook run analysis.mars --locked --offline --deterministic --report
 ```
 
 By default, a successful run writes execution counts and outputs back to the
@@ -53,7 +53,7 @@ input notebook. A failed run writes the partial state available before the
 failing cell. `--no-save` disables this write and is appropriate for read-only
 checks or CI probes.
 
-`mars run` saves partial outputs when execution fails or is interrupted and
+`mars notebook run` saves partial outputs when execution fails or is interrupted and
 returns a nonzero exit code.
 
 ### Multi-language execution
@@ -63,7 +63,7 @@ with `metadata.language` at the cell level. Project Mars maintains one runtime s
 per language:
 
 ```bash
-mars run analysis.mars  # Runs all cells with their respective language runtimes
+mars notebook run analysis.mars  # Runs all cells with their respective language runtimes
 ```
 
 ### Execution options
@@ -84,10 +84,10 @@ line; it is not a versioned machine-readable protocol.
 ## Import and export
 
 ```bash
-mars import notebook.ipynb analysis.mars
-mars export analysis.mars ipynb notebook.ipynb
-mars export analysis.mars html analysis.html
-mars export analysis.mars md analysis.md
+mars notebook import notebook.ipynb analysis.mars
+mars notebook export analysis.mars ipynb notebook.ipynb
+mars notebook export analysis.mars html analysis.html
+mars notebook export analysis.mars md analysis.md
 ```
 
 Markdown export preserves Markdown cells, writes code cells as fenced `rust`
@@ -109,7 +109,7 @@ Jupyter import maps language kernelspecs to Project Mars language metadata:
 ## Open a notebook
 
 ```bash
-mars open analysis.mars
+mars notebook open analysis.mars
 ```
 
 This opens the notebook with the platform default application.
@@ -166,21 +166,21 @@ The `--runtime` flag selects the execution backend:
 Run a notebook without changing it:
 
 ```bash
-mars run examples/mars/rust/01-getting-started/getting-started.mars --no-save --report
+mars notebook run examples/mars/rust/01-getting-started/getting-started.mars --no-save --report
 ```
 
 Run a dependency-backed notebook using only its stored resolution:
 
 ```bash
-mars run analysis.mars --deterministic --offline --report
+mars notebook run analysis.mars --deterministic --offline --report
 ```
 
 Generate default output paths:
 
 ```bash
-mars export analysis.mars html
-mars export analysis.mars ipynb
-mars export analysis.mars md
+mars notebook export analysis.mars html
+mars notebook export analysis.mars ipynb
+mars notebook export analysis.mars md
 ```
 
 Run all examples:

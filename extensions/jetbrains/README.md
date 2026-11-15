@@ -19,8 +19,8 @@ IntelliJ Platform plugin for [Project Mars](https://github.com/hieudoanm/mars) n
   between `cells[]` entries.
 - **Notebook actions** — Execute All Cells, Check Notebook (compile-check via
   `diagnose`), Send Input to Kernel (stdin), Create/Restore Checkpoint,
-  Run Notebook (`mars run`), Export to HTML / Markdown / `.ipynb`, Inspect
-  (`mars inspect`), Restart Kernel, Interrupt Execution.
+  Run Notebook (`mars notebook run`), Export to HTML / Markdown / `.ipynb`, Inspect
+  (`mars notebook inspect`), Restart Kernel, Interrupt Execution.
 - **Configurable CLI path** — Settings → Tools → Project Mars.
 
 ## Requirements
@@ -36,7 +36,7 @@ IntelliJ Platform plugin for [Project Mars](https://github.com/hieudoanm/mars) n
   Notebook API). Cells are edited as raw JSON inside the `.mars` document;
   there is no per-cell gutter, output pane, or markdown rendering. Execution
   results are shown in the Project Mars Kernel tool window and are **not** written
-  back into the file's `outputs` arrays — use `mars run` / the desktop app
+  back into the file's `outputs` arrays — use `mars notebook run` / the desktop app
   for full output persistence.
 - "Cell at caret" resolution pairs `cells[]` entries with `"source"` keys in
   document order; it assumes `.mars` files keep the canonical cell structure.

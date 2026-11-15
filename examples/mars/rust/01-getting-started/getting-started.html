@@ -89,7 +89,7 @@ fenced code blocks.</p>
 <li>ordered item</li>
 <li>another item</li>
 </ol>
-<pre><code>mars run getting-started.mars --report
+<pre><code>mars notebook run getting-started.mars --report
 </code></pre>
 </article><article class="cell cell-raw"><pre class="raw"><code>A raw cell is stored and exported verbatim.
 It is useful for generated text or content that should not be parsed.</code></pre></article><article class="cell cell-markdown"><h2>Your first code cell</h2>
@@ -136,12 +136,7 @@ initial = M
 <span class="rust-keyword">let</span> <span class="rust-ident">float_quotient</span> = <span class="rust-number">7.0</span> / <span class="rust-number">5.0</span>;
 <span class="rust-keyword">let</span> <span class="rust-ident">power</span> = <span class="rust-number">2_</span><span class="rust-type">i32</span>.<span class="rust-ident">pow</span>(<span class="rust-number">10</span>);
 
-(<span class="rust-ident">sum</span>, <span class="rust-ident">difference</span>, <span class="rust-ident">product</span>, <span class="rust-ident">quotient</span>, <span class="rust-ident">remainder</span>, <span class="rust-ident">float_quotient</span>, <span class="rust-ident">power</span>)</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
+(<span class="rust-ident">sum</span>, <span class="rust-ident">difference</span>, <span class="rust-ident">product</span>, <span class="rust-ident">quotient</span>, <span class="rust-ident">remainder</span>, <span class="rust-ident">float_quotient</span>, <span class="rust-ident">power</span>)</code></pre><div class="output output-text"><pre>(12, 2, 35, 1, 2, 1.4, 1024)
 </pre></div></article><article class="cell cell-markdown"><h2>Mutability and shadowing</h2>
 <p>Use <code>mut</code> when a binding changes. Shadowing creates a new binding with the same
 name, which is handy for changing a value's type.</p>
@@ -154,13 +149,7 @@ name, which is handy for changing a value's type.</p>
 <span class="rust-keyword">let</span> <span class="rust-ident">answer</span> = <span class="rust-ident">answer</span> * <span class="rust-number">2</span>;
 <span class="rust-keyword">let</span> <span class="rust-ident">answer</span>: <span class="rust-type">f64</span> = <span class="rust-ident">answer</span> <span class="rust-keyword">as</span> <span class="rust-type">f64</span> + <span class="rust-number">0.5</span>;
 
-<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;counter = {counter}\nanswer = {answer}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;counter = {counter}\nanswer = {answer}&quot;</span>))</code></pre><div class="output output-text"><pre>counter = 5
 answer = 42.5
 </pre></div></article><article class="cell cell-markdown"><h2>Strings</h2>
 <p><code>&amp;str</code> is a borrowed string slice, while <code>String</code> owns its contents. Both can
@@ -174,18 +163,10 @@ be formatted with <code>format!</code>, and many string methods return new value
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;greeting = {greeting}\nshout = {shout}\nwords = {words:?}\ncharacters = {character_count}\nreplaced = {replaced}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
+))</code></pre><div class="output output-text"><pre>greeting = Hello, Project Mars!
+shout = HELLO, PROJECT MARS!
+words = [&quot;Hello,&quot;, &quot;Project&quot;, &quot;Mars!&quot;]
+characters = 20
 replaced = Hello, notebooks!
 </pre></div></article><article class="cell cell-markdown"><h2>Control flow</h2>
 <p><code>if</code> is an expression, so it can produce a value. <code>match</code> compares patterns and
@@ -207,20 +188,7 @@ can bind parts of the value.</p>
     <span class="rust-ident">_</span> => <span class="rust-string">&quot;warm&quot;</span>,
 };
 
-<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;{temperature} C is {description}: {advice}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;{temperature} C is {description}: {advice}&quot;</span>))</code></pre><div class="output output-text"><pre>21 C is mild: A jacket is enough
 </pre></div></article><article class="cell cell-markdown"><h2>Loops</h2>
 <p><code>for</code> walks an iterator, <code>while</code> repeats while a condition holds, <code>while let</code>
 repeats while a pattern matches, and <code>loop</code> repeats until <code>break</code>.</p>
@@ -250,21 +218,7 @@ repeats while a pattern matches, and <code>loop</code> repeats until <code>break
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;countdown = {countdown:?}\ndoubled = {doubled}\npopped = {popped:?}\nloop_count = {loop_count}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
+))</code></pre><div class="output output-text"><pre>countdown = [5, 4, 3, 2, 1]
 doubled = 10
 popped = [3, 2, 1]
 loop_count = 3
@@ -283,25 +237,7 @@ expression is its return value when there is no semicolon.</p>
     <span class="rust-string">&quot;square(9) = {}\naverage([2, 4, 6, 8]) = {}&quot;</span>,
     <span class="rust-ident">square</span>(<span class="rust-number">9</span>),
     <span class="rust-ident">average</span>(&[<span class="rust-number">2.0</span>, <span class="rust-number">4.0</span>, <span class="rust-number">6.0</span>, <span class="rust-number">8.0</span>])
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
+))</code></pre><div class="output output-text"><pre>square(9) = 81
 average([2, 4, 6, 8]) = 5
 </pre></div></article><article class="cell cell-markdown"><h2>Tuples, arrays, and slices</h2>
 <p>Tuples group values of different types. Arrays have a fixed length. Slices
@@ -314,27 +250,7 @@ borrow a contiguous range from an array or vector.</p>
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;point = {point:?}\nx = {x}, y = {y}\narray = {array:?}\nslice = {slice:?}\ntotal = {array_total}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
+))</code></pre><div class="output output-text"><pre>point = (3, 4)
 x = 3, y = 4
 array = [10, 20, 30, 40]
 slice = [20, 30]
@@ -351,32 +267,7 @@ range, and inspect the first or last item safely with <code>Option</code>.</p>
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;primes = {primes:?}\nfirst = {first:?}\nlast = {last:?}\nmiddle = {middle:?}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
+))</code></pre><div class="output output-text"><pre>primes = [2, 3, 5, 7, 11, 13]
 first = Some(2)
 last = Some(13)
 middle = [3, 5, 7]
@@ -398,36 +289,7 @@ iterators without writing manual loops.</p>
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;numbers = {numbers:?}\nsquares = {squares:?}\nevens = {evens:?}\nsum = {total}\nproduct = {product}\nmax = {maximum:?}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
+))</code></pre><div class="output output-text"><pre>numbers = [1, 2, 3, 4, 5, 6]
 squares = [1, 4, 9, 16, 25, 36]
 evens = [2, 4, 6]
 sum = 21
@@ -449,42 +311,7 @@ simple.</p>
 <span class="rust-keyword">let</span> <span class="rust-keyword">mut</span> <span class="rust-ident">counts</span>: <span class="rust-type">Vec</span><(&<span class="rust-type">str</span>, <span class="rust-type">i32</span>)> = <span class="rust-ident">word_counts</span>.<span class="rust-ident">into_iter</span>().<span class="rust-ident">collect</span>();
 <span class="rust-ident">counts</span>.<span class="rust-ident">sort</span>();
 
-<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;{counts:?}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;{counts:?}&quot;</span>))</code></pre><div class="output output-text"><pre>[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
 </pre></div></article><article class="cell cell-markdown"><h2>Structs and methods</h2>
 <p>A <code>struct</code> groups related fields. An <code>impl</code> block adds methods, and <code>&amp;self</code>
 borrows the value without taking ownership.</p>
@@ -513,43 +340,7 @@ borrows the value without taking ownership.</p>
     <span class="rust-string">&quot;rectangle = {rectangle:?}\narea = {}\nperimeter = {}&quot;</span>,
     <span class="rust-ident">rectangle</span>.<span class="rust-ident">area</span>(),
     <span class="rust-ident">rectangle</span>.<span class="rust-ident">perimeter</span>()
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
+))</code></pre><div class="output output-text"><pre>rectangle = Rectangle { width: 3.0, height: 4.0 }
 area = 12
 perimeter = 14
 </pre></div></article><article class="cell cell-markdown"><h2>Enums and pattern matching</h2>
@@ -586,46 +377,7 @@ perimeter = 14
     .<span class="rust-ident">map</span>(|<span class="rust-ident">shape</span>| <span class="rust-macro">format</span>!(<span class="rust-string">&quot;{} = {:.2}&quot;</span>, <span class="rust-ident">shape</span>.<span class="rust-ident">name</span>(), <span class="rust-ident">shape</span>.<span class="rust-ident">area</span>()))
     .<span class="rust-ident">collect</span>();
 
-<span class="rust-ident">report</span>(<span class="rust-ident">summary</span>.<span class="rust-ident">join</span>(<span class="rust-string">&quot;\n&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
+<span class="rust-ident">report</span>(<span class="rust-ident">summary</span>.<span class="rust-ident">join</span>(<span class="rust-string">&quot;\n&quot;</span>))</code></pre><div class="output output-text"><pre>circle = 12.57
 rectangle = 12.00
 </pre></div></article><article class="cell cell-markdown"><h2>Option and Result</h2>
 <p><code>Option&lt;T&gt;</code> models a value that may be missing. <code>Result&lt;T, E&gt;</code> models an
@@ -655,48 +407,7 @@ combinators such as <code>map</code> and <code>unwrap_or</code>.</p>
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;good = {good:?}\nbad = {bad:?}\nfirst_even = {first_even:?}\nfallback = {fallback}\nparsed = {parsed}\ncategory = {category}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
+))</code></pre><div class="output output-text"><pre>good = Ok(42)
 bad = Err(&quot;`forty-two` is not a number&quot;)
 first_even = Some(2)
 fallback = -1
@@ -712,54 +423,7 @@ environment. They are commonly passed to iterator methods.</p>
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;offset = {offset}\nvalues = {values:?}\nadjusted = {adjusted:?}&quot;</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
+))</code></pre><div class="output output-text"><pre>offset = 10
 values = [1, 2, 3, 4]
 adjusted = [11, 12, 13, 14]
 </pre></div></article><article class="cell cell-markdown"><h2>Constants and statics</h2>
@@ -771,57 +435,7 @@ may be shared across threads. Both require an explicit type annotation.</p>
 <span class="rust-keyword">let</span> <span class="rust-ident">constant</span> = <span class="rust-ident">MAX_POINTS</span>;
 <span class="rust-keyword">let</span> <span class="rust-ident">static_ref</span>: &<span class="rust-string">&#39;static u32 = &amp;NEXT_ID;
 
-report(format!(&quot;MAX_POINTS = {MAX_POINTS}\nNEXT_ID = {NEXT_ID}\nstatic_ref = {static_ref}&quot;)</span>)</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
+report(format!(&quot;MAX_POINTS = {MAX_POINTS}\nNEXT_ID = {NEXT_ID}\nstatic_ref = {static_ref}&quot;)</span>)</code></pre><div class="output output-text"><pre>MAX_POINTS = 100
 NEXT_ID = 1
 static_ref = 1
 </pre></div></article><article class="cell cell-markdown"><h2>References and borrowing</h2>
@@ -834,60 +448,7 @@ reference from coexisting with any other reference to the same data.</p>
 <span class="rust-keyword">let</span> <span class="rust-ident">mut_ref</span> = &<span class="rust-keyword">mut</span> <span class="rust-ident">counter</span>;
 *<span class="rust-ident">mut_ref</span> += <span class="rust-number">1</span>;
 
-<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;total = {total}\nreference = {reference}\ncounter = {counter}&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;total = {total}\nreference = {reference}\ncounter = {counter}&quot;</span>))</code></pre><div class="output output-text"><pre>total = 100
 reference = 100
 counter = 6
 </pre></div></article><article class="cell cell-markdown"><h2>Modules</h2>
@@ -899,63 +460,7 @@ outside the module, and <code>use</code> brings names into the current scope.</p
     }
 }
 
-<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;math::double(21) = {}&quot;</span>, <span class="rust-ident">math</span>::<span class="rust-ident">double</span>(<span class="rust-number">21</span>)))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;math::double(21) = {}&quot;</span>, <span class="rust-ident">math</span>::<span class="rust-ident">double</span>(<span class="rust-number">21</span>)))</code></pre><div class="output output-text"><pre>math::double(21) = 42
 </pre></div></article><article class="cell cell-markdown"><h2>Macros</h2>
 <p>Declarative macros (<code>macro_rules!</code>) expand at compile time using pattern
 matching. They generate code from code, which is why their output can look
@@ -966,64 +471,7 @@ very different from the invocation.</p>
     };
 }
 
-<span class="rust-ident">report</span>(<span class="rust-macro">greet</span>!(<span class="rust-string">&quot;Project Mars&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
+<span class="rust-ident">report</span>(<span class="rust-macro">greet</span>!(<span class="rust-string">&quot;Project Mars&quot;</span>))</code></pre><div class="output output-text"><pre>hello, Project Mars
 </pre></div></article><article class="cell cell-markdown"><h2>Attributes</h2>
 <p>Attributes like <code>#[derive(...)]</code> attach metadata to items. The compiler uses
 them to generate code, enforce rules, or control warnings.</p>
@@ -1036,65 +484,7 @@ them to generate code, enforce rules, or control warnings.</p>
 <span class="rust-keyword">let</span> <span class="rust-ident">origin</span> = <span class="rust-ident">Point2D</span> { <span class="rust-ident">x</span>: <span class="rust-number">0</span>, <span class="rust-ident">y</span>: <span class="rust-number">0</span> };
 <span class="rust-keyword">let</span> <span class="rust-ident">other</span> = <span class="rust-ident">Point2D</span> { <span class="rust-ident">x</span>: <span class="rust-number">0</span>, <span class="rust-ident">y</span>: <span class="rust-number">0</span> };
 
-<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;origin = {origin:?}\norigin == other: {}&quot;</span>, <span class="rust-ident">origin</span> == <span class="rust-ident">other</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
+<span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(<span class="rust-string">&quot;origin = {origin:?}\norigin == other: {}&quot;</span>, <span class="rust-ident">origin</span> == <span class="rust-ident">other</span>))</code></pre><div class="output output-text"><pre>origin = Point2D { x: 0, y: 0 }
 origin == other: true
 </pre></div></article><article class="cell cell-markdown"><h2>Lifetimes, generics, and type aliases</h2>
 <p>Generics let you write functions and types that work for many types.
@@ -1115,67 +505,7 @@ report(format!(
     &quot;distance = {distance} m\nidentity(3) = {}\nfirst = {}&quot;,
     identity(3),
     pick_first(&amp;numbers)
-)</span>)</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
+)</span>)</code></pre><div class="output output-text"><pre>distance = 12.5 m
 identity(3) = 3
 first = 7
 </pre></div></article><article class="cell cell-markdown"><h2>Traits</h2>
@@ -1194,70 +524,7 @@ common interface.</p>
 
 <span class="rust-keyword">let</span> <span class="rust-ident">number</span> = <span class="rust-number">42</span>;
 
-<span class="rust-ident">report</span>(<span class="rust-ident">number</span>.<span class="rust-ident">describe</span>())</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
+<span class="rust-ident">report</span>(<span class="rust-ident">number</span>.<span class="rust-ident">describe</span>())</code></pre><div class="output output-text"><pre>integer 42
 </pre></div></article><article class="cell cell-markdown"><h2>Summary statistics</h2>
 <p>The next cell computes count, total, mean, minimum, maximum, and median for a
 small list of integers. This is the data-analysis example merged into the tour.</p>
@@ -1279,71 +546,7 @@ small list of integers. This is the data-analysis example merged into the tour.<
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;values = {values:?}\ncount = {}\ntotal = {total}\nmean = {mean}\nmin = {minimum:?}\nmax = {maximum:?}\nmedian = {median}&quot;</span>,
     <span class="rust-ident">values</span>.<span class="rust-ident">len</span>()
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
-values = [3, 7, 4, 9, 12, 6]
+))</code></pre><div class="output output-text"><pre>values = [3, 7, 4, 9, 12, 6]
 count = 6
 total = 41
 mean = 6.833333333333333
@@ -1373,78 +576,7 @@ the variance of <code>x</code>. This is the linear-regression example merged int
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;x mean = {x_mean}\ny mean = {y_mean}\nslope = {slope}\nintercept = {intercept}\nprediction at x = 5: {:.2}&quot;</span>,
     <span class="rust-ident">slope</span> * <span class="rust-number">5.0</span> + <span class="rust-ident">intercept</span>
-))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
-values = [3, 7, 4, 9, 12, 6]
-count = 6
-total = 41
-mean = 6.833333333333333
-min = Some(3)
-max = Some(12)
-median = 6.5
-x mean = 2.5
+))</code></pre><div class="output output-text"><pre>x mean = 2.5
 y mean = 5.05
 slope = 2.04
 intercept = -0.04999999999999982
@@ -1470,83 +602,7 @@ prediction at x = 5: 10.15
     .<span class="rust-ident">map</span>(|(<span class="rust-ident">name</span>, <span class="rust-ident">detail</span>)| <span class="rust-macro">format</span>!(<span class="rust-string">&quot;{name:width$}  {detail}&quot;</span>))
     .<span class="rust-ident">collect</span>();
 
-<span class="rust-ident">report</span>(<span class="rust-ident">summary</span>.<span class="rust-ident">join</span>(<span class="rust-string">&quot;\n&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[(&quot;be&quot;, 2), (&quot;not&quot;, 1), (&quot;or&quot;, 1), (&quot;to&quot;, 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err(&quot;`forty-two` is not a number&quot;)
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
-values = [3, 7, 4, 9, 12, 6]
-count = 6
-total = 41
-mean = 6.833333333333333
-min = Some(3)
-max = Some(12)
-median = 6.5
-x mean = 2.5
-y mean = 5.05
-slope = 2.04
-intercept = -0.04999999999999982
-prediction at x = 5: 10.15
-cells         markdown, code, raw
+<span class="rust-ident">report</span>(<span class="rust-ident">summary</span>.<span class="rust-ident">join</span>(<span class="rust-string">&quot;\n&quot;</span>))</code></pre><div class="output output-text"><pre>cells         markdown, code, raw
 basics        variables, types, operators
 flow          if, match, loops, functions
 collections   tuples, arrays, vectors, iterators, maps
@@ -1574,11 +630,11 @@ intentionally left out of this tour: procedural macros, which need a separate
 <tr><td><code>05-plotting/plotting.mars</code></td><td>Vector figures rendered as SVG output</td></tr>
 </tbody></table>
 <p>Useful commands:</p>
-<pre><code>mars run getting-started.mars --report   # execute and save outputs
-mars run getting-started.mars --no-save  # check without writing
-mars export getting-started.mars md      # Markdown export
-mars export getting-started.mars html    # HTML export
-mars export getting-started.mars pdf     # PDF export
+<pre><code>mars notebook run getting-started.mars --report   # execute and save outputs
+mars notebook run getting-started.mars --no-save  # check without writing
+mars notebook export getting-started.mars md      # Markdown export
+mars notebook export getting-started.mars html    # HTML export
+mars notebook export getting-started.mars pdf     # PDF export
 </code></pre>
 </article>
 </body>

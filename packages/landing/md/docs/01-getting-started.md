@@ -36,15 +36,15 @@ cargo run -p mars -- --help
 ## Create a notebook
 
 ```bash
-mars new analysis.mars
+mars notebook new analysis.mars
 ```
 
 This creates a `.mars` file with one Markdown cell. Specify a language:
 
 ```bash
-mars new analysis.mars rust    # Rust (default)
-mars new analysis.mars python  # Python
-mars new analysis.mars r       # R
+mars notebook new analysis.mars rust    # Rust (default)
+mars notebook new analysis.mars python  # Python
+mars notebook new analysis.mars r       # R
 ```
 
 Open it in the desktop app, VS Code, or edit the JSON directly.
@@ -59,14 +59,14 @@ cp examples/mars/rust/01-getting-started/getting-started.mars my-notebook.mars
 ## Run a notebook
 
 ```bash
-mars run analysis.mars
+mars notebook run analysis.mars
 ```
 
 By default, results are written back to the notebook. Use `--no-save` for a
 read-only check:
 
 ```bash
-mars run analysis.mars --no-save --report
+mars notebook run analysis.mars --no-save --report
 ```
 
 Code cells execute in order and share bindings. A later cell can use a value
@@ -85,11 +85,11 @@ cell level:
 
 ```bash
 # Create a Python notebook
-mars new analysis.mars python
+mars notebook new analysis.mars python
 # Create an R notebook
-mars new analysis.mars r
+mars notebook new analysis.mars r
 # Create a Julia notebook
-mars new analysis.mars julia
+mars notebook new analysis.mars julia
 ```
 
 Each language runs in its own persistent session:
@@ -100,9 +100,9 @@ Each language runs in its own persistent session:
 ## Export a notebook
 
 ```bash
-mars export analysis.mars html analysis.html
-mars export analysis.mars md analysis.md
-mars export analysis.mars ipynb analysis.ipynb
+mars notebook export analysis.mars html analysis.html
+mars notebook export analysis.mars md analysis.md
+mars notebook export analysis.mars ipynb analysis.ipynb
 ```
 
 Markdown export preserves Markdown cells, fences Rust code, and converts
@@ -111,9 +111,9 @@ tables, LaTeX, images, and offline charts into portable Markdown.
 When the output path is omitted, Project Mars derives one from the input file name:
 
 ```bash
-mars export analysis.mars html   # Creates analysis.html
-mars export analysis.mars md     # Creates analysis.md
-mars export analysis.mars ipynb   # Creates analysis.ipynb
+mars notebook export analysis.mars html   # Creates analysis.html
+mars notebook export analysis.mars md     # Creates analysis.md
+mars notebook export analysis.mars ipynb   # Creates analysis.ipynb
 ```
 
 ## Install the desktop app and VS Code extension
@@ -178,7 +178,7 @@ cd examples/mars
 Or run a single example:
 
 ```bash
-mars run examples/mars/rust/01-getting-started/getting-started.mars --report
+mars notebook run examples/mars/rust/01-getting-started/getting-started.mars --report
 ```
 
 ## Runtime helpers

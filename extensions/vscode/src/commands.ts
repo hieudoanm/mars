@@ -38,9 +38,9 @@ export async function runNotebook(): Promise<void> {
   const runArguments = config.get<string[]>('runArguments', []);
   const output = vscode.window.createOutputChannel('Project Mars');
   output.show(true);
-  output.appendLine(`$ ${cliPath} run ${document.fileName} ${runArguments.join(' ')}`.trim());
+  output.appendLine(`$ ${cliPath} notebook run ${document.fileName} ${runArguments.join(' ')}`.trim());
   try {
-    const result = await execFileAsync(cliPath, ['run', document.fileName, ...runArguments]);
+    const result = await execFileAsync(cliPath, ['notebook', 'run', document.fileName, ...runArguments]);
     if (result.stdout) output.append(result.stdout);
     if (result.stderr) output.append(result.stderr);
     void vscode.window.showInformationMessage('Project Mars notebook completed.');
@@ -72,7 +72,7 @@ export async function exportNotebook(format: 'html' | 'md', extension: string): 
   try {
     const config = vscode.workspace.getConfiguration('mars');
     const cliPath = config.get<string>('cliPath', 'mars');
-    await execFileAsync(cliPath, ['export', filePath, format, outputPath]);
+    await execFileAsync(cliPath, ['notebook', 'export', filePath, format, outputPath]);
     if (config.get<boolean>('previewAfterExport', true)) {
       await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(outputPath));
     } else {

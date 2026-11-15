@@ -29,6 +29,8 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
 ## Features
 
+**Mars Notebook** — Interactive computing platform:
+
 - Multi-language notebook platform supporting Rust, Python, R, Julia, and C++.
 - Typed notebook documents, validation, and atomic persistence.
 - Isolated execution with per-language persistent sessions.
@@ -40,6 +42,18 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 - Jupyter conversion with common rich MIME outputs.
 - Sanitized HTML rendering with KaTeX math and Vega-Lite charts.
 - Model Context Protocol (MCP) server for AI assistant integration.
+
+**Mars Lab** — Machine learning training studio:
+
+- 83 ML algorithms across 6 task types (classification, regression, clustering, anomaly detection, semi-supervised, reinforcement learning).
+- CSV dataset management with automatic type inference and missing value detection.
+- Pure Rust training pipeline with metrics, charts, and ONNX export.
+- SQLite persistence for datasets, jobs, and artefacts.
+- Job comparison and model versioning.
+- Desktop UI and CLI access for headless training.
+
+**Shared platform:**
+
 - Functional Tauri desktop editor with multi-notebook workspace, LSP integration, and rich UI.
 - Next.js landing site with comprehensive documentation and VS Code/Zed/JetBrains extensions.
 
@@ -51,13 +65,20 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 - Run Project Mars directly from the workspace:
 
 ```bash
-cargo run -p mars -- new analysis.mars
-cargo run -p mars -- inspect analysis.mars
-cargo run -p mars -- run analysis.mars
-cargo run -p mars -- import notebook.ipynb analysis.mars
-cargo run -p mars -- export analysis.mars ipynb notebook.ipynb
-cargo run -p mars -- export analysis.mars html analysis.html
-cargo run -p mars -- export analysis.mars md analysis.md
+# Notebook commands
+cargo run -p mars -- notebook new analysis.mars
+cargo run -p mars -- notebook inspect analysis.mars
+cargo run -p mars -- notebook run analysis.mars
+cargo run -p mars -- notebook import notebook.ipynb analysis.mars
+cargo run -p mars -- notebook export analysis.mars ipynb notebook.ipynb
+cargo run -p mars -- notebook export analysis.mars html analysis.html
+cargo run -p mars -- notebook export analysis.mars md analysis.md
+
+# Lab commands
+cargo run -p mars -- lab algorithms --task classification
+cargo run -p mars -- lab dataset data.csv
+cargo run -p mars -- lab train --dataset-id <uuid> --task classification --algorithm random_forest_classifier --features age,income --label target
+
 cargo test --workspace
 ```
 
@@ -81,7 +102,8 @@ pnpm run build
 
 ```bash
 cargo install --path crates/mars-cli
-mars new analysis.mars
+mars notebook new analysis.mars
+mars lab algorithms --task classification
 ```
 
 ### Desktop application
@@ -110,9 +132,9 @@ npm run tauri build
 
 - See [`docs/14-release.md`](docs/14-release.md) for signing, platform targets, and artifact verification.
 
-- `mars run` reports each executable cell's position, execution count, duration, output count, and captured output.
+- `mars notebook run` reports each executable cell's position, execution count, duration, output count, and captured output.
 - Failed cells persist partial results and exit unsuccessfully after reporting.
-- Long-running cells can be bounded with `mars run analysis.mars --timeout-ms 5000`.
+- Long-running cells can be bounded with `mars notebook run analysis.mars --timeout-ms 5000`.
 - Timed-out cells are marked interrupted and not committed to the persistent runtime session.
 
 - The Rust cell editor integrates rust-analyzer over LSP: diagnostics,
@@ -169,17 +191,23 @@ Project Mars fits into a real workflow — start in the terminal, then move to t
 
 **From the command line.** Create a notebook, run every cell, inspect it, and export it to HTML — all headless, scriptable, and CI-friendly.
 
-![Project Mars CLI session: mars new, run, inspect, --version, export, and kernel restart](assets/demo/png/terminal.png)
+![Project Mars CLI session: mars notebook new, run, inspect, export, and kernel restart](assets/demo/png/terminal.png)
 
 Or watch it run: [`assets/demo/gif/demo.gif`](assets/demo/gif/demo.gif) animates the same session line by line.
 
-**Into the desktop app.** Launch `mars-desktop` (or the Tauri build) and pick up where the CLI left off — same `.mars` files, same kernel semantics.
+**Into the desktop app.** Launch `mars-desktop` (or the Tauri build) and pick your workspace — Notebook for interactive computing or Lab for machine learning.
 
-![Project Mars desktop welcome screen](assets/demo/png/desktop-welcome.png)
+![Project Mars desktop welcome screen showing Notebook and Lab options](assets/demo/png/desktop-welcome.png)
 
-**A real notebook.** Markdown cells render as prose, Rust cells get syntax highlighting and persistent variables, and outputs — text, errors, tables, images, and charts — appear inline beneath each cell.
+**Mars Notebook.** Markdown cells render as prose, Rust cells get syntax highlighting and persistent variables, and outputs — text, errors, tables, images, and charts — appear inline beneath each cell.
 
-![Project Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-overview.png)
+![Project Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-notebook.png)
+
+**Mars Lab.** Upload CSV datasets, train models with 83 algorithms, and export ONNX artefacts — all in a visual interface.
+
+![Project Mars Lab interface with datasets and training jobs](assets/demo/png/desktop-lab.png)
+
+![Project Mars Lab new training job form](assets/demo/png/desktop-lab-new-job.png)
 
 Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG exports in `png/`, animated captures in `gif/`). Regenerate the terminal SVG/PNG/GIF with [`assets/demo/svg-to-gif.sh`](assets/demo/svg-to-gif.sh) (requires `rsvg-convert` and `ffmpeg`). Regenerate the app captures with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which records the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright. The social preview card is [`assets/branding/png/og.png`](assets/branding/png/og.png).
 
@@ -211,6 +239,10 @@ Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG e
 | [`docs/15-evcxr-experiment.md`](docs/15-evcxr-experiment.md) | Evcxr backend experiment analysis                            |
 | [`docs/18-mcp.md`](docs/18-mcp.md)                           | Model Context Protocol integration                           |
 | [`docs/02-branding.md`](docs/02-branding.md)                 | Canonical logo and social-preview assets                     |
+| [`docs/13-lab-overview.md`](docs/13-lab-overview.md)         | Mars Lab features and architecture                           |
+| [`docs/14-lab-cli.md`](docs/14-lab-cli.md)                   | Mars Lab CLI commands and examples                           |
+| [`docs/15-lab-algorithms.md`](docs/15-lab-algorithms.md)     | Complete algorithm catalogue                                 |
+| [`docs/16-lab-workflows.md`](docs/16-lab-workflows.md)       | Common training workflows                                    |
 
 ## Landing site
 

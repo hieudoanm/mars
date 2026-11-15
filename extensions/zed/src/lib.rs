@@ -7,7 +7,7 @@ use zed_extension_api as zed;
 /// Notebook cell execution is intentionally not wired here: the
 /// `mars kernel serve` protocol is not LSP, and Zed has no notebook UI, so
 /// running cells is left to the Project Mars desktop app, the VS Code extension, or
-/// the `mars` CLI (`mars run <file.mars>`).
+/// the `mars` CLI (`mars notebook run <file.mars>`).
 pub struct MarsExtension;
 
 impl zed::Extension for MarsExtension {

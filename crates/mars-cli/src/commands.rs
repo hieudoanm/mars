@@ -18,34 +18,12 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
     };
 
     match command {
-        "new" => {
-            let path = args.get(1).ok_or_else(crate::util::usage)?;
-            let language = args.get(2).map(String::as_str).unwrap_or("rust");
-            if language.trim().is_empty() {
-                return Err("language must not be empty".to_owned());
-            }
-            let mut notebook = Notebook::new();
-            notebook.metadata.language = language.to_owned();
-            notebook
-                .add_cell(Cell::new(CellType::Markdown, "# New Project Mars notebook"))
-                .map_err(|error| error.to_string())?;
-            save_atomic(&notebook, path).map_err(|error| error.to_string())?;
-            println!("Created {path}");
-            Ok(())
-        }
-        "inspect" => {
-            let path = args.get(1).ok_or_else(crate::util::usage)?;
-            let notebook = load(path).map_err(|error| error.to_string())?;
-            println!("format_version: {}", notebook.format_version);
-            println!("language: {}", notebook.metadata.language);
-            println!("cells: {}", notebook.cells.len());
-            Ok(())
-        }
-        "open" => {
-            let path = args.get(1).ok_or_else(crate::util::usage)?;
-            load(path).map_err(|error| error.to_string())?;
-            crate::util::open_with_system(path)?;
-            Ok(())
+        "notebook" => run_notebook_command(&args[1..]),
+        "new" | "inspect" | "open" | "run" | "import" | "export" => {
+            // Backwards compatibility: redirect legacy commands to notebook subcommand
+            let mut new_args = vec!["notebook".to_owned()];
+            new_args.extend(args);
+            run_notebook_command(&new_args[1..])
         }
         "kernel" => match args.get(1).map(String::as_str) {
             Some("list") => {
@@ -80,13 +58,52 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
         },
         "lab" => crate::lab::run_lab(&args[1..]),
         "tools" => crate::mcp::run_tools(&args[1..]),
+        _ => Err(crate::util::usage()),
+    }
+}
+
+fn run_notebook_command(args: &[String]) -> Result<(), String> {
+    let Some(command) = args.first().map(String::as_str) else {
+        return Err(crate::util::notebook_usage());
+    };
+
+    match command {
+        "new" => {
+            let path = args.get(1).ok_or_else(crate::util::notebook_usage)?;
+            let language = args.get(2).map(String::as_str).unwrap_or("rust");
+            if language.trim().is_empty() {
+                return Err("language must not be empty".to_owned());
+            }
+            let mut notebook = Notebook::new();
+            notebook.metadata.language = language.to_owned();
+            notebook
+                .add_cell(Cell::new(CellType::Markdown, "# New Project Mars notebook"))
+                .map_err(|error| error.to_string())?;
+            save_atomic(&notebook, path).map_err(|error| error.to_string())?;
+            println!("Created {path}");
+            Ok(())
+        }
+        "inspect" => {
+            let path = args.get(1).ok_or_else(crate::util::notebook_usage)?;
+            let notebook = load(path).map_err(|error| error.to_string())?;
+            println!("format_version: {}", notebook.format_version);
+            println!("language: {}", notebook.metadata.language);
+            println!("cells: {}", notebook.cells.len());
+            Ok(())
+        }
+        "open" => {
+            let path = args.get(1).ok_or_else(crate::util::notebook_usage)?;
+            load(path).map_err(|error| error.to_string())?;
+            crate::util::open_with_system(path)?;
+            Ok(())
+        }
         "run" => {
-            let path = args.get(1).ok_or_else(crate::util::usage)?;
+            let path = args.get(1).ok_or_else(crate::util::notebook_usage)?;
             let options = mars::options::parse_run_options(&args[2..])?;
             run_notebook(path, &options)
         }
         "import" => {
-            let input = args.get(1).ok_or_else(crate::util::usage)?;
+            let input = args.get(1).ok_or_else(crate::util::notebook_usage)?;
             let output = args.get(2).map_or_else(
                 || crate::util::default_mars_path(input),
                 |path| Path::new(path).to_path_buf(),
@@ -98,7 +115,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
             Ok(())
         }
         "export" => {
-            let input = args.get(1).ok_or_else(crate::util::usage)?;
+            let input = args.get(1).ok_or_else(crate::util::notebook_usage)?;
             let format = args.get(2).map(String::as_str).unwrap_or("ipynb");
             let mut page_size_str = "a4";
             let mut output: Option<&str> = None;
@@ -129,7 +146,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
             println!("Exported {} -> {}", input, output.display());
             Ok(())
         }
-        _ => Err(crate::util::usage()),
+        _ => Err(crate::util::notebook_usage()),
     }
 }
 
@@ -153,7 +170,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
     let mut sessions: std::collections::HashMap<String, Box<dyn mars_runtime::RuntimeBackend>> =
         std::collections::HashMap::new();
     // Forwards process stdin to whichever language runtime is executing so
-    // interactive prompts (`input()`, `mars_prompt`) work under `mars run`.
+    // interactive prompts (`input()`, `mars_prompt`) work under `mars notebook run`.
     // Lines are queued until a writer for the active language exists; stdin
     // EOF is replayed to every writer (present and future) so prompts fail
     // fast with EOF instead of hanging headless runs.

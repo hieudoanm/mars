@@ -53,7 +53,7 @@ Three motivations drove the project:
 
 1. **Teaching.** A Rust notebook can show students the language in a runnable, explorable format. Variables persist across cells, so you can experiment with ownership, iterators, and generics the way you would in a REPL, but with a document that stays saved and shareable.
 2. **Data science and ML.** The Rust ecosystem — `polars`, `ndarray`, `linfa`, `plotters` — is maturing fast. Project Mars gives those libraries a notebook home where they can be explored interactively, without the overhead of a Python interpreter.
-3. **Reproducibility.** A `.mars` notebook is a JSON document with stored outputs. Execute it with `mars run`, and you get deterministic results. No environment drift, no missing dependencies, no "it worked on my machine."
+3. **Reproducibility.** A `.mars` notebook is a JSON document with stored outputs. Execute it with `mars notebook run`, and you get deterministic results. No environment drift, no missing dependencies, no "it worked on my machine."
 
 Project Mars is open source, MIT licensed, and built as a modular Cargo workspace. The execution engine runs Rust code in an isolated process, so untrusted notebooks cannot touch the desktop application. The CLI works headless, so notebooks can be part of CI pipelines.
 

@@ -1,7 +1,11 @@
 use std::process::Command;
 
 pub fn usage() -> String {
-    "usage: mars new <file.mars> [language] | mars open <file.mars> | mars inspect <file.mars> | mars run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars import <file.ipynb> [file.mars] | mars export <file.mars> [ipynb|html|md|pdf] [--page-size=<a4|letter|legal|...>] [output] | mars kernel [list|restart|serve [--runtime replay|evcxr] [--notebook <file.mars>] [--language <lang>]] | mars mcp serve [--runtime replay|evcxr] [--offline] [--notebook <file.mars>] [--language <lang>] | mars lab <algorithms|dataset|datasets|train|job|jobs|export> ... | mars tools [list|call <name> [json] [--server <cmd>]]".to_owned()
+    "usage: mars notebook <new|inspect|open|run|import|export> ... | mars kernel [list|restart|serve] | mars mcp serve ... | mars lab <algorithms|dataset|datasets|train|job|jobs|export> ... | mars tools [list|call <name> [json] [--server <cmd>]]".to_owned()
+}
+
+pub fn notebook_usage() -> String {
+    "usage: mars notebook new <file.mars> [language] | mars notebook inspect <file.mars> | mars notebook open <file.mars> | mars notebook run <file.mars> [--runtime replay|evcxr] [--timeout-ms <milliseconds>] [--offline] [--locked] [--deterministic] [--no-save] [--report] | mars notebook import <file.ipynb> [file.mars] | mars notebook export <file.mars> [ipynb|html|md|pdf] [--page-size=<a4|letter|legal|...>] [output]".to_owned()
 }
 
 pub fn open_with_system(path: &str) -> Result<(), String> {

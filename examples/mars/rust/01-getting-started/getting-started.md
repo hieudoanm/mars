@@ -54,7 +54,7 @@ fenced code blocks.
 2. another item
 
 ```bash
-mars run getting-started.mars --report
+mars notebook run getting-started.mars --report
 ```
 
 ```text
@@ -129,11 +129,6 @@ let power = 2_i32.pow(10);
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 ```
 
@@ -156,12 +151,6 @@ report(format!("counter = {counter}\nanswer = {answer}"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
 ```
@@ -185,18 +174,10 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
 greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
+shout = HELLO, PROJECT MARS!
+words = ["Hello,", "Project", "Mars!"]
+characters = 20
 replaced = Hello, notebooks!
 ```
 
@@ -227,19 +208,6 @@ report(format!("{temperature} C is {description}: {advice}"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
 ```
 
@@ -279,20 +247,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
 countdown = [5, 4, 3, 2, 1]
 doubled = 10
 popped = [3, 2, 1]
@@ -321,24 +275,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
 square(9) = 81
 average([2, 4, 6, 8]) = 5
 ```
@@ -361,26 +297,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
 point = (3, 4)
 x = 3, y = 4
 array = [10, 20, 30, 40]
@@ -407,31 +323,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
 primes = [2, 3, 5, 7, 11, 13]
 first = Some(2)
 last = Some(13)
@@ -463,35 +354,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
 numbers = [1, 2, 3, 4, 5, 6]
 squares = [1, 4, 9, 16, 25, 36]
 evens = [2, 4, 6]
@@ -523,41 +385,6 @@ report(format!("{counts:?}"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
 [("be", 2), ("not", 1), ("or", 1), ("to", 2)]
 ```
 
@@ -596,42 +423,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
 rectangle = Rectangle { width: 3.0, height: 4.0 }
 area = 12
 perimeter = 14
@@ -678,45 +469,6 @@ report(summary.join("\n"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
 circle = 12.57
 rectangle = 12.00
 ```
@@ -756,47 +508,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
 good = Ok(42)
 bad = Err("`forty-two` is not a number")
 first_even = Some(2)
@@ -822,53 +533,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
 offset = 10
 values = [1, 2, 3, 4]
 adjusted = [11, 12, 13, 14]
@@ -890,56 +554,6 @@ report(format!("MAX_POINTS = {MAX_POINTS}\nNEXT_ID = {NEXT_ID}\nstatic_ref = {st
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
 MAX_POINTS = 100
 NEXT_ID = 1
 static_ref = 1
@@ -962,59 +576,6 @@ report(format!("total = {total}\nreference = {reference}\ncounter = {counter}"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
 total = 100
 reference = 100
 counter = 6
@@ -1036,62 +597,6 @@ report(format!("math::double(21) = {}", math::double(21)))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
 math::double(21) = 42
 ```
 
@@ -1112,63 +617,6 @@ report(greet!("Project Mars"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
 hello, Project Mars
 ```
 
@@ -1191,64 +639,6 @@ report(format!("origin = {origin:?}\norigin == other: {}", origin == other))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 ```
@@ -1279,66 +669,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
 distance = 12.5 m
 identity(3) = 3
 first = 7
@@ -1367,69 +697,6 @@ report(number.describe())
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
 integer 42
 ```
 
@@ -1461,70 +728,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
 values = [3, 7, 4, 9, 12, 6]
 count = 6
 total = 41
@@ -1564,77 +767,6 @@ report(format!(
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
-values = [3, 7, 4, 9, 12, 6]
-count = 6
-total = 41
-mean = 6.833333333333333
-min = Some(3)
-max = Some(12)
-median = 6.5
 x mean = 2.5
 y mean = 5.05
 slope = 2.04
@@ -1670,82 +802,6 @@ report(summary.join("\n"))
 ```
 
 ```text
-language = Rust
-year = 2024
-pi = 3.141592653589793
-is_fun = true
-initial = M
-(12, 2, 35, 1, 2, 1.4, 1024)
-counter = 5
-answer = 42.5
-greeting = Hello, Project Mars!
-shout = HELLO, MARS!
-words = ["Hello,", "Project Mars!"]
-characters = 12
-replaced = Hello, notebooks!
-21 C is mild: A jacket is enough
-countdown = [5, 4, 3, 2, 1]
-doubled = 10
-popped = [3, 2, 1]
-loop_count = 3
-square(9) = 81
-average([2, 4, 6, 8]) = 5
-point = (3, 4)
-x = 3, y = 4
-array = [10, 20, 30, 40]
-slice = [20, 30]
-total = 100
-primes = [2, 3, 5, 7, 11, 13]
-first = Some(2)
-last = Some(13)
-middle = [3, 5, 7]
-numbers = [1, 2, 3, 4, 5, 6]
-squares = [1, 4, 9, 16, 25, 36]
-evens = [2, 4, 6]
-sum = 21
-product = 720
-max = Some(6)
-[("be", 2), ("not", 1), ("or", 1), ("to", 2)]
-rectangle = Rectangle { width: 3.0, height: 4.0 }
-area = 12
-perimeter = 14
-circle = 12.57
-rectangle = 12.00
-good = Ok(42)
-bad = Err("`forty-two` is not a number")
-first_even = Some(2)
-fallback = -1
-parsed = parsed 42
-category = pass
-offset = 10
-values = [1, 2, 3, 4]
-adjusted = [11, 12, 13, 14]
-MAX_POINTS = 100
-NEXT_ID = 1
-static_ref = 1
-total = 100
-reference = 100
-counter = 6
-math::double(21) = 42
-hello, Project Mars
-origin = Point2D { x: 0, y: 0 }
-origin == other: true
-distance = 12.5 m
-identity(3) = 3
-first = 7
-integer 42
-values = [3, 7, 4, 9, 12, 6]
-count = 6
-total = 41
-mean = 6.833333333333333
-min = Some(3)
-max = Some(12)
-median = 6.5
-x mean = 2.5
-y mean = 5.05
-slope = 2.04
-intercept = -0.04999999999999982
-prediction at x = 5: 10.15
 cells         markdown, code, raw
 basics        variables, types, operators
 flow          if, match, loops, functions
@@ -1783,9 +839,9 @@ Continue with:
 Useful commands:
 
 ```bash
-mars run getting-started.mars --report   # execute and save outputs
-mars run getting-started.mars --no-save  # check without writing
-mars export getting-started.mars md      # Markdown export
-mars export getting-started.mars html    # HTML export
-mars export getting-started.mars pdf     # PDF export
+mars notebook run getting-started.mars --report   # execute and save outputs
+mars notebook run getting-started.mars --no-save  # check without writing
+mars notebook export getting-started.mars md      # Markdown export
+mars notebook export getting-started.mars html    # HTML export
+mars notebook export getting-started.mars pdf     # PDF export
 ```

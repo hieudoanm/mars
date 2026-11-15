@@ -32,10 +32,10 @@ To execute Project Mars notebooks from Zed, use the CLI:
 
 ```bash
 # Run the notebook
-mars run notebook.mars --report
+mars notebook run notebook.mars --report
 
 # Open in the desktop app for interactive editing
-mars open notebook.mars
+mars notebook open notebook.mars
 ```
 
 Or configure a Zed task to run `mars` on the current file.

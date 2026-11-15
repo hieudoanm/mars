@@ -47,7 +47,7 @@ julia --version
 ## Creating a Julia Notebook
 
 ```bash
-mars new analysis.mars julia
+mars notebook new analysis.mars julia
 ```
 
 Or set the language in notebook metadata:
@@ -222,5 +222,5 @@ should use the desktop application for full functionality.
 A Julia introduction example is available at `examples/mars/julia/julia-intro.mars`:
 
 ```bash
-mars run examples/mars/julia/julia-intro.mars --report
+mars notebook run examples/mars/julia/julia-intro.mars --report
 ```

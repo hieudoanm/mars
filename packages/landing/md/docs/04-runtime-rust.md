@@ -162,7 +162,7 @@ After a successful run with dependencies, Project Mars generates a `Cargo.lock` 
 
 ```bash
 # Run using only the stored lockfile
-mars run analysis.mars --locked --offline --deterministic --report
+mars notebook run analysis.mars --locked --offline --deterministic --report
 ```
 
 ## Diagnostics

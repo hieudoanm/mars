@@ -43,7 +43,7 @@ JetBrains IDEs have no notebook-cell editor API (unlike VS Code's Notebook
 API). Cells are edited as raw JSON inside the `.mars` document; there is no
 per-cell gutter, output pane, or markdown rendering. Execution results appear
 in the Project Mars Kernel tool window and are **not** written back into the file's
-`outputs` arrays — use `mars run` or the desktop app for full output
+`outputs` arrays — use `mars notebook run` or the desktop app for full output
 persistence.
 
 ## Supported IDEs

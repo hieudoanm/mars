@@ -40,14 +40,10 @@ fn default_export_paths_cover_formats() {
 fn usage_mentions_all_command_groups() {
     let usage = usage();
     for fragment in [
-        "mars new",
-        "mars open",
-        "mars inspect",
-        "mars run",
-        "mars import",
-        "mars export",
+        "mars notebook",
         "mars kernel",
         "mars mcp serve",
+        "mars lab",
         "mars tools",
     ] {
         assert!(usage.contains(fragment), "missing {fragment}");

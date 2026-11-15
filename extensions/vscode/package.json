@@ -179,7 +179,7 @@
             "type": "string"
           },
           "default": [],
-          "description": "Additional arguments passed to `mars run`."
+          "description": "Additional arguments passed to `mars notebook run`."
         },
         "mars.executionTimeout": {
           "type": "number",

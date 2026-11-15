@@ -124,7 +124,7 @@ Manage Workspace Trust** to trust the folder if figures show as text.
 | Setting                   | Default    | Description                               |
 | ------------------------- | ---------- | ----------------------------------------- |
 | `mars.cliPath`            | `"mars"`   | Path to the Project Mars CLI executable           |
-| `mars.runArguments`       | `[]`       | Additional arguments passed to `mars run` |
+| `mars.runArguments`       | `[]`       | Additional arguments passed to `mars notebook run` |
 | `mars.previewAfterExport` | `true`     | Automatically open the exported file      |
 | `mars.executionTimeout`   | `30000`    | Execution timeout in milliseconds         |
 | `mars.runtime`            | `"replay"` | Runtime backend: `"replay"` or `"evcxr"`  |
@@ -145,7 +145,7 @@ If cell execution fails:
 
 1. Check the VS Code output panel for detailed error messages
 2. Ensure the notebook has valid Rust syntax
-3. Try running the notebook from the CLI: `mars run notebook.mars --report`
+3. Try running the notebook from the CLI: `mars notebook run notebook.mars --report`
 4. For dependency-backed notebooks, ensure Cargo is installed
 
 ### SVG not rendering

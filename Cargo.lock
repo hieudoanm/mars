@@ -3193,7 +3193,7 @@ dependencies = [
  "clap",
  "linfa",
  "linfa-clustering",
- "ndarray 0.15.6",
+ "ndarray 0.16.1",
  "onnx-protobuf",
  "polars",
  "polars-lazy",
@@ -4003,8 +4003,6 @@ checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 [[package]]
 name = "onnx-protobuf"
 version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c82bcd4b77209b2f1e3de24e71272dffa46670e36ee0bc29d28d60f4e376d08"
 dependencies = [
  "protobuf",
 ]

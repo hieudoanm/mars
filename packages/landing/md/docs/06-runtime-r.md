@@ -46,7 +46,7 @@ Rscript --version
 ## Creating an R Notebook
 
 ```bash
-mars new analysis.mars r
+mars notebook new analysis.mars r
 ```
 
 Or set the language in notebook metadata:
@@ -230,5 +230,5 @@ should use the desktop application for full functionality.
 An R introduction example is available at `examples/mars/r/r-intro.mars`:
 
 ```bash
-mars run examples/mars/r/r-intro.mars --report
+mars notebook run examples/mars/r/r-intro.mars --report
 ```

@@ -15,7 +15,7 @@ No Evcxr types enter `mars-core`, and `.mars` serialization is unchanged.
 
 The kernel selects the existing replay runtime unless explicitly opted in.
 Requests and results continue through the existing `RuntimeBackend`, kernel,
-and `mars-protocol` output types. CLI `mars run` also uses the backend factory.
+and `mars-protocol` output types. CLI `mars notebook run` also uses the backend factory.
 The experimental runtime does not implement Project Mars's embedded Cargo.lock
 semantics; it rejects `--locked` and embedded locks rather than claiming
 reproducibility it cannot provide. Dependency names and values are validated

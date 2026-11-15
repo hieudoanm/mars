@@ -66,7 +66,7 @@ This discovers every `.mars` notebook recursively, executes them in sorted order
 
 ```bash
 cd mars
-mars run rust/01-getting-started/getting-started.mars --report
+mars notebook run rust/01-getting-started/getting-started.mars --report
 ```
 
 Or without the `--report` flag for default output.
@@ -77,7 +77,7 @@ After editing an example, regenerate its export:
 
 ```bash
 cd mars
-mars export rust/01-getting-started/getting-started.mars md rust/01-getting-started/getting-started.md
+mars notebook export rust/01-getting-started/getting-started.mars md rust/01-getting-started/getting-started.md
 ```
 
 ### Requirements
@@ -167,8 +167,8 @@ See individual README files in each directory:
 Convert Jupyter notebooks to Project Mars format:
 
 ```bash
-mars import jupyter/python/notebook.ipynb mars-python.mars
-mars run mars-python.mars
+mars notebook import jupyter/python/notebook.ipynb mars-python.mars
+mars notebook run mars-python.mars
 ```
 
 ### Exporting from Project Mars
@@ -176,7 +176,7 @@ mars run mars-python.mars
 Convert Project Mars notebooks to Jupyter format:
 
 ```bash
-mars export mars/python/01-getting-started/getting-started.mars ipynb notebook.ipynb
+mars notebook export mars/python/01-getting-started/getting-started.mars ipynb notebook.ipynb
 ```
 
 ## Common Features Across Examples

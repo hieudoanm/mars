@@ -39,7 +39,7 @@ Project Mars removes the markers and turns a standalone SVG payload into an `ima
 
 ## Multi-language notebooks
 
-`mars run` keeps one runtime per language found in the notebook. For example, a notebook with Rust, Python, and R cells maintains three separate runtime sessions. Cargo dependency options apply only to Rust cells. `mars kernel serve` binds a single language per connection (`--language` overrides the notebook's `metadata.language`).
+`mars notebook run` keeps one runtime per language found in the notebook. For example, a notebook with Rust, Python, and R cells maintains three separate runtime sessions. Cargo dependency options apply only to Rust cells. `mars kernel serve` binds a single language per connection (`--language` overrides the notebook's `metadata.language`).
 
 ## Performance considerations
 

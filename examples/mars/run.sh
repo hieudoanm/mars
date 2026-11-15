@@ -32,13 +32,13 @@ while IFS= read -r file; do
     relative_path="${file#"$SCRIPT_DIR"/}"
     echo "Running: $relative_path"
     echo "-------------------"
-    mars run "$file" --report
+    mars notebook run "$file" --report
 
     base="${file%.mars}"
     echo "Exporting: $(basename "$base").md / .pdf / .html"
-    mars export "$file" md "${base}.md"
-    mars export "$file" pdf "${base}.pdf"
-    mars export "$file" html "${base}.html"
+    mars notebook export "$file" md "${base}.md"
+    mars notebook export "$file" pdf "${base}.pdf"
+    mars notebook export "$file" html "${base}.html"
     echo ""
 done < <(find "$SCRIPT_DIR" -type f -name '*.mars' -print | LC_ALL=C sort)
 

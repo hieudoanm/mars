@@ -342,7 +342,7 @@
     {
       "id": "next-steps",
       "cell_type": "markdown",
-      "source": "## Next steps\n\n- **Rich output**: trailing expressions print via `print()`/`str()`; use\n  `cat()` for unadorned output.\n- **Packages**: `install.packages(\"ggplot2\")` then `library(ggplot2)` adds\n  grammar-of-graphics plotting.\n- **Interactive input**: `readline(\"prompt\")` is not supported in Project Mars's R\n  kernel yet — input prompts are a Python/Julia feature.\n- **Jupyter interop**: `mars import notebook.ipynb` and\n  `mars export notebook.mars ipynb` convert between formats.\n- Try the [Python](../python/01-getting-started/getting-started.mars) and\n  [Julia](../julia/julia-intro.mars) introductions, or the Rust tour in\n  `../rust/01-getting-started/`.",
+      "source": "## Next steps\n\n- **Rich output**: trailing expressions print via `print()`/`str()`; use\n  `cat()` for unadorned output.\n- **Packages**: `install.packages(\"ggplot2\")` then `library(ggplot2)` adds\n  grammar-of-graphics plotting.\n- **Interactive input**: `readline(\"prompt\")` is not supported in Project Mars's R\n  kernel yet — input prompts are a Python/Julia feature.\n- **Jupyter interop**: `mars notebook import notebook.ipynb` and\n  `mars notebook export notebook.mars ipynb` convert between formats.\n- Try the [Python](../python/01-getting-started/getting-started.mars) and\n  [Julia](../julia/julia-intro.mars) introductions, or the Rust tour in\n  `../rust/01-getting-started/`.",
       "metadata": {},
       "outputs": []
     }

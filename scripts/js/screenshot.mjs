@@ -31,11 +31,67 @@ await page.goto(`${base}/`);
 await page.waitForTimeout(800);
 
 const welcome = page.locator('[data-component="WelcomeView"]');
-if (await welcome.isVisible()) {
+const productWelcome = page.locator('[data-component="ProductWelcome"]');
+
+// Capture product selection screen (Notebook vs Lab)
+if (await productWelcome.isVisible()) {
+  await page.screenshot({ path: path.join(out, 'desktop-welcome.png') });
+
+  // Navigate to Lab
+  await page.getByRole('button', { name: /mars lab/i }).click();
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: path.join(out, 'desktop-lab.png') });
+
+  // Navigate to new job form
+  const newJobButton = page.getByRole('button', { name: /new training job/i });
+  if (await newJobButton.isVisible()) {
+    await newJobButton.click();
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: path.join(out, 'desktop-lab-new-job.png') });
+  }
+
+  // Go back to lab home, then to product selection
+  const backToHome = page.getByRole('button', { name: '← Back' });
+  if (await backToHome.isVisible()) {
+    await backToHome.click();
+    await page.waitForTimeout(600);
+  }
+
+  const backToProducts = page.getByRole('button', { name: 'Back to product selection' });
+  if (await backToProducts.isVisible()) {
+    await backToProducts.click();
+    await page.waitForTimeout(600);
+  }
+
+  // Navigate to Notebook
+  await page.getByRole('button', { name: /mars notebook/i }).click();
+  await page.waitForTimeout(1200);
+} else if (await welcome.isVisible()) {
+  // Legacy welcome screen
   await page.screenshot({ path: path.join(out, 'desktop-welcome.png') });
   await welcome.getByRole('button', { name: 'New notebook' }).click();
+  await page.waitForTimeout(1200);
+} else {
+  // Already on notebook view
+  await page.waitForTimeout(600);
 }
-await page.waitForTimeout(1200);
-await page.screenshot({ path: path.join(out, 'desktop-overview.png') });
+
+// If we're on notebook view, capture notebook screens
+const notebookView = page.locator('[data-component="App"]');
+if (await notebookView.isVisible()) {
+  await page.waitForTimeout(600);
+
+  // Capture notebook with cells
+  await page.screenshot({ path: path.join(out, 'desktop-notebook.png') });
+
+  // Try to open file explorer if available
+  const explorerButton = page.getByRole('button', { name: /explorer|files/i });
+  if (await explorerButton.isVisible()) {
+    await explorerButton.click();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: path.join(out, 'desktop-notebook-explorer.png') });
+  }
+}
+
 await browser.close();
 console.log('screenshots written to', out);
