@@ -255,10 +255,10 @@ rustc --version
 
 ## Related Documentation
 
-- [Project Mars CLI documentation](../../docs/12-cli.md)
-- [Jupyter compatibility](../../docs/03-notebook-format.md)
-- [Python runtime documentation](../../docs/08-runtime-python.md)
-- [Rust runtime documentation](../../docs/07-runtime-rust.md)
+- [Project Mars CLI documentation](../../docs/02-platform/cli.md)
+- [Jupyter compatibility](../../docs/01-foundations/notebook-format.md)
+- [Python runtime documentation](../../docs/02-platform/runtime-python.md)
+- [Rust runtime documentation](../../docs/02-platform/runtime-rust.md)
 - [Project Mars examples README](../README.md)
 
 ## Contributing

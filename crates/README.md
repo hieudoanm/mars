@@ -181,9 +181,9 @@ See individual crate directories for detailed architecture documentation.
 
 ## Related Documentation
 
-- [Architecture documentation](../docs/04-architecture.md)
-- [Runtime documentation](../docs/06-runtime.md)
-- [Development documentation](../docs/13-development.md)
+- [Architecture documentation](../docs/01-foundations/architecture.md)
+- [Runtime documentation](../docs/02-platform/runtime.md)
+- [Development documentation](../docs/05-development/development.md)
 - [Repository AGENTS.md](../AGENTS.md)
 
 ## Adding a New Crate

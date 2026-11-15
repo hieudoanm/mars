@@ -9,6 +9,9 @@ import { searchContent, toSearchableDocs } from '@/lib/search';
 const sidebarLink =
   'rounded-lg px-2.5 py-[7px] text-sm-plus leading-[1.4] text-muted hover:bg-panel-2 hover:text-ink';
 
+const chapterLabel = (chapter: string) =>
+  chapter.charAt(0).toUpperCase() + chapter.slice(1);
+
 const DocsSearch: FC<Readonly<{ docs: Doc[] }>> = ({ docs }) => {
   const [query, setQuery] = useState('');
 
@@ -19,6 +22,18 @@ const DocsSearch: FC<Readonly<{ docs: Doc[] }>> = ({ docs }) => {
     const bySlug = new Map(results.map((result) => [result.slug, result]));
     return docs.filter((doc) => bySlug.has(doc.slug));
   }, [docs, query]);
+
+  const groupedDocs = useMemo(() => {
+    if (query.trim()) return null;
+    const groups = new Map<string, Doc[]>();
+    for (const doc of filteredDocs) {
+      const key = doc.chapter ?? '';
+      const group = groups.get(key);
+      if (group) group.push(doc);
+      else groups.set(key, [doc]);
+    }
+    return [...groups.entries()];
+  }, [filteredDocs, query]);
 
   return (
     <aside
@@ -43,11 +58,26 @@ const DocsSearch: FC<Readonly<{ docs: Doc[] }>> = ({ docs }) => {
       <Link className={sidebarLink} href='/docs'>
         Overview
       </Link>
-      {filteredDocs.map((doc) => (
-        <Link className={sidebarLink} href={`/docs/${doc.slug}`} key={doc.slug}>
-          {doc.title}
-        </Link>
-      ))}
+      {groupedDocs
+        ? groupedDocs.map(([chapter, chapterDocs]) => (
+            <div className='flex flex-col gap-1' key={chapter || 'ungrouped'}>
+              {chapter ? (
+                <p className='text-faint mt-2 px-2.5 text-2xs font-bold tracking-caps-lg uppercase first:mt-0'>
+                  {chapterLabel(chapter)}
+                </p>
+              ) : null}
+              {chapterDocs.map((doc) => (
+                <Link className={sidebarLink} href={`/docs/${doc.slug}`} key={doc.slug}>
+                  {doc.title}
+                </Link>
+              ))}
+            </div>
+          ))
+        : filteredDocs.map((doc) => (
+            <Link className={sidebarLink} href={`/docs/${doc.slug}`} key={doc.slug}>
+              {doc.title}
+            </Link>
+          ))}
       <a className={sidebarLink} href={`${repositoryUrl}/tree/main/docs`}>
         Repository docs <span aria-hidden='true'>↗</span>
       </a>

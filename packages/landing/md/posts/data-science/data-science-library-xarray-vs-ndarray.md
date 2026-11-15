@@ -84,4 +84,4 @@ Project Mars supports both xarray and ndarray in their respective language runti
 - Both can coexist in the same `.mars` notebook
 - Arrays persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore xarray and ndarray in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore xarray and ndarray in Project Mars notebooks.

@@ -1,54 +1,53 @@
 ---
 title: Overview
-description: Project Mars index documentation
-order: 0
+description: Project Mars documentation index
 author: Project Mars Team
-tags: [overview, getting-started]
+order: 0
 ---
 
 # Project Mars documentation
 
 Project Mars is a Rust-powered interactive notebook for exploring ideas, executing
-code, and discovering possibilities. It combines executable cells, Markdown,
-mathematics, tables, charts, and rich output in a native `.mars` document.
+code, and discovering possibilities — plus **Mars Lab**, a machine learning studio
+that turns CSV datasets into trained ONNX models. It combines executable cells,
+Markdown, mathematics, tables, charts, and rich output in a native `.mars` document.
 
-## Current capabilities
+## Documentation chapters
 
-Project Mars is a mature, feature-rich notebook platform with:
+### Foundations
 
-- **Multi-language support**: Rust (default), Python, and R runtimes
-- **Rich desktop editor**: Tauri-based with CodeMirror 6, LSP integration, and full notebook editing
-- **Isolated execution**: Replay-based Rust runtime with timeout/cancellation and Cargo dependency support
-- **Developer tools**: rust-analyzer LSP integration (diagnostics, hover, completion, signature help, go-to-definition, quick fixes, inlay hints, semantic tokens)
-- **Workspace features**: Multi-notebook tabs, file explorer, checkpoints with diff view, variable inspector, problems panel
-- **Rich outputs**: HTML, LaTeX, images, tables, charts, and MIME bundles with interactive rendering
-- **Jupyter compatibility**: Import and export `.ipynb` notebooks with metadata and output preservation
-- **CLI**: Full command-line interface for headless execution, import/export, and kernel serving
-- **Editor extensions**: VS Code companion extension and Zed grammar support
+- [Getting started](/docs/getting-started/) — install Project Mars and run your first notebook.
+- [Notebook format](/docs/notebook-format/) — understand the `.mars` document model.
 
-## Start here
+### Platform
 
-- [Getting started](/docs/01-getting-started/) — install Project Mars and run your first notebook.
-- [CLI reference](/docs/02-cli/) — create, run, inspect, and export notebooks.
-- [Notebook format](/docs/03-notebook-format/) — understand the `.mars` document model.
-- [Rust runtime](/docs/04-runtime-rust/) — Rust execution (replay and Evcxr backends).
-- [Python runtime](/docs/05-runtime-python/) — Python execution and data science.
-- [R runtime](/docs/06-runtime-r/) — R execution and data science.
-- [Julia runtime](/docs/07-runtime-julia/) — Julia execution and data science.
-- [C++ runtime](/docs/08-runtime-cpp/) — C++ execution with Conan/vcpkg dependencies.
-- [MCP integration](/docs/09-mcp/) — Model Context Protocol for AI assistants and automation.
-- [VS Code extension](/docs/10-extension-vscode/) — use Project Mars from the VS Code notebook editor.
-- [Zed extension](/docs/11-extension-zed/) — Zed grammar support and usage.
-- [JetBrains extension](/docs/12-extension-jetbrains/) — JetBrains plugin status and future plans.
-- [Mars Lab](/docs/13-lab-overview/) — Machine learning training studio with ONNX export.
-- [Lab CLI](/docs/14-lab-cli/) — Command-line interface for Mars Lab training.
-- [Lab Algorithms](/docs/15-lab-algorithms/) — Complete algorithm catalogue and hyperparameters.
-- [Lab Workflows](/docs/16-lab-workflows/) — Common training workflows and examples.
+- [Runtime architecture](/docs/runtime/) — how runtimes provide persistent, process-isolated sessions.
+- [CLI reference](/docs/cli/) — create, run, inspect, and export notebooks.
+- [Rust runtime](/docs/runtime-rust/) — Rust execution (replay and Evcxr backends).
+- [Python runtime](/docs/runtime-python/) — Python execution and data science.
+- [R runtime](/docs/runtime-r/) — R execution and data science.
+- [Julia runtime](/docs/runtime-julia/) — Julia execution and data science.
+- [C++ runtime](/docs/runtime-cpp/) — C++ execution with Conan/vcpkg dependencies.
+- [SQL runtime](/docs/runtime-sql/) — in-process SQLite cells and CSV-backed tables.
+- [MCP integration](/docs/mcp/) — Model Context Protocol for AI assistants and automation.
+
+### Mars Lab
+
+- [Lab overview](/docs/lab-overview/) — the machine learning studio: features and architecture.
+- [Lab CLI](/docs/lab-cli/) — command-line training, datasets, jobs, and ONNX export.
+- [Lab algorithms](/docs/lab-algorithms/) — complete algorithm catalogue and hyperparameters.
+- [Lab workflows](/docs/lab-workflows/) — common training workflows and examples.
+
+### Extensions
+
+- [VS Code extension](/docs/extension-vscode/) — use Project Mars from the VS Code notebook editor.
+- [Zed extension](/docs/extension-zed/) — Zed grammar support and usage.
+- [JetBrains extension](/docs/extension-jetbrains/) — JetBrains plugin status and future plans.
 
 ## Design principles
 
 - **Rust first.** Execution, conversion, and rendering share one Rust core.
-- **Multi-language.** Rust, Python, and R runtimes with a protocol boundary for future languages.
+- **Multi-language.** Rust, Python, R, Julia, C++, and SQL runtimes with a protocol boundary for future languages.
 - **Clear boundaries.** The document model, kernel, runtime, renderer, and CLI are separate components.
 - **Isolation by default.** Notebook code does not run inside the desktop process.
 - **Open documents.** `.mars` is versioned JSON, and Jupyter notebooks can be imported and exported.

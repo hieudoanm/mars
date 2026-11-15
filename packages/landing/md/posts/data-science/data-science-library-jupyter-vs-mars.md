@@ -117,8 +117,8 @@ Each language has its own persistent runtime, so variables persist across cells 
 
 Explore Project Mars's multi-language notebook platform:
 
-- [Getting started guide](/docs/01-getting-started)
-- [Runtime documentation](/docs/06-runtime.md)
-- [CLI reference](/docs/12-cli.md)
+- [Getting started guide](/docs/getting-started)
+- [Runtime documentation](/docs/02-platform/runtime.md)
+- [CLI reference](/docs/02-platform/cli.md)
 - [Desktop application](packages/desktop)
-- [Extension guides](/docs/10-extension-vscode.md)
+- [Extension guides](/docs/extension-vscode.md)

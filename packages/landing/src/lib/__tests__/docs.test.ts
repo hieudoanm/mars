@@ -3,44 +3,63 @@ import fs from "node:fs";
 
 interface MockFs {
   readFileSync: (filePath: string) => string;
-  readdirSync: () => string[];
+  readdirSync: (dir: string, options?: unknown) => unknown[];
   existsSync: (filePath: string) => boolean;
   _setStore: (s: Record<string, string>) => void;
   _clearStore: () => void;
 }
 
 vi.mock("node:fs", () => {
-  const store: Record<string, string> = {};
+  const store = new Map<string, string>();
+  const rootMarker = 'md/docs';
+  const toRel = (filePath: unknown) => {
+    const s = String(filePath).replace(/\\/g, '/');
+    const index = s.indexOf(rootMarker);
+    const rel = index >= 0 ? s.slice(index + rootMarker.length) : s;
+    return rel.replace(/^\/+/, '');
+  };
+  const dirent = (name: string, isDir: boolean) => ({
+    name,
+    isDirectory: () => isDir,
+    isFile: () => !isDir,
+  });
   const mod: MockFs = {
     readFileSync: (filePath: string) => {
-      const name = String(filePath).split(/[/\\]/).pop()!;
-      if (!(name in store)) {
+      const rel = toRel(filePath);
+      if (!store.has(rel)) {
         const err: Error & {
           code?: string;
           errno?: number;
           path?: string;
           syscall?: string;
-        } = new Error(`ENOENT: no such file '${name}'`);
+        } = new Error(`ENOENT: no such file '${rel}'`);
         err.code = "ENOENT";
         err.errno = -2;
-        err.path = name;
+        err.path = rel;
         err.syscall = "open";
         throw err;
       }
-      return store[name];
+      return store.get(rel)!;
     },
-    readdirSync: () => Object.keys(store),
-    existsSync: (filePath: string) => {
-      const name = String(filePath).split(/[/\\]/).pop()!;
-      return name in store;
+    readdirSync: (dir: string) => {
+      const rel = toRel(dir);
+      const prefix = rel ? `${rel}/` : '';
+      const children = new Map<string, boolean>();
+      for (const key of store.keys()) {
+        if (!key.startsWith(prefix)) continue;
+        const rest = key.slice(prefix.length);
+        if (!rest) continue;
+        const [head, ...tail] = rest.split('/');
+        children.set(head, tail.length > 0 || children.get(head) === true);
+      }
+      return [...children.entries()].map(([name, isDir]) => dirent(name, isDir));
     },
+    existsSync: (filePath: string) => store.has(toRel(filePath)),
     _setStore: (s: Record<string, string>) => {
-      Object.keys(store).forEach((k) => delete store[k]);
-      Object.assign(store, s);
+      store.clear();
+      for (const [key, value] of Object.entries(s)) store.set(key, value);
     },
-    _clearStore: () => {
-      Object.keys(store).forEach((k) => delete store[k]);
-    },
+    _clearStore: () => store.clear(),
   };
   return { __esModule: true, default: mod };
 });
@@ -131,6 +150,19 @@ describe("docs lib (mocked fs)", () => {
   it("getDoc returns undefined when file does not exist", () => {
     mockFs._setStore({ "existing.md": withFrontmatter("Existing") });
     expect(getDoc("missing")).toBeUndefined();
+  });
+
+  it("getDocs discovers docs inside chapter folders", () => {
+    mockFs._setStore({
+      "foundations/getting-started.md": withFrontmatter("Getting Started", 1),
+      "platform/runtime.md": withFrontmatter("Runtime", 2),
+      "index.md": "---\ntitle: Index\n---\n# Index\n\nindex",
+    });
+    const docs = getDocs();
+    expect(docs.map((d) => d.slug)).toEqual(["getting-started", "runtime"]);
+    expect(docs[0].chapter).toBe("foundations");
+    expect(docs[1].chapter).toBe("platform");
+    expect(getDoc("runtime")?.title).toBe("Runtime");
   });
 
   it("getDocs filters out index.md and non-matching files", () => {

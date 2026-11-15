@@ -105,9 +105,9 @@ When working in Project Mars, consider these guidelines:
 
 Explore these languages in Project Mars:
 
-- [Getting started guide](/docs/01-getting-started)
-- [Runtime documentation](/docs/06-runtime.md)
-- [Language-specific runtime docs](/docs/07-runtime-rust.md)
+- [Getting started guide](/docs/getting-started)
+- [Runtime documentation](/docs/02-platform/runtime.md)
+- [Language-specific runtime docs](/docs/02-platform/runtime-rust.md)
 - [Examples](https://github.com/hieudoanm/mars/tree/main/examples)
 
 Each language has its own strengths, and Project Mars brings them all together in a unified notebook environment.

@@ -23,7 +23,7 @@ the browser process.
 The default `replay` runtime recompiles accumulated successful code in a
 separate process. This preserves bindings between cells without running
 notebook code inside the desktop application process. Earlier side effects are
-replayed; see the root [runtime documentation](../../docs/06-runtime.md) for
+replayed; see the root [runtime documentation](../../docs/02-platform/runtime.md) for
 the trade-offs and experimental Evcxr option.
 
 ## Requirements

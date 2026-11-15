@@ -1,333 +1,83 @@
-# Build Project Mars — A Rust-Powered Interactive Notebook
+# Project Mars
 
-You are a senior Rust engineer, software architect, and developer-tools designer. Your task is to design and implement **Project Mars**, an independent, Rust-powered interactive notebook platform.
-
-Do not build another Jupyter frontend or simply implement a Rust kernel for Jupyter. Project Mars must have its own architecture, notebook format, execution engine, and user experience.
-
-The goal is to create a high-quality open-source developer tool for interactive programming, scientific computing, data science, machine learning, experimentation, and education.
-
-## 1. Product Vision
-
-**Name:** Project Mars
+Project Mars is an independent, Rust-powered interactive computing platform. It is
+not a Jupyter frontend — it has its own notebook format, execution engine,
+protocol, CLI, desktop application, and rendering pipeline.
 
 **Tagline:** Explore ideas. Execute code. Discover possibilities.
 
-**Primary language:** Rust
+## Products
 
-**Native notebook extension:** `.mars`
+Project Mars is an umbrella project with two products:
 
-**Jupyter compatibility:** Import and export `.ipynb`
+- **Mars Notebook** — a Jupyter Notebook alternative: an interactive environment
+  combining executable cells, Markdown, mathematics, tables, charts, and rich
+  output in a native `.mars` document, with `.ipynb` import/export.
+- **Mars Lab** — *Machine Learning in Rust*: a studio that turns CSV datasets
+  into trained ONNX models (83 algorithms across six task types).
 
-Project Mars should provide an interactive environment where users can combine executable code, Markdown, mathematical equations, tables, charts, and rich outputs in a single document.
+## Mars Notebook
 
-Prioritise Rust as the primary programming language. Additional language runtimes (Python, Julia, R, C++) are integrated through the `RuntimeBackend` trait. The platform also supports Model Context Protocol (MCP) for AI assistant integration.
+- **Native format:** `.mars` — versioned JSON document (cells, metadata, outputs).
+- **Languages:** Rust (primary, replay + opt-in Evcxr backends), Python, R, Julia,
+  C++, and SQL — all behind the `RuntimeBackend` trait, each running in an
+  isolated child process (SQL is in-process SQLite).
+- **Execution:** `mars-kernel` owns sessions and dispatches cells to language
+  runtimes; `mars-protocol` defines the typed messages; `mars-renderer` turns
+  outputs into HTML, Markdown, slides, and `.ipynb`.
+- **Editing:** `mars-lsp` provides rust-analyzer diagnostics, hover, completion,
+  and quick fixes inside the desktop editor (Tauri 2 + React + TypeScript).
+- **CLI:** `mars notebook …` works fully headless — create, run, inspect, diff,
+  export — plus `mars kernel serve` for external clients.
+- **AI integration:** `mars-mcp` exposes notebook operations over the Model
+  Context Protocol; VS Code, Zed, and JetBrains extensions round out the
+  ecosystem.
 
-## 2. Technical Principles
+## Mars Lab
 
-Follow these principles throughout development:
+- **Pipeline:** CSV upload → profiling → column mapping → algorithm selection →
+  training → metrics/charts → ONNX export.
+- **Catalogue:** 83 algorithms across classification, regression, semi-supervised
+  learning, clustering, anomaly detection, and offline reinforcement learning.
+- **Storage:** SQLite (sqlx, WAL) for datasets, jobs, metrics, and artefacts;
+  dataset files under `.mars-lab-data/`.
+- **Surfaces:** `mars lab …` CLI and the Lab view inside the desktop app
+  (Welcome / Lab / Notebook product routing via React Router).
 
-- Rust-first architecture.
-- Modular Cargo workspace.
-- Separation of document management, execution, rendering, and UI.
-- Strong type safety.
-- No unnecessary dependencies.
-- Avoid `unwrap()` and `expect()` in production code.
-- No `any` in TypeScript.
-- Use idiomatic Rust and TypeScript.
-- Prefer maintainable abstractions over premature optimisation.
-- Use asynchronous execution where appropriate.
-- Provide comprehensive error handling.
-- Write tests for all important functionality.
-- Ensure cross-platform compatibility where practical.
-- Document public APIs.
-- Keep the project easy to build, test, and contribute to.
-
-Use the latest stable Rust toolchain and compatible dependency versions available during implementation.
-
-## 3. Architecture
-
-Create a modular Cargo workspace.
-
-Current workspace structure:
+## Repository layout
 
 ```text
 mars/
-├── Cargo.toml
-├── Cargo.lock
-├── rust-toolchain.toml
-├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── .gitignore
-│
-├── crates/
-│   ├── mars-core/
-│   ├── mars-document/
-│   ├── mars-runtime/
-│   ├── mars-runtime-evcxr/
-│   ├── mars-runtime-python/
-│   ├── mars-runtime-r/
-│   ├── mars-runtime-julia/
-│   ├── mars-runtime-cpp/
-│   ├── mars-kernel/
-│   ├── mars-protocol/
-│   ├── mars-jupyter/
-│   ├── mars-renderer/
-│   ├── mars-lsp/
-│   ├── mars-cli/
-│   ├── mars-mcp/
-│   └── mars-lab/
-│
+├── crates/                  # Rust workspace — all core logic lives here
+│   ├── mars-core/           # Shared domain types, IDs, errors
+│   ├── mars-document/       # .mars notebook model, persistence, validation
+│   ├── mars-runtime/        # Rust replay execution engine
+│   ├── mars-runtime-{python,r,julia,cpp,sql,evcxr}/
+│   ├── mars-kernel/         # Kernel lifecycle, sessions, language dispatch
+│   ├── mars-protocol/       # Typed frontend↔kernel messages
+│   ├── mars-renderer/       # HTML/Markdown/slides/.ipynb export
+│   ├── mars-jupyter/        # .ipynb import/export
+│   ├── mars-lsp/            # rust-analyzer LSP client
+│   ├── mars-cli/            # `mars` binary (notebook, lab, kernel, mcp)
+│   ├── mars-mcp/            # MCP server (JSON-RPC over stdio)
+│   └── mars-lab/            # Mars Lab core + SQLite repositories
 ├── packages/
-│   ├── desktop/
-│   └── landing/
-│
-├── extensions/
-│   ├── vscode/
-│   └── zed/
-│
-├── examples/
-│   ├── mars/
-│   ├── jupyter/
-│   ├── jupyter_evcxr/
-│   ├── r/
-│   └── julia/
-│
-└── docs/
+│   ├── desktop/             # Tauri 2 + React desktop app (Notebook + Lab)
+│   └── landing/             # Next.js static site + blog + docs
+├── extensions/              # VS Code, Zed, JetBrains integrations
+├── examples/                # Sample .mars notebooks per language
+├── vendor/onnx-protobuf/    # Vendored patch (protobuf 3.7.x compat)
+└── docs/                    # Canonical documentation (numbered chapters)
 ```
 
-### mars-core
-
-Responsible for:
-
-- Shared domain types.
-- IDs and metadata.
-- Common error types.
-- Execution status.
-- Shared interfaces.
-
-### mars-document
-
-Responsible for:
-
-- Notebook representation.
-- Cell management.
-- Serialization and deserialization.
-- Notebook validation.
-- File persistence.
-- Autosave support.
-- Document versioning.
-- Undo/redo foundations.
-
-### mars-runtime
-
-Responsible for:
-
-- Rust code execution.
-- Persistent execution sessions.
-- Shared variables between cells.
-- Dependency management.
-- Capturing standard output and errors.
-- Execution time tracking.
-- Execution cancellation and interruption.
-- Runtime isolation.
-
-### mars-runtime-python
-
-Responsible for:
-
-- Python code execution via persistent `python3 -u` subprocess.
-- Top-level `await` support.
-- Matplotlib figure capture.
-- `_repr_*` display methods.
-- Interactive `input()` prompts.
-
-### mars-runtime-r
-
-Responsible for:
-
-- R code execution via persistent `Rscript --vanilla` subprocess.
-- `.GlobalEnv` binding persistence.
-- Plot capture via graphics devices.
-- Streaming warnings and messages.
-
-### mars-runtime-julia
-
-Responsible for:
-
-- Julia code execution via persistent Julia subprocess.
-- `MarsKernel` module for state management.
-- Interactive `readline()` prompts.
-- MIME bundle output for rich rendering.
-
-### mars-runtime-cpp
-
-Responsible for:
-
-- C++ code execution via replay-based compilation.
-- `clang++`/`g++` compiler support.
-- Conan/vcpkg dependency management.
-- Header accumulation and linking.
-
-### mars-runtime-evcxr
-
-Responsible for:
-
-- Experimental Evcxr-based Rust execution.
-- Faster re-execution without recompilation.
-- Opt-in via `--features experimental-evcxr`.
-
-### mars-kernel
-
-Responsible for:
-
-- Kernel lifecycle.
-- Execution requests.
-- Execution responses.
-- Kernel state.
-- Session management.
-- Communication with execution runtimes.
-- Multi-language runtime dispatch.
-
-### mars-protocol
-
-Responsible for:
-
-- Communication between frontend and backend.
-- Typed request and response messages.
-- Execution events.
-- WebSocket or JSON-RPC communication where appropriate.
-
-### mars-renderer
-
-Responsible for:
-
-- Markdown rendering.
-- HTML output.
-- LaTeX mathematical equations.
-- Tables.
-- Images.
-- Charts.
-- Rich notebook outputs.
-
-### mars-jupyter
-
-Responsible for:
-
-- Importing `.ipynb` notebooks.
-- Exporting `.ipynb` notebooks.
-- Mapping Jupyter cell types.
-- Mapping notebook metadata.
-- Preserving unsupported metadata where possible.
-- Handling compatibility limitations gracefully.
-
-### mars-lsp
-
-Responsible for:
-
-- Language Server Protocol client.
-- rust-analyzer integration.
-- Diagnostics mapping.
-- Hover, completion, signature help.
-- Go-to-definition and quick fixes.
-
-### mars-cli
-
-Responsible for:
-
-- Creating notebooks.
-- Opening notebooks.
-- Executing notebooks.
-- Exporting notebooks.
-- Inspecting notebook metadata.
-- Running notebooks in headless mode.
-- Kernel lifecycle commands.
-- MCP server commands.
-
-### mars-mcp
-
-Responsible for:
-
-- Model Context Protocol server.
-- Tool definitions and handlers.
-- Session management for MCP clients.
-- JSON-RPC 2.0 over stdio transport.
-
-### mars-lab
-
-Mars Lab — Machine Learning in Rust (ported from llm.rs): the ML studio that turns CSV datasets into
-ONNX models. Owns the pure-Rust core — CSV parsing, polars-backed tabular
-data, the 83-algorithm catalogue across six task types, training pipeline,
-metrics/charts, dataset insights, filesystem storage, ONNX protobuf export —
-plus `db` (sqlx + SQLite repositories for datasets, jobs, metrics, artefacts,
-idempotency; WAL mode). Shared by `mars lab` CLI commands and the desktop
-app's Tauri commands.
-
-## 4. Notebook Format
-
-Create an independent JSON-based notebook format using `.mars`.
-
-## 5. Rust Execution Engine
-
-Project Mars must execute Rust code interactively with persistent state across cells.
-
-## 6. Notebook User Interface
-
-Build a polished desktop notebook application using Tauri 2, React, TypeScript, and Tailwind CSS.
-
-## 7. Output Rendering
-
-Support different output types: text, errors, HTML, images, tables, LaTeX, charts, and MIME bundles.
-
-## 8. CLI
-
-Project Mars must work without the desktop application. Provide a CLI named `mars`.
-
-## 9. Jupyter Compatibility
-
-Project Mars should be independent but interoperable. Implement `.ipynb` import and export.
-
-## 10. Testing
-
-Testing is mandatory. Implement unit tests, integration tests, and end-to-end tests.
-
-- For crates under `crates/`, keep all Rust tests in crate-level `tests/` directories alongside `src/`; do not add inline `#[cfg(test)]` modules or `#[test]` functions inside `src/`.
-- Rust crates under `crates/` must maintain at least 80% line and function coverage; verify with `make coverage`, which fails below those thresholds.
-
-## 11. Documentation
-
-Create comprehensive documentation including README.md, CONTRIBUTING.md, architecture docs, notebook format spec, runtime architecture, installation instructions, CLI reference, and known limitations.
-
-## 12. Development Strategy
-
-Follow the phases outlined in the original specification, but the project is currently in Phase 7 — Desktop and rendering polish with full multi-language support and MCP integration.
-
-## 13. Important Engineering Constraints
-
-- Do not build a monolithic application.
-- Do not put business logic inside React components.
-- Do not put notebook persistence logic inside the UI.
-- Do not couple the Rust runtime to the desktop framework.
-- Do not use Python as the primary execution engine.
-- Do not use Evcxr as a mandatory dependency for Project Mars.
-- Do not execute untrusted notebook code in the application process.
-- Do not fake execution results.
-- Do not leave core functionality as TODO placeholders.
-- Avoid excessive abstraction.
-- Keep dependencies justified.
-- Ensure the CLI and desktop application can share the same core libraries.
-
-## 14. Current Implementation Status
-
-Project Mars is a mature, feature-rich notebook platform with:
-
-- **Multi-language support**: Rust (replay + Evcxr), Python, R, Julia, C++, SQL
-- **Rich desktop editor**: Tauri-based with CodeMirror 6, LSP integration, multi-notebook workspace
-- **Developer tools**: rust-analyzer LSP, variable inspector, problems panel, checkpoints
-- **Runtime helpers**: mars_table, mars_csv, mars_display_*, mars_chart, mars_prompt
-- **Jupyter compatibility**: Import/export with metadata and output preservation
-- **CLI**: Full command-line interface with kernel serve and MCP commands
-- **MCP integration**: Model Context Protocol server for AI assistants
-- **Editor extensions**: VS Code companion, Zed grammar support, JetBrains planned
-
-See PROGRESS.md for detailed implementation history and outstanding tasks.
+## Documentation
+
+- [`README.md`](README.md) — project overview, features, quick start.
+- [`docs/README.md`](docs/README.md) — full documentation index, organised into
+  numbered chapter folders (`01-foundations` … `06-appendix`).
+- [`packages/landing/md/docs/`](packages/landing/md/docs/) — the curated docs
+  subset published on the landing site (same chapter layout, flat `/docs/…`
+  routes).
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — product roadmap and outstanding work.
+- Per-crate `README.md`/`AGENTS.md` files document module responsibilities and
+  local conventions.

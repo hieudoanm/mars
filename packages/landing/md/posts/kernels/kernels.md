@@ -163,6 +163,6 @@ Project Mars aims to lead in the **performance** and **multi-language** aspects 
 Explore Project Mars's multi-language approach:
 
 - [Project Mars Desktop App](packages/desktop) - Native application
-- [Project Mars CLI](docs/12-cli.md) - Command-line interface
-- [Project Mars Runtime](docs/06-runtime.md) - Multi-language execution
-- [Getting Started](docs/01-getting-started.md) - First notebook tutorial
+- [Project Mars CLI](docs/02-platform/cli.md) - Command-line interface
+- [Project Mars Runtime](docs/02-platform/runtime.md) - Multi-language execution
+- [Getting Started](docs/01-foundations/getting-started.md) - First notebook tutorial

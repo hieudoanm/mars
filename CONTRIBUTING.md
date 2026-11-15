@@ -18,9 +18,15 @@ pnpm install
 
 The Node workspace contains:
 
-- `@mars/desktop` — React/Vite frontend and Tauri shell.
-- `@mars/vscode` — VS Code language and notebook companion.
+- `@mars/desktop` — React/Vite frontend and Tauri shell (hosts both the
+  Notebook and Lab product views).
+- `mars-vscode` (`extensions/vscode`) — VS Code language and notebook companion.
 - `@mars/landing` — Next.js static landing page with Markdown docs.
+
+Project Mars ships two products from this repository: **Mars Notebook** (the
+interactive notebook platform) and **Mars Lab** (Machine Learning in Rust —
+CSV datasets to ONNX models via the `mars-lab` crate, the `mars lab` CLI, and
+the desktop Lab view).
 
 Turborepo coordinates package tasks and caches successful work locally:
 
@@ -35,7 +41,7 @@ Run a specific package task with a Turbo filter:
 ```bash
 pnpm turbo run build --filter=@mars/landing
 pnpm turbo run check --filter=@mars/desktop
-pnpm turbo run check --filter=@mars/vscode
+pnpm turbo run check --filter=mars-vscode
 ```
 
 The Rust workspace is validated independently:
@@ -79,6 +85,22 @@ Run the VS Code extension compiler:
 pnpm run vscode:compile
 ```
 
+## Installing from a local checkout
+
+`scripts/sh/install-local.sh` builds the `mars` CLI from the working tree
+(with stale-build detection) and installs it to `~/.local/bin`, then delegates
+the desktop app and editor extensions to `scripts/sh/install.sh`:
+
+```bash
+./scripts/sh/install-local.sh            # CLI only (default)
+./scripts/sh/install-local.sh --all      # CLI + desktop + all extensions
+INSTALL_DIR=/usr/local/bin ./scripts/sh/install-local.sh
+```
+
+The CLI supports both products: `mars notebook …` for `.mars` notebooks and
+`mars lab …` for dataset upload, training, job inspection, and ONNX export
+(data persists to `.mars-lab-data/` by default; see `MARS_LAB_*` settings).
+
 ## Pre-commit hooks
 
 Install `pre-commit` with your preferred Python environment, then enable and
@@ -113,8 +135,10 @@ Keep document management, execution, protocol, rendering, and UI logic in
 their respective crates or application layers. Do not put persistence or
 runtime behavior in React components.
 
-Before submitting a change, update `README.md`, `PROGRESS.md`, or the relevant
-document when behavior or limitations change. Add focused tests for new
+Before submitting a change, update `README.md`, `AGENTS.md`, `docs/ROADMAP.md`,
+or the relevant document when behavior or limitations change — including the
+per-crate `AGENTS.md`/`README.md` files under `crates/` and
+`packages/desktop/AGENTS.md` for desktop changes. Add focused tests for new
 runtime, format, protocol, or conversion behavior.
 
 When changing a public format or command:

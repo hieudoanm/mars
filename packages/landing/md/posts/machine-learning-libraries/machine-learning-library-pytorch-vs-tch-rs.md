@@ -80,4 +80,4 @@ Project Mars supports both PyTorch and tch-rs in their respective language runti
 - Both can coexist in the same `.mars` notebook
 - Tensors and models persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore PyTorch and tch-rs in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore PyTorch and tch-rs in Project Mars notebooks.

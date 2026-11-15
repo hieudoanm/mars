@@ -138,8 +138,8 @@ These projects are organized by difficulty level:
 
 Explore these projects in Project Mars notebooks:
 
-- [Getting started guide](/docs/01-getting-started)
+- [Getting started guide](/docs/getting-started)
 - [Machine learning examples](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning)
-- [Runtime documentation](/docs/06-runtime.md)
+- [Runtime documentation](/docs/02-platform/runtime.md)
 
 Each project includes complete code, explanations, and results you can run interactively in Project Mars.

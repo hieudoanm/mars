@@ -99,4 +99,4 @@ Project Mars is designed as a **multi-language interactive notebook**. That mean
 - **Reproducible workflows.** Notebooks are stored as versioned JSON (`.mars`), with outputs preserved and execution available through the CLI.
 - **Interoperability.** Project Mars can import and export `.ipynb` notebooks, making it easier to move between Python/Jupyter workflows and multi-language Project Mars exploration.
 
-If you want to explore these tools interactively, start with the [getting started guide](/docs/01-getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) which demonstrates vector plotting with plotters in a Project Mars notebook.
+If you want to explore these tools interactively, start with the [getting started guide](/docs/getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) which demonstrates vector plotting with plotters in a Project Mars notebook.

@@ -80,4 +80,4 @@ Project Mars supports both OpenCV versions in their respective language runtimes
 - Both can coexist in the same `.mars` notebook
 - Images and video frames persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore OpenCV in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore OpenCV in Project Mars notebooks.

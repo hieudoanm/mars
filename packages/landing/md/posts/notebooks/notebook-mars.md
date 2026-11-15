@@ -57,4 +57,4 @@ Three motivations drove the project:
 
 Project Mars is open source, MIT licensed, and built as a modular Cargo workspace. The execution engine runs Rust code in an isolated process, so untrusted notebooks cannot touch the desktop application. The CLI works headless, so notebooks can be part of CI pipelines.
 
-If you are curious, the [getting-started notebook](/docs/01-getting-started) is a good place to begin.
+If you are curious, the [getting-started notebook](/docs/getting-started) is a good place to begin.

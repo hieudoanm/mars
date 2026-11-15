@@ -152,7 +152,7 @@ As C++ continues to be important for high-performance computing and systems prog
 
 ## Get Started
 
-- [Project Mars C++ Runtime](docs/11-runtime-cpp.md) - C++ execution documentation
+- [Project Mars C++ Runtime](docs/02-platform/runtime-cpp.md) - C++ execution documentation
 - [Project Mars Desktop App](packages/desktop) - Native application
-- [Project Mars CLI](docs/12-cli.md) - Command-line interface
-- [Getting Started](docs/01-getting-started.md) - First notebook tutorial
+- [Project Mars CLI](docs/02-platform/cli.md) - Command-line interface
+- [Getting Started](docs/01-foundations/getting-started.md) - First notebook tutorial

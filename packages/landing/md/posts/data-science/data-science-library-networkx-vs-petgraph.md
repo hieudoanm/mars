@@ -85,4 +85,4 @@ Project Mars supports both NetworkX and petgraph in their respective language ru
 - Both can coexist in the same `.mars` notebook
 - Graphs persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore NetworkX and petgraph in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore NetworkX and petgraph in Project Mars notebooks.

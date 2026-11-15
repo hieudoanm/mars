@@ -96,6 +96,6 @@ Some users combine Observable and Project Mars:
 ## Get Started
 
 - [Project Mars Desktop App](packages/desktop) - Download the native application
-- [Project Mars CLI](docs/12-cli.md) - Command-line interface for automation
-- [Project Mars Runtime](docs/06-runtime.md) - Multi-language execution
-- [Getting Started](docs/01-getting-started.md) - First notebook tutorial
+- [Project Mars CLI](docs/02-platform/cli.md) - Command-line interface for automation
+- [Project Mars Runtime](docs/02-platform/runtime.md) - Multi-language execution
+- [Getting Started](docs/01-foundations/getting-started.md) - First notebook tutorial

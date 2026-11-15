@@ -81,4 +81,4 @@ Project Mars supports both Seaborn and charming in their respective language run
 - Both can coexist in the same `.mars` notebook
 - Statistical chart outputs render as rich MIME bundles in the notebook
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Seaborn and charming in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore Seaborn and charming in Project Mars notebooks.

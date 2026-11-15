@@ -277,11 +277,11 @@ julia -e "using Pkg; Pkg.add('DataFrames')"
 
 ## Related Documentation
 
-- [Project Mars CLI documentation](../docs/12-cli.md)
-- [Runtime documentation](../docs/06-runtime.md)
-- [Notebook format specification](../docs/03-notebook-format.md)
-- [Landing site examples](../packages/landing/md/docs/01-getting-started.md)
-- [Development documentation](../docs/13-development.md)
+- [Project Mars CLI documentation](../docs/02-platform/cli.md)
+- [Runtime documentation](../docs/02-platform/runtime.md)
+- [Notebook format specification](../docs/01-foundations/notebook-format.md)
+- [Landing site examples](../packages/landing/md/docs/01-foundations/getting-started.md)
+- [Development documentation](../docs/05-development/development.md)
 
 ## Desktop Application
 

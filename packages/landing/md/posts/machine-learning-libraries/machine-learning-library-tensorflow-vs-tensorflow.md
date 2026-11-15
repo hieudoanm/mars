@@ -78,4 +78,4 @@ Project Mars supports both TensorFlow versions in their respective language runt
 - Both can coexist in the same `.mars` notebook
 - Models and tensors persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore TensorFlow in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore TensorFlow in Project Mars notebooks.

@@ -13,7 +13,7 @@ The `mars` binary. Depends on all other crates; thin orchestration layer — no 
 - `mars notebook diff <file.mars> [ref|file]` — cell-aware diff matched by stable cell IDs with line-level hunks (`changes.rs`).
 - `mars notebook import <file.ipynb> [file.mars]` / `mars notebook export <file.mars> [ipynb|html|slides|md|pdf] [--page-size=...] [output]` — Jupyter and renderer-backed export; `slides` is a self-contained keyboard-navigable deck (`mars-renderer::slides`).
 - `mars kernel list|restart|serve` — kernels are per-process; `serve` runs a JSON-lines protocol loop on stdin/stdout (`kernel.rs::serve_kernel`) so external tools can drive `Kernel` via `mars-protocol`. The server keeps one `Kernel` per language (`Execute.language` selects/creates it), answers `Input` requests through backend `StdinWriter`s so prompts work mid-execution, resets all kernels on `reset`, and aggregates `status` across languages.
-- `mars mcp serve` — MCP (Model Context Protocol) server on stdio (`mcp.rs::serve_mcp` → `mars-mcp`). Exposes notebook/cell/kernel operations as `tools/call` tools; see `docs/13-mcp.md`.
+- `mars mcp serve` — MCP (Model Context Protocol) server on stdio (`mcp.rs::serve_mcp` → `mars-mcp`). Exposes notebook/cell/kernel operations as `tools/call` tools; see `docs/02-platform/mcp.md`.
 - `mars tools list|call <name> [json] [--server <cmd>]` — MCP client commands (`mcp.rs::run_tools` → `mars_mcp::McpClient`). Defaults to spawning this binary as `mars mcp serve`.
 
 ## Rules

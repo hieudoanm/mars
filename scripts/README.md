@@ -56,7 +56,7 @@ MARS_CARGO_FEATURES=experimental-evcxr ./scripts/install.sh
 - Visual Studio Code with the `code` command in PATH when installing the
   extension
 - Tauri desktop prerequisites for the current platform (see
-  [`docs/08-development.md`](../docs/08-development.md)) when installing the desktop
+  [`docs/05-development/development.md`](../docs/05-development/development.md)) when installing the desktop
   app
 
 On macOS, the desktop build produces `Project Mars.app` and a DMG under

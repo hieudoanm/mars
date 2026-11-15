@@ -80,4 +80,4 @@ Project Mars runs both Python and Rust in the same notebook environment:
 - Both can coexist in the same `.mars` notebook
 - Variables persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore NumPy and ndarray in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore NumPy and ndarray in Project Mars notebooks.

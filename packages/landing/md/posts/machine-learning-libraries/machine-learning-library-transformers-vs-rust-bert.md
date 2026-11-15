@@ -83,4 +83,4 @@ Project Mars supports both Transformers and rust-bert in their respective langua
 - Both can coexist in the same `.mars` notebook
 - Models and tokenizers persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Transformers and rust-bert in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore Transformers and rust-bert in Project Mars notebooks.

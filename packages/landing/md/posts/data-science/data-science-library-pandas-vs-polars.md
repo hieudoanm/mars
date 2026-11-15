@@ -83,4 +83,4 @@ Project Mars supports both pandas and Polars in their respective language runtim
 - Both can coexist in the same `.mars` notebook
 - DataFrames persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore pandas and Polars in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore pandas and Polars in Project Mars notebooks.

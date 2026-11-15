@@ -134,7 +134,7 @@ As MATLAB continues to be important for engineering and scientific computing, bo
 
 ## Get Started
 
-- [Project Mars MATLAB Runtime](docs/06-runtime.md) - MATLAB execution documentation
+- [Project Mars MATLAB Runtime](docs/02-platform/runtime.md) - MATLAB execution documentation
 - [Project Mars Desktop App](packages/desktop) - Native application
-- [Project Mars CLI](docs/12-cli.md) - Command-line interface
-- [Getting Started](docs/01-getting-started.md) - First notebook tutorial
+- [Project Mars CLI](docs/02-platform/cli.md) - Command-line interface
+- [Getting Started](docs/01-foundations/getting-started.md) - First notebook tutorial

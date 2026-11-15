@@ -80,4 +80,4 @@ Project Mars supports both CatBoost versions in their respective language runtim
 - Both can coexist in the same `.mars` notebook
 - Models and datasets persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore CatBoost in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore CatBoost in Project Mars notebooks.

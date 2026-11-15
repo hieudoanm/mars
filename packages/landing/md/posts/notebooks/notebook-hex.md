@@ -111,6 +111,6 @@ As data science teams grow, collaboration features become increasingly important
 ## Get Started
 
 - [Project Mars Desktop App](packages/desktop) - Download the native application
-- [Project Mars CLI](docs/12-cli.md) - Command-line interface for automation
-- [Project Mars MCP](docs/18-mcp.md) - AI assistant integration
-- [Getting Started](docs/01-getting-started.md) - First notebook tutorial
+- [Project Mars CLI](docs/02-platform/cli.md) - Command-line interface for automation
+- [Project Mars MCP](docs/02-platform/mcp.md) - AI assistant integration
+- [Getting Started](docs/01-foundations/getting-started.md) - First notebook tutorial

@@ -91,6 +91,6 @@ cargo clippy -p mars-mcp --all-targets -- -D warnings
 
 ## Related Documentation
 
-- [MCP documentation](../../docs/18-mcp.md)
-- [CLI documentation](../../docs/12-cli.md)
+- [MCP documentation](../../docs/02-platform/mcp.md)
+- [CLI documentation](../../docs/02-platform/cli.md)
 - [AGENTS.md](./AGENTS.md) — Architecture rules and module details

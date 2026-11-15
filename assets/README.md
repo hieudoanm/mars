@@ -123,7 +123,7 @@ Requires `rsvg-convert` (librsvg): `brew install librsvg` on macOS,
 - **Landing site** — package-local copies under `packages/landing/src/assets/`
 - **Desktop app** — package-local copies under `packages/desktop/src/assets/`
 - **VS Code extension** — package-local copies under `extensions/vscode/assets/`
-- **Docs** — see [`docs/02-branding.md`](../docs/02-branding.md)
+- **Docs** — see [`docs/06-appendix/branding.md`](../docs/06-appendix/branding.md)
 
 Package-local copies are intentional: each app bundles only the assets it
 needs. When brand artwork changes, update `branding/` first, then sync the

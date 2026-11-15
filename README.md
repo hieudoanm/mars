@@ -1,6 +1,6 @@
-# mars
+# Mars - Machine Learning in Rust
 
-[![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/18-mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
+[![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/02-platform/mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
 
 Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
@@ -12,7 +12,7 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
 ## Table of Contents
 
-- [mars](#mars)
+- [Mars - Machine Learning in Rust](#mars---machine-learning-in-rust)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Get Started](#get-started)
@@ -108,7 +108,7 @@ mars lab algorithms --task classification
 
 ### Desktop application
 
-- Install stable Rust toolchain, Node.js 20+, and platform prerequisites in [`docs/13-development.md`](docs/13-development.md).
+- Install stable Rust toolchain, Node.js 20+, and platform prerequisites in [`docs/05-development/development.md`](docs/05-development/development.md).
 - Run:
 
 ```bash
@@ -130,7 +130,7 @@ pnpm --filter @mars/desktop dev
 npm run tauri build
 ```
 
-- See [`docs/14-release.md`](docs/14-release.md) for signing, platform targets, and artifact verification.
+- See [`docs/05-development/release.md`](docs/05-development/release.md) for signing, platform targets, and artifact verification.
 
 - `mars notebook run` reports each executable cell's position, execution count, duration, output count, and captured output.
 - Failed cells persist partial results and exit unsuccessfully after reporting.
@@ -145,7 +145,7 @@ npm run tauri build
   `mars_*` display helpers autocomplete with snippets, table outputs filter
   and sort, and the problems panel cycles diagnostics.
 - See `AGENTS.md` for product architecture and development strategy.
-- Contributor docs: `CONTRIBUTING.md`, `docs/04-architecture.md`, `docs/03-notebook-format.md`, `docs/06-runtime.md`, `docs/12-cli.md`, `docs/05-protocol.md`, `docs/13-development.md`, `docs/14-release.md`, `docs/02-branding.md`.
+- Contributor docs: `CONTRIBUTING.md`, `docs/01-foundations/architecture.md`, `docs/01-foundations/notebook-format.md`, `docs/02-platform/runtime.md`, `docs/02-platform/cli.md`, `docs/02-platform/protocol.md`, `docs/05-development/development.md`, `docs/05-development/release.md`, `docs/06-appendix/branding.md`.
 
 - Execution runtime recompiles accumulated cells in an isolated temporary program.
 - Preserves Rust bindings between cells without executing notebook code in the CLI process.
@@ -220,36 +220,43 @@ Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG e
 
 ## Documentation
 
-| Document                                                     | Purpose                                                      |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [`docs/04-architecture.md`](docs/04-architecture.md)         | Crate boundaries, application boundaries, and data flow      |
-| [`docs/03-notebook-format.md`](docs/03-notebook-format.md)   | `.mars` schema, validation, migrations, and Jupyter mapping  |
-| [`docs/06-runtime.md`](docs/06-runtime.md)                   | Runtime architecture overview                                |
-| [`docs/07-runtime-rust.md`](docs/07-runtime-rust.md)         | Rust replay and Evcxr backends                               |
-| [`docs/08-runtime-python.md`](docs/08-runtime-python.md)     | Python persistent driver                                     |
-| [`docs/09-runtime-r.md`](docs/09-runtime-r.md)               | R .GlobalEnv persistence                                     |
-| [`docs/10-runtime-julia.md`](docs/10-runtime-julia.md)       | Julia MarsKernel module                                      |
-| [`docs/11-runtime-cpp.md`](docs/11-runtime-cpp.md)           | C++ replay compilation                                       |
-| [`docs/12-cli.md`](docs/12-cli.md)                           | CLI commands, options, exit behavior, and examples           |
-| [`docs/05-protocol.md`](docs/05-protocol.md)                 | Typed kernel messages and JSONL transport                    |
-| [`docs/17-kernel-protocol.md`](docs/17-kernel-protocol.md)   | Detailed kernel protocol and transport options               |
-| [`docs/16-runtime-helpers.md`](docs/16-runtime-helpers.md)   | Runtime helpers (mars_table, mars_csv, mars_display_*)       |
-| [`docs/13-development.md`](docs/13-development.md)           | Toolchains, local development, tests, and architecture rules |
-| [`docs/14-release.md`](docs/14-release.md)                   | Native artifacts, verification, signing, and release CI      |
-| [`docs/15-evcxr-experiment.md`](docs/15-evcxr-experiment.md) | Evcxr backend experiment analysis                            |
-| [`docs/18-mcp.md`](docs/18-mcp.md)                           | Model Context Protocol integration                           |
-| [`docs/02-branding.md`](docs/02-branding.md)                 | Canonical logo and social-preview assets                     |
-| [`docs/13-lab-overview.md`](docs/13-lab-overview.md)         | Mars Lab features and architecture                           |
-| [`docs/14-lab-cli.md`](docs/14-lab-cli.md)                   | Mars Lab CLI commands and examples                           |
-| [`docs/15-lab-algorithms.md`](docs/15-lab-algorithms.md)     | Complete algorithm catalogue                                 |
-| [`docs/16-lab-workflows.md`](docs/16-lab-workflows.md)       | Common training workflows                                    |
+Documents are grouped into numbered chapter folders; see [`docs/README.md`](docs/README.md) for the full index.
+
+| Document                                                                                 | Purpose                                                      |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [`docs/01-foundations/getting-started.md`](docs/01-foundations/getting-started.md)       | Install, first notebook, and examples                        |
+| [`docs/01-foundations/notebook-format.md`](docs/01-foundations/notebook-format.md)       | `.mars` schema, validation, migrations, and Jupyter mapping  |
+| [`docs/01-foundations/architecture.md`](docs/01-foundations/architecture.md)             | Crate boundaries, application boundaries, and data flow      |
+| [`docs/02-platform/protocol.md`](docs/02-platform/protocol.md)                           | Typed kernel messages and JSONL transport                    |
+| [`docs/02-platform/kernel-protocol.md`](docs/02-platform/kernel-protocol.md)             | Detailed kernel protocol and transport options               |
+| [`docs/02-platform/runtime.md`](docs/02-platform/runtime.md)                             | Runtime architecture overview                                |
+| [`docs/02-platform/runtime-rust.md`](docs/02-platform/runtime-rust.md)                   | Rust replay and Evcxr backends                               |
+| [`docs/02-platform/runtime-python.md`](docs/02-platform/runtime-python.md)               | Python persistent driver                                     |
+| [`docs/02-platform/runtime-r.md`](docs/02-platform/runtime-r.md)                         | R `.GlobalEnv` persistence                                   |
+| [`docs/02-platform/runtime-julia.md`](docs/02-platform/runtime-julia.md)                 | Julia `MarsKernel` module                                    |
+| [`docs/02-platform/runtime-cpp.md`](docs/02-platform/runtime-cpp.md)                     | C++ replay compilation                                       |
+| [`docs/02-platform/runtime-sql.md`](docs/02-platform/runtime-sql.md)                     | In-process SQLite runtime                                    |
+| [`docs/02-platform/runtime-helpers.md`](docs/02-platform/runtime-helpers.md)             | Runtime helpers (`mars_table`, `mars_csv`, `mars_display_*`) |
+| [`docs/02-platform/cli.md`](docs/02-platform/cli.md)                                     | CLI commands, options, exit behavior, and examples           |
+| [`docs/02-platform/mcp.md`](docs/02-platform/mcp.md)                                     | Model Context Protocol integration                           |
+| [`docs/03-lab/lab-overview.md`](docs/03-lab/lab-overview.md)                             | Mars Lab features and architecture                           |
+| [`docs/03-lab/lab-cli.md`](docs/03-lab/lab-cli.md)                                       | Mars Lab CLI commands and examples                           |
+| [`docs/03-lab/lab-algorithms.md`](docs/03-lab/lab-algorithms.md)                         | Complete algorithm catalogue                                 |
+| [`docs/03-lab/lab-workflows.md`](docs/03-lab/lab-workflows.md)                           | Common training workflows                                    |
+| [`docs/04-extensions/extension-vscode.md`](docs/04-extensions/extension-vscode.md)       | VS Code extension guide                                      |
+| [`docs/04-extensions/extension-zed.md`](docs/04-extensions/extension-zed.md)             | Zed extension guide                                          |
+| [`docs/04-extensions/extension-jetbrains.md`](docs/04-extensions/extension-jetbrains.md) | JetBrains plugin guide                                       |
+| [`docs/05-development/development.md`](docs/05-development/development.md)               | Toolchains, local development, tests, and architecture rules |
+| [`docs/05-development/release.md`](docs/05-development/release.md)                       | Native artifacts, verification, signing, and release CI      |
+| [`docs/06-appendix/evcxr-experiment.md`](docs/06-appendix/evcxr-experiment.md)           | Evcxr backend experiment analysis                            |
+| [`docs/06-appendix/branding.md`](docs/06-appendix/branding.md)                           | Canonical logo and social-preview assets                     |
 
 ## Landing site
 
 The Next.js landing site (`packages/landing`) provides:
 
 - Getting started guide and CLI reference
-- Runtime documentation for all five languages
+- Runtime documentation for all seven languages
 - MCP integration documentation
 - Extension guides for VS Code, Zed, and JetBrains
 - Blog posts on language choices and ecosystem comparisons

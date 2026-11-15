@@ -81,4 +81,4 @@ Project Mars supports both scikit-learn and linfa in their respective language r
 - Both can coexist in the same `.mars` notebook
 - Models and datasets persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) and the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) to explore scikit-learn and linfa in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) and the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) to explore scikit-learn and linfa in Project Mars notebooks.

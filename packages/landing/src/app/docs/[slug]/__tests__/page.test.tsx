@@ -19,7 +19,7 @@ describe('DocPage', () => {
   it('renders doc content for valid slug', async () => {
     let result: ReturnType<typeof render> | null = null;
     await act(async () => {
-      result = render(DocPage({ params: Promise.resolve({ slug: '01-getting-started' }) }));
+      result = render(DocPage({ params: Promise.resolve({ slug: 'getting-started' }) }));
     });
     expect(result!.container).not.toBeEmptyDOMElement();
     expect(result!.getByTestId('markdown')).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe('DocPage', () => {
   it('renders next link for first doc (no previous)', async () => {
     let result: ReturnType<typeof render> | null = null;
     await act(async () => {
-      result = render(DocPage({ params: Promise.resolve({ slug: '01-getting-started' }) }));
+      result = render(DocPage({ params: Promise.resolve({ slug: 'getting-started' }) }));
     });
     expect(result!.queryByText('Previous')).toBeNull();
     expect(result!.queryByText('Next')).not.toBeNull();
@@ -38,7 +38,7 @@ describe('DocPage', () => {
   it('renders both previous and next links for middle doc', async () => {
     let result: ReturnType<typeof render> | null = null;
     await act(async () => {
-      result = render(DocPage({ params: Promise.resolve({ slug: '02-cli' }) }));
+      result = render(DocPage({ params: Promise.resolve({ slug: 'cli' }) }));
     });
     expect(result!.queryByText('Previous')).not.toBeNull();
     expect(result!.queryByText('Next')).not.toBeNull();
@@ -47,7 +47,7 @@ describe('DocPage', () => {
   it('does not render next link for last doc', async () => {
     let result: ReturnType<typeof render> | null = null;
     await act(async () => {
-      result = render(DocPage({ params: Promise.resolve({ slug: '12-extension-jetbrains' }) }));
+      result = render(DocPage({ params: Promise.resolve({ slug: 'extension-jetbrains' }) }));
     });
     expect(result!.queryByText('Next')).toBeNull();
     expect(result!.queryByText('Previous')).not.toBeNull();

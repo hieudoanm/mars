@@ -11,8 +11,8 @@ import DocsLayout, { metadata } from '../layout';
 describe('docs layout', () => {
   beforeEach(() => {
     getDocsMock.mockReturnValue([
-      { slug: '01-getting-started', title: 'Getting Started', description: 'Project Mars getting-started documentation' },
-      { slug: '04-runtime', title: 'Runtime', description: 'Project Mars runtime documentation' },
+      { slug: 'getting-started', title: 'Getting Started', description: 'Project Mars getting-started documentation', chapter: 'foundations' },
+      { slug: 'runtime', title: 'Runtime', description: 'Project Mars runtime documentation', chapter: 'platform' },
     ]);
   });
 
@@ -23,9 +23,9 @@ describe('docs layout', () => {
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Getting Started' })).toHaveAttribute(
       'href',
-      '/docs/01-getting-started',
+      '/docs/getting-started',
     );
-    expect(screen.getByRole('link', { name: 'Runtime' })).toHaveAttribute('href', '/docs/04-runtime');
+    expect(screen.getByRole('link', { name: 'Runtime' })).toHaveAttribute('href', '/docs/runtime');
     expect(screen.getByRole('link', { name: /repository docs/i })).toHaveAttribute(
       'href',
       'https://github.com/hieudoanm/mars/tree/main/docs',

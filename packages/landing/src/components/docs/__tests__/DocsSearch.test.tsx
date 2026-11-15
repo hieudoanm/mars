@@ -3,19 +3,22 @@ import DocsSearch from '../DocsSearch';
 
 const docs = [
   {
-    slug: '01-getting-started',
+    slug: 'getting-started',
+    chapter: 'foundations',
     title: 'Getting Started',
     description: 'Project Mars getting-started documentation',
     content: '# Getting Started',
   },
   {
-    slug: '02-cli',
+    slug: 'cli',
+    chapter: 'platform',
     title: 'CLI',
     description: 'Project Mars cli documentation',
     content: '# CLI',
   },
   {
-    slug: '03-notebook-format',
+    slug: 'notebook-format',
+    chapter: 'foundations',
     title: 'Notebook Format',
     description: 'Project Mars notebook-format documentation',
     content: '# Notebook Format',
@@ -75,6 +78,12 @@ describe('DocsSearch', () => {
       'href',
       'https://github.com/hieudoanm/mars/tree/main/docs',
     );
+  });
+
+  it('groups docs by chapter when not searching', () => {
+    render(<DocsSearch docs={docs} />);
+    expect(screen.getByText('Foundations')).toBeInTheDocument();
+    expect(screen.getByText('Platform')).toBeInTheDocument();
   });
 
   it('matches search case-insensitively', () => {

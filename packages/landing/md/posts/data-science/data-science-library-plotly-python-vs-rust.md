@@ -82,4 +82,4 @@ Project Mars supports both Plotly versions in their respective language runtimes
 - Both can coexist in the same `.mars` notebook
 - Interactive chart outputs render as HTML MIME bundles in the notebook
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Plotly in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore Plotly in Project Mars notebooks.

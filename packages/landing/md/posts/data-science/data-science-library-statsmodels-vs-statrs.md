@@ -83,4 +83,4 @@ Project Mars supports both Statsmodels and statrs in their respective language r
 - Both can coexist in the same `.mars` notebook
 - Statistical results persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Statsmodels and statrs in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) to explore Statsmodels and statrs in Project Mars notebooks.

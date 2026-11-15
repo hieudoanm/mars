@@ -243,12 +243,12 @@ See individual extension directories for contribution guidelines and development
 ## Related Documentation
 
 - [Landing site extensions documentation](../packages/landing/md/docs/)
-  - [VS Code extension](../packages/landing/md/docs/10-extension-vscode.md)
-  - [Zed extension](../packages/landing/md/docs/11-extension-zed.md)
-  - [JetBrains extension](../packages/landing/md/docs/12-extension-jetbrains.md)
-- [Project Mars CLI documentation](../docs/12-cli.md)
-- [Runtime documentation](../docs/06-runtime.md)
-- [Notebook format specification](../docs/03-notebook-format.md)
+  - [VS Code extension](../packages/landing/md/docs/04-extensions/extension-vscode.md)
+  - [Zed extension](../packages/landing/md/docs/04-extensions/extension-zed.md)
+  - [JetBrains extension](../packages/landing/md/docs/04-extensions/extension-jetbrains.md)
+- [Project Mars CLI documentation](../docs/02-platform/cli.md)
+- [Runtime documentation](../docs/02-platform/runtime.md)
+- [Notebook format specification](../docs/01-foundations/notebook-format.md)
 
 ## Desktop Application
 

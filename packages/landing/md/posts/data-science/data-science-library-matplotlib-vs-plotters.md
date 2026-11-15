@@ -85,4 +85,4 @@ Project Mars supports both Matplotlib and plotters in their respective language 
 - Both can coexist in the same `.mars` notebook
 - Chart outputs render as rich MIME bundles in the notebook
 
-Start with the [getting started guide](/docs/01-getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) to explore Matplotlib and plotters in Project Mars notebooks.
+Start with the [getting started guide](/docs/getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) to explore Matplotlib and plotters in Project Mars notebooks.

@@ -127,7 +127,7 @@ As R continues to be important for statistical computing and data science, both 
 
 ## Get Started
 
-- [Project Mars R Runtime](docs/09-runtime-r.md) - R execution documentation
+- [Project Mars R Runtime](docs/02-platform/runtime-r.md) - R execution documentation
 - [Project Mars Desktop App](packages/desktop) - Native application
-- [Project Mars CLI](docs/12-cli.md) - Command-line interface
-- [Getting Started](docs/01-getting-started.md) - First notebook tutorial
+- [Project Mars CLI](docs/02-platform/cli.md) - Command-line interface
+- [Getting Started](docs/01-foundations/getting-started.md) - First notebook tutorial

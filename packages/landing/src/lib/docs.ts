@@ -7,6 +7,7 @@ export type Doc = {
   description?: string;
   author?: string;
   order?: number;
+  chapter?: string;
   content: string;
 };
 
@@ -42,9 +43,30 @@ const parseFrontmatter = (
   return { data, body };
 };
 
-const readDoc = (fileName: string): Doc => {
+type DocFile = {
+  filePath: string;
+  chapter?: string;
+};
+
+const walkDocs = (directory: string, chapter?: string): DocFile[] => {
+  const found: DocFile[] = [];
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      found.push(...walkDocs(entryPath, entry.name.replace(/^\d+-/, '')));
+    } else if (docFilePattern.test(entry.name)) {
+      found.push({ filePath: entryPath, chapter });
+    }
+  }
+  return found;
+};
+
+const listDocFiles = (): DocFile[] => walkDocs(docsDirectory);
+
+const readDoc = ({ filePath, chapter }: DocFile): Doc => {
+  const fileName = path.basename(filePath);
   const slug = fileName.replace(/\.md$/i, '');
-  const raw = fs.readFileSync(path.join(docsDirectory, fileName), 'utf8');
+  const raw = fs.readFileSync(filePath, 'utf8');
   const { data, body } = parseFrontmatter(raw);
   const heading = body.match(/^#\s+(.+)$/m)?.[1]?.trim();
   const title =
@@ -63,14 +85,14 @@ const readDoc = (fileName: string): Doc => {
     description: data.description,
     author: data.author,
     order: Number.isNaN(order as number) ? undefined : order,
+    chapter,
     content: body,
   };
 };
 
 export const getDocs = (): Doc[] => {
-  return fs
-    .readdirSync(docsDirectory)
-    .filter((fileName) => docFilePattern.test(fileName) && fileName.toLowerCase() !== 'index.md')
+  return listDocFiles()
+    .filter(({ filePath }) => path.basename(filePath).toLowerCase() !== 'index.md')
     .map(readDoc)
     .sort((left, right) => {
       if (left.order !== undefined && right.order !== undefined) {
@@ -85,6 +107,6 @@ export const getDocs = (): Doc[] => {
 export const getDoc = (slug: string): Doc | undefined => {
   if (!/^[a-z0-9-]+$/i.test(slug)) return undefined;
   const fileName = `${slug}.md`;
-  if (!fs.existsSync(path.join(docsDirectory, fileName))) return undefined;
-  return readDoc(fileName);
+  const match = listDocFiles().find(({ filePath }) => path.basename(filePath) === fileName);
+  return match ? readDoc(match) : undefined;
 };

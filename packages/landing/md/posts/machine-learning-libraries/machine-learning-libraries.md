@@ -99,4 +99,4 @@ Project Mars is built to make ML development in Python, Rust, Julia, and C++ int
 - **Reproducibility and automation.** Save notebooks as JSON, preserve outputs, and run them headlessly with the Project Mars CLI for repeatable experiments.
 - **Jupyter interoperability.** Import and export `.ipynb` files to bridge existing notebook workflows with Project Mars's multi-language runtime.
 
-To get started with ML in Project Mars notebooks, open the [getting started guide](/docs/01-getting-started), explore the [runtime documentation](/docs/06-runtime.md), and try the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) which demonstrates a complete ML workflow in Project Mars.
+To get started with ML in Project Mars notebooks, open the [getting started guide](/docs/getting-started), explore the [runtime documentation](/docs/02-platform/runtime.md), and try the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) which demonstrates a complete ML workflow in Project Mars.
