@@ -1,12 +1,12 @@
-# Mars landing site
+# Project Mars landing site
 
-The Mars landing site is a static Next.js application for project discovery,
+The Project Mars landing site is a static Next.js application for project discovery,
 downloads, documentation, and blog posts. It is designed to deploy to GitHub
 Pages or any static host—no Node.js server is required at runtime.
 
 ## Features
 
-- Responsive Mars product pages, downloads, blog, and documentation routes.
+- Responsive Project Mars product pages, downloads, blog, and documentation routes.
 - Markdown-backed documentation and posts with generated navigation and search.
 - Static export with trailing-slash routes and unoptimized images for portable
   hosting.

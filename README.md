@@ -4,12 +4,11 @@
 
 Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
-
-![Mars — a Rust-powered interactive notebook platform](assets/branding/png/og.png)
+![Project Mars — a Rust-powered interactive notebook platform](assets/branding/png/og.png)
 
 **Live demo:** <https://hieudoanm.github.io/mars/>
 
-**Mars** — Explore ideas. Execute code. Discover possibilities.
+**Project Mars** — Explore ideas. Execute code. Discover possibilities.
 
 ## Table of Contents
 
@@ -49,7 +48,7 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 ### CLI
 
 - Install Rust 1.85 or newer.
-- Run Mars directly from the workspace:
+- Run Project Mars directly from the workspace:
 
 ```bash
 cargo run -p mars -- new analysis.mars
@@ -139,7 +138,7 @@ npm run tauri build
 - Unknown MIME bundles represented safely as fallback blocks.
 
 - Rust notebooks may declare registry dependencies in `metadata.dependencies`, for example `{ "serde": "1" }`.
-- Mars creates a temporary Cargo project for those notebooks.
+- Project Mars creates a temporary Cargo project for those notebooks.
 - Dependency resolution uses Cargo's configured cache and registry and may require network access.
 
 - Desktop shell under `packages/desktop`.
@@ -166,21 +165,21 @@ npm run test:e2e
 
 ## Demo
 
-Mars fits into a real workflow — start in the terminal, then move to the desktop when you want a visual editor.
+Project Mars fits into a real workflow — start in the terminal, then move to the desktop when you want a visual editor.
 
 **From the command line.** Create a notebook, run every cell, inspect it, and export it to HTML — all headless, scriptable, and CI-friendly.
 
-![Mars CLI session: mars new, run, inspect, --version, export, and kernel restart](assets/demo/png/terminal.png)
+![Project Mars CLI session: mars new, run, inspect, --version, export, and kernel restart](assets/demo/png/terminal.png)
 
 Or watch it run: [`assets/demo/gif/demo.gif`](assets/demo/gif/demo.gif) animates the same session line by line.
 
 **Into the desktop app.** Launch `mars-desktop` (or the Tauri build) and pick up where the CLI left off — same `.mars` files, same kernel semantics.
 
-![Mars desktop welcome screen](assets/demo/png/desktop-welcome.png)
+![Project Mars desktop welcome screen](assets/demo/png/desktop-welcome.png)
 
 **A real notebook.** Markdown cells render as prose, Rust cells get syntax highlighting and persistent variables, and outputs — text, errors, tables, images, and charts — appear inline beneath each cell.
 
-![Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-overview.png)
+![Project Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-overview.png)
 
 Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG exports in `png/`, animated captures in `gif/`). Regenerate the terminal SVG/PNG/GIF with [`assets/demo/svg-to-gif.sh`](assets/demo/svg-to-gif.sh) (requires `rsvg-convert` and `ffmpeg`). Regenerate the app captures with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which records the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright. The social preview card is [`assets/branding/png/og.png`](assets/branding/png/og.png).
 
@@ -189,7 +188,7 @@ Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG e
 - Optional companion extension under [`extensions/vscode`](extensions/vscode).
 - Provides `.mars` syntax highlighting, cell navigation, and CLI-backed HTML export.
 - Tauri desktop app remains canonical notebook experience.
-- Extension reuses Mars CLI rather than duplicating runtime or persistence layer.
+- Extension reuses Project Mars CLI rather than duplicating runtime or persistence layer.
 
 ## Documentation
 

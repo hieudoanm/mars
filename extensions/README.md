@@ -1,16 +1,16 @@
-# Mars Editor Extensions
+# Project Mars Editor Extensions
 
-Mars provides editor extensions for popular code editors to enable `.mars` notebook editing and execution directly within your preferred development environment.
+Project Mars provides editor extensions for popular code editors to enable `.mars` notebook editing and execution directly within your preferred development environment.
 
 ## Overview
 
-Mars extensions integrate with:
+Project Mars extensions integrate with:
 
 - **VS Code** — Full notebook editor with execution, variables inspection, diagnostics, checkpoints, and export
 - **Zed** — Syntax highlighting, grammar support, and MCP context-server integration
 - **JetBrains IDEs** — Kotlin plugin with file type, cell execution via `mars kernel serve`, and a kernel tool window
 
-All extensions are designed to work with the Mars CLI (`mars`) and share the same notebook format, ensuring consistency across editors.
+All extensions are designed to work with the Project Mars CLI (`mars`) and share the same notebook format, ensuring consistency across editors.
 
 ## VS Code Extension
 
@@ -52,7 +52,7 @@ code --install-extension vsix/mars-vscode.vsix
 ### Requirements
 
 - VS Code 1.145.2 or later
-- Mars CLI on `PATH` or configured via `mars.cliPath`
+- Project Mars CLI on `PATH` or configured via `mars.cliPath`
 - For development: Node.js and Corepack-managed pnpm
 
 ### Configuration
@@ -83,8 +83,8 @@ The Zed extension provides:
 
 - **Syntax highlighting** — `.mars` file syntax highlighting
 - **Grammar support** — Rust code cell and Markdown cell highlighting
-- **File icon** — Mars file icon in the file explorer
-- **MCP context server** — `context_server_command` launches the Mars MCP server so Zed's agent can inspect and work with Mars notebooks
+- **File icon** — Project Mars file icon in the file explorer
+- **MCP context server** — `context_server_command` launches the Project Mars MCP server so Zed's agent can inspect and work with Project Mars notebooks
 
 ### Installation
 
@@ -92,7 +92,7 @@ From the Zed extension marketplace (when published):
 
 ```bash
 # Via Zed's extension manager
-# Search for "Mars"
+# Search for "Project Mars"
 ```
 
 Or from source:
@@ -105,11 +105,11 @@ cd extensions/zed
 ### Current Status
 
 ⚠️ Grammar, language config, and MCP integration implemented
-❌ Notebook cell execution is not available — Zed has no notebook UI API, and `mars kernel serve` speaks the Mars kernel protocol rather than LSP
+❌ Notebook cell execution is not available — Zed has no notebook UI API, and `mars kernel serve` speaks the Project Mars kernel protocol rather than LSP
 
 ### MCP context server
 
-The extension registers `mars` as a Zed context server that spawns the Mars CLI's MCP server, giving Zed's agent access to Mars notebook inspection and related tools. It requires the `mars` CLI on `PATH` (or a resolvable location) since the context server command launches it directly.
+The extension registers `mars` as a Zed context server that spawns the Project Mars CLI's MCP server, giving Zed's agent access to Project Mars notebook inspection and related tools. It requires the `mars` CLI on `PATH` (or a resolvable location) since the context server command launches it directly.
 
 ### Workaround
 
@@ -132,10 +132,10 @@ See [extensions/zed/README.md](./zed/README.md) for details.
 The JetBrains plugin (Kotlin) provides:
 
 - **`.mars` file type** — JSON-aware syntax highlighting, folding, and structure view
-- **Cell execution** — `Mars → Execute Cell at Caret` runs the code cell under the caret through `mars kernel serve`, honoring per-cell `language` metadata
-- **Mars Kernel tool window** — kernel status, live variables, execution output, and stderr
+- **Cell execution** — `Project Mars → Execute Cell at Caret` runs the code cell under the caret through `mars kernel serve`, honoring per-cell `language` metadata
+- **Project Mars Kernel tool window** — kernel status, live variables, execution output, and stderr
 - **Notebook actions** — New Notebook, Run Notebook, Export (HTML/Markdown/`.ipynb`), Inspect, Navigate Cells, Diagnostics, Checkpoints, Interrupt Execution, Restart Kernel
-- **Configurable CLI path** — Settings → Tools → Mars
+- **Configurable CLI path** — Settings → Tools → Project Mars
 
 ### Installation
 
@@ -163,16 +163,16 @@ See [extensions/jetbrains/README.md](./jetbrains/README.md) for development stat
 
 ## Common Requirements
 
-All Mars extensions require:
+All Project Mars extensions require:
 
-- **Mars CLI** — Install from source or build the workspace:
+- **Project Mars CLI** — Install from source or build the workspace:
 
 ```bash
 cd /path/to/mars
 cargo install --path crates/mars-cli
 ```
 
-- **`.mars` format** — Extensions read and write the Mars notebook format
+- **`.mars` format** — Extensions read and write the Project Mars notebook format
 - **Runtime backends** — Language execution requires appropriate runtimes (Rust, Python, R, Julia, C++)
 
 ## Editor Compatibility
@@ -192,7 +192,7 @@ cargo install --path crates/mars-cli
 Notes:
 
 - JetBrains cell execution is caret-based (no notebook UI); results display in the tool window and are not persisted to `outputs`.
-- Zed has no notebook UI API and no LSP frontend; it exposes the Mars MCP server as a context server instead of executing cells.
+- Zed has no notebook UI API and no LSP frontend; it exposes the Project Mars MCP server as a context server instead of executing cells.
 
 Legend:
 
@@ -246,13 +246,13 @@ See individual extension directories for contribution guidelines and development
   - [VS Code extension](../packages/landing/md/docs/10-extension-vscode.md)
   - [Zed extension](../packages/landing/md/docs/11-extension-zed.md)
   - [JetBrains extension](../packages/landing/md/docs/12-extension-jetbrains.md)
-- [Mars CLI documentation](../docs/12-cli.md)
+- [Project Mars CLI documentation](../docs/12-cli.md)
 - [Runtime documentation](../docs/06-runtime.md)
 - [Notebook format specification](../docs/03-notebook-format.md)
 
 ## Desktop Application
 
-For the full interactive notebook experience with multi-language support, LSP integration, and rich UI features, consider using the **Mars desktop application**:
+For the full interactive notebook experience with multi-language support, LSP integration, and rich UI features, consider using the **Project Mars desktop application**:
 
 ```bash
 cd packages/desktop

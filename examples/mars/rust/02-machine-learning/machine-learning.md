@@ -17,7 +17,7 @@ Similar to the Python workflow using pandas, numpy, and scikit-learn.
 // :dep rand = "0.8"
 
 // For now, we'll use standard library to demonstrate the concept
-// since Mars runtime doesn't yet support external dependencies
+// since Project Mars runtime doesn't yet support external dependencies
 ```
 
 ## 1. Generate Synthetic Dataset
@@ -358,4 +358,4 @@ This notebook demonstrated:
 - **linfa** for ML algorithms (similar to scikit-learn)
 - **plotters** for visualization (similar to matplotlib)
 
-These libraries would be added as dependencies in a real Mars project's Cargo.toml.
+These libraries would be added as dependencies in a real Project Mars project's Cargo.toml.

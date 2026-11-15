@@ -1,7 +1,7 @@
 ---
 title: "Plotly vs plotly: Interactive Visualization Libraries"
 description: "Compare Python's Plotly with Rust's plotly for interactive, publication-quality charts in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 19
 tags: ["data-science", "plotly", "rust", "python", "interactive", "mars"]
@@ -73,13 +73,13 @@ plot.show();
 - **Plotly** in Python when you need interactive charts, Dash integration, or want to share visualizations via Plotly Cloud.
 - **plotly** in Rust when you need interactive charts with type safety and want to avoid the Python interpreter overhead.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both Plotly versions in their respective language runtimes:
+Project Mars supports both Plotly versions in their respective language runtimes:
 
 - **Python cells** can use Plotly with HTML output rendering
 - **Rust cells** can use plotly via Cargo dependencies with HTML output
 - Both can coexist in the same `.mars` notebook
 - Interactive chart outputs render as HTML MIME bundles in the notebook
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Plotly in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore Plotly in Project Mars notebooks.

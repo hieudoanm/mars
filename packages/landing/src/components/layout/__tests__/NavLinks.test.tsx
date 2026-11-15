@@ -5,7 +5,7 @@ import NavLinks from '../NavLinks';
 describe('NavLinks', () => {
   it('renders primary links', () => {
     render(<NavLinks />);
-    expect(screen.getByRole('link', { name: /why mars/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /why project mars/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /downloads/i })).toBeInTheDocument();
   });
 

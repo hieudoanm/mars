@@ -130,7 +130,7 @@ fn new_notebook(session: &mut MarsSession, args: NewArgs) -> Result<Value, Strin
     };
     let mut notebook = Notebook::new();
     notebook.metadata = metadata;
-    let cell = Cell::new(CellType::Markdown, "# New Mars notebook");
+    let cell = Cell::new(CellType::Markdown, "# New Project Mars notebook");
     notebook.add_cell(cell).map_err(|error| error.to_string())?;
     save_atomic(&notebook, &path).map_err(|error| error.to_string())?;
     session.create_notebook(&path, notebook.clone());

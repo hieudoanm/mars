@@ -11,15 +11,15 @@ import DocsLayout, { metadata } from '../layout';
 describe('docs layout', () => {
   beforeEach(() => {
     getDocsMock.mockReturnValue([
-      { slug: '01-getting-started', title: 'Getting Started', description: 'Mars getting-started documentation' },
-      { slug: '04-runtime', title: 'Runtime', description: 'Mars runtime documentation' },
+      { slug: '01-getting-started', title: 'Getting Started', description: 'Project Mars getting-started documentation' },
+      { slug: '04-runtime', title: 'Runtime', description: 'Project Mars runtime documentation' },
     ]);
   });
 
   it('renders the shared navigation, document links, and page content', () => {
     render(<DocsLayout><h1>Guide content</h1></DocsLayout>);
 
-    expect(screen.getByRole('link', { name: 'Mars home' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Project Mars home' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Getting Started' })).toHaveAttribute(
       'href',
@@ -68,7 +68,7 @@ describe('docs layout', () => {
   it('exports documentation metadata', () => {
     expect(metadata).toMatchObject({
       title: 'Documentation',
-      description: expect.stringContaining('Guides for installing Mars'),
+      description: expect.stringContaining('Guides for installing Project Mars'),
     });
   });
 });

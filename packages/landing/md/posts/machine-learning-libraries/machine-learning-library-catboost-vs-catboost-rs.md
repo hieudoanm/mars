@@ -1,7 +1,7 @@
 ---
 title: "CatBoost vs catboost-rs: Categorical Gradient Boosting"
 description: "Compare Python's CatBoost with Rust's catboost-rs for gradient boosting with strong categorical handling in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 30
 tags: ["machine-learning", "catboost", "rust", "python", "gradient-boosting", "mars"]
@@ -71,13 +71,13 @@ let model = train(&params, &pool)?;
 - **CatBoost** in Python when you need automatic categorical handling, GPU training, or integration with pandas and scikit-learn.
 - **catboost-rs** in Rust when you want to use CatBoost from Rust, combine it with Rust's type system, or deploy models in Rust applications.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both CatBoost versions in their respective language runtimes:
+Project Mars supports both CatBoost versions in their respective language runtimes:
 
 - **Python cells** can use CatBoost with standard library imports
 - **Rust cells** can use catboost-rs via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Models and datasets persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore CatBoost in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore CatBoost in Project Mars notebooks.

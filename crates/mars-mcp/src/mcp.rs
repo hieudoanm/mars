@@ -1,6 +1,6 @@
 //! MCP (Model Context Protocol) wire types.
 //!
-//! Implements the subset of the protocol Mars uses: `initialize`, `ping`,
+//! Implements the subset of the protocol Project Mars uses: `initialize`, `ping`,
 //! `tools/list`, and `tools/call` over newline-delimited JSON-RPC.
 
 use serde::{Deserialize, Serialize};

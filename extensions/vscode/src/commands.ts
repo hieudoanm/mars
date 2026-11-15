@@ -36,19 +36,19 @@ export async function runNotebook(): Promise<void> {
   const config = vscode.workspace.getConfiguration('mars');
   const cliPath = config.get<string>('cliPath', 'mars');
   const runArguments = config.get<string[]>('runArguments', []);
-  const output = vscode.window.createOutputChannel('Mars');
+  const output = vscode.window.createOutputChannel('Project Mars');
   output.show(true);
   output.appendLine(`$ ${cliPath} run ${document.fileName} ${runArguments.join(' ')}`.trim());
   try {
     const result = await execFileAsync(cliPath, ['run', document.fileName, ...runArguments]);
     if (result.stdout) output.append(result.stdout);
     if (result.stderr) output.append(result.stderr);
-    void vscode.window.showInformationMessage('Mars notebook completed.');
+    void vscode.window.showInformationMessage('Project Mars notebook completed.');
   } catch (error) {
     const failure = error as { stdout?: string; stderr?: string; message?: string };
     if (failure.stdout) output.append(failure.stdout);
     if (failure.stderr) output.append(failure.stderr);
-    void vscode.window.showErrorMessage(failure.message ?? 'Mars notebook execution failed');
+    void vscode.window.showErrorMessage(failure.message ?? 'Project Mars notebook execution failed');
   }
 }
 
@@ -76,10 +76,10 @@ export async function exportNotebook(format: 'html' | 'md', extension: string): 
     if (config.get<boolean>('previewAfterExport', true)) {
       await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(outputPath));
     } else {
-      void vscode.window.showInformationMessage(`Exported Mars notebook to ${outputPath}`);
+      void vscode.window.showInformationMessage(`Exported Project Mars notebook to ${outputPath}`);
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Mars export failed';
+    const message = error instanceof Error ? error.message : 'Project Mars export failed';
     void vscode.window.showErrorMessage(message);
   }
 }
@@ -145,7 +145,7 @@ async function diagnoseCells(
 export async function checkCell(): Promise<void> {
   const editor = vscode.window.activeNotebookEditor;
   if (!editor) {
-    void vscode.window.showWarningMessage('Open a Mars notebook first.');
+    void vscode.window.showWarningMessage('Open a Project Mars notebook first.');
     return;
   }
   const cells = editor.notebook
@@ -153,14 +153,14 @@ export async function checkCell(): Promise<void> {
     .slice(editor.selection.start, editor.selection.end + 1)
     .filter((cell) => cell.kind === vscode.NotebookCellKind.Code);
   if (cells.length === 0) {
-    void vscode.window.showWarningMessage('Select a Mars code cell first.');
+    void vscode.window.showWarningMessage('Select a Project Mars code cell first.');
     return;
   }
   try {
     await diagnoseCells(cells, notebookPathOf(editor.notebook));
   } catch (error) {
     void vscode.window.showErrorMessage(
-      error instanceof Error ? error.message : 'Mars diagnostics failed',
+      error instanceof Error ? error.message : 'Project Mars diagnostics failed',
     );
   }
 }
@@ -168,7 +168,7 @@ export async function checkCell(): Promise<void> {
 export async function checkNotebook(): Promise<void> {
   const notebook = vscode.window.activeNotebookEditor?.notebook;
   if (!notebook) {
-    void vscode.window.showWarningMessage('Open a Mars notebook first.');
+    void vscode.window.showWarningMessage('Open a Project Mars notebook first.');
     return;
   }
   const cells = notebook.getCells().filter((cell) => cell.kind === vscode.NotebookCellKind.Code);
@@ -181,21 +181,21 @@ export async function checkNotebook(): Promise<void> {
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
-        title: 'Checking Mars notebook',
+        title: 'Checking Project Mars notebook',
         cancellable: false,
       },
       () => diagnoseCells(cells, notebookPathOf(notebook)),
     );
   } catch (error) {
     void vscode.window.showErrorMessage(
-      error instanceof Error ? error.message : 'Mars diagnostics failed',
+      error instanceof Error ? error.message : 'Project Mars diagnostics failed',
     );
   }
 }
 
 export async function sendKernelInput(): Promise<void> {
   const text = await vscode.window.showInputBox({
-    prompt: 'Send a line to the running Mars kernel',
+    prompt: 'Send a line to the running Project Mars kernel',
     ignoreFocusOut: true,
   });
   if (text === undefined) return;

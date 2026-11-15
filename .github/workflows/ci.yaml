@@ -169,7 +169,7 @@ jobs:
       - name: Zip macOS app bundle
         if: runner.os == 'macOS'
         working-directory: target/release/bundle/macos
-        run: zip -r Mars.app.zip Mars.app
+        run: zip -r Project Mars.app.zip Project Mars.app
 
       - name: Build Linux bundles
         if: runner.os == 'Linux'
@@ -188,7 +188,7 @@ jobs:
           name: mars-desktop-macos
           path: |
             target/release/bundle/dmg/*.dmg
-            target/release/bundle/macos/Mars.app.zip
+            target/release/bundle/macos/Project Mars.app.zip
           if-no-files-found: error
 
       - name: Upload Linux artifacts
@@ -438,6 +438,6 @@ jobs:
         uses: softprops/action-gh-release@v3.0.4
         with:
           tag_name: latest
-          name: Mars (latest)
+          name: Project Mars (latest)
           body_path: README.md
           files: dist/**

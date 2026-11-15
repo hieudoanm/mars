@@ -1,6 +1,6 @@
 # mars-runtime-cpp
 
-C++ execution backend for Mars notebooks using replay-based compilation.
+C++ execution backend for Project Mars notebooks using replay-based compilation.
 
 ## Purpose
 

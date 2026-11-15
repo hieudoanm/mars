@@ -82,7 +82,7 @@ sum  // Displays: 15
 Use `std::cout` for explicit output:
 
 ```cpp
-std::cout << "Hello from Mars!" << std::endl;
+std::cout << "Hello from Project Mars!" << std::endl;
 ```
 
 ## Dependency management
@@ -103,7 +103,7 @@ Specify Conan dependencies in notebook metadata:
 }
 ```
 
-Mars generates a temporary `conanfile.txt` for the build.
+Project Mars generates a temporary `conanfile.txt` for the build.
 
 ### vcpkg
 
@@ -121,7 +121,7 @@ Specify vcpkg dependencies in notebook metadata:
 }
 ```
 
-Mars generates a temporary `vcpkg.json` for the build.
+Project Mars generates a temporary `vcpkg.json` for the build.
 
 ### Lockfile support
 

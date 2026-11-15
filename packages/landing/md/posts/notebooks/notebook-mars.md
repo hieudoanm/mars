@@ -1,15 +1,15 @@
 ---
-title: "Mars: The Multi-Language Notebook Platform"
-description: "Mars is a Rust-first interactive notebook. Here is how it compares to Jupyter, and why we built it."
-author: "Mars Team"
+title: "Project Mars: The Multi-Language Notebook Platform"
+description: "Project Mars is a Rust-first interactive notebook. Here is how it compares to Jupyter, and why we built it."
+author: "Project Mars Team"
 date: "2026-11-06"
 order: 8
 tags: ["mars", "notebooks", "jupyter", "rust", "product"]
 ---
 
-# Why Mars?
+# Why Project Mars?
 
-Jupyter notebooks are the standard way to explore code interactively. They are also built on Python, which means they inherit Python's strengths and its limits. **Mars** is a notebook platform where the primary language is Rust. It keeps the things people love about Jupyter — Markdown, executable cells, rich outputs, shared state — and rebuilds the whole stack in a language designed for the workloads notebooks actually run.
+Jupyter notebooks are the standard way to explore code interactively. They are also built on Python, which means they inherit Python's strengths and its limits. **Project Mars** is a notebook platform where the primary language is Rust. It keeps the things people love about Jupyter — Markdown, executable cells, rich outputs, shared state — and rebuilds the whole stack in a language designed for the workloads notebooks actually run.
 
 ## What Jupyter does well
 
@@ -29,11 +29,11 @@ Jupyter is built for interpreted, dynamic languages. That choice carries real co
 - **Concurrency.** The GIL means a notebook cell cannot use threads for real parallelism without multiprocessing hacks.
 - **Type safety.** Notebook code is dynamically typed, so errors surface at runtime, during execution, after you have already run the cells above.
 
-## Mars vs Jupyter
+## Project Mars vs Jupyter
 
-Mars keeps the notebook format but makes Rust the first-class language. Every cell you write is real Rust, compiled and executed in a persistent session, with variables shared across cells just like in Jupyter.
+Project Mars keeps the notebook format but makes Rust the first-class language. Every cell you write is real Rust, compiled and executed in a persistent session, with variables shared across cells just like in Jupyter.
 
-|                  | Jupyter                   | Mars                                   |
+|                  | Jupyter                   | Project Mars                                   |
 | ---------------- | ------------------------- | -------------------------------------- |
 | Primary language | Python (interpreted)      | Rust (compiled)                        |
 | Execution model  | Kernel process            | Persistent Rust session                |
@@ -45,16 +45,16 @@ Mars keeps the notebook format but makes Rust the first-class language. Every ce
 | Interop          | —                         | Import/export `.ipynb`                 |
 | Outputs          | Rich (HTML, plots, LaTeX) | Rich (HTML, plots, LaTeX, SVG, images) |
 
-Mars is not a replacement for Python. It is a replacement for the *notebook runtime*. If you want to keep using Python, you can still import `.ipynb` files and export them. But if you want to write the notebook itself in a language that is fast, safe, and reproducible, Rust is the answer.
+Project Mars is not a replacement for Python. It is a replacement for the *notebook runtime*. If you want to keep using Python, you can still import `.ipynb` files and export them. But if you want to write the notebook itself in a language that is fast, safe, and reproducible, Rust is the answer.
 
-## Why we built Mars
+## Why we built Project Mars
 
 Three motivations drove the project:
 
 1. **Teaching.** A Rust notebook can show students the language in a runnable, explorable format. Variables persist across cells, so you can experiment with ownership, iterators, and generics the way you would in a REPL, but with a document that stays saved and shareable.
-2. **Data science and ML.** The Rust ecosystem — `polars`, `ndarray`, `linfa`, `plotters` — is maturing fast. Mars gives those libraries a notebook home where they can be explored interactively, without the overhead of a Python interpreter.
+2. **Data science and ML.** The Rust ecosystem — `polars`, `ndarray`, `linfa`, `plotters` — is maturing fast. Project Mars gives those libraries a notebook home where they can be explored interactively, without the overhead of a Python interpreter.
 3. **Reproducibility.** A `.mars` notebook is a JSON document with stored outputs. Execute it with `mars run`, and you get deterministic results. No environment drift, no missing dependencies, no "it worked on my machine."
 
-Mars is open source, MIT licensed, and built as a modular Cargo workspace. The execution engine runs Rust code in an isolated process, so untrusted notebooks cannot touch the desktop application. The CLI works headless, so notebooks can be part of CI pipelines.
+Project Mars is open source, MIT licensed, and built as a modular Cargo workspace. The execution engine runs Rust code in an isolated process, so untrusted notebooks cannot touch the desktop application. The CLI works headless, so notebooks can be part of CI pipelines.
 
 If you are curious, the [getting-started notebook](/docs/01-getting-started) is a good place to begin.

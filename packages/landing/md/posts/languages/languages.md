@@ -1,7 +1,7 @@
 ---
 title: "Programming Languages for Data Science: A Comparative Guide"
 description: "Explore the unique strengths and trade-offs of Rust, Python, R, Julia, and C++ in the context of interactive notebooks and data science."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 1
 tags: ["languages", "rust", "python", "r", "julia", "cpp", "overview", "mars"]
@@ -9,11 +9,11 @@ tags: ["languages", "rust", "python", "r", "julia", "cpp", "overview", "mars"]
 
 # Why These Programming Languages?
 
-Mars supports multiple programming languages because different tasks benefit from different tools. This post explores why we chose Rust, Python, R, Julia, and C++ as our primary language runtimes, and how they complement each other in a multi-language notebook environment.
+Project Mars supports multiple programming languages because different tasks benefit from different tools. This post explores why we chose Rust, Python, R, Julia, and C++ as our primary language runtimes, and how they complement each other in a multi-language notebook environment.
 
 ## Language Overview
 
-| Language | Primary Strengths                                    | Best For                                                     | Mars Integration                                            |
+| Language | Primary Strengths                                    | Best For                                                     | Project Mars Integration                                            |
 | -------- | ---------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
 | Rust     | Performance, safety, systems programming             | High-performance computing, systems, low-level work          | Replay-based execution, Cargo dependencies, LSP integration |
 | Python   | Ecosystem, readability, rapid prototyping            | Data science, ML, web development, scripting                 | Persistent sessions, matplotlib capture, top-level await    |
@@ -23,7 +23,7 @@ Mars supports multiple programming languages because different tasks benefit fro
 
 ## Why Rust?
 
-Rust is Mars's primary language and the foundation of our architecture. We chose Rust for several reasons:
+Rust is Project Mars's primary language and the foundation of our architecture. We chose Rust for several reasons:
 
 - **Performance without garbage collection**: Rust provides C-like performance with memory safety
 - **Type safety**: Compile-time guarantees prevent entire classes of bugs
@@ -31,7 +31,7 @@ Rust is Mars's primary language and the foundation of our architecture. We chose
 - **Systems programming**: Perfect for building developer tools and infrastructure
 - **Growing ecosystem**: Excellent crates for data science, ML, and scientific computing
 
-See [Why Rust?](/blog/why-language-rust) for a deep dive into Rust's strengths and how Mars leverages them.
+See [Why Rust?](/blog/why-language-rust) for a deep dive into Rust's strengths and how Project Mars leverages them.
 
 ## Why Python?
 
@@ -43,7 +43,7 @@ Python remains the lingua franca of data science and machine learning:
 - **Community**: Massive community support and extensive documentation
 - **Integration**: Seamless integration with other languages and tools
 
-See [Why Python?](/blog/why-language-python) for insights into Python's role in data science and how Mars supports it.
+See [Why Python?](/blog/why-language-python) for insights into Python's role in data science and how Project Mars supports it.
 
 ## Why R?
 
@@ -55,7 +55,7 @@ R is the statistical computing powerhouse:
 - **Domain expertise**: Deep domain knowledge in statistics and biostatistics
 - **Visualization**: Excellent plotting capabilities with ggplot2 and friends
 
-See [Why R?](/blog/why-language-r) for a look at R's statistical capabilities and Mars integration.
+See [Why R?](/blog/why-language-r) for a look at R's statistical capabilities and Project Mars integration.
 
 ## Why Julia?
 
@@ -79,11 +79,11 @@ C++ provides ultimate control and performance:
 - **Embedded systems**: Critical for embedded and real-time systems
 - **Legacy integration**: Seamless integration with existing C/C++ codebases
 
-See [Why C++?](/blog/why-language-cpp) for insights into C++'s role in high-performance computing and Mars integration.
+See [Why C++?](/blog/why-language-cpp) for insights into C++'s role in high-performance computing and Project Mars integration.
 
-## How Mars Supports Multi-Language Workflows
+## How Project Mars Supports Multi-Language Workflows
 
-Mars is designed as a **multi-language interactive notebook** that allows you to:
+Project Mars is designed as a **multi-language interactive notebook** that allows you to:
 
 - **Mix languages in a single notebook**: Use Rust for performance-critical code, Python for data analysis, R for statistics, Julia for numerical computing, and C++ for systems programming
 - **Persistent sessions**: Each language has its own runtime with persistent state across cells
@@ -93,7 +93,7 @@ Mars is designed as a **multi-language interactive notebook** that allows you to
 
 ## Choosing the Right Language
 
-When working in Mars, consider these guidelines:
+When working in Project Mars, consider these guidelines:
 
 - **Use Rust** for performance-critical code, systems programming, or when you need type safety and memory safety
 - **Use Python** for rapid prototyping, data analysis, machine learning, and when you need the vast Python ecosystem
@@ -103,11 +103,11 @@ When working in Mars, consider these guidelines:
 
 ## Get Started
 
-Explore these languages in Mars:
+Explore these languages in Project Mars:
 
 - [Getting started guide](/docs/01-getting-started)
 - [Runtime documentation](/docs/06-runtime.md)
 - [Language-specific runtime docs](/docs/07-rust-runtime.md)
 - [Examples](https://github.com/hieudoanm/mars/tree/main/examples)
 
-Each language has its own strengths, and Mars brings them all together in a unified notebook environment.
+Each language has its own strengths, and Project Mars brings them all together in a unified notebook environment.

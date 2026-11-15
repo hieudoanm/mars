@@ -1,6 +1,6 @@
-# Contributing to Mars
+# Contributing to Project Mars
 
-Thank you for contributing to Mars. The project is intentionally split between
+Thank you for contributing to Project Mars. The project is intentionally split between
 Rust crates and a small set of Node applications. Keep domain behavior in the
 Rust workspace, keep UI behavior in the relevant application, and update the
 documentation whenever a supported workflow or limitation changes.
@@ -127,7 +127,7 @@ When changing a public format or command:
 
 ## Code standards
 
-Mars uses explicit error handling, strong Rust types, and strict TypeScript.
+Project Mars uses explicit error handling, strong Rust types, and strict TypeScript.
 Avoid `unwrap()` and `expect()` in production Rust code, and do not introduce
 TypeScript `any`. User code must execute outside the desktop application
 process.

@@ -1,7 +1,7 @@
 ---
 title: "Jupyter Kernels: Language Support Beyond Python"
 description: "Explore the unique strengths and trade-offs of evcxr_jupyter, IJulia, xeus-cling, IRkernel, and matlab_kernel as language-specific kernels for Jupyter notebooks."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 45
 tags: ["kernels", "jupyter", "rust", "julia", "cpp", "r", "matlab", "comparison", "mars"]
@@ -9,18 +9,18 @@ tags: ["kernels", "jupyter", "rust", "julia", "cpp", "r", "matlab", "comparison"
 
 # These Jupyter Kernels
 
-Jupyter kernels enable interactive computing in multiple languages within the same notebook interface. This post explores the major language-specific kernels and how they compare to Mars's native multi-language approach.
+Jupyter kernels enable interactive computing in multiple languages within the same notebook interface. This post explores the major language-specific kernels and how they compare to Project Mars's native multi-language approach.
 
 ## Kernel Overview
 
-| Kernel        | Language       | Execution Model     | Key Strengths                          | Mars Differentiator                     |
+| Kernel        | Language       | Execution Model     | Key Strengths                          | Project Mars Differentiator                     |
 | ------------- | -------------- | ------------------- | -------------------------------------- | --------------------------------------- |
 | evcxr_jupyter | Rust           | REPL-based          | Rust performance, Cargo integration    | Native compilation, multi-language      |
 | IJulia        | Julia          | REPL-based          | Julia performance, multiple dispatch   | MarsKernel module, MIME bundles         |
 | xeus-cling    | C++            | Interpreter (Cling) | C++ performance, modern C++            | Full compilation, dependency management |
 | IRkernel      | R              | REPL-based          | Statistical computing, tidyverse       | Plot capture, warnings streaming        |
 | matlab_kernel | MATLAB         | REPL-based          | Matrix operations, toolboxes, plotting | Multi-language, desktop app             |
-| Mars          | Multi-language | Native runtimes     | Rust-first, multi-language, CLI        | Independent platform, desktop app       |
+| Project Mars          | Multi-language | Native runtimes     | Rust-first, multi-language, CLI        | Independent platform, desktop app       |
 
 ## Why evcxr_jupyter?
 
@@ -33,7 +33,7 @@ evcxr_jupyter brings Rust's performance and safety to Jupyter:
 
 **When evcxr_jupyter excels**: Rust experimentation, Jupyter ecosystem integration
 
-**Mars's alternative**: Native Rust compilation, multi-language support, desktop application
+**Project Mars's alternative**: Native Rust compilation, multi-language support, desktop application
 
 ## Why IJulia?
 
@@ -46,7 +46,7 @@ IJulia enables Julia's high-performance computing in Jupyter:
 
 **When IJulia excels**: Julia scientific computing, Jupyter ecosystem integration
 
-**Mars's alternative**: MarsKernel module, MIME bundles, multi-language support
+**Project Mars's alternative**: MarsKernel module, MIME bundles, multi-language support
 
 ## Why xeus-cling?
 
@@ -59,7 +59,7 @@ xeus-cling brings C++'s performance to Jupyter:
 
 **When xeus-cling excels**: C++ experimentation, Jupyter ecosystem integration
 
-**Mars's alternative**: Full compilation, Conan/vcpkg dependencies, multi-language support
+**Project Mars's alternative**: Full compilation, Conan/vcpkg dependencies, multi-language support
 
 ## Why IRkernel?
 
@@ -72,7 +72,7 @@ IRkernel enables R's statistical computing in Jupyter:
 
 **When IRkernel excels**: R statistical computing, Jupyter ecosystem integration
 
-**Mars's alternative**: Plot capture, warnings streaming, multi-language support
+**Project Mars's alternative**: Plot capture, warnings streaming, multi-language support
 
 ## Why matlab_kernel?
 
@@ -85,7 +85,7 @@ matlab_kernel brings MATLAB's computational capabilities to Jupyter:
 
 **When matlab_kernel excels**: MATLAB engineering, Jupyter ecosystem integration
 
-**Mars's alternative**: Multi-language support, desktop application, CLI automation
+**Project Mars's alternative**: Multi-language support, desktop application, CLI automation
 
 ## The Kernel Landscape
 
@@ -100,18 +100,18 @@ The Jupyter kernel ecosystem has evolved to support multiple languages:
 - **Python**: Built-in Jupyter kernel
 
 ### Multi-Language Platforms
-- **Mars**: Rust, Python, R, Julia, C++ in one notebook
+- **Project Mars**: Rust, Python, R, Julia, C++ in one notebook
 - **JupyterLab**: Multiple kernels in one interface
 - **VS Code**: Jupyter extension with multiple kernels
 
 ### Platform-Specific
-- **Mars**: Independent platform, not Jupyter-based
+- **Project Mars**: Independent platform, not Jupyter-based
 - **Jupyter**: Kernel-based architecture
 - **Observable**: JavaScript-only reactive notebooks
 
-## Mars's Unique Approach
+## Project Mars's Unique Approach
 
-Mars takes a different approach to multi-language notebooks:
+Project Mars takes a different approach to multi-language notebooks:
 
 ### Native Runtimes
 - **Rust**: Replay-based compilation with Cargo
@@ -140,7 +140,7 @@ Mars takes a different approach to multi-language notebooks:
 - Want to leverage Jupyter extensions
 - Prefer kernel-based architecture
 
-### Choose Mars if:
+### Choose Project Mars if:
 - Want multi-language notebooks in one platform
 - Need Rust-first performance and type safety
 - Require desktop application with offline capability
@@ -152,17 +152,17 @@ Mars takes a different approach to multi-language notebooks:
 The notebook ecosystem is evolving toward multi-language support:
 
 - **Jupyter**: Expanding kernel ecosystem
-- **Mars**: Native multi-language platform
+- **Project Mars**: Native multi-language platform
 - **Observable**: JavaScript-only reactive approach
 - **Deepnote**: Cloud-native collaboration focus
 
-Mars aims to lead in the **performance** and **multi-language** aspects while providing a unified, independent platform.
+Project Mars aims to lead in the **performance** and **multi-language** aspects while providing a unified, independent platform.
 
 ## Get Started
 
-Explore Mars's multi-language approach:
+Explore Project Mars's multi-language approach:
 
-- [Mars Desktop App](packages/desktop) - Native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface
-- [Mars Runtime](docs/06-runtime.md) - Multi-language execution
+- [Project Mars Desktop App](packages/desktop) - Native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface
+- [Project Mars Runtime](docs/06-runtime.md) - Multi-language execution
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

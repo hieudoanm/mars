@@ -35,7 +35,7 @@ function executionHandler() {
   };
 }
 
-describe('Mars notebook execution controller', () => {
+describe('Project Mars notebook execution controller', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();

@@ -1,7 +1,7 @@
 ---
 title: "OpenCV vs opencv: Computer Vision Libraries"
 description: "Compare Python's OpenCV with Rust's opencv for computer vision, image processing, and video I/O in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 33
 tags: ["machine-learning", "opencv", "rust", "python", "computer-vision", "mars"]
@@ -71,13 +71,13 @@ let edges = canny(&image, 100.0, 200.0, None, None)?;
 - **OpenCV** in Python when you need the full OpenCV ecosystem, rapid prototyping, or integration with NumPy and deep learning frameworks.
 - **opencv** in Rust when you want to use OpenCV from Rust, combine it with Rust's type system, or deploy computer vision applications in Rust.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both OpenCV versions in their respective language runtimes:
+Project Mars supports both OpenCV versions in their respective language runtimes:
 
 - **Python cells** can use OpenCV with standard library imports
 - **Rust cells** can use opencv via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Images and video frames persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore OpenCV in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore OpenCV in Project Mars notebooks.

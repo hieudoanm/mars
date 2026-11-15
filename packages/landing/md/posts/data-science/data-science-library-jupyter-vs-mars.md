@@ -1,15 +1,15 @@
 ---
-title: "Jupyter vs Mars: Notebook Platforms Compared"
-description: "Compare Python's Jupyter with Mars for interactive notebook environments, multi-language support, and data science workflows."
-author: "Mars Team"
+title: "Jupyter vs Project Mars: Notebook Platforms Compared"
+description: "Compare Python's Jupyter with Project Mars for interactive notebook environments, multi-language support, and data science workflows."
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 20
 tags: ["data-science", "jupyter", "mars", "rust", "python", "notebook", "multi-language"]
 ---
 
-# Jupyter vs Mars: Interactive Notebooks Compared
+# Jupyter vs Project Mars: Interactive Notebooks Compared
 
-Jupyter defines the interactive notebook experience for many Python users. Mars builds on that paradigm with a Rust-first platform, multi-language support, and a new document format designed for reproducible data science workflows.
+Jupyter defines the interactive notebook experience for many Python users. Project Mars builds on that paradigm with a Rust-first platform, multi-language support, and a new document format designed for reproducible data science workflows.
 
 ## What Jupyter does
 
@@ -24,9 +24,9 @@ Jupyter introduced the notebook paradigm to data science:
 
 It became the default environment for data science experimentation, education, and research.
 
-## What Mars brings
+## What Project Mars brings
 
-Mars provides a Rust-first interactive notebook platform:
+Project Mars provides a Rust-first interactive notebook platform:
 
 - **Rust-first design** with native `.mars` document format
 - **Multi-language support** (Rust, Python, R, Julia, C++) in the same notebook
@@ -36,11 +36,11 @@ Mars provides a Rust-first interactive notebook platform:
 - **CLI** for headless execution and automation
 - **Jupyter interoperability** via import/export
 
-The key difference: Mars is designed as an independent notebook platform with a native document format and execution architecture, not just another Jupyter kernel or frontend.
+The key difference: Project Mars is designed as an independent notebook platform with a native document format and execution architecture, not just another Jupyter kernel or frontend.
 
 ## Comparison
 
-| Feature               | Jupyter (Python)                          | Mars                                        |
+| Feature               | Jupyter (Python)                          | Project Mars                                        |
 | --------------------- | ---------------------------------------- | ------------------------------------------- |
 | Code execution       | Python kernel                             | Rust, Python, R, Julia, C++ kernels        |
 | Cell structure        | Code, Markdown, raw                      | Code, Markdown, raw                         |
@@ -64,7 +64,7 @@ df = pd.DataFrame({'a': arr})
 df
 ```
 
-## Example: Mars (Rust)
+## Example: Project Mars (Rust)
 
 ```rust
 // Cell 1: Rust
@@ -79,11 +79,11 @@ arr = np.array([1, 2, 3])
 ## When to use each
 
 - **Jupyter** in Python when you need the mature ecosystem, broad language support via kernels, or integration with Python-specific tools.
-- **Mars** when you want a Rust-first notebook platform, multi-language notebooks in a single file, native desktop application, or CLI automation.
+- **Project Mars** when you want a Rust-first notebook platform, multi-language notebooks in a single file, native desktop application, or CLI automation.
 
-## How Mars supports Jupyter workflows
+## How Project Mars supports Jupyter workflows
 
-Mars provides Jupyter interoperability:
+Project Mars provides Jupyter interoperability:
 
 - **Import** `.ipynb` notebooks to `.mars` format
 - **Export** `.mars` notebooks to `.ipynb` format
@@ -91,11 +91,11 @@ Mars provides Jupyter interoperability:
 - **Metadata preservation** for unsupported features
 - **Cell structure mapping** (code, Markdown, raw)
 
-This makes it easy to migrate existing Jupyter workflows to Mars while maintaining compatibility with the broader ecosystem.
+This makes it easy to migrate existing Jupyter workflows to Project Mars while maintaining compatibility with the broader ecosystem.
 
 ## Multi-language notebooks
 
-Mars allows mixing languages in a single notebook:
+Project Mars allows mixing languages in a single notebook:
 
 ```mars
 // Cell 1: Rust
@@ -113,9 +113,9 @@ t.test(df.values)
 
 Each language has its own persistent runtime, so variables persist across cells within that language.
 
-## Get started with Mars
+## Get started with Project Mars
 
-Explore Mars's multi-language notebook platform:
+Explore Project Mars's multi-language notebook platform:
 
 - [Getting started guide](/docs/01-getting-started)
 - [Runtime documentation](/docs/06-runtime.md)

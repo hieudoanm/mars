@@ -1,7 +1,7 @@
 ---
 title: "10 Machine Learning Libraries Every Developer Should Know"
-description: "A practical map of 10 machine learning libraries in Python and their Rust equivalents, and how Mars supports both ML ecosystems fully."
-author: "Mars Team"
+description: "A practical map of 10 machine learning libraries in Python and their Rust equivalents, and how Project Mars supports both ML ecosystems fully."
+author: "Project Mars Team"
 date: "2026-11-06"
 order: 23
 tags: ["machine-learning", "rust", "python", "libraries", "mars"]
@@ -9,7 +9,7 @@ tags: ["machine-learning", "rust", "python", "libraries", "mars"]
 
 # 10 Machine Learning Libraries that Every Developers Should Know
 
-Machine learning in Python benefits from a rich, familiar set of libraries. Rust now provides capable equivalents that emphasize performance, safety, and predictable deployment. Mars brings both Python and Rust libraries into an interactive notebook environment so developers can experiment, iterate, and share results in their preferred language.
+Machine learning in Python benefits from a rich, familiar set of libraries. Rust now provides capable equivalents that emphasize performance, safety, and predictable deployment. Project Mars brings both Python and Rust libraries into an interactive notebook environment so developers can experiment, iterate, and share results in their preferred language.
 
 ## Python to Rust at a glance
 
@@ -34,7 +34,7 @@ See [scikit-learn vs linfa](/blog/machine-learning-library-scikit-learn-vs-linfa
 
 ## 2. PyTorch → `tch-rs`
 
-PyTorch is popular for research and production deep learning. **`tch-rs`** provides Rust bindings to the Torch ecosystem, enabling tensor computation and neural network workflows from Rust code. In Mars, developers can prototype model logic interactively while staying in a compiled language.
+PyTorch is popular for research and production deep learning. **`tch-rs`** provides Rust bindings to the Torch ecosystem, enabling tensor computation and neural network workflows from Rust code. In Project Mars, developers can prototype model logic interactively while staying in a compiled language.
 
 See [PyTorch vs tch-rs](/blog/machine-learning-library-pytorch-vs-tch-rs) for a detailed comparison.
 
@@ -86,9 +86,9 @@ OpenCV is a foundational computer vision library. The Rust **`opencv`** crate ex
 
 See [OpenCV Python vs Rust](/blog/machine-learning-library-opencv-vs-opencv) for a detailed comparison.
 
-## How Mars supports both ecosystems
+## How Project Mars supports both ecosystems
 
-Mars is built to make ML development in Python, Rust, Julia, and C++ interactive, reproducible, and practical:
+Project Mars is built to make ML development in Python, Rust, Julia, and C++ interactive, reproducible, and practical:
 
 - **Persistent sessions.** Train, evaluate, and iterate across notebook cells while keeping variables and intermediate results available in your preferred language.
 - **Notebook-native workflow.** Combine code, Markdown explanations, equations, tables, and rich outputs in a single `.mars` document.
@@ -96,7 +96,7 @@ Mars is built to make ML development in Python, Rust, Julia, and C++ interactive
 - **Python ecosystem.** Use standard Python ML libraries (scikit-learn, PyTorch, TensorFlow, etc.) with matplotlib figure capture and top-level `await` support.
 - **Julia ecosystem.** Use Julia ML libraries (Flux.jl, MLJ.jl, ScikitLearn.jl) with MIME bundle output and interactive input support.
 - **C++ ecosystem.** Use C++ ML libraries via Conan/vcpkg with replay-based compilation.
-- **Reproducibility and automation.** Save notebooks as JSON, preserve outputs, and run them headlessly with the Mars CLI for repeatable experiments.
-- **Jupyter interoperability.** Import and export `.ipynb` files to bridge existing notebook workflows with Mars's multi-language runtime.
+- **Reproducibility and automation.** Save notebooks as JSON, preserve outputs, and run them headlessly with the Project Mars CLI for repeatable experiments.
+- **Jupyter interoperability.** Import and export `.ipynb` files to bridge existing notebook workflows with Project Mars's multi-language runtime.
 
-To get started with ML in Mars notebooks, open the [getting started guide](/docs/01-getting-started), explore the [runtime documentation](/docs/06-runtime.md), and try the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) which demonstrates a complete ML workflow in Mars.
+To get started with ML in Project Mars notebooks, open the [getting started guide](/docs/01-getting-started), explore the [runtime documentation](/docs/06-runtime.md), and try the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) which demonstrates a complete ML workflow in Project Mars.

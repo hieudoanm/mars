@@ -1,7 +1,7 @@
 ---
 title: "pandas vs Polars: Modern DataFrame Libraries Compared"
 description: "Compare Python's pandas with Rust's Polars for DataFrames, tabular data manipulation, and analytics in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 14
 tags: ["data-science", "pandas", "polars", "rust", "python", "mars"]
@@ -74,13 +74,13 @@ let result = df.filter(col("a").gt(1)).groupby(["a"]).sum();
 - **pandas** in Python when you need the vast ecosystem, familiar syntax, or compatibility with existing Python workflows.
 - **polars** in Rust when you need performance for large datasets, parallel execution, or want to avoid the Python interpreter overhead.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both pandas and Polars in their respective language runtimes:
+Project Mars supports both pandas and Polars in their respective language runtimes:
 
 - **Python cells** can use pandas with standard library imports
 - **Rust cells** can use Polars via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - DataFrames persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore pandas and Polars in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore pandas and Polars in Project Mars notebooks.

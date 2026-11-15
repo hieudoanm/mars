@@ -1,7 +1,7 @@
 ---
 title: "Movie Recommendation System: Collaborative Filtering"
 description: "Build a recommender system with collaborative filtering and matrix factorization on the MovieLens dataset in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 39
 tags: ["machine-learning", "rust", "recommender-systems", "collaborative-filtering", "als"]

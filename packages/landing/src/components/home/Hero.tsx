@@ -42,7 +42,7 @@ const Hero: FC = () => {
           <em className='text-orange-2 font-serif font-normal'>Build in Rust.</em>
         </motion.h1>
         <motion.p className='m-0 max-w-prose-md text-lg max-sm-nav:text-base' {...reveal(0.16)}>
-          Mars is a focused environment for exploring ideas, executing code, and discovering
+          Project Mars is a focused environment for exploring ideas, executing code, and discovering
           possibilities - without giving up the power of a real developer tool.
         </motion.p>
         <motion.div className='my-8 flex flex-wrap gap-3' {...reveal(0.24)}>
@@ -69,7 +69,7 @@ const Hero: FC = () => {
       </div>
       <motion.div
         className='relative grid h-125 place-items-center max-md-nav:h-98 max-sm-nav:h-82 lg:col-span-5'
-        aria-label='Mars notebook interface preview'
+        aria-label='Project Mars notebook interface preview'
         {...(reduce
           ? {}
           : {
@@ -86,7 +86,7 @@ const Hero: FC = () => {
         <div className='absolute h-48 w-132 -rotate-25 rounded-full border border-orange/25 max-sm-nav:w-90' />
         <div className='absolute h-35 w-112 rotate-36 rounded-full border border-slate-400/20 max-sm-nav:w-75' />
         <div className='animate-float relative z-10 h-75 w-75 drop-shadow-hero max-sm-nav:h-55 max-sm-nav:w-55'>
-          <img className='h-full w-full' src={marsLogo.src} alt='Mars logo' />
+          <img className='h-full w-full' src={marsLogo.src} alt='Project Mars logo' />
         </div>
         <motion.div
           className='absolute top-18 right-0 z-20 rounded-lg border border-line-8 bg-surface-5 px-4 py-3.5 font-mono text-xs leading-relaxed shadow-code max-sm-nav:top-6 max-sm-nav:-right-2 max-sm-nav:text-2xs'

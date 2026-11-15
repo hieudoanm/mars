@@ -1,7 +1,7 @@
 ---
 title: "MNIST Digit Recognition: Computer Vision Project"
 description: "Recognize handwritten digits from 28x28 pixel images using a convolutional neural network trained with burn in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 37
 tags: ["machine-learning", "rust", "deep-learning", "cnn", "mnist", "burn"]

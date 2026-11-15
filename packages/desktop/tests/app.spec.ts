@@ -21,7 +21,7 @@ test('opens the notebook editor and exposes core workflows', async ({ page }) =>
   await startNotebook(page);
 
   await expect(
-    page.getByRole('heading', { name: 'Getting started with Mars' }).first(),
+    page.getByRole('heading', { name: 'Getting started with Project Mars' }).first(),
   ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Run current cell' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Run all (F6)' })).toBeVisible();

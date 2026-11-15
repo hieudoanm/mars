@@ -1,7 +1,7 @@
 ---
 title: "Statsmodels vs statrs: Statistical Modeling in Python vs Rust"
 description: "Compare Python's Statsmodels with Rust's statrs for statistical distributions, tests, and models in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 16
 tags: ["data-science", "statsmodels", "statrs", "rust", "python", "mars"]
@@ -74,13 +74,13 @@ let result = normal.cdf(x);
 - **Statsmodels** in Python when you need a comprehensive statistical modeling suite, time series analysis, or integration with pandas and NumPy.
 - **statrs** in Rust when you need type-safe statistical primitives, performance for simulations, or want to avoid the Python interpreter overhead.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both Statsmodels and statrs in their respective language runtimes:
+Project Mars supports both Statsmodels and statrs in their respective language runtimes:
 
 - **Python cells** can use Statsmodels with standard library imports
 - **Rust cells** can use statrs via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Statistical results persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Statsmodels and statrs in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore Statsmodels and statrs in Project Mars notebooks.

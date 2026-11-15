@@ -1,11 +1,11 @@
-# Mars desktop application
+# Project Mars desktop application
 
 Scope: `packages/desktop/**`. Follow the repository-level `AGENTS.md` first; these
 instructions describe the Tauri desktop client specifically.
 
 ## Architecture and ownership
 
-- This is the Mars notebook desktop client: React 19 + TypeScript in `src/`,
+- This is the Project Mars notebook desktop client: React 19 + TypeScript in `src/`,
   with a Tauri 2 Rust host in `src-tauri/`.
 - Keep the frontend thin. Document mutations belong in `src/lib/notebookOperations.ts`;
   notebook UI state and side effects belong in focused hooks under `src/hooks/`.
@@ -30,7 +30,7 @@ instructions describe the Tauri desktop client specifically.
 
 ## UI, outputs, and security
 
-- Preserve the default dark Mars visual language and existing Tailwind class
+- Preserve the default dark Project Mars visual language and existing Tailwind class
   ordering; format with the local Prettier configuration after style edits.
 - Rich output is untrusted notebook content. Route HTML through
   `sanitizeHtml.ts`; never add `dangerouslySetInnerHTML` or relax the Tauri CSP

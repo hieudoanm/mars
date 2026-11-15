@@ -1,21 +1,21 @@
 ---
 title: MCP Integration
-description: Mars MCP server and client for AI assistants and automation
+description: Project Mars MCP server and client for AI assistants and automation
 order: 9
-author: Mars Team
+author: Project Mars Team
 tags: [mcp, model-context-protocol, tools, ai, automation]
 ---
 
 # Model Context Protocol (MCP)
 
-Mars ships an MCP server and client so AI assistants, IDEs, and automation
+Project Mars ships an MCP server and client so AI assistants, IDEs, and automation
 tools can inspect, edit, execute, and save `.mars` notebooks through the
 standardized Model Context Protocol.
 
 ## What is MCP?
 
 The Model Context Protocol is an open standard that lets AI assistants and
-tools interact with external systems through a unified interface. Mars
+tools interact with external systems through a unified interface. Project Mars
 implements it to expose notebook operations as callable tools over a
 newline-delimited JSON-RPC 2.0 transport on stdio — the same framing as
 `mars kernel serve`.

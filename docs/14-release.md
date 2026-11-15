@@ -1,4 +1,4 @@
-# Mars release guide
+# Project Mars release guide
 
 This guide describes a release as a set of independently verifiable Rust,
 Node, and native desktop artifacts. A green frontend build is not sufficient
@@ -85,7 +85,7 @@ Before publishing:
 
 1. Inspect the generated bundle names and target architecture.
 2. Install or launch the artifact on the target operating system.
-3. Create a notebook, execute Rust cells, save it, close Mars, and reopen it.
+3. Create a notebook, execute Rust cells, save it, close Project Mars, and reopen it.
 4. Verify that `.mars` files, Jupyter import/export, rich outputs, and native
    dialogs work.
 5. Record known platform limitations and checksums with the release.

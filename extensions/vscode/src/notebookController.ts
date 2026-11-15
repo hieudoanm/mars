@@ -18,7 +18,7 @@ export class MarsNotebookController implements vscode.Disposable {
     this.controller = vscode.notebooks.createNotebookController(
       'mars-kernel',
       'mars-notebook',
-      'Mars Kernel',
+      'Project Mars Kernel',
     );
     this.controller.supportedLanguages = ['rust', 'python', 'r', 'julia', 'cpp'];
     this.controller.supportsExecutionOrder = true;
@@ -112,7 +112,7 @@ export class MarsNotebookController implements vscode.Disposable {
           new vscode.NotebookCellOutput([
             new vscode.NotebookCellOutputItem(
               Buffer.from(
-                `Mars CLI not found at '${cliPath}'.\n\nInstall Mars CLI to enable actual code execution.\n\nFor now, showing placeholder output:\n\n${code}`,
+                `Project Mars CLI not found at '${cliPath}'.\n\nInstall Project Mars CLI to enable actual code execution.\n\nFor now, showing placeholder output:\n\n${code}`,
                 'utf-8',
               ),
               'text/plain',
@@ -172,7 +172,7 @@ export class MarsNotebookController implements vscode.Disposable {
         new vscode.NotebookCellOutput([
           new vscode.NotebookCellOutputItem(
             Buffer.from(
-              `Error: ${message}\n\nMake sure:\n1. Mars CLI is installed and on PATH\n2. 'mars kernel serve' command is available\n3. Rust toolchain is installed`,
+              `Error: ${message}\n\nMake sure:\n1. Project Mars CLI is installed and on PATH\n2. 'mars kernel serve' command is available\n3. Rust toolchain is installed`,
               'utf-8',
             ),
             'application/vnd.code.notebook.error',

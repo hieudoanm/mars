@@ -1,10 +1,10 @@
-# Mars Crates
+# Project Mars Crates
 
-This directory contains the Rust crates that form the core of the Mars notebook platform.
+This directory contains the Rust crates that form the core of the Project Mars notebook platform.
 
 ## Overview
 
-Mars is organized as a modular Cargo workspace with crates for:
+Project Mars is organized as a modular Cargo workspace with crates for:
 
 - **Core types and utilities** — Shared domain types, IDs, errors
 - **Document management** — Notebook format, serialization, validation
@@ -50,7 +50,7 @@ Mars is organized as a modular Cargo workspace with crates for:
 
 | Crate                     | Purpose                         |
 | ------------------------- | ------------------------------- |
-| [`mars-cli`](./mars-cli/) | Command-line interface for Mars |
+| [`mars-cli`](./mars-cli/) | Command-line interface for Project Mars |
 
 ## Architecture
 

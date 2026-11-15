@@ -1,7 +1,7 @@
 ---
 title: "Image Classification: Transfer Learning Project"
 description: "Classify cats vs dogs using a pretrained ResNet via transfer learning with tch-rs in Rust — the modern approach to vision ML."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 44
 tags: ["machine-learning", "rust", "deep-learning", "computer-vision", "transfer-learning", "pytorch"]

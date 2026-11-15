@@ -6,7 +6,7 @@ import { siteName, siteUrl } from '@/lib/site';
 export const metadata: Metadata = {
   title: `Series | ${siteName} Blog`,
   description: 'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
-  keywords: 'series, languages, notebooks, kernels, data science, machine learning, Mars',
+  keywords: 'series, languages, notebooks, kernels, data science, machine learning, Project Mars',
   alternates: {
     canonical: `${siteUrl}/blog/series`,
   },
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: `${siteUrl}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: 'Mars Blog Series',
+        alt: 'Project Mars Blog Series',
       },
     ],
     type: 'website',
@@ -37,19 +37,19 @@ const series = [
   {
     slug: 'languages',
     title: 'Programming Languages',
-    description: 'Explore why Rust, Python, R, Julia, and C++ are essential for modern data science and how Mars supports them all.',
+    description: 'Explore why Rust, Python, R, Julia, and C++ are essential for modern data science and how Project Mars supports them all.',
     posts: ['languages', 'language-rust', 'language-python', 'language-r', 'language-julia', 'language-cpp'],
   },
   {
     slug: 'notebooks',
     title: 'Notebook Platforms',
-    description: 'Compare Deepnote, Observable, Jupyter, and Mars to understand different approaches to interactive computing.',
+    description: 'Compare Deepnote, Observable, Jupyter, and Project Mars to understand different approaches to interactive computing.',
     posts: ['notebooks', 'notebook-mars', 'notebook-jupyter', 'notebook-deepnote', 'notebook-observable', 'notebook-hex'],
   },
   {
     slug: 'kernels',
     title: 'Jupyter Kernels',
-    description: 'Explore language-specific Jupyter kernels and how they compare to Mars\'s native multi-language approach.',
+    description: 'Explore language-specific Jupyter kernels and how they compare to Project Mars\'s native multi-language approach.',
     posts: ['kernels', 'kernel-evcxr-jupyter', 'kernel-ijulia', 'kernel-xeus-cling', 'kernel-irkernel', 'kernel-matlab'],
   },
   {

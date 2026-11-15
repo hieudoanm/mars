@@ -7,7 +7,7 @@ serialized compiler session and does not require Rust to parse or edit.
 Documents should remain useful for Markdown review, source control, export,
 and future language runtimes even when a particular runtime is unavailable.
 
-Mars notebooks are UTF-8 JSON documents with `format_version: 2`:
+Project Mars notebooks are UTF-8 JSON documents with `format_version: 2`:
 
 ```json
 {
@@ -54,7 +54,7 @@ execution ranges, display order, and export order all follow the document list.
 
 ## Persistence and migration
 
-Mars writes through a sibling temporary file and rename sequence rather than
+Project Mars writes through a sibling temporary file and rename sequence rather than
 overwriting the target directly. This reduces the chance of leaving a
 partially-written notebook after a process or machine failure. The operation
 does not replace the need for backups or source control.
@@ -66,7 +66,7 @@ future versions are rejected instead of being silently downgraded.
 
 The optional `metadata.dependencies` object declares Cargo registry
 dependencies for Rust code cells. Keys are Cargo package names and values are
-version requirements or inline Cargo dependency tables. When present, Mars
+version requirements or inline Cargo dependency tables. When present, Project Mars
 generates a temporary Cargo project for each execution and uses Cargo's normal
 dependency resolution and cache. A successful CLI run stores the generated
 `Cargo.lock` text in `metadata.cargo_lock`; subsequent `--locked` runs require
@@ -101,13 +101,13 @@ instead of being discarded.
 The desktop may render rich outputs interactively using bundled frontend
 libraries. Standalone HTML export uses a dependency-free renderer with
 sanitized HTML and static fallbacks. Unsupported or unknown MIME values are
-preserved safely, but preservation does not imply that Mars can execute or
+preserved safely, but preservation does not imply that Project Mars can execute or
 visually render every MIME type.
 
 ## Jupyter compatibility
 
-Mars preserves imported notebook metadata under `metadata.jupyter` and keeps
-cell metadata on the corresponding Mars cell. Compatibility tests cover
+Project Mars preserves imported notebook metadata under `metadata.jupyter` and keeps
+cell metadata on the corresponding Project Mars cell. Compatibility tests cover
 format-4 markdown, code, and raw cells; execution counts; stream output;
 errors and tracebacks; display metadata; HTML, LaTeX, table, chart, and image
 MIME values; PNG/JPEG/SVG image variants; widget view/state data; and unknown
@@ -115,17 +115,17 @@ MIME bundles. The representative fixture is
 `crates/mars-jupyter/tests/fixtures/jupyter-compatibility.ipynb`.
 
 When a Jupyter output contains multiple MIME representations or display
-metadata, Mars retains the complete `MimeBundle` so unsupported widget and
+metadata, Project Mars retains the complete `MimeBundle` so unsupported widget and
 application-specific values survive import/export instead of being silently
 discarded. Single standard MIME values without metadata continue to map to
-their typed Mars output variants.
+their typed Project Mars output variants.
 
-Mars does not execute Jupyter widget protocols, comm messages, or frontend
+Project Mars does not execute Jupyter widget protocols, comm messages, or frontend
 state. Widget MIME data is preserved as an opaque MIME bundle for round-trip
 fidelity. Table outputs are preserved as HTML when exporting to `.ipynb`;
 structured dataframe semantics are not inferred from arbitrary MIME payloads.
 
 Jupyter metadata such as kernelspec, language information, display metadata,
-and unknown notebook/cell fields are retained where the Mars model can
+and unknown notebook/cell fields are retained where the Project Mars model can
 represent them. Import/export aims for safe, useful interoperability rather
 than claiming complete equivalence with every Jupyter frontend extension.

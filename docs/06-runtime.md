@@ -2,7 +2,7 @@
 
 ## Purpose and guarantees
 
-Mars runtimes provide persistent notebook sessions without running arbitrary notebook code inside the desktop process. All runtimes guarantee:
+Project Mars runtimes provide persistent notebook sessions without running arbitrary notebook code inside the desktop process. All runtimes guarantee:
 
 - Successful cells can define bindings used by later cells.
 - Compilation and execution happen in a child process.
@@ -35,7 +35,7 @@ EVCXR_BEGIN_CONTENT text/html
 EVCXR_END_CONTENT
 ```
 
-Mars removes the markers and turns a standalone SVG payload into an `image/svg+xml` MIME bundle (with a `text/plain` fallback), so saved notebook outputs render as figures instead of raw marker text. HTML that merely contains an SVG alongside visible content stays an HTML output.
+Project Mars removes the markers and turns a standalone SVG payload into an `image/svg+xml` MIME bundle (with a `text/plain` fallback), so saved notebook outputs render as figures instead of raw marker text. HTML that merely contains an SVG alongside visible content stays an HTML output.
 
 ## Multi-language notebooks
 

@@ -18,7 +18,9 @@ fn evaluates_replayed_final_expressions_without_displaying() {
     let program = render_program(&cells);
 
     let hash = cell_source_hash("1 + 1");
-    assert!(program.contains(&format!("    // Mars cell 0 {hash}\n    (1 + 1);\n")));
+    assert!(program.contains(&format!(
+        "    // Project Mars cell 0 {hash}\n    (1 + 1);\n"
+    )));
     assert!(program.contains("println!(\"__MARS_RESULT__={:?}\", (2 + 2));"));
     assert_eq!(program.matches("__MARS_RESULT__").count(), 1);
 }

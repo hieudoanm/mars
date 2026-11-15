@@ -1,11 +1,11 @@
 # mars-jupyter — `.ipynb` Import & Export
 
-Bidirectional conversion between Mars notebooks and Jupyter nbformat 4. Depends on `mars-core` and `mars-document`.
+Bidirectional conversion between Project Mars notebooks and Jupyter nbformat 4. Depends on `mars-core` and `mars-document`.
 
 ## Responsibilities
 
 - `import.rs` — `import_ipynb(&str) -> Notebook`: parses nbformat JSON (`JupyterNotebook`, `JupyterCell`, `JupyterOutput`, `Source` which accepts both string and line-array forms), maps cell types, execution counts, and metadata. `language_from_metadata` / `metadata_string` extract kernel/language info.
-- `export.rs` — `export_ipynb(&Notebook) -> String`: writes nbformat 4 JSON, `export_cell`/`export_output` map Mars `Output` back to Jupyter output types.
+- `export.rs` — `export_ipynb(&Notebook) -> String`: writes nbformat 4 JSON, `export_cell`/`export_output` map Project Mars `Output` back to Jupyter output types.
 - `conversion.rs` — `convert_output`, `convert_mime_bundle`, `table_to_html` (escaped), `escape_html`.
 
 ## Rules

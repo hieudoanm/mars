@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
-description = "Minimal rust-analyzer LSP client for Mars notebook sessions"
+description = "Minimal rust-analyzer LSP client for Project Mars notebook sessions"
 
 [dependencies]
 serde = { workspace = true }

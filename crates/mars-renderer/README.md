@@ -1,6 +1,6 @@
 # mars-renderer
 
-Output rendering for the Mars notebook platform.
+Output rendering for the Project Mars notebook platform.
 
 ## Purpose
 

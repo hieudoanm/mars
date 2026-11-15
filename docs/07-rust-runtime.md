@@ -48,11 +48,11 @@ make benchmark CELLS=16
 
 On the development machine used for this implementation, the replay benchmark took approximately 3.28 seconds for 8 cells and 6.56 seconds for 16 cells (about 410 ms per cell). This is a small workload benchmark, not a universal performance claim. A 32-cell run measured approximately 13.36 seconds (about 418 ms per cell), further confirming the expected linear cost of rebuilding the accumulated program.
 
-A long-lived compiler or incremental execution service could reduce that cost, but it would add compiler-process lifecycle, state isolation, portability, and reset-complexity risks. Mars therefore retains replay as the validated default until an alternative can demonstrate equivalent isolation and semantics with representative benchmarks.
+A long-lived compiler or incremental execution service could reduce that cost, but it would add compiler-process lifecycle, state isolation, portability, and reset-complexity risks. Project Mars therefore retains replay as the validated default until an alternative can demonstrate equivalent isolation and semantics with representative benchmarks.
 
 ## Automatic output extraction
 
-Automatic output extraction accepts multiline final expressions and removes trailing line comments before analysis. Values are first formatted with `Debug`; when that compilation fails, Mars retries the generated wrapper with `Display`, allowing display-only values to render without changing explicit `println!` output. Declarations and statement-only cells are still left untouched.
+Automatic output extraction accepts multiline final expressions and removes trailing line comments before analysis. Values are first formatted with `Debug`; when that compilation fails, Project Mars retries the generated wrapper with `Display`, allowing display-only values to render without changing explicit `println!` output. Declarations and statement-only cells are still left untouched.
 
 ## Cancellation
 
@@ -60,7 +60,7 @@ Cancellation has two layers: a shareable `CancellationToken` lets callers cancel
 
 ## Compiler diagnostics
 
-Compiler diagnostics use rustc's JSON message format when compiling direct Rust sessions. Mars retains diagnostic levels, error codes, primary and secondary labeled spans, source ranges, and rendered notes. The desktop diagnostic adapter converts Rust source columns into JavaScript editor offsets without splitting Unicode characters incorrectly. Cargo-backed compilation falls back to Cargo's emitted diagnostic text when Cargo wraps compiler messages.
+Compiler diagnostics use rustc's JSON message format when compiling direct Rust sessions. Project Mars retains diagnostic levels, error codes, primary and secondary labeled spans, source ranges, and rendered notes. The desktop diagnostic adapter converts Rust source columns into JavaScript editor offsets without splitting Unicode characters incorrectly. Cargo-backed compilation falls back to Cargo's emitted diagnostic text when Cargo wraps compiler messages.
 
 ## Dependency management
 
@@ -77,7 +77,7 @@ Rust notebooks may declare registry dependencies in `metadata.dependencies`:
 }
 ```
 
-Mars creates a temporary Cargo project for those notebooks. Dependency resolution uses Cargo's configured cache and registry and may require network access. For reproducible builds, use `--locked` and `--offline`:
+Project Mars creates a temporary Cargo project for those notebooks. Dependency resolution uses Cargo's configured cache and registry and may require network access. For reproducible builds, use `--locked` and `--offline`:
 
 ```bash
 mars run analysis.mars --locked --offline
@@ -87,7 +87,7 @@ This requires `metadata.cargo_lock` to be present (set after first successful ru
 
 ## Evcxr backend (experimental)
 
-Mars includes an experimental Evcxr backend for faster re-execution without recompilation. Enable via:
+Project Mars includes an experimental Evcxr backend for faster re-execution without recompilation. Enable via:
 
 ```bash
 mars run analysis.mars --runtime evcxr

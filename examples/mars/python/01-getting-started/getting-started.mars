@@ -1,21 +1,21 @@
 {
   "format_version": 2,
   "metadata": {
-    "title": "Getting started with Mars (Python)",
+    "title": "Getting started with Project Mars (Python)",
     "language": "python"
   },
   "cells": [
     {
       "id": "intro",
       "cell_type": "markdown",
-      "source": "# Getting started with Mars (Python)\n\n**Mars** is an interactive notebook where code cells share a persistent\nPython session. A `.mars` notebook is a JSON document made of **markdown**,\n**code**, and **raw** cells. Code cells run from top to bottom, and bindings\ncreated in one cell are available in every later cell — like a Jupyter\nnotebook, but with Mars's own document format and kernel.\n\nThis notebook is a tour of the Python basics: variables, built-in types,\ncollections, control flow, functions, exceptions, classes, modules, and a\nfew standard-library tools. It uses only the standard library, so it runs\nanywhere `python3` is installed.\n\n> Tip: the last expression of a cell is displayed automatically. Use\n> `print()` for multi-line output.",
+      "source": "# Getting started with Project Mars (Python)\n\n**Project Mars** is an interactive notebook where code cells share a persistent\nPython session. A `.mars` notebook is a JSON document made of **markdown**,\n**code**, and **raw** cells. Code cells run from top to bottom, and bindings\ncreated in one cell are available in every later cell — like a Jupyter\nnotebook, but with Project Mars's own document format and kernel.\n\nThis notebook is a tour of the Python basics: variables, built-in types,\ncollections, control flow, functions, exceptions, classes, modules, and a\nfew standard-library tools. It uses only the standard library, so it runs\nanywhere `python3` is installed.\n\n> Tip: the last expression of a cell is displayed automatically. Use\n> `print()` for multi-line output.",
       "metadata": {},
       "outputs": []
     },
     {
       "id": "how-notebooks-work",
       "cell_type": "markdown",
-      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Python source executed in a shared interpreter session |\n| `raw` | Text preserved verbatim, without rendering or execution |\n\nWhen a code cell runs:\n\n1. Mars sends the source to the Python driver.\n2. The driver parses it, runs every statement in order, and evaluates the\n   trailing expression.\n3. `print()` output streams as **stdout**, warnings go to **stderr** (shown\n   but not fatal), and the trailing value is displayed with its `repr()`.\n4. Errors are reported as cell errors and do not stop later cells — fix the\n   cell and re-run it.\n\nVariables live in one shared namespace for the whole notebook, so order\nmatters: run cells top to bottom.",
+      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Python source executed in a shared interpreter session |\n| `raw` | Text preserved verbatim, without rendering or execution |\n\nWhen a code cell runs:\n\n1. Project Mars sends the source to the Python driver.\n2. The driver parses it, runs every statement in order, and evaluates the\n   trailing expression.\n3. `print()` output streams as **stdout**, warnings go to **stderr** (shown\n   but not fatal), and the trailing value is displayed with its `repr()`.\n4. Errors are reported as cell errors and do not stop later cells — fix the\n   cell and re-run it.\n\nVariables live in one shared namespace for the whole notebook, so order\nmatters: run cells top to bottom.",
       "metadata": {},
       "outputs": []
     },
@@ -43,7 +43,7 @@
     {
       "id": "setup-report",
       "cell_type": "code",
-      "source": "def report(title, *lines):\n    print(title)\n    for line in lines:\n        print(\"  \" + str(line))\n\nreport(\"Mars Python kernel is alive\", \"python\", \"shared session\")",
+      "source": "def report(title, *lines):\n    print(title)\n    for line in lines:\n        print(\"  \" + str(line))\n\nreport(\"Project Mars Python kernel is alive\", \"python\", \"shared session\")",
       "metadata": {
         "language": "python"
       },
@@ -51,7 +51,7 @@
       "outputs": [
         {
           "type": "text",
-          "text": "Mars Python kernel is alive\n  python\n  shared session\n"
+          "text": "Project Mars Python kernel is alive\n  python\n  shared session\n"
         }
       ]
     },
@@ -197,7 +197,7 @@
     {
       "id": "functions-demo",
       "cell_type": "code",
-      "source": "def greet(name, greeting=\"Hello\", punctuation=\"!\", **extra):\n    '''Return a greeting; extra kwargs are ignored for now.'''\n    return f\"{greeting}, {name}{punctuation}\"\n\ndef apply_twice(fn, value):\n    return fn(fn(value))\n\ndef shout(text):\n    return text.upper()\n\nreport(\n    \"functions\",\n    greet(\"Mars\"),\n    greet(\"Mars\", greeting=\"Hi\", punctuation=\"?\"),\n    f\"apply_twice(shout, 'hey') = {apply_twice(shout, 'hey')!r}\",\n    f\"greet.__doc__ = {greet.__doc__!r}\",\n)",
+      "source": "def greet(name, greeting=\"Hello\", punctuation=\"!\", **extra):\n    '''Return a greeting; extra kwargs are ignored for now.'''\n    return f\"{greeting}, {name}{punctuation}\"\n\ndef apply_twice(fn, value):\n    return fn(fn(value))\n\ndef shout(text):\n    return text.upper()\n\nreport(\n    \"functions\",\n    greet(\"Project Mars\"),\n    greet(\"Project Mars\", greeting=\"Hi\", punctuation=\"?\"),\n    f\"apply_twice(shout, 'hey') = {apply_twice(shout, 'hey')!r}\",\n    f\"greet.__doc__ = {greet.__doc__!r}\",\n)",
       "metadata": {
         "language": "python"
       },
@@ -205,7 +205,7 @@
       "outputs": [
         {
           "type": "text",
-          "text": "functions\n  Hello, Mars!\n  Hi, Mars?\n  apply_twice(shout, 'hey') = 'HEY'\n  greet.__doc__ = 'Return a greeting; extra kwargs are ignored for now.'\n"
+          "text": "functions\n  Hello, Project Mars!\n  Hi, Project Mars?\n  apply_twice(shout, 'hey') = 'HEY'\n  greet.__doc__ = 'Return a greeting; extra kwargs are ignored for now.'\n"
         }
       ]
     },
@@ -329,7 +329,7 @@
     {
       "id": "stdlib-demo",
       "cell_type": "code",
-      "source": "import random\nimport re\nimport statistics\nimport string\nfrom pathlib import Path\n\nrandom.seed(42)\nwords = re.findall(r\"[a-z]+\", \"Mars notebooks are fun, really!\")\npath = Path(\"/tmp/mars-demo\") / \"notebook.mars\"\nletters = \"\".join(random.choices(string.ascii_lowercase, k=8))\nvalues = [random.randint(1, 100) for _ in range(20)]\n\nreport(\n    \"stdlib\",\n    f\"re.findall -> {words}\",\n    f\"path.name = {path.name!r}, suffix = {path.suffix!r}\",\n    f\"random letters = {letters!r}\",\n    f\"statistics.mean(values) = {statistics.mean(values):.2f}\",\n    f\"statistics.stdev(values) = {statistics.stdev(values):.2f}\",\n)",
+      "source": "import random\nimport re\nimport statistics\nimport string\nfrom pathlib import Path\n\nrandom.seed(42)\nwords = re.findall(r\"[a-z]+\", \"Project Mars notebooks are fun, really!\")\npath = Path(\"/tmp/mars-demo\") / \"notebook.mars\"\nletters = \"\".join(random.choices(string.ascii_lowercase, k=8))\nvalues = [random.randint(1, 100) for _ in range(20)]\n\nreport(\n    \"stdlib\",\n    f\"re.findall -> {words}\",\n    f\"path.name = {path.name!r}, suffix = {path.suffix!r}\",\n    f\"random letters = {letters!r}\",\n    f\"statistics.mean(values) = {statistics.mean(values):.2f}\",\n    f\"statistics.stdev(values) = {statistics.stdev(values):.2f}\",\n)",
       "metadata": {
         "language": "python"
       },

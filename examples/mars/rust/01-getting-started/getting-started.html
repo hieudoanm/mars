@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Getting started with Mars</title>
+<title>Getting started with Project Mars</title>
 <style>
 :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #171717; color: #e5e5e5; }
 body { max-width: 960px; margin: 0 auto; padding: 2rem; }
@@ -35,9 +35,9 @@ a { color: #fb923c; }
 </style>
 </head>
 <body>
-<h1>Getting started with Mars</h1>
-<article class="cell cell-markdown"><h1>Getting started with Mars</h1>
-<p><strong>Mars</strong> is a Rust-first interactive notebook. A <code>.mars</code> notebook is a JSON
+<h1>Getting started with Project Mars</h1>
+<article class="cell cell-markdown"><h1>Getting started with Project Mars</h1>
+<p><strong>Project Mars</strong> is a Rust-first interactive notebook. A <code>.mars</code> notebook is a JSON
 document made of <strong>markdown</strong>, <strong>code</strong>, and <strong>raw</strong> cells. Code cells are
 written in Rust and share state as they run from top to bottom.</p>
 <p>This notebook is a tour of the basics. It covers:</p>
@@ -60,7 +60,7 @@ written in Rust and share state as they run from top to bottom.</p>
 </tbody></table>
 <p>When a code cell runs:</p>
 <ol>
-<li>Mars replays all earlier successful code cells, so their bindings are available.</li>
+<li>Project Mars replays all earlier successful code cells, so their bindings are available.</li>
 <li>The current cell is compiled and executed.</li>
 <li>Its final expression is displayed automatically.</li>
 <li>Standard output and errors are captured.</li>
@@ -165,12 +165,12 @@ answer = 42.5
 </pre></div></article><article class="cell cell-markdown"><h2>Strings</h2>
 <p><code>&amp;str</code> is a borrowed string slice, while <code>String</code> owns its contents. Both can
 be formatted with <code>format!</code>, and many string methods return new values.</p>
-</article><article class="cell cell-code"><div class="cell-label">In [5]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">name</span> = <span class="rust-type">String</span>::<span class="rust-ident">from</span>(<span class="rust-string">&quot;Mars&quot;</span>);
+</article><article class="cell cell-code"><div class="cell-label">In [5]</div><pre class="code"><code class="language-rust"><span class="rust-keyword">let</span> <span class="rust-ident">name</span> = <span class="rust-type">String</span>::<span class="rust-ident">from</span>(<span class="rust-string">&quot;Project Mars&quot;</span>);
 <span class="rust-keyword">let</span> <span class="rust-ident">greeting</span> = <span class="rust-macro">format</span>!(<span class="rust-string">&quot;Hello, {name}!&quot;</span>);
 <span class="rust-keyword">let</span> <span class="rust-ident">shout</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">to_uppercase</span>();
 <span class="rust-keyword">let</span> <span class="rust-ident">words</span>: <span class="rust-type">Vec</span><&<span class="rust-type">str</span>> = <span class="rust-ident">greeting</span>.<span class="rust-ident">split</span>(<span class="rust-string">&#39; &#39;</span>).<span class="rust-ident">collect</span>();
 <span class="rust-keyword">let</span> <span class="rust-ident">character_count</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">chars</span>().<span class="rust-ident">count</span>();
-<span class="rust-keyword">let</span> <span class="rust-ident">replaced</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">replace</span>(<span class="rust-string">&quot;Mars&quot;</span>, <span class="rust-string">&quot;notebooks&quot;</span>);
+<span class="rust-keyword">let</span> <span class="rust-ident">replaced</span> = <span class="rust-ident">greeting</span>.<span class="rust-ident">replace</span>(<span class="rust-string">&quot;Project Mars&quot;</span>, <span class="rust-string">&quot;notebooks&quot;</span>);
 
 <span class="rust-ident">report</span>(<span class="rust-macro">format</span>!(
     <span class="rust-string">&quot;greeting = {greeting}\nshout = {shout}\nwords = {words:?}\ncharacters = {character_count}\nreplaced = {replaced}&quot;</span>
@@ -182,9 +182,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 </pre></div></article><article class="cell cell-markdown"><h2>Control flow</h2>
@@ -215,9 +215,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -258,9 +258,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -291,9 +291,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -322,9 +322,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -359,9 +359,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -406,9 +406,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -457,9 +457,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -521,9 +521,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -594,9 +594,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -663,9 +663,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -720,9 +720,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -779,9 +779,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -842,9 +842,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -907,9 +907,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -966,7 +966,7 @@ very different from the invocation.</p>
     };
 }
 
-<span class="rust-ident">report</span>(<span class="rust-macro">greet</span>!(<span class="rust-string">&quot;Mars&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
+<span class="rust-ident">report</span>(<span class="rust-macro">greet</span>!(<span class="rust-string">&quot;Project Mars&quot;</span>))</code></pre><div class="output output-text"><pre>language = Rust
 year = 2024
 pi = 3.141592653589793
 is_fun = true
@@ -974,9 +974,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1023,7 +1023,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 </pre></div></article><article class="cell cell-markdown"><h2>Attributes</h2>
 <p>Attributes like <code>#[derive(...)]</code> attach metadata to items. The compiler uses
 them to generate code, enforce rules, or control warnings.</p>
@@ -1044,9 +1044,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1093,7 +1093,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 </pre></div></article><article class="cell cell-markdown"><h2>Lifetimes, generics, and type aliases</h2>
@@ -1123,9 +1123,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1172,7 +1172,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1202,9 +1202,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1251,7 +1251,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1287,9 +1287,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1336,7 +1336,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1381,9 +1381,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1430,7 +1430,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1478,9 +1478,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = [&quot;Hello,&quot;, &quot;Mars!&quot;]
+words = [&quot;Hello,&quot;, &quot;Project Mars!&quot;]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1527,7 +1527,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1557,7 +1557,7 @@ generics      lifetimes, generics, type aliases
 results       Option and Result
 analysis      statistics and regression
 </pre></div></article><article class="cell cell-markdown"><h2>What comes next</h2>
-<p>You have now seen the core of a Mars notebook: Markdown and raw cells, Rust
+<p>You have now seen the core of a Project Mars notebook: Markdown and raw cells, Rust
 code cells, persisted bindings, automatic output, and stored results.</p>
 <p>This tour also maps onto a Rust syllabus. It covers basic syntax
 (statements, expressions, variables, mutability, constants, modules,

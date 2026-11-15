@@ -1,4 +1,4 @@
-//! Mars MCP integration: expose notebook/kernel operations as MCP tools and
+//! Project Mars MCP integration: expose notebook/kernel operations as MCP tools and
 //! provide a client for calling MCP servers.
 //!
 //! Two directions are supported:

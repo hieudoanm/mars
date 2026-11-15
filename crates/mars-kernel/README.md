@@ -1,6 +1,6 @@
 # mars-kernel
 
-Kernel lifecycle and request handling for the Mars notebook platform.
+Kernel lifecycle and request handling for the Project Mars notebook platform.
 
 ## Purpose
 

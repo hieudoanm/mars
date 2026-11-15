@@ -53,7 +53,7 @@ const BuiltDifferent: FC = () => {
           Not a black box.
         </h2>
         <p className='max-w-120'>
-          Mars is designed from the document model outward. The UI, kernel, protocol, renderer,
+          Project Mars is designed from the document model outward. The UI, kernel, protocol, renderer,
           runtime, and CLI are separate pieces you can understand, test, and extend.
         </p>
         <ul className='mt-9 grid list-none gap-5 p-0'>

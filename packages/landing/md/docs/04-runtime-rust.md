@@ -1,14 +1,14 @@
 ---
 title: Rust Runtime
-description: Mars Rust runtime documentation
+description: Project Mars Rust runtime documentation
 order: 4
-author: Mars Team
+author: Project Mars Team
 tags: [runtime, rust, execution, replay, evcxr]
 ---
 
 # Rust Runtime
 
-Mars provides two Rust execution backends: the replay runtime (default) and the
+Project Mars provides two Rust execution backends: the replay runtime (default) and the
 experimental Evcxr runtime. Both maintain persistent sessions without running
 arbitrary notebook code inside the desktop process.
 
@@ -72,7 +72,7 @@ are left untouched, so they still need explicit output.
 
 ## Display helpers
 
-Mars injects helper functions into Rust cells for rich output:
+Project Mars injects helper functions into Rust cells for rich output:
 
 - `mars_table(&[columns], &[vec![rows]])` — Render a table from column names and row data
 - `mars_csv(r#"csv"#)` — Parse RFC 4180 CSV and render as a table
@@ -158,7 +158,7 @@ Or use version requirements in a single line:
 
 ### Lockfile persistence
 
-After a successful run with dependencies, Mars generates a `Cargo.lock` and stores it in the notebook's `metadata.cargo_lock` field. This enables deterministic, offline, and locked execution modes:
+After a successful run with dependencies, Project Mars generates a `Cargo.lock` and stores it in the notebook's `metadata.cargo_lock` field. This enables deterministic, offline, and locked execution modes:
 
 ```bash
 # Run using only the stored lockfile
@@ -168,7 +168,7 @@ mars run analysis.mars --locked --offline --deterministic --report
 ## Diagnostics
 
 Compiler diagnostics use rustc's JSON message format when compiling direct
-Rust sessions. Mars retains diagnostic levels, error codes, primary and
+Rust sessions. Project Mars retains diagnostic levels, error codes, primary and
 secondary labeled spans, source ranges, and rendered notes. The desktop
 diagnostic adapter converts Rust source columns into JavaScript editor offsets
 without splitting Unicode characters incorrectly. Cargo-backed compilation

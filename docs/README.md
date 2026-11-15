@@ -1,6 +1,6 @@
-# Mars documentation
+# Project Mars documentation
 
-This directory contains the project documentation for **Mars**, a Rust-powered
+This directory contains the project documentation for **Project Mars**, a Rust-powered
 interactive notebook platform with multi-language support (Rust, Python, R, Julia, C++)
 and Model Context Protocol integration. Files are prefixed with a number to suggest a
 reading order.

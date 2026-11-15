@@ -8,7 +8,7 @@ const FALLBACK_NOTEBOOK: Notebook = {
     {
       id: crypto.randomUUID(),
       cell_type: 'markdown',
-      source: '# Welcome to Mars\n\nExplore ideas. Execute code. Discover possibilities.',
+      source: '# Welcome to Project Mars\n\nExplore ideas. Execute code. Discover possibilities.',
       execution_count: null,
       outputs: [],
       metadata: {},
@@ -16,7 +16,7 @@ const FALLBACK_NOTEBOOK: Notebook = {
     {
       id: crypto.randomUUID(),
       cell_type: 'code',
-      source: 'println!("Hello from Mars!");',
+      source: 'println!("Hello from Project Mars!");',
       execution_count: null,
       outputs: [],
       metadata: {},

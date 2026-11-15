@@ -7,20 +7,20 @@ import { repositoryUrl, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Downloads',
-  description: 'Download Mars desktop app for macOS, Windows, and Linux. Install VS Code, Zed, and JetBrains extensions.',
+  description: 'Download Project Mars desktop app for macOS, Windows, and Linux. Install VS Code, Zed, and JetBrains extensions.',
   alternates: {
     canonical: `${siteUrl}/downloads`,
   },
   openGraph: {
-    title: 'Download Mars',
-    description: 'Get the Mars desktop application and editor extensions for your platform.',
+    title: 'Download Project Mars',
+    description: 'Get the Project Mars desktop application and editor extensions for your platform.',
     url: `${siteUrl}/downloads`,
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'Download Mars',
-    description: 'Get the Mars desktop application and editor extensions for your platform.',
+    title: 'Download Project Mars',
+    description: 'Get the Project Mars desktop application and editor extensions for your platform.',
   },
 };
 
@@ -119,7 +119,7 @@ const DownloadsPage: FC & NextPage = () => {
               Download
             </div>
             <h1 className='text-display font-semibold-plus tracking-tighter-plus mt-5 mb-4.5 leading-tight'>
-              Get Mars for your platform
+              Get Project Mars for your platform
             </h1>
             <p className='text-muted-2 text-lg'>
               Download the desktop app, install extensions, or use the CLI from source.

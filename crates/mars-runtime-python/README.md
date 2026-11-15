@@ -1,6 +1,6 @@
 # mars-runtime-python
 
-Python execution backend for Mars notebooks with persistent sessions.
+Python execution backend for Project Mars notebooks with persistent sessions.
 
 ## Purpose
 

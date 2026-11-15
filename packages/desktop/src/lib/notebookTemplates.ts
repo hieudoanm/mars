@@ -44,7 +44,7 @@ export const NOTEBOOK_TEMPLATES: NotebookTemplate[] = [
   {
     id: 'getting-started',
     name: 'Getting started',
-    description: 'The Mars tour: markdown, Rust cells, variables, and rich output.',
+    description: 'The Project Mars tour: markdown, Rust cells, variables, and rich output.',
     notebook: {
       format_version: 2,
       metadata: { language: 'rust', title: 'Getting started' },
@@ -53,7 +53,7 @@ export const NOTEBOOK_TEMPLATES: NotebookTemplate[] = [
           'markdown',
           '# Getting started\n\nMars notebooks mix **Markdown**, executable Rust cells, and rich outputs. Variables persist across cells.',
         ),
-        cell('code', 'let greeting = "Hello from Mars";\ngreeting'),
+        cell('code', 'let greeting = "Hello from Project Mars";\ngreeting'),
         cell('code', 'let numbers = vec![1, 2, 3, 4, 5];\nnumbers.iter().sum::<i32>()'),
         cell(
           'markdown',

@@ -12,7 +12,7 @@
     {
       "id": "plotting-intro",
       "cell_type": "markdown",
-      "source": "# Plotting with Plotters\n\nPlotters renders vector figures for notebook output, similar to matplotlib in Jupyter. Mars displays the SVG MIME representation directly.",
+      "source": "# Plotting with Plotters\n\nPlotters renders vector figures for notebook output, similar to matplotlib in Jupyter. Project Mars displays the SVG MIME representation directly.",
       "metadata": {},
       "outputs": []
     },

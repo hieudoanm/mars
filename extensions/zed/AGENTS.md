@@ -1,4 +1,4 @@
-# Mars Zed extension
+# Project Mars Zed extension
 
 Scope: `extensions/zed/**`. Follow the repository-level `AGENTS.md` first;
 these instructions apply to the Zed WebAssembly extension and its grammar.
@@ -7,14 +7,14 @@ these instructions apply to the Zed WebAssembly extension and its grammar.
 
 - This is a Zed extension compiled as a `cdylib` for `wasm32-wasip1`. Keep its
   runtime surface minimal: `src/lib.rs` implements `zed_extension_api::Extension`
-  and launches the external Mars CLI rather than evaluating notebooks itself.
+  and launches the external Project Mars CLI rather than evaluating notebooks itself.
 - `extension.toml` is part of the published integration contract. Keep its
   extension ID, language path, and grammar registration aligned with
   `languages/mars/config.toml` and the Rust implementation.
 - The pinned `zed_extension_api` version exists for Zed ABI compatibility. Do
   not update it casually or use APIs unavailable at that version.
 - Do not register `mars kernel serve` as a Zed language server: it speaks the
-  Mars kernel protocol, not LSP. Zed support is intentionally limited to
+  Project Mars kernel protocol, not LSP. Zed support is intentionally limited to
   grammar and language configuration until a real LSP frontend exists.
 - Keep production Rust files at or below 200 lines where practical (220 is the
   absolute sensible exception). Extract command construction or configuration
@@ -23,7 +23,7 @@ these instructions apply to the Zed WebAssembly extension and its grammar.
 ## Grammar and language support
 
 - The Tree-sitter grammar in `grammars/tree-sitter-mars/grammar.js` describes
-  the Mars JSON notebook format. Make grammar changes together with
+  the Project Mars JSON notebook format. Make grammar changes together with
   `highlights.scm`, language configuration, fixture coverage where added, and
   the public extension description when behaviour changes.
 - Preserve support for Markdown and embedded Rust semantics. Avoid claiming full

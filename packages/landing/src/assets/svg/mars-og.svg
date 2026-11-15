@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
-  <title id="title">Mars interactive notebook platform</title>
-  <desc id="desc">Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.</desc>
+  <title id="title">Project Mars interactive notebook platform</title>
+  <desc id="desc">Project Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0b1018"/>
@@ -37,7 +37,7 @@
     <rect x="0" y="0" width="82" height="82" rx="20" fill="#e75240"/>
     <path d="M22 58V24l19 20 19-20v34" fill="none" stroke="#fff8ef" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="82" y="300" fill="#fff8ef" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="102" font-weight="760" letter-spacing="-4">Mars</text>
+  <text x="82" y="300" fill="#fff8ef" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="102" font-weight="760" letter-spacing="-4">Project Mars</text>
   <text x="88" y="366" fill="#ffb36b" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="28" font-weight="650" letter-spacing="3">EXPLORE IDEAS. EXECUTE CODE.</text>
   <text x="88" y="420" fill="#b9c3d4" font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif" font-size="25">A Rust-powered interactive notebook platform.</text>
   <g transform="translate(88 486)">

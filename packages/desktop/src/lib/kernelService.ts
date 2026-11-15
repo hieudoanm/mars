@@ -353,3 +353,192 @@ export const sendKernelComm = async (
   if (response.type === 'comm') return response.comms;
   return [];
 };
+
+// ── Mars Lab ────────────────────────────────────────────────────────────────
+
+export type LabAlgorithm = {
+  id: string;
+  name: string;
+  taskType: string;
+  family: string;
+  description: string;
+  defaultHyperparameters: Record<string, unknown>;
+  exports: string[];
+};
+
+export type LabColumnPreview = {
+  name: string;
+  inferredDtype: string;
+  nullCount: number;
+  sampleValues: unknown[];
+};
+
+export type LabDataset = {
+  id: string;
+  originalFilename: string;
+  sha256: string;
+  byteSize: number;
+  storageKey: string;
+  columns: LabColumnPreview[];
+  rowCount: number;
+  createdAt: string;
+};
+
+export type LabDatasetProfile = {
+  rowCount: number;
+  columnCount: number;
+  totalMissing: number;
+  columns: unknown[];
+  warnings: { code?: string; column?: string | null; message: string }[];
+};
+
+export type LabDatasetDetail = {
+  dataset: LabDataset;
+  profile: LabDatasetProfile;
+};
+
+export type LabRLColumns = {
+  actionColumn: string;
+  rewardColumn: string;
+  nextStateColumns?: string[];
+  doneColumn?: string | null;
+  episodeColumn?: string | null;
+};
+
+export type LabJob = {
+  id: string;
+  datasetId: string;
+  taskType: string;
+  algorithmId: string;
+  featureColumns: string[];
+  labelColumn: string | null;
+  rlColumns: LabRLColumns | null;
+  hyperparameters: Record<string, unknown>;
+  splitRatio: number;
+  randomSeed: number;
+  status: string;
+  errorCode: string | null;
+  errorMessage: string | null;
+  name: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type LabJobMetric = {
+  jobId: string;
+  metrics: Record<string, unknown>;
+  charts: Record<string, unknown> | null;
+  createdAt: string;
+};
+
+export type LabArtefact = {
+  id: string;
+  jobId: string;
+  format: string;
+  filename: string;
+  byteSize: number;
+  storageKey: string;
+  createdAt: string;
+};
+
+export type LabJobDetail = {
+  job: LabJob;
+  metrics: LabJobMetric | null;
+  artefacts: LabArtefact[];
+};
+
+export type LabTrainRequest = {
+  datasetId: string;
+  taskType: string;
+  algorithmId: string;
+  featureColumns: string[];
+  labelColumn: string | null;
+  rlColumns: LabRLColumns | null;
+  hyperparameters: Record<string, unknown>;
+  splitRatio: number;
+  randomSeed: number;
+  name: string | null;
+};
+
+export const labAlgorithms = async (task?: string): Promise<LabAlgorithm[]> => {
+  return invoke<LabAlgorithm[]>('lab_algorithms', { task: task ?? null });
+};
+
+export const labUploadDataset = async (path: string): Promise<LabDatasetDetail> => {
+  return invoke<LabDatasetDetail>('lab_upload_dataset', { path });
+};
+
+export const labListDatasets = async (): Promise<LabDataset[]> => {
+  return invoke<LabDataset[]>('lab_list_datasets');
+};
+
+export const labDatasetInsights = async (datasetId: string): Promise<unknown> => {
+  return invoke('lab_dataset_insights', { datasetId });
+};
+
+export const labListJobs = async (): Promise<LabJob[]> => {
+  return invoke<LabJob[]>('lab_list_jobs');
+};
+
+export const labGetJob = async (jobId: string): Promise<LabJobDetail | null> => {
+  return invoke<LabJobDetail | null>('lab_get_job', { jobId });
+};
+
+export const labTrain = async (request: LabTrainRequest): Promise<LabJobDetail> => {
+  return invoke<LabJobDetail>('lab_train', { request });
+};
+
+export const labExportArtefact = async (
+  jobId: string,
+  format: string,
+  outputPath: string,
+): Promise<void> => {
+  await invoke('lab_export_artefact', { jobId, format, outputPath });
+};
+
+export type LabJobFilters = {
+  statuses?: string[];
+  taskTypes?: string[];
+  algorithmIds?: string[];
+  q?: string | null;
+  sortField?: string;
+  sortDirection?: string;
+};
+
+export type LabJobPage = {
+  items: LabJob[];
+  nextCursor: string | null;
+};
+
+export type LabDatasetPreview = {
+  columns: string[];
+  rows: (string | null)[][];
+};
+
+export const labListJobsPage = async (
+  filters: LabJobFilters = {},
+  cursor: string | null = null,
+  limit = 25,
+): Promise<LabJobPage> => {
+  return invoke<LabJobPage>('lab_list_jobs_page', { filters, cursor, limit });
+};
+
+export const labDatasetPreview = async (
+  datasetId: string,
+  offset = 0,
+  limit = 20,
+): Promise<LabDatasetPreview> => {
+  return invoke<LabDatasetPreview>('lab_dataset_preview', { datasetId, offset, limit });
+};
+
+export type LabJobProgress = {
+  jobId: string;
+  stage: 'training' | 'exporting' | 'completed' | 'failed';
+};
+
+export const listenLabProgress = async (
+  handler: (event: LabJobProgress) => void,
+): Promise<() => void> => {
+  if (!('__TAURI_INTERNALS__' in window)) return () => {};
+  return listen<LabJobProgress>('lab-job-progress', (event) => handler(event.payload));
+};

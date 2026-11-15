@@ -1,7 +1,7 @@
 ---
 title: "Keras vs burn: High-Level ML APIs Compared"
 description: "Compare Python's Keras with Rust's burn for ergonomic model building and training abstractions in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 27
 tags: ["machine-learning", "keras", "burn", "rust", "python", "deep-learning", "mars"]
@@ -74,13 +74,13 @@ let optimizer = AdamConfig::new().init();
 - **Keras** in Python when you need a high-level API, broad backend support, or integration with the Python ML ecosystem.
 - **burn** in Rust when you want a Rust-native deep learning framework with type safety and ergonomic abstractions.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both Keras and burn in their respective language runtimes:
+Project Mars supports both Keras and burn in their respective language runtimes:
 
 - **Python cells** can use Keras with standard library imports
 - **Rust cells** can use burn via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Models and training states persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Keras and burn in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore Keras and burn in Project Mars notebooks.

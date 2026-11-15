@@ -1,10 +1,10 @@
 # mars-core
 
-Shared domain types for the Mars notebook platform.
+Shared domain types for the Project Mars notebook platform.
 
 ## Purpose
 
-`mars-core` defines the foundational data types used across all Mars crates. It is dependency-light (only `serde`, `serde_json`, `thiserror`, and `uuid`) and contains no execution or rendering logic.
+`mars-core` defines the foundational data types used across all Project Mars crates. It is dependency-light (only `serde`, `serde_json`, `thiserror`, and `uuid`) and contains no execution or rendering logic.
 
 ## Types
 

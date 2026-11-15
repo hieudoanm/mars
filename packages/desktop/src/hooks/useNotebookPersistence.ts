@@ -119,7 +119,7 @@ export const useNotebookPersistence = ({
     try {
       const path = await open({
         multiple: false,
-        filters: [{ name: 'Mars', extensions: ['mars'] }],
+        filters: [{ name: 'Project Mars', extensions: ['mars'] }],
       });
       if (!path || Array.isArray(path)) return;
       if (isDirty) setPendingOpenPath(path);
@@ -160,7 +160,7 @@ export const useNotebookPersistence = ({
         filePath ??
         (await save({
           defaultPath: 'Untitled.mars',
-          filters: [{ name: 'Mars', extensions: ['mars'] }],
+          filters: [{ name: 'Project Mars', extensions: ['mars'] }],
         }));
       if (!path) return false;
       await saveNotebookFile(path, snapshot);

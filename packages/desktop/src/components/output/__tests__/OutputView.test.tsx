@@ -43,7 +43,7 @@ describe('OutputView', () => {
       'data:image/png;base64,aGVsbG8=',
     );
     rerender(
-      <OutputView output={{ type: 'table', columns: ['Name', 'Value'], rows: [['Mars', '42']] }} />,
+      <OutputView output={{ type: 'table', columns: ['Name', 'Value'], rows: [['Project Mars', '42']] }} />,
     );
     expect(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: '42' })).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe('OutputView', () => {
   it('renders chart specs and safely falls back for invalid chart JSON', () => {
     const spec = { mark: 'bar', data: { values: [] } };
     const { rerender } = render(<OutputView output={{ type: 'chart', spec }} />);
-    rerender(<OutputView output={{ type: 'chart', spec: { title: 'Mars' } }} />);
+    rerender(<OutputView output={{ type: 'chart', spec: { title: 'Project Mars' } }} />);
     expect(embed).toHaveBeenCalled();
     rerender(
       <OutputView

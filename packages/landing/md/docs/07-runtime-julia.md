@@ -1,14 +1,14 @@
 ---
 title: Julia Runtime
-description: Mars Julia runtime documentation
+description: Project Mars Julia runtime documentation
 order: 7
-author: Mars Team
+author: Project Mars Team
 tags: [runtime, julia, execution, data-science]
 ---
 
 # Julia Runtime
 
-Mars provides a Julia execution runtime that maintains a persistent Julia
+Project Mars provides a Julia execution runtime that maintains a persistent Julia
 subprocess speaking newline-delimited JSON. Variables persist in the driver's
 `MarsKernel` module across cells, enabling interactive Julia development in
 notebooks.
@@ -33,7 +33,7 @@ Julia must be installed and available on your system:
 # Or use your system package manager
 ```
 
-Mars discovers the Julia interpreter via:
+Project Mars discovers the Julia interpreter via:
 
 1. The `MARS_JULIA` environment variable (takes precedence)
 2. The `julia` command on PATH
@@ -151,7 +151,7 @@ plot(rand(10))  # Displays as image/png or image/svg+xml
 
 ## Julia Data Science Ecosystem
 
-Julia has a rich data science ecosystem that works well in Mars notebooks:
+Julia has a rich data science ecosystem that works well in Project Mars notebooks:
 
 | Domain | Julia Packages |
 | --- | --- |

@@ -66,7 +66,7 @@ const WhyMars: FC = () => {
             to working <em className='text-orange-2 font-serif font-normal'>insight.</em>
           </h2>
           <p className='max-w-prose-lg text-base'>
-            Mars keeps the fast feedback of a notebook and brings the boundaries, portability, and
+            Project Mars keeps the fast feedback of a notebook and brings the boundaries, portability, and
             clarity of a developer tool.
           </p>
         </div>

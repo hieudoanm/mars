@@ -6,14 +6,14 @@ import { siteName, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: `Blog | ${siteName}`,
-  description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Mars. Explore insights, tutorials, and best practices.',
-  keywords: 'Rust, notebooks, data science, machine learning, Mars, programming, tutorials, best practices',
+  description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars. Explore insights, tutorials, and best practices.',
+  keywords: 'Rust, notebooks, data science, machine learning, Project Mars, programming, tutorials, best practices',
   alternates: {
     canonical: `${siteUrl}/blog`,
   },
   openGraph: {
     title: `Blog | ${siteName}`,
-    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Mars.',
+    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
     url: `${siteUrl}/blog`,
     siteName,
     images: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         url: `${siteUrl}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: 'Mars Blog',
+        alt: 'Project Mars Blog',
       },
     ],
     type: 'website',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: `Blog | ${siteName}`,
-    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Mars.',
+    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
     images: [`${siteUrl}/og-image.png`],
   },
 };
@@ -41,7 +41,7 @@ export default function BlogPage() {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: `${siteName} Blog`,
-    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Mars.',
+    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
     url: `${siteUrl}/blog`,
     publisher: {
       '@type': 'Organization',
@@ -56,7 +56,7 @@ export default function BlogPage() {
       datePublished: post.date,
       author: {
         '@type': 'Person',
-        name: post.author || 'Mars Team',
+        name: post.author || 'Project Mars Team',
       },
     })),
   };
@@ -93,7 +93,7 @@ export default function BlogPage() {
       <div className='mb-10'>
         <h1 className='text-ink text-3xl font-bold tracking-tight'>Blog</h1>
         <p className='text-muted mt-2'>
-          Essays on Rust, notebooks, data science, and the case for Mars.
+          Essays on Rust, notebooks, data science, and the case for Project Mars.
         </p>
         <p className='text-muted mt-1 text-sm'>
           {posts.length} {posts.length === 1 ? 'post' : 'posts'}

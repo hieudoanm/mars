@@ -45,7 +45,7 @@ describe('notebook chrome components', () => {
         onToggleSidebar={vi.fn()}
       />,
     );
-    expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Project Mars' })).toBeInTheDocument();
     expect(screen.getByText('Explore ideas.')).toBeInTheDocument();
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));

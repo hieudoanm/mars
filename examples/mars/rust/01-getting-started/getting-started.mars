@@ -1,21 +1,21 @@
 {
   "format_version": 2,
   "metadata": {
-    "title": "Getting started with Mars",
+    "title": "Getting started with Project Mars",
     "language": "rust"
   },
   "cells": [
     {
       "id": "intro",
       "cell_type": "markdown",
-      "source": "# Getting started with Mars\n\n**Mars** is a Rust-first interactive notebook. A `.mars` notebook is a JSON\ndocument made of **markdown**, **code**, and **raw** cells. Code cells are\nwritten in Rust and share state as they run from top to bottom.\n\nThis notebook is a tour of the basics. It covers:\n\n- notebook cells, Markdown, and outputs\n- variables, types, operators, and strings\n- mutability, shadowing, constants, and statics\n- control flow, loops, functions, and closures\n- tuples, arrays, slices, vectors, iterators, and hash maps\n- structs, enums, traits, `Option`, and `Result`\n- modules, macros, attributes, references, lifetimes, generics, and type aliases\n- summary statistics and a least-squares regression\n\nRun the cells in order. Each code cell can use every binding created before it.\n",
+      "source": "# Getting started with Project Mars\n\n**Project Mars** is a Rust-first interactive notebook. A `.mars` notebook is a JSON\ndocument made of **markdown**, **code**, and **raw** cells. Code cells are\nwritten in Rust and share state as they run from top to bottom.\n\nThis notebook is a tour of the basics. It covers:\n\n- notebook cells, Markdown, and outputs\n- variables, types, operators, and strings\n- mutability, shadowing, constants, and statics\n- control flow, loops, functions, and closures\n- tuples, arrays, slices, vectors, iterators, and hash maps\n- structs, enums, traits, `Option`, and `Result`\n- modules, macros, attributes, references, lifetimes, generics, and type aliases\n- summary statistics and a least-squares regression\n\nRun the cells in order. Each code cell can use every binding created before it.\n",
       "metadata": {},
       "outputs": []
     },
     {
       "id": "how-notebooks-work",
       "cell_type": "markdown",
-      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Rust source that is compiled and executed |\n| `raw` | Text that is preserved without Markdown or Rust processing |\n\nWhen a code cell runs:\n\n1. Mars replays all earlier successful code cells, so their bindings are available.\n2. The current cell is compiled and executed.\n3. Its final expression is displayed automatically.\n4. Standard output and errors are captured.\n5. The execution count and outputs are stored in the `.mars` file.\n\nBecause earlier cells are replayed, side effects such as printing, file writes,\nor random numbers can happen again. Keep side-effecting cells idempotent, or\nrun them once and store the result.\n\n> Tip: the final expression of a code cell is shown without a `println!`.\n> End a cell with a semicolon when you do not want output.\n",
+      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Rust source that is compiled and executed |\n| `raw` | Text that is preserved without Markdown or Rust processing |\n\nWhen a code cell runs:\n\n1. Project Mars replays all earlier successful code cells, so their bindings are available.\n2. The current cell is compiled and executed.\n3. Its final expression is displayed automatically.\n4. Standard output and errors are captured.\n5. The execution count and outputs are stored in the `.mars` file.\n\nBecause earlier cells are replayed, side effects such as printing, file writes,\nor random numbers can happen again. Keep side-effecting cells idempotent, or\nrun them once and store the result.\n\n> Tip: the final expression of a code cell is shown without a `println!`.\n> End a cell with a semicolon when you do not want output.\n",
       "metadata": {},
       "outputs": []
     },
@@ -118,13 +118,13 @@
     {
       "id": "strings-demo",
       "cell_type": "code",
-      "source": "let name = String::from(\"Mars\");\nlet greeting = format!(\"Hello, {name}!\");\nlet shout = greeting.to_uppercase();\nlet words: Vec<&str> = greeting.split(' ').collect();\nlet character_count = greeting.chars().count();\nlet replaced = greeting.replace(\"Mars\", \"notebooks\");\n\nreport(format!(\n    \"greeting = {greeting}\\nshout = {shout}\\nwords = {words:?}\\ncharacters = {character_count}\\nreplaced = {replaced}\"\n))",
+      "source": "let name = String::from(\"Project Mars\");\nlet greeting = format!(\"Hello, {name}!\");\nlet shout = greeting.to_uppercase();\nlet words: Vec<&str> = greeting.split(' ').collect();\nlet character_count = greeting.chars().count();\nlet replaced = greeting.replace(\"Project Mars\", \"notebooks\");\n\nreport(format!(\n    \"greeting = {greeting}\\nshout = {shout}\\nwords = {words:?}\\ncharacters = {character_count}\\nreplaced = {replaced}\"\n))",
       "metadata": {},
       "execution_count": 5,
       "outputs": [
         {
           "type": "text",
-          "text": "greeting = Hello, Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n"
+          "text": "greeting = Hello, Project Mars!\nshout = HELLO, MARS!\nwords = [\"Hello,\", \"Project Mars!\"]\ncharacters = 12\nreplaced = Hello, notebooks!\n"
         }
       ]
     },
@@ -418,13 +418,13 @@
     {
       "id": "macros-demo",
       "cell_type": "code",
-      "source": "macro_rules! greet {\n    ($name:expr) => {\n        format!(\"hello, {name}\")\n    };\n}\n\nreport(greet!(\"Mars\"))",
+      "source": "macro_rules! greet {\n    ($name:expr) => {\n        format!(\"hello, {name}\")\n    };\n}\n\nreport(greet!(\"Project Mars\"))",
       "metadata": {},
       "execution_count": 20,
       "outputs": [
         {
           "type": "text",
-          "text": "hello, Mars\n"
+          "text": "hello, Project Mars\n"
         }
       ]
     },
@@ -551,7 +551,7 @@
     {
       "id": "next-steps",
       "cell_type": "markdown",
-      "source": "## What comes next\n\nYou have now seen the core of a Mars notebook: Markdown and raw cells, Rust\ncode cells, persisted bindings, automatic output, and stored results.\n\nThis tour also maps onto a Rust syllabus. It covers basic syntax\n(statements, expressions, variables, mutability, constants, modules,\nmacros, and attributes), control flow (`if`, `if let`, `match`, loops),\nfunctions and closures, the type system (primitives, arrays, `Vec`,\n`&str`/`String`, tuples, structs, enums, `Option`, `Result`), and traits and\ngenerics (lifetimes, type aliasing, traits, generics). Two topics are\nintentionally left out of this tour: procedural macros, which need a separate\n`proc-macro` crate, and the Cargo toolchain (`cargo build`, `cargo test`,\n`cargo doc`, crates.io), which you run from a terminal rather than a notebook.\n\nContinue with:\n\n| Example | What it adds |\n| ------- | ------------ |\n| `04-machine-learning/machine-learning.mars` | A longer workflow with data generation, evaluation, and a plotters chart |\n| `05-plotting/plotting.mars` | Vector figures rendered as SVG output |\n\nUseful commands:\n\n```bash\nmars run getting-started.mars --report   # execute and save outputs\nmars run getting-started.mars --no-save  # check without writing\nmars export getting-started.mars md      # Markdown export\nmars export getting-started.mars html    # HTML export\nmars export getting-started.mars pdf     # PDF export\n```\n",
+      "source": "## What comes next\n\nYou have now seen the core of a Project Mars notebook: Markdown and raw cells, Rust\ncode cells, persisted bindings, automatic output, and stored results.\n\nThis tour also maps onto a Rust syllabus. It covers basic syntax\n(statements, expressions, variables, mutability, constants, modules,\nmacros, and attributes), control flow (`if`, `if let`, `match`, loops),\nfunctions and closures, the type system (primitives, arrays, `Vec`,\n`&str`/`String`, tuples, structs, enums, `Option`, `Result`), and traits and\ngenerics (lifetimes, type aliasing, traits, generics). Two topics are\nintentionally left out of this tour: procedural macros, which need a separate\n`proc-macro` crate, and the Cargo toolchain (`cargo build`, `cargo test`,\n`cargo doc`, crates.io), which you run from a terminal rather than a notebook.\n\nContinue with:\n\n| Example | What it adds |\n| ------- | ------------ |\n| `04-machine-learning/machine-learning.mars` | A longer workflow with data generation, evaluation, and a plotters chart |\n| `05-plotting/plotting.mars` | Vector figures rendered as SVG output |\n\nUseful commands:\n\n```bash\nmars run getting-started.mars --report   # execute and save outputs\nmars run getting-started.mars --no-save  # check without writing\nmars export getting-started.mars md      # Markdown export\nmars export getting-started.mars html    # HTML export\nmars export getting-started.mars pdf     # PDF export\n```\n",
       "metadata": {},
       "outputs": []
     }

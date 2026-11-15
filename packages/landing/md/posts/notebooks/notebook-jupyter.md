@@ -1,7 +1,7 @@
 ---
 title: "Jupyter: The Original Interactive Computing Platform"
 description: "Jupyter turned code into documents and documents into code. Here is why the notebook format won, and what it taught the tools that came after it."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-07"
 order: 9
 tags: ["jupyter", "notebooks", "literate-programming", "history", "mars"]
@@ -41,15 +41,15 @@ The same design choices that made Jupyter universal also created its limits:
 - **Deployment is awkward.** Sharing a notebook means sharing its environment. "Works on my machine" is the default failure mode, and pinning dependencies is a separate discipline from writing the analysis.
 - **Scale hits a wall.** Notebooks are great for exploration and painful for production. The path from "notebook that works" to "script that runs in CI" is a rewrite.
 
-## What Mars took from Jupyter
+## What Project Mars took from Jupyter
 
-Mars is a notebook platform, and Jupyter is the reason notebooks exist as a category. We kept the parts that work:
+Project Mars is a notebook platform, and Jupyter is the reason notebooks exist as a category. We kept the parts that work:
 
 - **The document model.** Markdown prose, executable code cells, rich outputs — stored as a versioned JSON file (`.mars`).
 - **Kernel isolation.** User code runs in a separate process, never inside the application itself.
 - **Rich outputs.** Text, errors, HTML, images, LaTeX, tables, and charts are all first-class output types.
-- **Interop.** Mars imports and exports `.ipynb` notebooks, so existing Jupyter work is not stranded.
+- **Interop.** Project Mars imports and exports `.ipynb` notebooks, so existing Jupyter work is not stranded.
 
-What Mars changes is the center of gravity: Rust is the primary language, not an afterthought. Where Jupyter made *any* language possible but *Python* inevitable, Mars makes *compiled, memory-safe, reproducible* the default. See [Why Mars?](/blog/why-mars) for the full comparison.
+What Project Mars changes is the center of gravity: Rust is the primary language, not an afterthought. Where Jupyter made *any* language possible but *Python* inevitable, Project Mars makes *compiled, memory-safe, reproducible* the default. See [Why Project Mars?](/blog/why-mars) for the full comparison.
 
-The notebook format Jupyter invented was one of the best ideas in developer tooling. Mars exists because we think it deserves a runtime built for the workloads people actually run inside it.
+The notebook format Jupyter invented was one of the best ideas in developer tooling. Project Mars exists because we think it deserves a runtime built for the workloads people actually run inside it.

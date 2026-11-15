@@ -1,4 +1,4 @@
-# Mars landing site
+# Project Mars landing site
 
 Scope: `packages/landing/**`. Follow the repository-level `AGENTS.md` first; these
 rules apply to the public documentation and marketing site.
@@ -37,7 +37,7 @@ rules apply to the public documentation and marketing site.
 - Markdown is content, not trusted HTML. Continue rendering it through the
   existing `Markdown` component and its constrained remark setup; do not enable
   arbitrary raw HTML or client-side script execution.
-- Maintain the dark Mars design system in `globals.css`; avoid style duplication
+- Maintain the dark Project Mars design system in `globals.css`; avoid style duplication
   and unnecessary animations. Respect reduced-motion behaviour for new motion.
 - Treat route params and front matter as untrusted input: validate/narrow
   external values and use `unknown`, never `any`.

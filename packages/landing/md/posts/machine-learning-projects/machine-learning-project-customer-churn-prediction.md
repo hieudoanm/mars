@@ -1,7 +1,7 @@
 ---
 title: "Customer Churn Prediction: Classification Project"
 description: "Predict which customers will cancel their subscription using logistic regression with class weighting and threshold tuning in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 40
 tags: ["machine-learning", "rust", "classification", "churn", "logistic-regression", "business"]

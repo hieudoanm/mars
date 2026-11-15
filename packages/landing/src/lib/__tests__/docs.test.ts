@@ -52,7 +52,7 @@ beforeEach(() => {
 });
 
 const withFrontmatter = (title: string, order?: number, extra = "") =>
-  `---\ntitle: ${title}${order !== undefined ? `\norder: ${order}` : ""}\nauthor: Mars Team\n---\n# ${title}\n\n${extra}`;
+  `---\ntitle: ${title}${order !== undefined ? `\norder: ${order}` : ""}\nauthor: Project Mars Team\n---\n# ${title}\n\n${extra}`;
 
 describe("docs lib (mocked fs)", () => {
   it("getDocs returns docs sorted by order", () => {

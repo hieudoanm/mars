@@ -18,7 +18,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Mars render error:', error, info.componentStack);
+    console.error('Project Mars render error:', error, info.componentStack);
   }
 
   render() {

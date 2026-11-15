@@ -73,7 +73,7 @@ module.exports = grammar({
 
     null: $ => 'null',
 
-    // Mars-specific keywords for semantic highlighting
+    // Project Mars-specific keywords for semantic highlighting
     format_version: $ => seq('"format_version"', ':', $.number),
     metadata: $ => seq('"metadata"', ':', $.object),
     cells: $ => seq('"cells"', ':', $.array),

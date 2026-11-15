@@ -97,7 +97,7 @@ pub fn metadata_string(metadata: &Map<String, Value>, key: &str) -> Option<Strin
     metadata.get(key).and_then(Value::as_str).map(str::to_owned)
 }
 
-/// Normalizes a Jupyter language/kernel name to a Mars language id.
+/// Normalizes a Jupyter language/kernel name to a Project Mars language id.
 fn normalize_language(name: &str) -> &str {
     match name {
         "python" | "python3" | "python2" => "python",

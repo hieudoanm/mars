@@ -1,6 +1,6 @@
 # mars-document
 
-Notebook document model for the Mars notebook platform.
+Notebook document model for the Project Mars notebook platform.
 
 ## Purpose
 

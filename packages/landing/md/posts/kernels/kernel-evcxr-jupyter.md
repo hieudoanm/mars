@@ -1,7 +1,7 @@
 ---
 title: "evcxr_jupyter: Rust Kernel for Interactive Computing"
 description: "Explore evcxr_jupyter, the Rust kernel for Jupyter, and how it enables interactive Rust development in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 46
 tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
@@ -31,9 +31,9 @@ tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
 - **Documentation**: Access to Rust documentation and examples
 - **Testing**: Write and run Rust tests in notebooks
 
-## evcxr_jupyter vs Mars Rust Runtime
+## evcxr_jupyter vs Project Mars Rust Runtime
 
-| Feature | evcxr_jupyter | Mars Rust Runtime |
+| Feature | evcxr_jupyter | Project Mars Rust Runtime |
 |---------|---------------|-------------------|
 | Platform | Jupyter kernel | Native Rust runtime |
 | Execution model | REPL-based | Replay-based compilation |
@@ -51,7 +51,7 @@ tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
 - **Educational purposes**: Teaching Rust with notebook interface
 - **Jupyter extensions**: Leverage existing Jupyter extensions
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Performance-critical** Rust code requiring native compilation
 - **Multi-language workflows** needing Rust + Python + R + Julia
@@ -59,9 +59,9 @@ tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
 - **CLI automation** for reproducible workflows
 - **Independent platform** not tied to Jupyter
 
-## Mars's Rust Runtime Advantages
+## Project Mars's Rust Runtime Advantages
 
-Mars provides a more sophisticated Rust runtime:
+Project Mars provides a more sophisticated Rust runtime:
 
 - **Replay-based compilation**: Full Rust compilation for each cell
 - **Workspace support**: Cargo workspace integration
@@ -90,9 +90,9 @@ fibonacci(10)
 
 The kernel maintains state between cells, allowing you to build up complex Rust programs interactively.
 
-## Mars's Rust Experience
+## Project Mars's Rust Experience
 
-Using Mars's Rust runtime:
+Using Project Mars's Rust runtime:
 
 ```rust
 // Cell 1: Same function
@@ -108,20 +108,20 @@ fn fibonacci(n: u32) -> u32 {
 fibonacci(10)
 ```
 
-Mars provides the same interactive experience but with additional features like LSP integration, variable inspection, and multi-language support.
+Project Mars provides the same interactive experience but with additional features like LSP integration, variable inspection, and multi-language support.
 
 ## The Future of Rust Notebooks
 
-Both evcxr_jupyter and Mars represent different approaches:
+Both evcxr_jupyter and Project Mars represent different approaches:
 
 - **evcxr_jupyter**: Integrates Rust into the Jupyter ecosystem
-- **Mars**: Builds a Rust-first notebook platform from the ground up
+- **Project Mars**: Builds a Rust-first notebook platform from the ground up
 
 As Rust continues to grow in data science and systems programming, both approaches will evolve to meet different user needs.
 
 ## Get Started
 
-- [Mars Rust Runtime](docs/07-rust-runtime.md) - Rust execution documentation
-- [Mars Desktop App](packages/desktop) - Native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface
+- [Project Mars Rust Runtime](docs/07-rust-runtime.md) - Rust execution documentation
+- [Project Mars Desktop App](packages/desktop) - Native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

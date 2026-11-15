@@ -1,16 +1,16 @@
 ---
 title: Getting Started
-description: Mars getting-started documentation
+description: Project Mars getting-started documentation
 order: 1
-author: Mars Team
+author: Project Mars Team
 tags: [getting-started, install, cli, desktop, vscode]
 ---
 
 # Getting started
 
-Mars has multiple surfaces: a desktop application, a command-line interface,
+Project Mars has multiple surfaces: a desktop application, a command-line interface,
 and a VS Code extension. All of them use the same notebook format and execution
-core. Mars supports Rust, Python, and R runtimes.
+core. Project Mars supports Rust, Python, and R runtimes.
 
 ## Install the CLI
 
@@ -108,7 +108,7 @@ mars export analysis.mars ipynb analysis.ipynb
 Markdown export preserves Markdown cells, fences Rust code, and converts
 tables, LaTeX, images, and offline charts into portable Markdown.
 
-When the output path is omitted, Mars derives one from the input file name:
+When the output path is omitted, Project Mars derives one from the input file name:
 
 ```bash
 mars export analysis.mars html   # Creates analysis.html
@@ -154,7 +154,7 @@ pnpm --filter @mars/desktop dev
 
 ## Explore examples
 
-The repository includes example notebooks demonstrating different aspects of Mars:
+The repository includes example notebooks demonstrating different aspects of Project Mars:
 
 | Example | Description |
 | --- | --- |
@@ -168,7 +168,7 @@ The repository includes example notebooks demonstrating different aspects of Mar
 | [r getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/r/01-getting-started) | Comprehensive R tour: vectors, data frames, apply family, environments, and statistics |
 | [cpp getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/cpp/01-getting-started) | C++ curriculum documentation (not yet executable — no C++ backend) |
 
-Run all Mars examples from the examples directory:
+Run all Project Mars examples from the examples directory:
 
 ```bash
 cd examples/mars
@@ -183,7 +183,7 @@ mars run examples/mars/rust/01-getting-started/getting-started.mars --report
 
 ## Runtime helpers
 
-Mars injects helper functions into Rust cells for rich output:
+Project Mars injects helper functions into Rust cells for rich output:
 
 - `mars_table(&[columns], &[vec![rows]])` — Render a table
 - `mars_csv(r#"csv"#)` — Parse CSV and render as a table

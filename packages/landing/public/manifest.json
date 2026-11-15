@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Mars — Rust-powered interactive notebooks",
-  "short_name": "Mars",
+  "name": "Project Mars — Rust-powered interactive notebooks",
+  "short_name": "Project Mars",
   "description": "A Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.",
   "lang": "en-US",
   "dir": "ltr",
@@ -44,7 +44,7 @@
     {
       "name": "Documentation",
       "short_name": "Docs",
-      "description": "Read Mars documentation and guides.",
+      "description": "Read Project Mars documentation and guides.",
       "url": "/docs/",
       "icons": [
         {
@@ -57,7 +57,7 @@
     {
       "name": "Downloads",
       "short_name": "Download",
-      "description": "Download Mars for macOS, Windows, and Linux.",
+      "description": "Download Project Mars for macOS, Windows, and Linux.",
       "url": "/downloads/",
       "icons": [
         {
@@ -70,7 +70,7 @@
     {
       "name": "Blog",
       "short_name": "Blog",
-      "description": "Read essays on Rust, notebooks, and Mars.",
+      "description": "Read essays on Rust, notebooks, and Project Mars.",
       "url": "/blog/",
       "icons": [
         {
@@ -87,7 +87,7 @@
       "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Mars landing page"
+      "label": "Project Mars landing page"
     }
   ]
 }

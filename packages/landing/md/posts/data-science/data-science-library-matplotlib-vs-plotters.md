@@ -1,7 +1,7 @@
 ---
 title: "Matplotlib vs plotters: Python vs Rust Plotting Libraries"
 description: "Compare Python's Matplotlib with Rust's plotters for 2D plotting and chart rendering in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 17
 tags: ["data-science", "matplotlib", "plotters", "rust", "python", "mars"]
@@ -76,13 +76,13 @@ let mut chart = ChartBuilder::on(&root)
 - **Matplotlib** in Python when you need the vast ecosystem, familiar API, or integration with NumPy and pandas.
 - **plotters** in Rust when you need native performance, type safety, or want to avoid the Python interpreter overhead for chart rendering.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both Matplotlib and plotters in their respective language runtimes:
+Project Mars supports both Matplotlib and plotters in their respective language runtimes:
 
 - **Python cells** can use Matplotlib with automatic figure capture to PNG
 - **Rust cells** can use plotters via Cargo dependencies with SVG/PNG output
 - Both can coexist in the same `.mars` notebook
 - Chart outputs render as rich MIME bundles in the notebook
 
-Start with the [getting started guide](/docs/01-getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) to explore Matplotlib and plotters in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) to explore Matplotlib and plotters in Project Mars notebooks.

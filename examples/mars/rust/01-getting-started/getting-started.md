@@ -1,6 +1,6 @@
-# Getting started with Mars
+# Getting started with Project Mars
 
-**Mars** is a Rust-first interactive notebook. A `.mars` notebook is a JSON
+**Project Mars** is a Rust-first interactive notebook. A `.mars` notebook is a JSON
 document made of **markdown**, **code**, and **raw** cells. Code cells are
 written in Rust and share state as they run from top to bottom.
 
@@ -27,7 +27,7 @@ Run the cells in order. Each code cell can use every binding created before it.
 
 When a code cell runs:
 
-1. Mars replays all earlier successful code cells, so their bindings are available.
+1. Project Mars replays all earlier successful code cells, so their bindings are available.
 2. The current cell is compiled and executed.
 3. Its final expression is displayed automatically.
 4. Standard output and errors are captured.
@@ -172,12 +172,12 @@ answer = 42.5
 be formatted with `format!`, and many string methods return new values.
 
 ```rust
-let name = String::from("Mars");
+let name = String::from("Project Mars");
 let greeting = format!("Hello, {name}!");
 let shout = greeting.to_uppercase();
 let words: Vec<&str> = greeting.split(' ').collect();
 let character_count = greeting.chars().count();
-let replaced = greeting.replace("Mars", "notebooks");
+let replaced = greeting.replace("Project Mars", "notebooks");
 
 report(format!(
     "greeting = {greeting}\nshout = {shout}\nwords = {words:?}\ncharacters = {character_count}\nreplaced = {replaced}"
@@ -193,9 +193,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 ```
@@ -235,9 +235,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -287,9 +287,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -329,9 +329,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -369,9 +369,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -415,9 +415,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -471,9 +471,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -531,9 +531,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -604,9 +604,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -686,9 +686,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -764,9 +764,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -830,9 +830,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -898,9 +898,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -970,9 +970,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1044,9 +1044,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1108,7 +1108,7 @@ macro_rules! greet {
     };
 }
 
-report(greet!("Mars"))
+report(greet!("Project Mars"))
 ```
 
 ```text
@@ -1120,9 +1120,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1169,7 +1169,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 ```
 
 ## Attributes
@@ -1199,9 +1199,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1248,7 +1248,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 ```
@@ -1287,9 +1287,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1336,7 +1336,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1375,9 +1375,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1424,7 +1424,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1469,9 +1469,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1518,7 +1518,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1572,9 +1572,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1621,7 +1621,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1678,9 +1678,9 @@ initial = M
 (12, 2, 35, 1, 2, 1.4, 1024)
 counter = 5
 answer = 42.5
-greeting = Hello, Mars!
+greeting = Hello, Project Mars!
 shout = HELLO, MARS!
-words = ["Hello,", "Mars!"]
+words = ["Hello,", "Project Mars!"]
 characters = 12
 replaced = Hello, notebooks!
 21 C is mild: A jacket is enough
@@ -1727,7 +1727,7 @@ total = 100
 reference = 100
 counter = 6
 math::double(21) = 42
-hello, Mars
+hello, Project Mars
 origin = Point2D { x: 0, y: 0 }
 origin == other: true
 distance = 12.5 m
@@ -1760,7 +1760,7 @@ analysis      statistics and regression
 
 ## What comes next
 
-You have now seen the core of a Mars notebook: Markdown and raw cells, Rust
+You have now seen the core of a Project Mars notebook: Markdown and raw cells, Rust
 code cells, persisted bindings, automatic output, and stored results.
 
 This tour also maps onto a Rust syllabus. It covers basic syntax

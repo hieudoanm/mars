@@ -10,7 +10,7 @@ pub fn render_notebook(notebook: &Notebook) -> String {
         .metadata
         .title
         .as_deref()
-        .unwrap_or("Mars notebook");
+        .unwrap_or("Project Mars notebook");
     let mut body = String::new();
     for cell in &notebook.cells {
         let cell_class = match cell.cell_type {

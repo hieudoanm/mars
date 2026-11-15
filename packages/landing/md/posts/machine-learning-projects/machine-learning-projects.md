@@ -1,7 +1,7 @@
 ---
 title: "10 Machine Learning Projects Every Beginner Should Know"
 description: "A curated list of 10 essential machine learning projects that cover fundamental concepts and build practical skills."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 34
 tags: ["machine-learning", "projects", "beginner", "tutorial", "mars"]
@@ -131,15 +131,15 @@ These projects are organized by difficulty level:
 1. **Start with beginner projects** to build fundamental skills
 2. **Progress to intermediate projects** to tackle real-world challenges
 3. **Attempt advanced projects** to master complex ML concepts
-4. **Use Mars notebooks** to experiment interactively with each project
+4. **Use Project Mars notebooks** to experiment interactively with each project
 5. **Modify and extend** projects to explore different approaches
 
 ## Get Started
 
-Explore these projects in Mars notebooks:
+Explore these projects in Project Mars notebooks:
 
 - [Getting started guide](/docs/01-getting-started)
 - [Machine learning examples](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning)
 - [Runtime documentation](/docs/06-runtime.md)
 
-Each project includes complete code, explanations, and results you can run interactively in Mars.
+Each project includes complete code, explanations, and results you can run interactively in Project Mars.

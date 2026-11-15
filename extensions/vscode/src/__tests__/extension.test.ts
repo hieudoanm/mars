@@ -19,7 +19,7 @@ describe('extension activation', () => {
     expect(vscode.notebooks.createNotebookController).toHaveBeenCalledWith(
       'mars-kernel',
       'mars-notebook',
-      'Mars Kernel',
+      'Project Mars Kernel',
     );
     expect(vscode.commands.registerCommand).toHaveBeenCalledTimes(14);
     expect(context.subscriptions).toHaveLength(20);

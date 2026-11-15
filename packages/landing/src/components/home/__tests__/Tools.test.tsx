@@ -4,7 +4,7 @@ import Tools from '../Tools';
 describe('Tools', () => {
   it('renders section heading', () => {
     render(<Tools />);
-    expect(screen.getByText(/meet mars where you work/i)).toBeInTheDocument();
+    expect(screen.getByText(/meet project mars where you work/i)).toBeInTheDocument();
     expect(screen.getByText(/one core/i)).toBeInTheDocument();
     expect(screen.getByText(/your choice of surface/i)).toBeInTheDocument();
   });

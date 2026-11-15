@@ -216,17 +216,17 @@ pub fn execution_outputs(stdout: &[u8], stderr: &[u8], error_name: &str) -> Vec<
     outputs
 }
 
-/// Rewrite `*.rs:LINE:COL` references in runtime stderr with Mars cell
+/// Rewrite `*.rs:LINE:COL` references in runtime stderr with Project Mars cell
 /// annotations (`[mars:cell=HASH,line=N]`) so the UI can navigate to the
 /// originating cell. `program` is the generated source that produced the
-/// binary; `// Mars cell` markers delimit each cell's line range.
+/// binary; `// Project Mars cell` markers delimit each cell's line range.
 pub fn annotate_source_locations(stderr: &str, program: &str) -> String {
     let markers: Vec<(usize, u32)> = program
         .lines()
         .enumerate()
         .filter_map(|(index, line)| {
-            let position = line.find("// Mars cell ")?;
-            let rest = &line[position + "// Mars cell ".len()..];
+            let position = line.find("// Project Mars cell ")?;
+            let rest = &line[position + "// Project Mars cell ".len()..];
             let hash = rest.split_whitespace().last()?.parse::<u32>().ok()?;
             Some((index, hash))
         })

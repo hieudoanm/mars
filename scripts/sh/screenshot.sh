@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Capture Mars desktop UI screenshots into assets/demo/png/.
+# Capture Project Mars desktop UI screenshots into assets/demo/png/.
 #
 # Starts the Vite dev server for packages/desktop, then delegates the actual
 # capture to scripts/js/screenshot.mjs (Playwright). Screenshots are written at

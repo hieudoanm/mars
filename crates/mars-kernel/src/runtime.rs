@@ -91,7 +91,7 @@ fn create_rust_runtime(config: &RuntimeConfig) -> Result<Box<dyn RuntimeBackend>
             {
                 if config.locked || config.cargo_lock.is_some() {
                     return Err(RuntimeError::Backend(
-                        "Evcxr does not support Mars embedded Cargo.lock or --locked execution"
+                        "Evcxr does not support Project Mars embedded Cargo.lock or --locked execution"
                             .to_owned(),
                     ));
                 }

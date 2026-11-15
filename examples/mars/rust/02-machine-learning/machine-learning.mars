@@ -20,7 +20,7 @@
     {
       "id": "deps",
       "cell_type": "code",
-      "source": "// Note: These dependencies would be added to Cargo.toml in a real project\n// :dep polars = { version = \"0.44\", features = [\"lazy\", \"ndarray\"] }\n// :dep ndarray = { version = \"0.16\", features = [\"rand\"] }\n// :dep ndarray-rand = \"0.15\"\n// :dep linfa = \"0.7\"\n// :dep linfa-logistic = \"0.7\"\n// :dep rand = \"0.8\"\n\n// For now, we'll use standard library to demonstrate the concept\n// since Mars runtime doesn't yet support external dependencies",
+      "source": "// Note: These dependencies would be added to Cargo.toml in a real project\n// :dep polars = { version = \"0.44\", features = [\"lazy\", \"ndarray\"] }\n// :dep ndarray = { version = \"0.16\", features = [\"rand\"] }\n// :dep ndarray-rand = \"0.15\"\n// :dep linfa = \"0.7\"\n// :dep linfa-logistic = \"0.7\"\n// :dep rand = \"0.8\"\n\n// For now, we'll use standard library to demonstrate the concept\n// since Project Mars runtime doesn't yet support external dependencies",
       "metadata": {},
       "execution_count": 1,
       "outputs": []
@@ -149,7 +149,7 @@
     {
       "id": "summary",
       "cell_type": "markdown",
-      "source": "## Summary\n\nThis notebook demonstrated:\n1. Synthetic data generation (like `make_classification`)\n2. Train/test split (like `train_test_split`)\n3. Logistic regression (like `LogisticRegression`)\n4. Model evaluation with accuracy and confusion matrix\n5. Feature importance analysis (like model coefficients)\n\n**Note:** This is a simplified implementation using the standard library. A full implementation would use:\n- **polars** for DataFrame operations (similar to pandas)\n- **ndarray** for numerical arrays (similar to numpy)\n- **linfa** for ML algorithms (similar to scikit-learn)\n- **plotters** for visualization (similar to matplotlib)\n\nThese libraries would be added as dependencies in a real Mars project's Cargo.toml.",
+      "source": "## Summary\n\nThis notebook demonstrated:\n1. Synthetic data generation (like `make_classification`)\n2. Train/test split (like `train_test_split`)\n3. Logistic regression (like `LogisticRegression`)\n4. Model evaluation with accuracy and confusion matrix\n5. Feature importance analysis (like model coefficients)\n\n**Note:** This is a simplified implementation using the standard library. A full implementation would use:\n- **polars** for DataFrame operations (similar to pandas)\n- **ndarray** for numerical arrays (similar to numpy)\n- **linfa** for ML algorithms (similar to scikit-learn)\n- **plotters** for visualization (similar to matplotlib)\n\nThese libraries would be added as dependencies in a real Project Mars project's Cargo.toml.",
       "metadata": {},
       "outputs": []
     }

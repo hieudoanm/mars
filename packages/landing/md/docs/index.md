@@ -1,20 +1,20 @@
 ---
 title: Overview
-description: Mars index documentation
+description: Project Mars index documentation
 order: 0
-author: Mars Team
+author: Project Mars Team
 tags: [overview, getting-started]
 ---
 
-# Mars documentation
+# Project Mars documentation
 
-Mars is a Rust-powered interactive notebook for exploring ideas, executing
+Project Mars is a Rust-powered interactive notebook for exploring ideas, executing
 code, and discovering possibilities. It combines executable cells, Markdown,
 mathematics, tables, charts, and rich output in a native `.mars` document.
 
 ## Current capabilities
 
-Mars is a mature, feature-rich notebook platform with:
+Project Mars is a mature, feature-rich notebook platform with:
 
 - **Multi-language support**: Rust (default), Python, and R runtimes
 - **Rich desktop editor**: Tauri-based with CodeMirror 6, LSP integration, and full notebook editing
@@ -28,7 +28,7 @@ Mars is a mature, feature-rich notebook platform with:
 
 ## Start here
 
-- [Getting started](/docs/01-getting-started/) — install Mars and run your first notebook.
+- [Getting started](/docs/01-getting-started/) — install Project Mars and run your first notebook.
 - [CLI reference](/docs/02-cli/) — create, run, inspect, and export notebooks.
 - [Notebook format](/docs/03-notebook-format/) — understand the `.mars` document model.
 - [Rust runtime](/docs/04-runtime-rust/) — Rust execution (replay and Evcxr backends).
@@ -37,7 +37,7 @@ Mars is a mature, feature-rich notebook platform with:
 - [Julia runtime](/docs/07-runtime-julia/) — Julia execution and data science.
 - [C++ runtime](/docs/08-runtime-cpp/) — C++ execution with Conan/vcpkg dependencies.
 - [MCP integration](/docs/09-mcp/) — Model Context Protocol for AI assistants and automation.
-- [VS Code extension](/docs/10-extension-vscode/) — use Mars from the VS Code notebook editor.
+- [VS Code extension](/docs/10-extension-vscode/) — use Project Mars from the VS Code notebook editor.
 - [Zed extension](/docs/11-extension-zed/) — Zed grammar support and usage.
 - [JetBrains extension](/docs/12-extension-jetbrains/) — JetBrains plugin status and future plans.
 

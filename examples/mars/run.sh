@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Run every Mars example notebook in this directory tree, then export each
+# Run every Project Mars example notebook in this directory tree, then export each
 # result to Markdown, PDF, and HTML formats.
 # Each example lives in its own folder alongside its exports.
 
@@ -23,7 +23,7 @@ if ! command -v mars >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Running Mars example notebooks..."
+echo "Running Project Mars example notebooks..."
 echo "=================================="
 echo ""
 

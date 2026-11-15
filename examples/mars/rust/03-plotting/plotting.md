@@ -1,6 +1,6 @@
 # Plotting with Plotters
 
-Plotters renders vector figures for notebook output, similar to matplotlib in Jupyter. Mars displays the SVG MIME representation directly.
+Plotters renders vector figures for notebook output, similar to matplotlib in Jupyter. Project Mars displays the SVG MIME representation directly.
 
 ```rust
 use plotters::prelude::*;

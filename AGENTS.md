@@ -1,14 +1,14 @@
-# Build Mars — A Rust-Powered Interactive Notebook
+# Build Project Mars — A Rust-Powered Interactive Notebook
 
-You are a senior Rust engineer, software architect, and developer-tools designer. Your task is to design and implement **Mars**, an independent, Rust-powered interactive notebook platform.
+You are a senior Rust engineer, software architect, and developer-tools designer. Your task is to design and implement **Project Mars**, an independent, Rust-powered interactive notebook platform.
 
-Do not build another Jupyter frontend or simply implement a Rust kernel for Jupyter. Mars must have its own architecture, notebook format, execution engine, and user experience.
+Do not build another Jupyter frontend or simply implement a Rust kernel for Jupyter. Project Mars must have its own architecture, notebook format, execution engine, and user experience.
 
 The goal is to create a high-quality open-source developer tool for interactive programming, scientific computing, data science, machine learning, experimentation, and education.
 
 ## 1. Product Vision
 
-**Name:** Mars
+**Name:** Project Mars
 
 **Tagline:** Explore ideas. Execute code. Discover possibilities.
 
@@ -18,7 +18,7 @@ The goal is to create a high-quality open-source developer tool for interactive 
 
 **Jupyter compatibility:** Import and export `.ipynb`
 
-Mars should provide an interactive environment where users can combine executable code, Markdown, mathematical equations, tables, charts, and rich outputs in a single document.
+Project Mars should provide an interactive environment where users can combine executable code, Markdown, mathematical equations, tables, charts, and rich outputs in a single document.
 
 Prioritise Rust as the primary programming language. Additional language runtimes (Python, Julia, R, C++) are integrated through the `RuntimeBackend` trait. The platform also supports Model Context Protocol (MCP) for AI assistant integration.
 
@@ -75,7 +75,8 @@ mars/
 │   ├── mars-renderer/
 │   ├── mars-lsp/
 │   ├── mars-cli/
-│   └── mars-mcp/
+│   ├── mars-mcp/
+│   └── mars-lab/
 │
 ├── packages/
 │   ├── desktop/
@@ -252,13 +253,23 @@ Responsible for:
 - Session management for MCP clients.
 - JSON-RPC 2.0 over stdio transport.
 
+### mars-lab
+
+Mars Lab — Machine Learning in Rust (ported from llm.rs): the ML studio that turns CSV datasets into
+ONNX models. Owns the pure-Rust core — CSV parsing, polars-backed tabular
+data, the 83-algorithm catalogue across six task types, training pipeline,
+metrics/charts, dataset insights, filesystem storage, ONNX protobuf export —
+plus `db` (sqlx + SQLite repositories for datasets, jobs, metrics, artefacts,
+idempotency; WAL mode). Shared by `mars lab` CLI commands and the desktop
+app's Tauri commands.
+
 ## 4. Notebook Format
 
 Create an independent JSON-based notebook format using `.mars`.
 
 ## 5. Rust Execution Engine
 
-Mars must execute Rust code interactively with persistent state across cells.
+Project Mars must execute Rust code interactively with persistent state across cells.
 
 ## 6. Notebook User Interface
 
@@ -270,11 +281,11 @@ Support different output types: text, errors, HTML, images, tables, LaTeX, chart
 
 ## 8. CLI
 
-Mars must work without the desktop application. Provide a CLI named `mars`.
+Project Mars must work without the desktop application. Provide a CLI named `mars`.
 
 ## 9. Jupyter Compatibility
 
-Mars should be independent but interoperable. Implement `.ipynb` import and export.
+Project Mars should be independent but interoperable. Implement `.ipynb` import and export.
 
 ## 10. Testing
 
@@ -298,7 +309,7 @@ Follow the phases outlined in the original specification, but the project is cur
 - Do not put notebook persistence logic inside the UI.
 - Do not couple the Rust runtime to the desktop framework.
 - Do not use Python as the primary execution engine.
-- Do not use Evcxr as a mandatory dependency for Mars.
+- Do not use Evcxr as a mandatory dependency for Project Mars.
 - Do not execute untrusted notebook code in the application process.
 - Do not fake execution results.
 - Do not leave core functionality as TODO placeholders.
@@ -308,7 +319,7 @@ Follow the phases outlined in the original specification, but the project is cur
 
 ## 14. Current Implementation Status
 
-Mars is a mature, feature-rich notebook platform with:
+Project Mars is a mature, feature-rich notebook platform with:
 
 - **Multi-language support**: Rust (replay + Evcxr), Python, R, Julia, C++
 - **Rich desktop editor**: Tauri-based with CodeMirror 6, LSP integration, multi-notebook workspace

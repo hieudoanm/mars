@@ -1,8 +1,8 @@
 TEAM
-Mars Desktop App contributors
+Project Mars Desktop App contributors
 
 SITE
-Mars — A Rust-powered interactive notebook
+Project Mars — A Rust-powered interactive notebook
 
 CONTACT
 https://github.com/hieudoanm/mars

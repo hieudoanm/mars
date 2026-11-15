@@ -1,4 +1,4 @@
-"""Mars Python kernel driver.
+"""Project Mars Python kernel driver.
 
 Speaks newline-delimited JSON on stdin/stdout. Cell sources execute in a
 shared module namespace so variables persist across cells. User stdout and
@@ -269,7 +269,7 @@ def mars_display(*objs, raw=False, include=None, exclude=None, metadata=None, **
 
 
 def setup_comms():
-    """Bridge the ``comm`` package to Mars's protocol so widget libraries
+    """Bridge the ``comm`` package to Project Mars's protocol so widget libraries
     (ipywidgets et al.) get real front-end comms instead of DummyComms.
 
     Outbound comm traffic is emitted as ``{"type": "comm", ...}`` lines;

@@ -1,7 +1,7 @@
 ---
 title: "NetworkX vs petgraph: Graph Libraries in Python vs Rust"
 description: "Compare Python's NetworkX with Rust's petgraph for graph data structures and network algorithms in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 21
 tags: ["data-science", "networkx", "petgraph", "rust", "python", "graphs", "mars"]
@@ -76,13 +76,13 @@ let path = dijkstra(&g, 0, Some(2));
 - **NetworkX** in Python when you need a comprehensive graph toolkit, visualization integration, or rapid prototyping of network analysis.
 - **petgraph** in Rust when you need type-safe graph operations, performance for large-scale network analysis, or want to avoid the Python interpreter overhead.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both NetworkX and petgraph in their respective language runtimes:
+Project Mars supports both NetworkX and petgraph in their respective language runtimes:
 
 - **Python cells** can use NetworkX with standard library imports
 - **Rust cells** can use petgraph via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Graphs persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore NetworkX and petgraph in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore NetworkX and petgraph in Project Mars notebooks.

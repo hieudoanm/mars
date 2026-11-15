@@ -24,7 +24,7 @@ export class MarsKernelService {
     if (this.process) this.stop();
     if (!(await commandExists(this.cliPath))) {
       throw new Error(
-        `Mars CLI not found at '${this.cliPath}'. Please install Mars CLI and ensure it's on your PATH.`,
+        `Project Mars CLI not found at '${this.cliPath}'. Please install Project Mars CLI and ensure it's on your PATH.`,
       );
     }
 
@@ -33,15 +33,15 @@ export class MarsKernelService {
     if (runtime === 'evcxr') args.push('--runtime', 'evcxr');
     if (notebookPath) args.push('--notebook', notebookPath);
 
-    console.log(`Starting Mars kernel: ${this.cliPath} ${args.join(' ')}`);
+    console.log(`Starting Project Mars kernel: ${this.cliPath} ${args.join(' ')}`);
     this.process = spawn(this.cliPath, args, { stdio: ['pipe', 'pipe', 'pipe'] });
     this.notebookPath = notebookPath;
     this.process.on('error', (error) => {
-      console.error('Mars kernel process error:', error);
+      console.error('Project Mars kernel process error:', error);
       this.process = null;
     });
     this.process.on('exit', (code) => {
-      console.error(`Mars kernel process exited with code ${code}`);
+      console.error(`Project Mars kernel process exited with code ${code}`);
       this.process = null;
     });
     await new Promise((resolve) => setTimeout(resolve, 500));

@@ -1,10 +1,10 @@
 # mars-lsp
 
-Minimal rust-analyzer LSP client for Mars notebook sessions.
+Minimal rust-analyzer LSP client for Project Mars notebook sessions.
 
 ## Purpose
 
-`mars-lsp` provides Language Server Protocol (LSP) integration with rust-analyzer for the Mars desktop application. It enables rich code editing features including:
+`mars-lsp` provides Language Server Protocol (LSP) integration with rust-analyzer for the Project Mars desktop application. It enables rich code editing features including:
 
 - Diagnostics
 - Hover information
@@ -22,7 +22,7 @@ The crate implements a minimal LSP client that:
 - Communicates with rust-analyzer via stdio
 - Sends workspace and document notifications
 - Receives diagnostics and completion results
-- Translates LSP responses to Mars UI commands
+- Translates LSP responses to Project Mars UI commands
 
 ## Dependencies
 
@@ -33,7 +33,7 @@ The crate implements a minimal LSP client that:
 
 ## Usage
 
-The LSP client is used by the Mars desktop application to provide Rust code editing features. It is not exposed as a standalone CLI tool.
+The LSP client is used by the Project Mars desktop application to provide Rust code editing features. It is not exposed as a standalone CLI tool.
 
 ## Testing
 

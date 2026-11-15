@@ -50,7 +50,7 @@
     "iconThemes": [
       {
         "id": "mars-icons",
-        "label": "Mars File Icons",
+        "label": "Project Mars File Icons",
         "path": "./icons/mars-icon-theme.json"
       }
     ],
@@ -84,66 +84,66 @@
     "commands": [
       {
         "command": "mars.exportHtml",
-        "title": "Mars: Export Notebook to HTML"
+        "title": "Project Mars: Export Notebook to HTML"
       },
       {
         "command": "mars.exportMarkdown",
-        "title": "Mars: Export Notebook to Markdown"
+        "title": "Project Mars: Export Notebook to Markdown"
       },
       {
         "command": "mars.preview",
-        "title": "Mars: Preview Notebook"
+        "title": "Project Mars: Preview Notebook"
       },
       {
         "command": "mars.runNotebook",
-        "title": "Mars: Run Notebook"
+        "title": "Project Mars: Run Notebook"
       },
       {
         "command": "mars.openCell",
-        "title": "Mars: Go to Cell"
+        "title": "Project Mars: Go to Cell"
       },
       {
         "command": "mars.createNotebook",
-        "title": "Mars: Create New Notebook"
+        "title": "Project Mars: Create New Notebook"
       },
       {
         "command": "mars.restartKernel",
-        "title": "Mars: Restart Kernel"
+        "title": "Project Mars: Restart Kernel"
       },
       {
         "command": "mars.interruptExecution",
-        "title": "Mars: Interrupt Execution"
+        "title": "Project Mars: Interrupt Execution"
       },
       {
         "command": "mars.checkCell",
-        "title": "Mars: Check Cell"
+        "title": "Project Mars: Check Cell"
       },
       {
         "command": "mars.checkNotebook",
-        "title": "Mars: Check Notebook"
+        "title": "Project Mars: Check Notebook"
       },
       {
         "command": "mars.sendKernelInput",
-        "title": "Mars: Send Input to Kernel"
+        "title": "Project Mars: Send Input to Kernel"
       },
       {
         "command": "mars.createCheckpoint",
-        "title": "Mars: Create Checkpoint"
+        "title": "Project Mars: Create Checkpoint"
       },
       {
         "command": "mars.restoreCheckpoint",
-        "title": "Mars: Restore Checkpoint"
+        "title": "Project Mars: Restore Checkpoint"
       },
       {
         "command": "mars.refreshVariables",
-        "title": "Mars: Refresh Variables"
+        "title": "Project Mars: Refresh Variables"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "mars",
-          "title": "Mars",
+          "title": "Project Mars",
           "icon": "assets/png/mars-logo.png"
         }
       ]
@@ -166,7 +166,7 @@
         "mars.cliPath": {
           "type": "string",
           "default": "mars",
-          "description": "Path to the Mars CLI executable."
+          "description": "Path to the Project Mars CLI executable."
         },
         "mars.previewAfterExport": {
           "type": "boolean",
@@ -193,7 +193,7 @@
             "evcxr"
           ],
           "default": "replay",
-          "description": "Runtime backend passed to `mars kernel serve`. Use `evcxr` for plotters/evcxr display output; the Mars CLI must be built with the experimental-evcxr feature."
+          "description": "Runtime backend passed to `mars kernel serve`. Use `evcxr` for plotters/evcxr display output; the Project Mars CLI must be built with the experimental-evcxr feature."
         }
       }
     },

@@ -14,10 +14,10 @@ import Footer from '../components/layout/Footer';
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'Mars',
+  name: 'Project Mars',
   url: 'https://hieudoanm.github.io/mars',
   logo: 'https://hieudoanm.github.io/mars/icons/mars-logo.png',
-  description: 'Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
+  description: 'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
   sameAs: [
     'https://github.com/hieudoanm/mars',
   ],
@@ -26,12 +26,12 @@ const organizationSchema = {
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Mars',
+  name: 'Project Mars',
   url: 'https://hieudoanm.github.io/mars',
-  description: 'Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
+  description: 'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
   publisher: {
     '@type': 'Organization',
-    name: 'Mars',
+    name: 'Project Mars',
     url: 'https://hieudoanm.github.io/mars',
   },
 };
@@ -39,7 +39,7 @@ const websiteSchema = {
 const softwareSchema = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'Mars',
+  name: 'Project Mars',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'macOS, Windows, Linux',
   description: 'A Rust-first interactive notebook platform with multi-language support, rich output rendering, and CLI automation.',
@@ -64,7 +64,7 @@ const softwareSchema = {
 const speakableSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: 'Mars - Explore ideas. Execute code.',
+  name: 'Project Mars - Explore ideas. Execute code.',
   url: 'https://hieudoanm.github.io/mars',
   speakable: {
     '@type': 'SpeakableSpecification',
@@ -78,42 +78,42 @@ const faqSchema = {
   mainEntity: [
     {
       '@type': 'Question',
-      name: 'What is Mars?',
+      name: 'What is Project Mars?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities. It supports multiple programming languages including Rust, Python, R, Julia, and C++.',
+        text: 'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities. It supports multiple programming languages including Rust, Python, R, Julia, and C++.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Is Mars free and open source?',
+      name: 'Is Project Mars free and open source?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Mars is completely free and open source. You can download it from the releases page or build it from source on GitHub.',
+        text: 'Yes, Project Mars is completely free and open source. You can download it from the releases page or build it from source on GitHub.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What programming languages does Mars support?',
+      name: 'What programming languages does Project Mars support?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Mars supports Rust, Python, R, Julia, and C++ with native runtimes for each language. It also has Jupyter compatibility for importing and exporting .ipynb files.',
+        text: 'Project Mars supports Rust, Python, R, Julia, and C++ with native runtimes for each language. It also has Jupyter compatibility for importing and exporting .ipynb files.',
       },
     },
     {
       '@type': 'Question',
-      name: 'How is Mars different from Jupyter?',
+      name: 'How is Project Mars different from Jupyter?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Mars is an independent platform, not a Jupyter frontend or kernel. It has its own .mars document format, native multi-language support, desktop application, CLI automation, and MCP integration for AI assistants.',
+        text: 'Project Mars is an independent platform, not a Jupyter frontend or kernel. It has its own .mars document format, native multi-language support, desktop application, CLI automation, and MCP integration for AI assistants.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Can I use Mars for data science and machine learning?',
+      name: 'Can I use Project Mars for data science and machine learning?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Mars is designed for data science, machine learning, scientific computing, and education. It supports rich output rendering including charts, tables, LaTeX equations, and interactive visualizations.',
+        text: 'Yes, Project Mars is designed for data science, machine learning, scientific computing, and education. It supports rich output rendering including charts, tables, LaTeX equations, and interactive visualizations.',
       },
     },
   ],

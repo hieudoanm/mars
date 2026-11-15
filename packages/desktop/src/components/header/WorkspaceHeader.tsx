@@ -23,6 +23,7 @@ type WorkspaceHeaderProps = {
   onOpenSettings: () => void;
   onOpenRecent?: (path: string) => void;
   onReorderTabs?: (fromId: string, toId: string) => void;
+  onHome?: () => void;
 };
 
 const iconClassName = 'h-4 w-4';
@@ -92,6 +93,7 @@ const WorkspaceHeader: FC<WorkspaceHeaderProps> = ({
   onOpenSettings,
   onOpenRecent,
   onReorderTabs,
+  onHome,
 }) => {
   const dragTabId = useRef<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
@@ -99,7 +101,10 @@ const WorkspaceHeader: FC<WorkspaceHeaderProps> = ({
     <header
       data-component='WorkspaceHeader'
       className='flex min-h-14 items-center gap-4 border-b border-neutral-800 bg-neutral-900 px-4 py-2'>
-      <NotebookHeaderBrand compact />
+      <NotebookHeaderBrand compact product='notebook' onHome={onHome} />
+      <span className='hidden text-xs text-neutral-500 lg:inline'>
+        Explore ideas. Execute code.
+      </span>
       <nav
         className='mars-tab-strip flex min-w-0 flex-1 items-center gap-1 overflow-x-auto overflow-y-hidden'
         aria-label='Open notebooks'>
@@ -160,12 +165,12 @@ const WorkspaceHeader: FC<WorkspaceHeaderProps> = ({
             </div>
           );
         })}
-        <IconButton
-          label='New notebook tab'
-          icon={<LuFilePlus aria-hidden='true' className={iconClassName} />}
-          onClick={onNewTab}
-        />
       </nav>
+      <IconButton
+        label='New notebook tab'
+        icon={<LuFilePlus aria-hidden='true' className={iconClassName} />}
+        onClick={onNewTab}
+      />
       {status ? <span className='max-w-56 truncate text-xs text-neutral-500'>{status}</span> : null}
       {onOpenRecent ? <RecentsMenu recents={recents} onOpenRecent={onOpenRecent} /> : null}
       <IconButton

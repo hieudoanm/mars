@@ -43,17 +43,17 @@ export const NOTEBOOK_TEMPLATES: NotebookTemplate[] = [
   {
     id: 'getting-started',
     name: 'Getting started',
-    description: 'The Mars tour: markdown, Rust cells, variables, and rich output.',
+    description: 'The Project Mars tour: markdown, Rust cells, variables, and rich output.',
     content: notebookJson('Getting started', [
       cell(
         'markdown',
         '# Getting started\n\nMars notebooks mix **Markdown**, executable Rust cells, and rich outputs. Variables persist across cells.',
       ),
-      cell('code', 'let greeting = "Hello from Mars";\ngreeting'),
+      cell('code', 'let greeting = "Hello from Project Mars";\ngreeting'),
       cell('code', 'let numbers = vec![1, 2, 3, 4, 5];\nnumbers.iter().sum::<i32>()'),
       cell(
         'markdown',
-        '## Next steps\n\n- Press `Shift+Enter` to run a cell and move on.\n- Open the command palette for Mars commands.\n- Try `mars_prompt("Your name?")` in a cell for interactive input.',
+        '## Next steps\n\n- Press `Shift+Enter` to run a cell and move on.\n- Open the command palette for Project Mars commands.\n- Try `mars_prompt("Your name?")` in a cell for interactive input.',
       ),
     ]),
   },

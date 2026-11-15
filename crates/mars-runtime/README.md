@@ -1,6 +1,6 @@
 # mars-runtime
 
-Rust code execution engine for the Mars notebook platform.
+Rust code execution engine for the Project Mars notebook platform.
 
 ## Purpose
 

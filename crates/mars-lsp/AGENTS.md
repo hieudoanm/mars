@@ -1,6 +1,6 @@
-# mars-lsp — LSP Client for Mars
+# mars-lsp — LSP Client for Project Mars
 
-Minimal rust-analyzer LSP client for Mars notebook sessions. Depends on
+Minimal rust-analyzer LSP client for Project Mars notebook sessions. Depends on
 `mars-runtime`.
 
 ## Architecture
@@ -12,7 +12,7 @@ Minimal rust-analyzer LSP client for Mars notebook sessions. Depends on
 - `transport.rs` handles newline-delimited JSON I/O for LSP communication.
 - The client sends workspace initialization, document open/change notifications,
   and receives diagnostics, completion, hover, and other results.
-- Responses are translated to Mars-specific UI commands (diagnostics, hover,
+- Responses are translated to Project Mars-specific UI commands (diagnostics, hover,
   completion) for the desktop application.
 
 ## Key Modules
@@ -42,5 +42,5 @@ cargo clippy -p mars-lsp --all-targets -- -D warnings
 
 ## Integration
 
-The LSP client is used by the Mars desktop application to provide Rust code
+The LSP client is used by the Project Mars desktop application to provide Rust code
 editing features. It is not exposed as a standalone CLI tool.

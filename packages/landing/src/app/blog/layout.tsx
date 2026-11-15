@@ -5,7 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 
 export const metadata: Metadata = {
   title: 'Blog',
-  description: 'Essays on Rust, notebooks, data science, and the case for Mars.',
+  description: 'Essays on Rust, notebooks, data science, and the case for Project Mars.',
 };
 
 const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';

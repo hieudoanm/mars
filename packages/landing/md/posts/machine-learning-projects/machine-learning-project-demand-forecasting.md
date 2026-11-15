@@ -1,7 +1,7 @@
 ---
 title: "Sales title: "Machine Learning Project: Sales & Demand Forecasting" Demand Forecasting: Time Series Project"
 description: "Forecast retail sales time series using moving averages, exponential smoothing, and ARIMA-style models in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 41
 tags: ["machine-learning", "rust", "time-series", "forecasting", "stats"]

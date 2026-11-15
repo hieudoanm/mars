@@ -1,13 +1,13 @@
 # Jupyter Examples
 
-This directory contains Jupyter `.ipynb` notebooks for testing Mars import/export compatibility and demonstrating how to migrate from Jupyter to Mars.
+This directory contains Jupyter `.ipynb` notebooks for testing Project Mars import/export compatibility and demonstrating how to migrate from Jupyter to Project Mars.
 
 ## Overview
 
 These examples serve two purposes:
 
-1. **Compatibility testing** — Verify that Mars can correctly import and export Jupyter notebooks
-2. **Migration reference** — Show how typical Jupyter workflows translate to Mars
+1. **Compatibility testing** — Verify that Project Mars can correctly import and export Jupyter notebooks
+2. **Migration reference** — Show how typical Jupyter workflows translate to Project Mars
 
 ## Available Examples
 
@@ -72,9 +72,9 @@ make run
 
 See [rust/README.md](./rust/README.md) for detailed instructions.
 
-## Importing to Mars
+## Importing to Project Mars
 
-Convert Jupyter notebooks to Mars format:
+Convert Jupyter notebooks to Project Mars format:
 
 ```bash
 # Import Python notebook
@@ -86,9 +86,9 @@ mars import jupyter/rust/notebook.ipynb mars-rust.mars
 mars run mars-rust.mars
 ```
 
-## Exporting from Mars
+## Exporting from Project Mars
 
-Convert Mars notebooks to Jupyter format:
+Convert Project Mars notebooks to Jupyter format:
 
 ```bash
 # Export to Jupyter
@@ -97,9 +97,9 @@ mars export mars/python/01-getting-started/getting-started.mars ipynb notebook.i
 
 ## Import/Export Compatibility
 
-Mars supports Jupyter import/export with the following mappings:
+Project Mars supports Jupyter import/export with the following mappings:
 
-| Jupyter Feature   | Mars Equivalent                |
+| Jupyter Feature   | Project Mars Equivalent                |
 | ----------------- | ------------------------------ |
 | Code cells        | Code cells                     |
 | Markdown cells    | Markdown cells                 |
@@ -122,9 +122,9 @@ Mars supports Jupyter import/export with the following mappings:
 
 ## Migration Guide
 
-### From Jupyter to Mars
+### From Jupyter to Project Mars
 
-1. **Install Mars CLI**
+1. **Install Project Mars CLI**
    ```bash
    cargo install --path crates/mars-cli
    ```
@@ -134,7 +134,7 @@ Mars supports Jupyter import/export with the following mappings:
    mars import my-notebook.ipynb my-notebook.mars
    ```
 
-3. **Run in Mars**
+3. **Run in Project Mars**
    ```bash
    mars run my-notebook.mars
    ```
@@ -146,16 +146,16 @@ Mars supports Jupyter import/export with the following mappings:
 
 ### Key Differences
 
-| Feature               | Jupyter      | Mars                               |
+| Feature               | Jupyter      | Project Mars                               |
 | --------------------- | ------------ | ---------------------------------- |
 | Native format         | `.ipynb`     | `.mars`                            |
 | Primary language      | Python       | Rust (with multi-language support) |
 | Dependency management | pip / conda  | Cargo (Rust), pip (Python), etc.   |
 | Kernel persistence    | Per-language | Per-language persistent sessions   |
-| VS Code support       | Native       | Via Mars extension                 |
+| VS Code support       | Native       | Via Project Mars extension                 |
 | Desktop app           | None         | Native Tauri app                   |
 
-## Python → Mars Translation
+## Python → Project Mars Translation
 
 ### Cell structure
 
@@ -166,7 +166,7 @@ import pandas as pd
 df = pd.DataFrame({"A": [1, 2, 3]})
 ```
 
-**Mars:**
+**Project Mars:**
 ```python
 # Cell 1
 import pandas as pd
@@ -181,7 +181,7 @@ df = pd.DataFrame({"A": [1, 2, 3]})
 !ls -la
 ```
 
-**Mars:**
+**Project Mars:**
 ```python
 %pip install numpy  # Supported
 !ls -la              # Supported
@@ -195,7 +195,7 @@ from IPython.display import display, HTML
 display(HTML("<b>Bold</b>"))
 ```
 
-**Mars:**
+**Project Mars:**
 ```python
 from IPython.display import display, HTML
 display(HTML("<b>Bold</b>"))  # Same syntax
@@ -209,7 +209,7 @@ The Rust Jupyter example uses evcxr, which has known limitations:
 - State persistence issues in some scenarios
 - Experimental and not production-ready
 
-For production Rust notebooks, use the Mars desktop app or CLI with the native Rust runtime.
+For production Rust notebooks, use the Project Mars desktop app or CLI with the native Rust runtime.
 
 ## Requirements
 
@@ -219,9 +219,9 @@ For production Rust notebooks, use the Mars desktop app or CLI with the native R
 - Jupyter: `pip install jupyter`
 - Dependencies per example (see individual READMEs)
 
-### For Mars import/export
+### For Project Mars import/export
 
-- Mars CLI installed
+- Project Mars CLI installed
 - Runtime dependencies (Python, R, Julia, C++ as needed)
 
 ## Troubleshooting
@@ -232,14 +232,14 @@ For production Rust notebooks, use the Mars desktop app or CLI with the native R
 # Check notebook is valid
 jupyter nbconvert --to notebook --stdout notebook.ipynb > /dev/null
 
-# Check Mars CLI is installed
+# Check Project Mars CLI is installed
 mars --version
 ```
 
 ### Export fails
 
 ```bash
-# Check notebook is valid Mars format
+# Check notebook is valid Project Mars format
 mars inspect my-notebook.mars
 ```
 
@@ -255,11 +255,11 @@ rustc --version
 
 ## Related Documentation
 
-- [Mars CLI documentation](../../docs/12-cli.md)
+- [Project Mars CLI documentation](../../docs/12-cli.md)
 - [Jupyter compatibility](../../docs/03-notebook-format.md)
 - [Python runtime documentation](../../docs/08-python-runtime.md)
 - [Rust runtime documentation](../../docs/07-rust-runtime.md)
-- [Mars examples README](../README.md)
+- [Project Mars examples README](../README.md)
 
 ## Contributing
 
@@ -270,7 +270,7 @@ When adding new Jupyter examples:
 3. Add a `Makefile` with install/run targets
 4. Add a `README.md` with usage instructions
 5. Update this README with the new example
-6. Test import/export with Mars
+6. Test import/export with Project Mars
 
 Example structure:
 
@@ -289,7 +289,7 @@ jupyter/
 
 ## Desktop Application
 
-For the best notebook experience, use the Mars desktop application:
+For the best notebook experience, use the Project Mars desktop application:
 
 ```bash
 cd ../../packages/desktop

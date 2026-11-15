@@ -1,6 +1,6 @@
-# Mars Examples
+# Project Mars Examples
 
-This directory contains example Mars notebooks demonstrating various features of the Mars notebook environment.
+This directory contains example Project Mars notebooks demonstrating various features of the Project Mars notebook environment.
 
 ## Examples
 
@@ -51,12 +51,12 @@ mars export rust/01-getting-started/getting-started.mars md rust/01-getting-star
 
 ## Requirements
 
-- [Mars CLI](../../crates/mars-cli) installed and available in PATH
+- [Project Mars CLI](../../crates/mars-cli) installed and available in PATH
 - Rust toolchain (for dependencies)
 - R + `jsonlite` for the `r/` notebooks, Julia for the `julia/` notebooks
-- The `cpp/` notebook is documentation only — Mars has no C++ runtime yet
+- The `cpp/` notebook is documentation only — Project Mars has no C++ runtime yet
 
-To install the Mars CLI:
+To install the Project Mars CLI:
 
 ```bash
 cd ../..

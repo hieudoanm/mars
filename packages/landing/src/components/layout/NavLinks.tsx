@@ -16,7 +16,7 @@ const NavLinks: FC<NavLinksProps> = ({ showHome = false, onNavigate }) => (
       </Link>
     ) : null}
     <Link className={navLinkClassName} href='/#why-mars' onClick={onNavigate}>
-      Why Mars
+      Why Project Mars
     </Link>
     <Link className={navLinkClassName} href='/#workflow' onClick={onNavigate}>
       Workflow

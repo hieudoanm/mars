@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
-  <title id="title">Mars social card (square)</title>
-  <desc id="desc">Square Open Graph card for Mars with the planet mark and tagline.</desc>
+  <title id="title">Project Mars social card (square)</title>
+  <desc id="desc">Square Open Graph card for Project Mars with the planet mark and tagline.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0b1018"/>
@@ -44,7 +44,7 @@
     <path d="M497 558V358l93 97 93-97v200" fill="none" stroke="#fff7ed" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M497 558V358l93 97 93-97v200" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="600" y="790" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="150" font-weight="700" letter-spacing="4" fill="#f5f0ea">Mars</text>
+  <text x="600" y="790" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="150" font-weight="700" letter-spacing="4" fill="#f5f0ea">Project Mars</text>
   <text x="600" y="880" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="38" fill="#9aa3b2">A Rust-powered interactive notebook</text>
   <text x="600" y="950" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="30" fill="#6b7280">Explore ideas. Execute code. Discover possibilities.</text>
 </svg>

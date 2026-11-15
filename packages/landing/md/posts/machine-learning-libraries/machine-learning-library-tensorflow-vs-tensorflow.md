@@ -1,7 +1,7 @@
 ---
 title: "TensorFlow vs tensorflow: Production ML Frameworks"
 description: "Compare Python's TensorFlow with Rust's tensorflow for graph-based and production-oriented ML workflows in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 26
 tags: ["machine-learning", "tensorflow", "rust", "python", "production", "mars"]
@@ -69,13 +69,13 @@ let output = model.run(&inputs)?;
 - **TensorFlow** in Python when you need the full TensorFlow ecosystem, distributed training, or production serving.
 - **tensorflow** in Rust when you want to use TensorFlow models from Rust, integrate with Rust applications, or leverage TensorFlow's serving capabilities.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both TensorFlow versions in their respective language runtimes:
+Project Mars supports both TensorFlow versions in their respective language runtimes:
 
 - **Python cells** can use TensorFlow with standard library imports
 - **Rust cells** can use tensorflow via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Models and tensors persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore TensorFlow in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore TensorFlow in Project Mars notebooks.

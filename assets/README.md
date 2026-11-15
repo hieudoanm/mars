@@ -1,6 +1,6 @@
-# Mars Assets
+# Project Mars Assets
 
-This directory contains visual assets for the Mars project: brand logos and
+This directory contains visual assets for the Project Mars project: brand logos and
 icons, demo artwork, and application screenshots used across the repository,
 documentation, and applications.
 
@@ -31,7 +31,7 @@ raster export.
 
 ### `logo.svg` / `logo.png`
 
-Primary Mars logo (planet + notebook `M` mark). Used in the repository README,
+Primary Project Mars logo (planet + notebook `M` mark). Used in the repository README,
 landing site, desktop application, and documentation.
 
 ### `logo-file.svg` / `logo-file.png`
@@ -66,7 +66,7 @@ defaults `color` to white; override via CSS `color` to recolor.
 
 ### `logo-horizontal.svg` / `logo-horizontal.png`
 
-Horizontal lockup: planet mark plus "Mars" wordmark and tagline (1200x400),
+Horizontal lockup: planet mark plus "Project Mars" wordmark and tagline (1200x400),
 for headers, docs, and presentations.
 
 ### `logo-favicon.svg` / `logo-favicon.png`
@@ -87,7 +87,7 @@ for README embeds and docs.
 ## Demo assets
 
 `demo/` holds the artwork used in the README [Demo](../README.md#demo)
-section, showing Mars in real-life use:
+section, showing Project Mars in real-life use:
 
 - `svg/terminal.svg` — a 1280x640 terminal window mockup (rounded corners,
   flat dark palette) walking through a real CLI session: `mars --version`,

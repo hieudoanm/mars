@@ -1,7 +1,7 @@
 ---
 title: "NumPy vs ndarray: Choosing the Right Array Library"
 description: "Compare Python's NumPy with Rust's ndarray for n-dimensional arrays and numerical computing in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 13
 tags: ["data-science", "numpy", "ndarray", "rust", "python", "mars"]
@@ -71,13 +71,13 @@ let result = &arr * 2; // Element-wise multiplication
 - **NumPy** in Python when you need maximum ecosystem compatibility, rapid prototyping, or integration with pandas, scikit-learn, and Matplotlib.
 - **ndarray** in Rust when you need compile-time safety, predictable performance, or want to avoid the Python interpreter overhead for array-heavy computations.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars runs both Python and Rust in the same notebook environment:
+Project Mars runs both Python and Rust in the same notebook environment:
 
 - **Python cells** can use NumPy with standard library imports
 - **Rust cells** can use ndarray via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Variables persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore NumPy and ndarray in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore NumPy and ndarray in Project Mars notebooks.

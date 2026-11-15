@@ -1,7 +1,7 @@
 ---
 title: "SciPy vs faer: Scientific Computing Libraries Compared"
 description: "Compare Python's SciPy with Rust's faer for linear algebra and scientific computing primitives in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 15
 tags: ["data-science", "scipy", "faer", "rust", "python", "mars"]
@@ -72,13 +72,13 @@ let result = A.cholesky();
 - **SciPy** in Python when you need the full scientific stack, optimization routines, or integration with NumPy-based workflows.
 - **faer** in Rust when you need fast linear algebra, compile-time safety, or want to avoid the Python interpreter overhead for matrix-heavy computations.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both SciPy and faer in their respective language runtimes:
+Project Mars supports both SciPy and faer in their respective language runtimes:
 
 - **Python cells** can use SciPy with standard library imports
 - **Rust cells** can use faer via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Matrices persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore SciPy and faer in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore SciPy and faer in Project Mars notebooks.

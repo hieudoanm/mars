@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import Footer from '../Footer';
 
 describe('Footer', () => {
-  it('renders Mars home link', () => {
+  it('renders Project Mars home link', () => {
     render(<Footer />);
     expect(screen.getByRole('link', { name: /mars/i })).toBeInTheDocument();
   });

@@ -20,8 +20,8 @@ export const generateMetadata = async ({
   const doc = getDoc(slug);
   if (!doc) return {};
 
-  const title = `${doc.title} | Mars Documentation`;
-  const description = doc.description || `Learn about ${doc.title} in Mars documentation.`;
+  const title = `${doc.title} | Project Mars Documentation`;
+  const description = doc.description || `Learn about ${doc.title} in Project Mars documentation.`;
   const url = `${siteUrl}/docs/${doc.slug}`;
 
   return {
@@ -63,7 +63,7 @@ const DocPage = async ({ params }: DocPageProps) => {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
     headline: doc.title,
-    description: doc.description || `Learn about ${doc.title} in Mars documentation.`,
+    description: doc.description || `Learn about ${doc.title} in Project Mars documentation.`,
     author: {
       '@type': 'Organization',
       name: siteName,
@@ -80,7 +80,7 @@ const DocPage = async ({ params }: DocPageProps) => {
     },
     isPartOf: {
       '@type': 'WebSite',
-      name: 'Mars Documentation',
+      name: 'Project Mars Documentation',
       url: `${siteUrl}/docs`,
     },
   };

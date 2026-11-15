@@ -57,7 +57,7 @@ describe('UnsavedChangesDialog', () => {
     );
     expect(
       screen.getByText(
-        'Your current notebook has unsaved changes. Choose how Mars should continue.',
+        'Your current notebook has unsaved changes. Choose how Project Mars should continue.',
       ),
     ).toBeInTheDocument();
   });

@@ -1,10 +1,10 @@
-# Mars Scripts
+# Project Mars Scripts
 
-This directory contains installation and setup scripts for the Mars project.
+This directory contains installation and setup scripts for the Project Mars project.
 
 ## install.sh
 
-Rebuilds and installs every Mars application:
+Rebuilds and installs every Project Mars application:
 
 ```bash
 ./scripts/install.sh
@@ -14,10 +14,10 @@ This is equivalent to `./scripts/install.sh --all` and will:
 
 1. Check for required dependencies (Rust/Cargo, Node.js/npm, and VS Code)
 2. Install the desktop and VS Code JavaScript dependencies
-3. Build the Mars CLI from source using `cargo build --release --locked`
-4. Install the Mars CLI to `~/.local/bin/mars` (and `~/.cargo/bin/mars` when present)
+3. Build the Project Mars CLI from source using `cargo build --release --locked`
+4. Install the Project Mars CLI to `~/.local/bin/mars` (and `~/.cargo/bin/mars` when present)
 5. Rebuild the VS Code extension from scratch and install it with `code`
-6. Rebuild the native Tauri desktop application and install `Mars.app` to
+6. Rebuild the native Tauri desktop application and install `Project Mars.app` to
    `/Applications` or `~/Applications`
 
 Every run builds new artifacts; it does not reuse an existing VSIX or desktop
@@ -29,7 +29,7 @@ Pass one or more target flags to install the specified targets. If no targets ar
 selected, all components are installed by default.
 
 ```bash
-./scripts/install.sh --cli          # Mars CLI only
+./scripts/install.sh --cli          # Project Mars CLI only
 ./scripts/install.sh --vscode       # VS Code extension only
 ./scripts/install.sh --desktop      # Desktop app only
 ./scripts/install.sh --cli --vscode # CLI plus extension (recommended for editors)
@@ -59,7 +59,7 @@ MARS_CARGO_FEATURES=experimental-evcxr ./scripts/install.sh
   [`docs/08-development.md`](../docs/08-development.md)) when installing the desktop
   app
 
-On macOS, the desktop build produces `Mars.app` and a DMG under
+On macOS, the desktop build produces `Project Mars.app` and a DMG under
 `target/release/bundle/`. The script installs the `.app`; the DMG is left in
 place for distribution.
 
@@ -89,7 +89,7 @@ writes:
 
 - `desktop-welcome.png` — the welcome screen (New/Open notebook, Open folder)
 - `desktop-overview.png` — the notebook editor with the "Getting started with
-  Mars" notebook
+  Project Mars" notebook
 
 Screenshots are captured at a **1280x640 ratio** (viewport 1280x640 CSS pixels
 at 2x device scale, producing 2560x1280 PNGs). The dev server is started on

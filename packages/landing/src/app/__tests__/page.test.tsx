@@ -4,6 +4,6 @@ import Page from '../page';
 describe('Page', () => {
   it('renders', () => {
     render(<Page />);
-    expect(screen.getAllByText(/Mars|Docs/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Project Mars|Docs/i).length).toBeGreaterThan(0);
   });
 });

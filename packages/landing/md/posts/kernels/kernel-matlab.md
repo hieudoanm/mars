@@ -1,7 +1,7 @@
 ---
 title: "matlab_kernel: MATLAB Kernel for Engineering Applications"
 description: "Explore matlab_kernel, the MATLAB kernel for Jupyter, and how it enables interactive MATLAB development in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 50
 tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
@@ -31,9 +31,9 @@ tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
 - **Toolboxes**: Access to specialized toolboxes (Signal Processing, Image Processing, etc.)
 - **Simulink integration**: Potential for Simulink model interaction
 
-## matlab_kernel vs Mars MATLAB Runtime
+## matlab_kernel vs Project Mars MATLAB Runtime
 
-| Feature | matlab_kernel | Mars MATLAB Runtime |
+| Feature | matlab_kernel | Project Mars MATLAB Runtime |
 |---------|---------------|---------------------|
 | Platform | Jupyter kernel | Native MATLAB runtime |
 | Execution model | REPL-based | Subprocess driver |
@@ -53,7 +53,7 @@ tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
 - **Signal processing**: Interactive signal processing workflows
 - **Image processing**: Interactive image processing tasks
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Multi-language workflows** needing MATLAB + Rust + Python + R + Julia + C++
 - **Desktop application** with native performance
@@ -61,9 +61,9 @@ tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
 - **Independent platform** not tied to Jupyter
 - **Enhanced MATLAB integration** with better tooling
 
-## Mars's MATLAB Runtime Advantages
+## Project Mars's MATLAB Runtime Advantages
 
-Mars provides a more integrated MATLAB runtime:
+Project Mars provides a more integrated MATLAB runtime:
 
 - **Subprocess driver**: Direct MATLAB subprocess execution
 - **Variable inspection**: View and manipulate MATLAB variables
@@ -92,9 +92,9 @@ fibonacci(10)
 
 The kernel maintains state between cells, allowing you to build up complex MATLAB programs interactively.
 
-## Mars's MATLAB Experience
+## Project Mars's MATLAB Experience
 
-Using Mars's MATLAB runtime:
+Using Project Mars's MATLAB runtime:
 
 ```matlab
 % Cell 1: Same function
@@ -110,7 +110,7 @@ end
 fibonacci(10)
 ```
 
-Mars provides the same interactive experience but with additional features like multi-language support, variable inspection, and desktop application integration.
+Project Mars provides the same interactive experience but with additional features like multi-language support, variable inspection, and desktop application integration.
 
 ## MATLAB's Unique Advantages
 
@@ -125,16 +125,16 @@ MATLAB offers several unique advantages for technical computing:
 
 ## The Future of MATLAB Notebooks
 
-Both matlab_kernel and Mars represent different approaches:
+Both matlab_kernel and Project Mars represent different approaches:
 
 - **matlab_kernel**: Integrates MATLAB into the Jupyter ecosystem
-- **Mars**: Builds a multi-language notebook platform with MATLAB support
+- **Project Mars**: Builds a multi-language notebook platform with MATLAB support
 
 As MATLAB continues to be important for engineering and scientific computing, both approaches will evolve to meet different user needs.
 
 ## Get Started
 
-- [Mars MATLAB Runtime](docs/06-runtime.md) - MATLAB execution documentation
-- [Mars Desktop App](packages/desktop) - Native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface
+- [Project Mars MATLAB Runtime](docs/06-runtime.md) - MATLAB execution documentation
+- [Project Mars Desktop App](packages/desktop) - Native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

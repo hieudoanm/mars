@@ -1,7 +1,7 @@
 ---
 title: "Spam Message Classifier: NLP Project"
 description: "Classify SMS messages as spam or ham using TF-IDF vectorization and multinomial Naive Bayes in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 38
 tags: ["machine-learning", "rust", "nlp", "text-classification", "naive-bayes"]

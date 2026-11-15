@@ -85,7 +85,7 @@ Objects with `_repr_*` methods render appropriately:
 
 ```python
 from IPython.display import Markdown
-Markdown("# Hello from **Mars**")  # Renders as HTML
+Markdown("# Hello from **Project Mars**")  # Renders as HTML
 ```
 
 ### Matplotlib figures
@@ -166,7 +166,7 @@ Python dependencies are not managed through notebook metadata. Use `%pip` to ins
 %pip install numpy
 ```
 
-Or install packages in your system Python environment before running Mars.
+Or install packages in your system Python environment before running Project Mars.
 
 ## Limitations
 

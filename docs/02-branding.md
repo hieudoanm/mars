@@ -1,6 +1,6 @@
-# Mars branding assets
+# Project Mars branding assets
 
-The project branding is built around a deep charcoal foundation with Mars red,
+The project branding is built around a deep charcoal foundation with Project Mars red,
 orange, and warm cream accents. The planet represents exploration. The primary
 logo uses a white `M` as a notebook/code mark; the file logo is the simplified
 ringless planet mark without the `M`.

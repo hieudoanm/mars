@@ -1,7 +1,7 @@
 ---
 title: "Hex: Modern Data Science Notebooks with SQL Integration"
 description: "Explore Hex, the modern data science platform that combines notebooks with SQL, Python, and collaborative workflows."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 12
 tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "mars"]
@@ -39,7 +39,7 @@ tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "ma
 
 ## Hex vs Traditional Notebooks
 
-| Feature | Hex | Jupyter | Mars |
+| Feature | Hex | Jupyter | Project Mars |
 |---------|-----|---------|------|
 | Language support | SQL, Python, R, more | Python, R, Julia, etc. | Rust, Python, R, Julia, C++ |
 | Collaboration | Real-time, built-in | Limited (via extensions) | Planned |
@@ -58,7 +58,7 @@ tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "ma
 - **Modern interface** and user experience
 - **Integrated data infrastructure** needed
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Rust-first development** with native performance
 - **Multi-language notebooks** (Rust, Python, R, Julia, C++)
@@ -89,9 +89,9 @@ Hex takes a different approach to notebooks:
 - **Data integrations**: Native connections to popular data sources
 - **Scheduled runs**: Automate notebook execution on a schedule
 
-## Mars's Approach to Collaboration
+## Project Mars's Approach to Collaboration
 
-While Mars doesn't yet have Hex's real-time collaboration features, it provides:
+While Project Mars doesn't yet have Hex's real-time collaboration features, it provides:
 
 - **Version control**: `.mars` files work with Git for version tracking
 - **CLI automation**: Run notebooks headlessly for reproducible workflows
@@ -101,16 +101,16 @@ While Mars doesn't yet have Hex's real-time collaboration features, it provides:
 
 ## The Future of Data Science Notebooks
 
-Both Hex and Mars represent different approaches to the notebook paradigm:
+Both Hex and Project Mars represent different approaches to the notebook paradigm:
 
 - **Hex**: Cloud-first, collaboration-focused, SQL-integrated
-- **Mars**: Rust-first, multi-language, open-source, developer-focused
+- **Project Mars**: Rust-first, multi-language, open-source, developer-focused
 
-As data science teams grow, collaboration features become increasingly important. Mars is exploring ways to add collaboration while maintaining its Rust-first, multi-language advantages.
+As data science teams grow, collaboration features become increasingly important. Project Mars is exploring ways to add collaboration while maintaining its Rust-first, multi-language advantages.
 
 ## Get Started
 
-- [Mars Desktop App](packages/desktop) - Download the native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface for automation
-- [Mars MCP](docs/18-mcp.md) - AI assistant integration
+- [Project Mars Desktop App](packages/desktop) - Download the native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface for automation
+- [Project Mars MCP](docs/18-mcp.md) - AI assistant integration
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

@@ -1,6 +1,6 @@
 # Development guide
 
-This guide covers the local commands used to develop and validate Mars. The
+This guide covers the local commands used to develop and validate Project Mars. The
 repository has two build systems: Cargo for Rust crates and pnpm/Turborepo for
 Node applications.
 

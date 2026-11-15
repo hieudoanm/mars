@@ -1,4 +1,4 @@
-# Mars protocol
+# Project Mars protocol
 
 `mars-protocol` defines the typed boundary between a desktop or external
 frontend and the Rust kernel. Requests and responses are JSON-serializable and

@@ -1,3 +1,7 @@
+use crate::lab::{
+    lab_algorithms, lab_dataset_insights, lab_dataset_preview, lab_export_artefact, lab_get_job,
+    lab_list_datasets, lab_list_jobs, lab_list_jobs_page, lab_train, lab_upload_dataset,
+};
 use mars_core::CellType;
 use mars_document::{Cell, Notebook, from_json, load, save_atomic, to_json_pretty};
 use mars_kernel::{Kernel, RuntimeBackendKind};
@@ -13,6 +17,7 @@ use std::sync::{
 use std::time::Duration;
 use tauri::{Emitter, Manager};
 
+mod lab;
 mod lsp;
 mod notebook_files;
 
@@ -606,7 +611,17 @@ pub fn run() -> tauri::Result<()> {
             create_notebook_checkpoint,
             list_notebook_checkpoints,
             read_notebook_checkpoint,
-            restore_notebook_checkpoint
+            restore_notebook_checkpoint,
+            lab_algorithms,
+            lab_upload_dataset,
+            lab_list_datasets,
+            lab_dataset_insights,
+            lab_list_jobs,
+            lab_get_job,
+            lab_train,
+            lab_list_jobs_page,
+            lab_dataset_preview,
+            lab_export_artefact
         ])
         .run(tauri::generate_context!())
 }

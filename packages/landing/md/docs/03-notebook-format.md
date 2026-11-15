@@ -1,8 +1,8 @@
 ---
 title: Notebook Format
-description: Mars notebook-format documentation
+description: Project Mars notebook-format documentation
 order: 3
-author: Mars Team
+author: Project Mars Team
 tags: [notebook-format, json, schema, jupyter, cells, outputs]
 ---
 
@@ -25,7 +25,7 @@ A `.mars` notebook is a JSON document. The current format version is `2`.
     {
       "id": "cell-markdown",
       "cell_type": "markdown",
-      "source": "# Welcome to Mars",
+      "source": "# Welcome to Project Mars",
       "metadata": {},
       "execution_count": null,
       "outputs": []
@@ -94,7 +94,7 @@ Other supported cell metadata:
 
 ## Outputs
 
-Mars supports text, errors, HTML, images, tables, LaTeX, chart specifications,
+Project Mars supports text, errors, HTML, images, tables, LaTeX, chart specifications,
 and MIME bundles. Images may be stored as base64 PNG, JPEG, GIF, WebP, or SVG
 data. HTML is sanitised before rendering.
 
@@ -150,7 +150,7 @@ atomic so an interrupted write cannot corrupt an existing notebook.
 
 ## Format migrations
 
-Mars supports format migrations. Version 1 → Version 2 migration is handled
+Project Mars supports format migrations. Version 1 → Version 2 migration is handled
 automatically when loading older notebooks. The migration includes:
 
 - Updated output schema
@@ -159,7 +159,7 @@ automatically when loading older notebooks. The migration includes:
 
 ## Imports and exports
 
-Mars can import and export representative Jupyter `.ipynb` notebooks. Cell
+Project Mars can import and export representative Jupyter `.ipynb` notebooks. Cell
 types, outputs, execution counts, and unknown metadata are preserved where
 possible. Unsupported Jupyter features are documented rather than silently
 discarded.
@@ -184,9 +184,9 @@ Known limitations:
 
 ### Language mapping
 
-Jupyter kernelspecs map to Mars languages:
+Jupyter kernelspecs map to Project Mars languages:
 
-| Jupyter kernelspec | Mars language         |
+| Jupyter kernelspec | Project Mars language         |
 | ------------------ | --------------------- |
 | `ir`               | `r`                   |
 | `python3`          | `python`              |

@@ -1,8 +1,8 @@
 ---
 title: CLI
-description: Mars cli documentation
+description: Project Mars cli documentation
 order: 2
-author: Mars Team
+author: Project Mars Team
 tags: [cli, commands, import, export, kernel]
 ---
 
@@ -59,7 +59,7 @@ returns a nonzero exit code.
 ### Multi-language execution
 
 Notebooks specify their language in `metadata.language`. Cells can override this
-with `metadata.language` at the cell level. Mars maintains one runtime session
+with `metadata.language` at the cell level. Project Mars maintains one runtime session
 per language:
 
 ```bash
@@ -99,9 +99,9 @@ blocks, and converts outputs into portable Markdown:
 - images and offline charts become data URI images
 
 `markdown` is accepted as an alias for `md`. When the output path is omitted,
-Mars derives one from the input file name.
+Project Mars derives one from the input file name.
 
-Jupyter import maps language kernelspecs to Mars language metadata:
+Jupyter import maps language kernelspecs to Project Mars language metadata:
 - `ir` → `r`
 - `python3` → `python`
 - `rust` → `rust`
@@ -143,7 +143,7 @@ mars tools call <name> [json-args] [--server <cmd>]
 ```
 
 The MCP commands allow AI assistants and automation tools to interact with
-Mars notebooks through the Model Context Protocol:
+Project Mars notebooks through the Model Context Protocol:
 
 - `mcp serve` — Starts an MCP server speaking JSON-RPC 2.0 over stdio
 - `tools list` — Lists all available MCP tools

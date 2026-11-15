@@ -1,7 +1,7 @@
 ---
 title: "Observable: Reactive JavaScript Notebooks for Data Visualization"
 description: "Explore Observable's reactive programming model, JavaScript-first approach, and data visualization capabilities compared to traditional notebooks."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 11
 tags: ["notebooks", "observable", "javascript", "reactive", "visualization", "mars"]
@@ -39,7 +39,7 @@ Observable is a unique notebook platform that combines reactive programming with
 
 ## Observable vs Traditional Notebooks
 
-| Feature | Observable | Jupyter | Mars |
+| Feature | Observable | Jupyter | Project Mars |
 |---------|------------|---------|------|
 | Language | JavaScript/TypeScript | Python, R, Julia, etc. | Rust, Python, R, Julia, C++ |
 | Execution model | Reactive | Imperative | Imperative |
@@ -57,7 +57,7 @@ Observable is a unique notebook platform that combines reactive programming with
 - **Web-native publishing** is important
 - **Interactive documentation** is a priority
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Multi-language support** needed (Rust, Python, R, Julia, C++)
 - **Performance-critical** computations required
@@ -65,9 +65,9 @@ Observable is a unique notebook platform that combines reactive programming with
 - **CLI automation** for reproducible workflows
 - **Systems programming** or low-level work
 
-## Mars's Approach to Visualization
+## Project Mars's Approach to Visualization
 
-While Mars doesn't have Observable's reactive model, it provides:
+While Project Mars doesn't have Observable's reactive model, it provides:
 
 - **Multi-language plotting**: Rust (plotters), Python (matplotlib), R (ggplot2), Julia (Plots.jl), C++ (matplot++)
 - **Rich output types**: Tables, charts, images, HTML, LaTeX
@@ -87,15 +87,15 @@ However, this model is specific to JavaScript and may not translate well to othe
 
 ## Combining Approaches
 
-Some users combine Observable and Mars:
+Some users combine Observable and Project Mars:
 
 - **Observable** for interactive visualization and exploration
-- **Mars** for performance-critical computations and multi-language workflows
+- **Project Mars** for performance-critical computations and multi-language workflows
 - **Export/import** between platforms for different stages of analysis
 
 ## Get Started
 
-- [Mars Desktop App](packages/desktop) - Download the native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface for automation
-- [Mars Runtime](docs/06-runtime.md) - Multi-language execution
+- [Project Mars Desktop App](packages/desktop) - Download the native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface for automation
+- [Project Mars Runtime](docs/06-runtime.md) - Multi-language execution
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

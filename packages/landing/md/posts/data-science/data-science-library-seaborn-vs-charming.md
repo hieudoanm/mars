@@ -1,7 +1,7 @@
 ---
 title: "Seaborn vs charming: Statistical Visualization Libraries"
 description: "Compare Python's Seaborn with Rust's charming for high-level statistical visualizations in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 18
 tags: ["data-science", "seaborn", "charming", "rust", "python", "mars"]
@@ -72,13 +72,13 @@ chart.save("boxplot.png")?;
 - **Seaborn** in Python when you need a high-level API for statistical graphics, built-in themes, or integration with pandas and Matplotlib.
 - **charming** in Rust when you need high-level statistical visualization with type safety and native performance.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both Seaborn and charming in their respective language runtimes:
+Project Mars supports both Seaborn and charming in their respective language runtimes:
 
 - **Python cells** can use Seaborn with automatic figure capture to PNG
 - **Rust cells** can use charming via Cargo dependencies with SVG/PNG output
 - Both can coexist in the same `.mars` notebook
 - Statistical chart outputs render as rich MIME bundles in the notebook
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Seaborn and charming in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore Seaborn and charming in Project Mars notebooks.

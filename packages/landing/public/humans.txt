@@ -1,5 +1,5 @@
 /* TEAM */
-Project: Mars
+Project: Project Mars
 Role: Open-source Rust-powered interactive notebook
 Repository: https://github.com/hieudoanm/mars
 

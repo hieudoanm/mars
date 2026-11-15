@@ -55,7 +55,7 @@ pub(crate) fn render_code_cell(ctx: &mut PdfRenderContext, cell: &Cell) {
         .rect_fill(box_x, box_w, code_box_h, (0.153, 0.153, 0.176)); // #262626 dark
     ctx.content
         .rect_stroke(box_x, box_w, code_box_h, (0.85, 0.85, 0.88), 1.0);
-    // Left accent bar (Mars orange)
+    // Left accent bar (Project Mars orange)
     ctx.content
         .rect_fill(MARGIN - 8.0, 4.0, code_box_h, (1.0, 0.55, 0.15));
 

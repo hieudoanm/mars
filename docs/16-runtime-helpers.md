@@ -6,7 +6,7 @@ and Markdown attachments.
 
 ## Injected Rust helpers
 
-Every code cell is compiled into a generated `fn main()` program. Mars injects
+Every code cell is compiled into a generated `fn main()` program. Project Mars injects
 a small set of helper functions into that program so cells can produce rich
 outputs without extra dependencies. All helpers are available in every Rust
 code cell.

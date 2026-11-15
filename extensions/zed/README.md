@@ -1,14 +1,14 @@
 # Mars Notebooks for Zed
 
-The Mars Zed extension provides `.mars` language recognition, Tree-sitter
-highlighting, and an MCP context server for the Mars CLI. It is a small Rust
+The Project Mars Zed extension provides `.mars` language recognition, Tree-sitter
+highlighting, and an MCP context server for the Project Mars CLI. It is a small Rust
 WebAssembly extension; it never evaluates notebook code in Zed's extension
 process.
 
 ## Features
 
-- Associates `.mars` files with the Mars language.
-- Provides Tree-sitter parsing and highlighting for the Mars notebook format,
+- Associates `.mars` files with the Project Mars language.
+- Provides Tree-sitter parsing and highlighting for the Project Mars notebook format,
   including embedded Rust and Markdown conventions.
 - Registers `mars` as a Zed **context server** (`context_server_command`),
   launching `mars mcp serve` so Zed's Agent Panel gets notebook, cell, and
@@ -16,9 +16,9 @@ process.
 
 ## Limitations
 
-Zed has no notebook editor UI, and `mars kernel serve` speaks the Mars kernel
+Zed has no notebook editor UI, and `mars kernel serve` speaks the Project Mars kernel
 protocol rather than LSP, so this extension does not provide cell execution,
-completions, or diagnostics. To run a notebook from Zed, use the Mars CLI or a
+completions, or diagnostics. To run a notebook from Zed, use the Project Mars CLI or a
 Zed task, for example a `.zed/tasks.json` entry:
 
 ```json
@@ -33,12 +33,12 @@ Zed task, for example a `.zed/tasks.json` entry:
 }
 ```
 
-For full notebook editing and execution, use the Mars desktop app or the VS
+For full notebook editing and execution, use the Project Mars desktop app or the VS
 Code extension.
 
 ## Install locally
 
-1. Build or install the Mars CLI:
+1. Build or install the Project Mars CLI:
 
    ```bash
    cargo install --path crates/mars-cli
@@ -47,7 +47,7 @@ Code extension.
 2. In Zed, open **Settings → Extensions**, choose **Load Local Extension**, and
    select `extensions/zed` from this repository.
 
-3. Open a `.mars` notebook to get Mars highlighting.
+3. Open a `.mars` notebook to get Project Mars highlighting.
 
 ## Development
 

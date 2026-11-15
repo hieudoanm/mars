@@ -29,7 +29,7 @@ export const generateMetadata = async ({
     title,
     description,
     keywords: post.tags.join(', '),
-    authors: [{ name: post.author || 'Mars Team' }],
+    authors: [{ name: post.author || 'Project Mars Team' }],
     alternates: {
       canonical: url,
     },
@@ -48,7 +48,7 @@ export const generateMetadata = async ({
       ],
       type: 'article',
       publishedTime: post.date,
-      authors: [post.author || 'Mars Team'],
+      authors: [post.author || 'Project Mars Team'],
       tags: post.tags,
     },
     twitter: {
@@ -82,7 +82,7 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
     description: post.description,
     author: {
       '@type': 'Person',
-      name: post.author || 'Mars Team',
+      name: post.author || 'Project Mars Team',
     },
     datePublished: post.date,
     dateModified: post.date,
@@ -109,7 +109,7 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
           {
             '@type': 'HowToStep',
             name: 'Setup Environment',
-            text: 'Install Mars and set up your development environment for the tutorial.',
+            text: 'Install Project Mars and set up your development environment for the tutorial.',
           },
           {
             '@type': 'HowToStep',

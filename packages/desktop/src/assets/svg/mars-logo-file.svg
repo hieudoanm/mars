@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="114 114 284 284" role="img" aria-labelledby="title desc">
-  <title id="title">Mars file logo</title>
-  <desc id="desc">The Mars planet mark without the notebook symbol.</desc>
+  <title id="title">Project Mars file logo</title>
+  <desc id="desc">The Project Mars planet mark without the notebook symbol.</desc>
   <defs>
     <radialGradient id="planet" cx="34%" cy="28%" r="78%">
       <stop offset="0" stop-color="#ff8a5c"/>

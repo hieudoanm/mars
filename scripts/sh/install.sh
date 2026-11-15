@@ -107,7 +107,7 @@ Usage: ./scripts/install.sh [options]
 
 Options:
   --all                Install CLI, VS Code, Zed, JetBrains, and desktop (default)
-  --cli                Install only the Mars CLI
+  --cli                Install only the Project Mars CLI
   --vscode             Install only the VS Code extension
   --zed                Install only the Zed extension
   --jetbrains          Install only the JetBrains plugin
@@ -204,7 +204,7 @@ STEP_TOTAL=$((1 + INSTALL_CLI + INSTALL_VSCODE + INSTALL_DESKTOP + INSTALL_ZED +
 # Environment
 # ---------------------------------------------------------------------------
 
-log "${C_BOLD}Installing Mars${C_RESET}"
+log "${C_BOLD}Installing Project Mars${C_RESET}"
 log "Repository: $REPO_ROOT"
 log "Platform:   $(uname -s) $(uname -m)"
 log "Shell:      bash $BASH_VERSION"
@@ -333,7 +333,7 @@ INSTALLED_APP=""
 # ---------------------------------------------------------------------------
 
 if [[ "$INSTALL_CLI" -eq 1 ]]; then
-  step "Building and installing the Mars CLI"
+  step "Building and installing the Project Mars CLI"
   cd "$REPO_ROOT"
   info "Running: cargo ${CARGO_ARGS[*]}"
   run cargo "${CARGO_ARGS[@]}"
@@ -347,13 +347,13 @@ if [[ "$INSTALL_CLI" -eq 1 ]]; then
 
   mkdir -p "$LOCAL_BIN"
   install -m 755 "$CLI_BINARY" "$LOCAL_BIN/mars"
-  success "Mars CLI installed to $LOCAL_BIN/mars"
+  success "Project Mars CLI installed to $LOCAL_BIN/mars"
 
   # Some environments put ~/.cargo/bin before ~/.local/bin. Keep both copies in
   # sync so `mars` always resolves to the freshly built CLI.
   if [ -d "$CARGO_BIN" ]; then
     install -m 755 "$CLI_BINARY" "$CARGO_BIN/mars"
-    success "Mars CLI mirrored to $CARGO_BIN/mars"
+    success "Project Mars CLI mirrored to $CARGO_BIN/mars"
   else
     debug "Skipping $CARGO_BIN mirror: directory does not exist"
   fi
@@ -366,7 +366,7 @@ if [[ "$INSTALL_CLI" -eq 1 ]]; then
     debug "$LOCAL_BIN is already on PATH"
   fi
 
-  finish_step "Mars CLI installed"
+  finish_step "Project Mars CLI installed"
 else
   log "Skipping CLI build/install (--cli not selected)"
 fi
@@ -392,7 +392,7 @@ if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
 
   info "Installing extension with: code --install-extension"
   run code --install-extension "$VSIX" --force
-  finish_step "Mars VS Code extension installed from $VSIX"
+  finish_step "Project Mars VS Code extension installed from $VSIX"
 else
   log "Skipping VS Code extension build/install (--vscode not selected)"
 fi
@@ -550,7 +550,7 @@ if [[ "$INSTALL_DESKTOP" -eq 1 ]]; then
   info "Copying app bundle to $INSTALLED_APP"
   rm -rf "$INSTALLED_APP"
   run ditto "$APP_BUNDLE" "$INSTALLED_APP"
-  finish_step "Mars desktop application installed to $INSTALLED_APP"
+  finish_step "Project Mars desktop application installed to $INSTALLED_APP"
 else
   log "Skipping desktop app build/install (--desktop not selected)"
 fi
@@ -561,7 +561,7 @@ fi
 
 step "Installation complete"
 if [[ "$INSTALL_CLI" -eq 1 ]]; then
-  success "Mars CLI:          $LOCAL_BIN/mars"
+  success "Project Mars CLI:          $LOCAL_BIN/mars"
 fi
 if [[ -n "$INSTALLED_APP" ]]; then
   success "Desktop app:       $INSTALLED_APP"

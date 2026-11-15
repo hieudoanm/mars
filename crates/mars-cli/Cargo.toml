@@ -18,8 +18,11 @@ mars-renderer = { path = "../mars-renderer" }
 mars-kernel = { path = "../mars-kernel" }
 mars-mcp = { path = "../mars-mcp" }
 mars-protocol = { path = "../mars-protocol" }
+mars-lab = { path = "../mars-lab" }
 serde.workspace = true
 serde_json.workspace = true
+tokio = { workspace = true, features = ["rt"] }
+uuid.workspace = true
 
 [features]
 experimental-evcxr = ["mars-kernel/experimental-evcxr"]

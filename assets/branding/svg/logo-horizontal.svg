@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="780" height="340" viewBox="0 0 780 340" role="img" aria-labelledby="title desc">
-  <title id="title">Mars logo (horizontal)</title>
-  <desc id="desc">Mars planet mark with the wordmark, for headers and documentation.</desc>
+  <title id="title">Project Mars logo (horizontal)</title>
+  <desc id="desc">Project Mars planet mark with the wordmark, for headers and documentation.</desc>
   <defs>
     <radialGradient id="planet" cx="34%" cy="28%" r="78%">
       <stop offset="0" stop-color="#ff8a5c"/>
@@ -22,5 +22,5 @@
     <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff7ed" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="310" y="224" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="150" font-weight="700" letter-spacing="2" fill="#e5e5e5">Mars</text>
+  <text x="310" y="224" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="150" font-weight="700" letter-spacing="2" fill="#e5e5e5">Project Mars</text>
 </svg>

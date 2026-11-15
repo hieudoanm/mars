@@ -1,7 +1,7 @@
 [project]
 name = "mars-jupyter-examples"
 version = "0.1.0"
-description = "Jupyter notebook examples for Mars"
+description = "Jupyter notebook examples for Project Mars"
 readme = "README.md"
 requires-python = ">=3.15"
 dependencies = [

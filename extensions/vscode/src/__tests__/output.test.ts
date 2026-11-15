@@ -14,14 +14,14 @@ function outputItem(bytes: string, mime: string) {
   return new vscode.NotebookCellOutputItem(Buffer.from(bytes), mime);
 }
 
-describe('Mars and VS Code notebook outputs', () => {
+describe('Project Mars and VS Code notebook outputs', () => {
   it('encodes text, HTML, LaTeX, charts, tables, and structured errors', () => {
     const outputs: MarsOutput[] = [
       { type: 'text', text: 'hello' },
       { type: 'html', html: '<b>hello</b>' },
       { type: 'latex', latex: 'x^2' },
       { type: 'chart', spec: { mark: 'bar' } },
-      { type: 'table', columns: ['A&B', '<Name>'], rows: [['"Mars"', "it's"]] },
+      { type: 'table', columns: ['A&B', '<Name>'], rows: [['"Project Mars"', "it's"]] },
       {
         type: 'error',
         name: 'CompileError',
@@ -36,7 +36,7 @@ describe('Mars and VS Code notebook outputs', () => {
     expect(itemText(encoded[2].items[0])).toBe('x^2');
     expect(encoded[3].items[0].mime).toBe('application/vnd.vega-lite+json');
     expect(itemText(encoded[4].items[0])).toContain('<th>A&amp;B</th><th>&lt;Name&gt;</th>');
-    expect(itemText(encoded[4].items[0])).toContain('<td>&quot;Mars&quot;</td><td>it&#39;s</td>');
+    expect(itemText(encoded[4].items[0])).toContain('<td>&quot;Project Mars&quot;</td><td>it&#39;s</td>');
     expect(JSON.parse(itemText(encoded[5].items[0]))).toEqual({
       name: 'CompileError',
       message: 'invalid',

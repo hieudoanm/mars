@@ -6,12 +6,12 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://hieudoanm.github.io/mars'),
   title: {
-    default: 'Mars - Explore ideas. Execute code.',
-    template: '%s | Mars',
+    default: 'Project Mars - Explore ideas. Execute code.',
+    template: '%s | Project Mars',
   },
   description:
-    'Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
-  applicationName: 'Mars',
+    'Project Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
+  applicationName: 'Project Mars',
   manifest: '/manifest.json',
   alternates: {
     languages: {
@@ -38,16 +38,16 @@ export const metadata: Metadata = {
     apple: [{ url: '/icons/mars-logo.png', sizes: '512x512' }],
   },
   openGraph: {
-    title: 'Mars - Explore ideas. Execute code.',
+    title: 'Project Mars - Explore ideas. Execute code.',
     description:
       'A Rust-first interactive notebook with isolated execution, rich output, and its own native document format.',
-    images: [{ url: marsOg.src, width: 1200, height: 630, alt: 'Mars' }],
+    images: [{ url: marsOg.src, width: 1200, height: 630, alt: 'Project Mars' }],
     type: 'website',
-    siteName: 'Mars',
+    siteName: 'Project Mars',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mars - Explore ideas. Execute code.',
+    title: 'Project Mars - Explore ideas. Execute code.',
     description:
       'A Rust-first interactive notebook with isolated execution, rich output, and its own native document format.',
     images: [marsOg.src],

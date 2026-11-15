@@ -1,10 +1,10 @@
-# Mars - AI-Readable Site Index
+# Project Mars - AI-Readable Site Index
 
-Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.
+Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.
 
 ## Site Overview
 
-- **Name**: Mars
+- **Name**: Project Mars
 - **Tagline**: Explore ideas. Execute code. Discover possibilities.
 - **Type**: Interactive notebook platform
 - **Primary Language**: Rust
@@ -45,7 +45,7 @@ Mars is a Rust-powered interactive notebook platform for exploring ideas, execut
 
 ### Notebook Platforms
 - Overview: https://hieudoanm.github.io/mars/blog/notebooks/
-- Mars: https://hieudoanm.github.io/mars/blog/notebook-mars/
+- Project Mars: https://hieudoanm.github.io/mars/blog/notebook-mars/
 - Jupyter: https://hieudoanm.github.io/mars/blog/notebook-jupyter/
 - Deepnote: https://hieudoanm.github.io/mars/blog/notebook-deepnote/
 - Observable: https://hieudoanm.github.io/mars/blog/notebook-observable/
@@ -68,7 +68,7 @@ Mars is a Rust-powered interactive notebook platform for exploring ideas, execut
 - Matplotlib vs plotters: https://hieudoanm.github.io/mars/blog/data-science-library-matplotlib-vs-plotters/
 - Seaborn vs charming: https://hieudoanm.github.io/mars/blog/data-science-library-seaborn-vs-charming/
 - Plotly vs plotly.rs: https://hieudoanm.github.io/mars/blog/data-science-library-plotly-python-vs-rust/
-- Jupyter vs Mars: https://hieudoanm.github.io/mars/blog/data-science-library-jupyter-vs-mars/
+- Jupyter vs Project Mars: https://hieudoanm.github.io/mars/blog/data-science-library-jupyter-vs-mars/
 - NetworkX vs petgraph: https://hieudoanm.github.io/mars/blog/data-science-library-networkx-vs-petgraph/
 - xarray vs ndarray: https://hieudoanm.github.io/mars/blog/data-science-library-xarray-vs-ndarray/
 

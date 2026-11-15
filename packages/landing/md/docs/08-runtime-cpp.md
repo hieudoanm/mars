@@ -1,14 +1,14 @@
 ---
 title: C++ Runtime
-description: Mars C++ runtime documentation
+description: Project Mars C++ runtime documentation
 order: 8
-author: Mars Team
+author: Project Mars Team
 tags: [runtime, cpp, execution, conan, vcpkg]
 ---
 
 # C++ Runtime
 
-Mars provides a C++ execution runtime that uses a replay-based approach
+Project Mars provides a C++ execution runtime that uses a replay-based approach
 similar to the Rust runtime. It accumulates cell sources into a single `main()`
 program, compiles with `clang++` (or `g++`), and executes the compiled binary
 in an isolated subprocess.
@@ -37,7 +37,7 @@ A C++ compiler must be installed and available on your system:
 # Windows: Install Visual Studio or MinGW
 ```
 
-Mars discovers the C++ compiler via:
+Project Mars discovers the C++ compiler via:
 
 1. The `MARS_CPP_COMPILER` environment variable (takes precedence)
 2. The `clang++` command on PATH (preferred)
@@ -110,7 +110,7 @@ sum  // Displays: 15
 
 ## Dependencies
 
-C++ dependency management is more complex than Rust's Cargo. Mars supports two
+C++ dependency management is more complex than Rust's Cargo. Project Mars supports two
 package managers:
 
 ### Conan (Preferred)
@@ -129,7 +129,7 @@ Specify Conan dependencies in notebook metadata:
 }
 ```
 
-Mars generates a temporary `conanfile.txt` for the build.
+Project Mars generates a temporary `conanfile.txt` for the build.
 
 ### vcpkg
 
@@ -147,7 +147,7 @@ Specify vcpkg dependencies in notebook metadata:
 }
 ```
 
-Mars generates a temporary `vcpkg.json` for the build.
+Project Mars generates a temporary `vcpkg.json` for the build.
 
 ### Lockfile Support
 
@@ -176,7 +176,7 @@ Prefer `clang++` for better error messages and diagnostics:
 export MARS_CPP_COMPILER=clang++
 ```
 
-Or let Mars auto-detect: it probes `clang++` first, then falls back to `g++`.
+Or let Project Mars auto-detect: it probes `clang++` first, then falls back to `g++`.
 
 ## Known Limitations
 
@@ -190,7 +190,7 @@ Or let Mars auto-detect: it probes `clang++` first, then falls back to `g++`.
 
 ## C++ Data Science Ecosystem
 
-C++ has a growing data science ecosystem that works well in Mars notebooks:
+C++ has a growing data science ecosystem that works well in Project Mars notebooks:
 
 | Domain | C++ Libraries |
 | --- | --- |

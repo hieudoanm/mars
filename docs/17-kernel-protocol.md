@@ -2,7 +2,7 @@
 
 ## Current boundary
 
-Mars does not (yet) expose a standalone kernel protocol. Today the layers are:
+Project Mars does not (yet) expose a standalone kernel protocol. Today the layers are:
 
 ```
 React UI ──invoke()──> Tauri commands (src-tauri) ──> mars-kernel ──> mars-runtime
@@ -53,7 +53,7 @@ The intended next architectural step is to put a transport in front of
   WebSocket remains the step needed for browser clients.
 - **WebSocket or ZMQ** — required for remote kernels and browser clients;
   ZMQ would also allow a Jupyter-protocol gateway so `jupyter console` /
-  `jupyter nbclient` could attach to a Mars kernel.
+  `jupyter nbclient` could attach to a Project Mars kernel.
 - **Session/multiplexing** — one transport should support multiple kernel
   sessions so tabs keep their per-notebook kernels.
 

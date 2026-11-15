@@ -46,7 +46,7 @@ fn renders_value_inspect_lines_with_debug_preview() {
     let program = render_inspect_program(&["let x = 1;".to_owned()], &["x".to_owned()], true);
     assert!(program.contains("format!(\"{:?}\", &x)"));
     assert!(program.contains("take(160)"));
-    assert!(program.contains("// Mars cell 0"));
+    assert!(program.contains("// Project Mars cell 0"));
 }
 
 #[test]
@@ -84,8 +84,7 @@ fn parse_variables_reads_marker_lines_only() {
 
 #[test]
 fn cell_line_map_reads_index_before_hash() {
-    let program =
-        "fn main() {\n    // Mars cell 0 123456\n    let x = 1;\n    // Mars cell 2 654321\n}\n";
+    let program = "fn main() {\n    // Project Mars cell 0 123456\n    let x = 1;\n    // Project Mars cell 2 654321\n}\n";
     assert_eq!(cell_line_map(program), vec![(2, 0), (4, 2)]);
 }
 
@@ -110,9 +109,9 @@ fn diagnostic_object_accepts_both_envelopes() {
 fn map_diagnostics_translates_rustc_spans_to_cells() {
     let program = concat!(
         "fn main() {\n",
-        "    // Mars cell 0 111\n",
+        "    // Project Mars cell 0 111\n",
         "    let fine = 1;\n",
-        "    // Mars cell 1 222\n",
+        "    // Project Mars cell 1 222\n",
         "    let broken = ;\n",
         "}\n",
     );

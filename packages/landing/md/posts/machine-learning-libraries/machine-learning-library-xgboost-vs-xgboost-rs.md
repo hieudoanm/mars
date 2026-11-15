@@ -1,7 +1,7 @@
 ---
 title: "XGBoost vs xgboost-rs: Gradient Boosting Libraries"
 description: "Compare Python's XGBoost with Rust's xgboost-rs for gradient-boosted decision trees in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 28
 tags: ["machine-learning", "xgboost", "rust", "python", "gradient-boosting", "mars"]
@@ -72,13 +72,13 @@ let booster = Booster::train(&params, &dtrain)?;
 - **XGBoost** in Python when you need the full XGBoost ecosystem, rapid prototyping, or integration with pandas and scikit-learn.
 - **xgboost-rs** in Rust when you want to use XGBoost from Rust, combine it with Rust's type system, or deploy models in Rust applications.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both XGBoost versions in their respective language runtimes:
+Project Mars supports both XGBoost versions in their respective language runtimes:
 
 - **Python cells** can use XGBoost with standard library imports
 - **Rust cells** can use xgboost-rs via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Models and datasets persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore XGBoost in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore XGBoost in Project Mars notebooks.

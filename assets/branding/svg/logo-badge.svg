@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="220" height="80" viewBox="0 0 220 80" role="img" aria-labelledby="title desc">
-  <title id="title">Mars badge</title>
-  <desc id="desc">Compact badge: Mars planet mark with a Rust-powered notebook caption.</desc>
+  <title id="title">Project Mars badge</title>
+  <desc id="desc">Compact badge: Project Mars planet mark with a Rust-powered notebook caption.</desc>
   <defs>
     <radialGradient id="planet" cx="34%" cy="28%" r="78%">
       <stop offset="0" stop-color="#ff8a5c"/>

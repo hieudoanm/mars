@@ -60,15 +60,15 @@ describe('NotebookHeader', () => {
 
   it('renders brand, title, and status', () => {
     renderHeader();
-    expect(screen.getByAltText('Mars')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByAltText('Project Mars')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Project Mars' })).toBeInTheDocument();
     expect(screen.getByText('Explore ideas.')).toBeInTheDocument();
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
   });
 
   it('hides the brand when showBrand is false', () => {
     render(<NotebookHeader status='Saved' mode='command' showBrand={false} {...actionProps} />);
-    expect(screen.queryByRole('heading', { name: 'Mars' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Project Mars' })).not.toBeInTheDocument();
     expect(screen.getByText('Saved · Command mode')).toBeInTheDocument();
   });
 

@@ -1,7 +1,7 @@
 ---
 title: "IRkernel: R Kernel for Statistical Computing"
 description: "Explore IRkernel, the R kernel for Jupyter, and how it enables interactive R development in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 49
 tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
@@ -31,9 +31,9 @@ tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
 - **Tidyverse**: Modern data manipulation and visualization ecosystem
 - **Reproducible research**: Support for R Markdown and reproducible workflows
 
-## IRkernel vs Mars R Runtime
+## IRkernel vs Project Mars R Runtime
 
-| Feature | IRkernel | Mars R Runtime |
+| Feature | IRkernel | Project Mars R Runtime |
 |---------|----------|----------------|
 | Platform | Jupyter kernel | Native R runtime |
 | Execution model | REPL-based | Subprocess driver |
@@ -52,7 +52,7 @@ tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
 - **Jupyter extensions**: Leverage existing Jupyter extensions
 - **Statistical analysis**: Interactive statistical computing
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Multi-language workflows** needing R + Rust + Python + Julia + C++
 - **Desktop application** with native performance
@@ -60,9 +60,9 @@ tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
 - **Independent platform** not tied to Jupyter
 - **Enhanced R integration** with plot capture and warnings
 
-## Mars's R Runtime Advantages
+## Project Mars's R Runtime Advantages
 
-Mars provides a more integrated R runtime:
+Project Mars provides a more integrated R runtime:
 
 - **Subprocess driver**: Direct Rscript subprocess execution
 - **`.GlobalEnv` persistence**: Variables persist across cells
@@ -89,9 +89,9 @@ fibonacci(10)
 
 The kernel maintains state between cells, allowing you to build up complex R programs interactively.
 
-## Mars's R Experience
+## Project Mars's R Experience
 
-Using Mars's R runtime:
+Using Project Mars's R runtime:
 
 ```r
 # Cell 1: Same function
@@ -104,7 +104,7 @@ fibonacci <- function(n) {
 fibonacci(10)
 ```
 
-Mars provides the same interactive experience but with additional features like plot capture, warnings streaming, and multi-language support.
+Project Mars provides the same interactive experience but with additional features like plot capture, warnings streaming, and multi-language support.
 
 ## R's Unique Advantages
 
@@ -118,16 +118,16 @@ R offers several unique advantages for statistical computing:
 
 ## The Future of R Notebooks
 
-Both IRkernel and Mars represent different approaches:
+Both IRkernel and Project Mars represent different approaches:
 
 - **IRkernel**: Integrates R into the Jupyter ecosystem
-- **Mars**: Builds a multi-language notebook platform with R support
+- **Project Mars**: Builds a multi-language notebook platform with R support
 
 As R continues to be important for statistical computing and data science, both approaches will evolve to meet different user needs.
 
 ## Get Started
 
-- [Mars R Runtime](docs/09-r-runtime.md) - R execution documentation
-- [Mars Desktop App](packages/desktop) - Native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface
+- [Project Mars R Runtime](docs/09-r-runtime.md) - R execution documentation
+- [Project Mars Desktop App](packages/desktop) - Native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

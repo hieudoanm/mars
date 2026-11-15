@@ -1,7 +1,7 @@
 ---
 title: "Rust: The Systems Programming Language for Data Science"
 description: "Rust is fast, memory-safe, and predictable. Here is why that matters for data science, ML, and the tools we build on top of it."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-06"
 order: 2
 tags: ["rust", "performance", "safety", "ml", "systems"]
@@ -54,4 +54,4 @@ The Rust ML ecosystem is young — `ndarray`, `linfa`, `burn`, `tch-rs`, and `te
 
 Rust has a steeper learning curve. Ownership and borrowing feel alien at first, and the compiler is uncompromising. But that friction is the point: the compiler is an assistant that catches your mistakes before they reach production. Once the borrow checker stops fighting you, you wonder how you ever wrote C++.
 
-If you want to explore Rust without leaving the comfort of a notebook, that is exactly what [Mars](/) is for.
+If you want to explore Rust without leaving the comfort of a notebook, that is exactly what [Project Mars](/) is for.

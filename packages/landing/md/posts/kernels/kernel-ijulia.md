@@ -1,7 +1,7 @@
 ---
 title: "IJulia: Julia Kernel for Scientific Computing"
 description: "Explore IJulia, the Julia kernel for Jupyter, and how it enables interactive Julia development in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 47
 tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
@@ -31,9 +31,9 @@ tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
 - **Scientific computing**: First-class support for numerical and scientific computing
 - **Parallel computing**: Built-in support for parallel and distributed computing
 
-## IJulia vs Mars Julia Runtime
+## IJulia vs Project Mars Julia Runtime
 
-| Feature | IJulia | Mars Julia Runtime |
+| Feature | IJulia | Project Mars Julia Runtime |
 |---------|--------|-------------------|
 | Platform | Jupyter kernel | Native Julia runtime |
 | Execution model | REPL-based | Subprocess driver |
@@ -51,7 +51,7 @@ tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
 - **Educational purposes**: Teaching Julia with notebook interface
 - **Jupyter extensions**: Leverage existing Jupyter extensions
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Multi-language workflows** needing Julia + Rust + Python + R
 - **Desktop application** with native performance
@@ -59,9 +59,9 @@ tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
 - **Independent platform** not tied to Jupyter
 - **MarsKernel module**: Enhanced Julia integration with MIME bundles
 
-## Mars's Julia Runtime Advantages
+## Project Mars's Julia Runtime Advantages
 
-Mars provides a more integrated Julia runtime:
+Project Mars provides a more integrated Julia runtime:
 
 - **MarsKernel module**: Custom Julia module for enhanced notebook integration
 - **MIME bundles**: Rich output support for Julia's display system
@@ -87,9 +87,9 @@ fibonacci(10)
 
 The kernel maintains state between cells, allowing you to build up complex Julia programs interactively.
 
-## Mars's Julia Experience
+## Project Mars's Julia Experience
 
-Using Mars's Julia runtime:
+Using Project Mars's Julia runtime:
 
 ```julia
 # Cell 1: Same function
@@ -102,7 +102,7 @@ end
 fibonacci(10)
 ```
 
-Mars provides the same interactive experience but with additional features like MarsKernel module, MIME bundle support, and multi-language capabilities.
+Project Mars provides the same interactive experience but with additional features like MarsKernel module, MIME bundle support, and multi-language capabilities.
 
 ## Julia's Unique Advantages
 
@@ -116,16 +116,16 @@ Julia offers several unique advantages for scientific computing:
 
 ## The Future of Julia Notebooks
 
-Both IJulia and Mars represent different approaches:
+Both IJulia and Project Mars represent different approaches:
 
 - **IJulia**: Integrates Julia into the Jupyter ecosystem
-- **Mars**: Builds a multi-language notebook platform with Julia support
+- **Project Mars**: Builds a multi-language notebook platform with Julia support
 
 As Julia continues to grow in scientific computing and data science, both approaches will evolve to meet different user needs.
 
 ## Get Started
 
-- [Mars Julia Runtime](docs/10-julia-runtime.md) - Julia execution documentation
-- [Mars Desktop App](packages/desktop) - Native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface
+- [Project Mars Julia Runtime](docs/10-julia-runtime.md) - Julia execution documentation
+- [Project Mars Desktop App](packages/desktop) - Native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

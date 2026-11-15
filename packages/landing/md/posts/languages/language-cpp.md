@@ -1,7 +1,7 @@
 ---
 title: "C++: High-Performance Computing for Scientific Applications"
 description: "C++ was born for systems programming. It is still the default when performance, control, and zero-cost abstractions matter. Here is why it endures."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-07"
 order: 6
 tags: ["cpp", "performance", "systems", "history", "mars"]
@@ -69,13 +69,13 @@ C++11, C++14, C++17, C++20, and C++23 modernized the language significantly:
 
 You can write modern C++ that feels less like 1990s code and more like a contemporary language — but the complexity is still there, and the compiler is still demanding.
 
-## Where Mars fits
+## Where Project Mars fits
 
-Mars does not ask you to leave C++ behind. It provides a notebook where C++ code runs interactively with automatic compilation and isolated execution. What Mars offers is a notebook where you can:
+Project Mars does not ask you to leave C++ behind. It provides a notebook where C++ code runs interactively with automatic compilation and isolated execution. What Project Mars offers is a notebook where you can:
 
 - Prototype high-performance algorithms without leaving the notebook
 - Use Conan or vcpkg for dependency management with reproducible lockfiles
 - Get real-time compiler diagnostics mapped to notebook cells
-- Combine C++ performance with Mars's rich output rendering
+- Combine C++ performance with Project Mars's rich output rendering
 
-C++ earned its place as the backbone of performance-critical software. Mars is for the parts of your workflow where you want to write that backbone interactively — without giving up the language's control or its zero-cost abstractions.
+C++ earned its place as the backbone of performance-critical software. Project Mars is for the parts of your workflow where you want to write that backbone interactively — without giving up the language's control or its zero-cost abstractions.

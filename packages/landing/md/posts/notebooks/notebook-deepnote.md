@@ -1,7 +1,7 @@
 ---
 title: "Deepnote: Cloud-Native Collaborative Data Science"
 description: "Explore Deepnote's collaborative features, real-time editing, and cloud-native data science workflow compared to traditional notebooks."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 10
 tags: ["notebooks", "deepnote", "collaboration", "data-science", "cloud", "mars"]
@@ -39,7 +39,7 @@ Deepnote is a cloud-native data science platform that emphasizes real-time colla
 
 ## Deepnote vs Traditional Notebooks
 
-| Feature | Deepnote | Jupyter | Mars |
+| Feature | Deepnote | Jupyter | Project Mars |
 |---------|----------|---------|------|
 | Collaboration | Real-time, built-in | Limited (via JupyterLab) | Planned |
 | Cloud-native | Yes | No (local) | Desktop app |
@@ -56,7 +56,7 @@ Deepnote is a cloud-native data science platform that emphasizes real-time colla
 - **Production data science** with scheduled runs
 - **Enterprise features** like audit logs and permissions
 
-## When Mars Might Be Better
+## When Project Mars Might Be Better
 
 - **Rust-first development** with native performance
 - **Multi-language notebooks** (Rust, Python, R, Julia, C++)
@@ -64,9 +64,9 @@ Deepnote is a cloud-native data science platform that emphasizes real-time colla
 - **CLI automation** for reproducible workflows
 - **Open-source** and self-hosted options
 
-## Mars's Approach to Collaboration
+## Project Mars's Approach to Collaboration
 
-While Mars doesn't yet have Deepnote's real-time collaboration features, it provides:
+While Project Mars doesn't yet have Deepnote's real-time collaboration features, it provides:
 
 - **Version control**: `.mars` files work with Git for version tracking
 - **CLI automation**: Run notebooks headlessly for reproducible workflows
@@ -76,16 +76,16 @@ While Mars doesn't yet have Deepnote's real-time collaboration features, it prov
 
 ## The Future of Collaborative Notebooks
 
-Both Deepnote and Mars represent different approaches to the notebook paradigm:
+Both Deepnote and Project Mars represent different approaches to the notebook paradigm:
 
 - **Deepnote**: Cloud-first, collaboration-focused, enterprise-ready
-- **Mars**: Rust-first, multi-language, open-source, developer-focused
+- **Project Mars**: Rust-first, multi-language, open-source, developer-focused
 
-As data science teams grow, collaboration features become increasingly important. Mars is exploring ways to add collaboration while maintaining its Rust-first, multi-language advantages.
+As data science teams grow, collaboration features become increasingly important. Project Mars is exploring ways to add collaboration while maintaining its Rust-first, multi-language advantages.
 
 ## Get Started
 
-- [Mars Desktop App](packages/desktop) - Download the native application
-- [Mars CLI](docs/12-cli.md) - Command-line interface for automation
-- [Mars MCP](docs/18-mcp.md) - AI assistant integration
+- [Project Mars Desktop App](packages/desktop) - Download the native application
+- [Project Mars CLI](docs/12-cli.md) - Command-line interface for automation
+- [Project Mars MCP](docs/18-mcp.md) - AI assistant integration
 - [Getting Started](docs/01-getting-started.md) - First notebook tutorial

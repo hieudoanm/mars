@@ -5,7 +5,7 @@ import type { MarsVariableInfo } from './kernelProtocol';
 /**
  * Completion provider for Rust code cells. Notebook cell documents use the
  * `vscode-notebook-cell` URI scheme, which rust-analyzer does not index, so
- * this provider supplies Mars-aware suggestions: live kernel session
+ * this provider supplies Project Mars-aware suggestions: live kernel session
  * variables plus a small set of Rust keywords and std prelude items.
  */
 export class MarsCompletionProvider implements vscode.CompletionItemProvider {

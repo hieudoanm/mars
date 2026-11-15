@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" color="#ffffff" role="img" aria-labelledby="title desc">
-  <title id="title">Mars logo (monochrome)</title>
-  <desc id="desc">Single-color line-art Mars mark: planet outline, orbit arcs, and notebook M. Uses currentColor.</desc>
+  <title id="title">Project Mars logo (monochrome)</title>
+  <desc id="desc">Single-color line-art Project Mars mark: planet outline, orbit arcs, and notebook M. Uses currentColor.</desc>
   <defs>
     <clipPath id="planetClip"><circle cx="256" cy="256" r="142"/></clipPath>
   </defs>

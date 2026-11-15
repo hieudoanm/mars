@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('mars.createNotebook', createNotebook),
     vscode.commands.registerCommand('mars.restartKernel', async () => {
       await controller.restartKernel();
-      void vscode.window.showInformationMessage('Mars kernel restarted');
+      void vscode.window.showInformationMessage('Project Mars kernel restarted');
     }),
     vscode.commands.registerCommand('mars.interruptExecution', async () => {
       await controller.interruptExecution();

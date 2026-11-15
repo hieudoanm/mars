@@ -8,7 +8,7 @@ describe('DownloadsPage', () => {
 
   it('renders download heading and platform cards', () => {
     render(<DownloadsPage />);
-    expect(screen.getByText(/get mars for your platform/i)).toBeInTheDocument();
+    expect(screen.getByText(/get project mars for your platform/i)).toBeInTheDocument();
     expect(screen.getByText('macOS')).toBeInTheDocument();
     expect(screen.getByText('Windows')).toBeInTheDocument();
     expect(screen.getByText('Linux')).toBeInTheDocument();

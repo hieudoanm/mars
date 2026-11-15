@@ -41,7 +41,7 @@ pub enum ExportedOutput {
     },
 }
 
-/// Maps a Mars language id to a Jupyter kernelspec object, when a
+/// Maps a Project Mars language id to a Jupyter kernelspec object, when a
 /// conventional kernel name exists.
 fn kernelspec_for_language(language: &str) -> Option<Value> {
     let (name, display_name) = match language {

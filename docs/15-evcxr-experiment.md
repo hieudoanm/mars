@@ -7,7 +7,7 @@
 `mars-runtime-evcxr` implements `mars-runtime::RuntimeBackend` and owns one
 `evcxr::CommandContext` per notebook session. The context preserves values,
 functions, types, and Cargo dependencies between cell requests. It runs through
-Evcxr's child-process protocol: the Mars CLI or Tauri process hosts the Evcxr
+Evcxr's child-process protocol: the Project Mars CLI or Tauri process hosts the Evcxr
 controller, while Evcxr compiles and loads user code in a separate evaluator
 process. Both application entry points call `mars_kernel::runtime_hook()` so
 the same executable can service Evcxr runtime and rustc-wrapper subprocesses.
@@ -16,7 +16,7 @@ No Evcxr types enter `mars-core`, and `.mars` serialization is unchanged.
 The kernel selects the existing replay runtime unless explicitly opted in.
 Requests and results continue through the existing `RuntimeBackend`, kernel,
 and `mars-protocol` output types. CLI `mars run` also uses the backend factory.
-The experimental runtime does not implement Mars's embedded Cargo.lock
+The experimental runtime does not implement Project Mars's embedded Cargo.lock
 semantics; it rejects `--locked` and embedded locks rather than claiming
 reproducibility it cannot provide. Dependency names and values are validated
 by the existing runtime helper and passed to Evcxr as `:dep` directives.
@@ -73,7 +73,7 @@ include Evcxr, so those numbers are context rather than a paired result.
 The paired runner is included, but **no Evcxr latency medians or p95 values
 are reported**. On the current macOS ARM64 host, the integration run reached a
 second cell that reads a value declared in the previous cell and did not
-complete within two minutes. A process sample showed the Mars controller
+complete within two minutes. A process sample showed the Project Mars controller
 waiting for Evcxr evaluation while the evaluator child was idle. The runner
 was stopped rather than publishing a timing for a stuck execution. This is a
 compatibility failure for the tested environment, not evidence of a measured
@@ -94,7 +94,7 @@ failed-cell state retention, reset, a `regex` dependency, timeout, panic, and
 evaluator termination/recovery. The suite did not complete because a later
 cell reading a previous value stalled, so these scenarios are not represented
 as passing compatibility results. Stdout and stderr are wired through
-Evcxr's output channels and mapped to the existing Mars `Text` and `Error`
+Evcxr's output channels and mapped to the existing Project Mars `Text` and `Error`
 variants, but output capture also lacks a completed runtime test. The adapter
 preserves the existing kernel response shape at the type boundary.
 Run the scenario executable explicitly with
@@ -115,7 +115,7 @@ Known compatibility limits:
 - Evcxr documents that macros defined in one cell are not generally available
   to later cells. Procedural macro and compiler-plugin workflows are not
   equivalent to Cargo projects.
-- Evcxr manages dependencies through its own generated Cargo project. Mars
+- Evcxr manages dependencies through its own generated Cargo project. Project Mars
   notebook lockfile pinning, `--locked`, and full offline/reproducible
   dependency guarantees are not implemented by this adapter.
 - Evcxr's evaluator is a child process, but it is not a hardened sandbox.
@@ -123,12 +123,12 @@ Known compatibility limits:
   may start descendant processes. Direct evaluator termination does not
   guarantee cleanup of every user-created descendant on every platform.
 - Restart after timeout, crash, or evaluator exit loses all live session
-  values. Mars does not replay prior cells into the replacement Evcxr context.
+  values. Project Mars does not replay prior cells into the replacement Evcxr context.
 - Evcxr's Rust Analyzer based completion and type handling add startup and
   compatibility surface. Rust toolchain and Evcxr upgrades require a fresh
   behavior and performance run.
 - Rich display output is limited to MIME values Evcxr itself produces; this
-  experiment does not add Mars-specific plotting or table APIs.
+  experiment does not add Project Mars-specific plotting or table APIs.
 
 ## Limitations and recommendation
 
@@ -144,4 +144,4 @@ An alternative next step is to retain replay while reducing redundant work
 with stable incremental compilation and compiled-program caching. For a
 persistent backend, evaluate Evcxr against a separate supervised worker with
 explicit protocol, resource limits, process-group/job cleanup, and a
-Mars-managed dependency lock contract.
+Project Mars-managed dependency lock contract.

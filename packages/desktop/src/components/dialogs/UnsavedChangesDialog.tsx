@@ -21,7 +21,7 @@ const UnsavedChangesDialog: FC<UnsavedChangesDialogProps> = ({
         {closeRequested ? 'Save changes before closing?' : 'Save changes before opening?'}
       </h2>
       <p className='mt-2 leading-relaxed text-neutral-400'>
-        Your current notebook has unsaved changes. Choose how Mars should continue.
+        Your current notebook has unsaved changes. Choose how Project Mars should continue.
       </p>
       <div className='mt-6 flex justify-end gap-2'>
         <Button onClick={onCancel}>Cancel</Button>

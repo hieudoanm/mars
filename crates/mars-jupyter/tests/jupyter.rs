@@ -30,7 +30,7 @@ fn exports_tables_as_escaped_html() {
     let mut cell = Cell::new(CellType::Code, "table()");
     cell.outputs.push(Output::Table {
         columns: vec!["Name".to_owned()],
-        rows: vec![vec!["<Mars>".to_owned()]],
+        rows: vec![vec!["<Project Mars>".to_owned()]],
     });
     notebook.add_cell(cell).expect("unique ID");
 
@@ -41,8 +41,8 @@ fn exports_tables_as_escaped_html() {
         .expect("HTML output");
 
     assert!(html.contains("<th>Name</th>"));
-    assert!(html.contains("&lt;Mars&gt;"));
-    assert!(!html.contains("<Mars>"));
+    assert!(html.contains("&lt;Project Mars&gt;"));
+    assert!(!html.contains("<Project Mars>"));
 }
 
 #[test]

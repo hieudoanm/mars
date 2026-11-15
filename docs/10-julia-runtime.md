@@ -55,7 +55,7 @@ Objects with MIME reprs render appropriately:
 
 ```julia
 using Markdown
-Markdown.parse("# Hello from **Mars**")  # Renders as HTML
+Markdown.parse("# Hello from **Project Mars**")  # Renders as HTML
 ```
 
 ### MIME bundles
@@ -122,7 +122,7 @@ Pkg.add("DataFrames")
 Pkg.add("Plots")
 ```
 
-Or install packages in your Julia environment before running Mars.
+Or install packages in your Julia environment before running Project Mars.
 
 ## JSON support
 

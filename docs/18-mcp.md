@@ -1,6 +1,6 @@
 # 13 — MCP (Model Context Protocol)
 
-Mars exposes its notebook and kernel capabilities over MCP so external agents
+Project Mars exposes its notebook and kernel capabilities over MCP so external agents
 (Claude Desktop, IDE assistants, custom tooling) can inspect, edit, execute,
 and save `.mars` notebooks.
 

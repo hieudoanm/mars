@@ -1,12 +1,12 @@
 # mars-mcp
 
-Model Context Protocol (MCP) server and client for Mars notebooks.
+Model Context Protocol (MCP) server and client for Project Mars notebooks.
 
 ## Purpose
 
-`mars-mcp` provides MCP integration for Mars, enabling AI assistants (Claude Desktop, Cursor, etc.) to:
+`mars-mcp` provides MCP integration for Project Mars, enabling AI assistants (Claude Desktop, Cursor, etc.) to:
 
-- Open and inspect Mars notebooks
+- Open and inspect Project Mars notebooks
 - Edit notebook cells
 - Execute code cells
 - Get variable inspection results

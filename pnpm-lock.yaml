@@ -265,6 +265,9 @@ importers:
       react-markdown:
         specifier: 10.1.0
         version: 10.1.0(@types/react@19.3.0)(react@19.3.1)(supports-color@7.2.0)
+      react-router-dom:
+        specifier: 7.18.5
+        version: 7.18.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       rehype-raw:
         specifier: 7.0.0
         version: 7.0.0
@@ -1865,6 +1868,10 @@ packages:
     resolution: {integrity: sha512-kRGRZw3bLlFISDBgwTSA1TMBFN6J6GWDeubmDE3AF+3+yXL8hTWv8r5rkLbqYXY4RjPk/EzHnClI3zQf1cFmHA==}
     engines: {node: '>= 0.6'}
 
+  cookie@1.1.1:
+    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
+    engines: {node: '>=18'}
+
   crelt@1.0.7:
     resolution: {integrity: sha512-aK6BbWfhf4U/wCcLHKPJl/xa6VkVstRaPywWtMKGwuOLc/wZTyQYuoxgvZnNsBvv7Kg3YTBQYYBCggcviQczuA==}
 
@@ -3047,6 +3054,23 @@ packages:
       '@types/react': '>=18'
       react: '>=18'
 
+  react-router-dom@7.18.5:
+    resolution: {integrity: sha512-9HcfDMU6JJ/fp6gJZYGwNE6RknVGS4kBjH1HkNw959mCJi70TVwdipQWv2FEol9uGpi+SZTFtVpJPtEQfayeOw==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  react-router@7.18.5:
+    resolution: {integrity: sha512-dTgvcXDOrLPrlLHrcZAqWveiK1hMSqN+rGAJzegP8HtmNkfRxOoshGWBNX3ZJ0cZjOHkRdlUJtaIhZMLLyGyPw==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+
   react@19.3.1:
     resolution: {integrity: sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==}
     engines: {node: '>=0.10.0'}
@@ -3141,6 +3165,9 @@ packages:
     resolution: {integrity: sha512-7or7YqR3zXwHhiBGj40l9yODyQY146O+hXKaEAfQYQkcvHtMDdX95K96xr50qL9EjXScyYVJb1NIgVE8F0i5cA==}
     engines: {node: '>= 14'}
     hasBin: true
+
+  set-cookie-parser@2.7.3:
+    resolution: {integrity: sha512-irZHtTqurLna57KQG/s+fzOwv/J6XSH4cs8M/vsrY3uCaQ3S6+QJguAH0WdN47SXlk82voMZ4naWMQf8fdEoIg==}
 
   sharp@0.35.5:
     resolution: {integrity: sha512-Ywn4OnzGukp7CDMrp08RQ50YKmuwG47brZgIVPTvBaaAfQlRlygrRqSrxdCiL9M+LlzLBiJ68IR1QqvzHyjC7g==}
@@ -5016,6 +5043,8 @@ snapshots:
 
   content-disposition@0.5.2: {}
 
+  cookie@1.1.1: {}
+
   crelt@1.0.7: {}
 
   cross-spawn@7.0.6:
@@ -6342,6 +6371,20 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  react-router-dom@7.18.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      react-router: 7.18.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+
+  react-router@7.18.5(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      cookie: 1.1.1
+      react: 19.3.1
+      set-cookie-parser: 2.7.3
+    optionalDependencies:
+      react-dom: 19.3.1(react@19.3.1)
+
   react@19.3.1: {}
 
   read@1.0.7:
@@ -6482,6 +6525,8 @@ snapshots:
       update-check: 1.5.4
     transitivePeerDependencies:
       - supports-color
+
+  set-cookie-parser@2.7.3: {}
 
   sharp@0.35.5(@types/node@26.6.6):
     dependencies:

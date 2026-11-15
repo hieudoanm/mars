@@ -17,7 +17,7 @@ const setup = (recents: string[] = []) => {
 describe('WelcomeView', () => {
   it('renders the brand, tagline, and primary actions', () => {
     setup();
-    expect(screen.getByText('Mars')).toBeInTheDocument();
+    expect(screen.getByText('Project Mars')).toBeInTheDocument();
     expect(
       screen.getByText('Explore ideas. Execute code. Discover possibilities.'),
     ).toBeInTheDocument();

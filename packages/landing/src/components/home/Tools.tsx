@@ -72,7 +72,7 @@ const Tools: FC = () => {
   return (
     <section className={`${sectionShell} py-30 pb-38 max-sm-nav:py-22`}>
       <Reveal className='mx-auto max-w-prose-sm text-center'>
-        <div className={`${eyebrow} justify-center`}>Meet Mars where you work</div>
+        <div className={`${eyebrow} justify-center`}>Meet Project Mars where you work</div>
         <h2 className={heading}>
           One core.{' '}
           <em className='text-orange-2 font-serif font-normal'>Your choice of surface.</em>

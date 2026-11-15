@@ -1,7 +1,7 @@
 ---
 title: "Julia: High-Performance Computing for Data Science"
 description: "Julia walks like Python, runs like C, and makes scientific computing feel fast. Here is why it matters for interactive programming."
-author: " Mars Team"
+author: " Project Mars Team"
 date: "2026-11-07"
 order: 3
 tags: ["julia", "data-science", "performance", "multiple-dispatch", "mars"]
@@ -80,9 +80,9 @@ The same design choices that make Julia fast create trade-offs:
 
 None of this made Julia a bad choice — it made it a *different* choice, optimized for performance-first development without sacrificing the REPL experience.
 
-## Where Mars fits
+## Where Project Mars fits
 
-Mars does not ask you to choose Julia over Python. It supports both in the same notebook environment, so you can use the right tool for each cell. What Mars offers with Julia is:
+Project Mars does not ask you to choose Julia over Python. It supports both in the same notebook environment, so you can use the right tool for each cell. What Project Mars offers with Julia is:
 
 - A persistent Julia subprocess with stateful execution
 - Interactive `readline()` for user input
@@ -90,6 +90,6 @@ Mars does not ask you to choose Julia over Python. It supports both in the same 
 - Variable inspection and diagnostics
 - A notebook where the Julia code stays fast and readable
 
-Julia is where Python's approach (dynamic, interpreted) meets C's performance (compiled, native speed). Mars is where that approach lives in a multi-language notebook with Rust, Python, R, and C++ alongside it.
+Julia is where Python's approach (dynamic, interpreted) meets C's performance (compiled, native speed). Project Mars is where that approach lives in a multi-language notebook with Rust, Python, R, and C++ alongside it.
 
-Julia proved that data scientists want speed without leaving the REPL. Mars is for the workloads where that speed matters.
+Julia proved that data scientists want speed without leaving the REPL. Project Mars is for the workloads where that speed matters.

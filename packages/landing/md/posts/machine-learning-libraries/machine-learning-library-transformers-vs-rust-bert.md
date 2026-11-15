@@ -1,7 +1,7 @@
 ---
 title: "Transformers vs rust-bert: NLP Model Libraries"
 description: "Compare Python's Transformers with Rust's rust-bert for pretrained transformer models for NLP tasks in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 32
 tags: ["machine-learning", "transformers", "rust-bert", "rust", "python", "nlp", "mars"]
@@ -74,13 +74,13 @@ let outputs = model.forward(&inputs)?;
 - **Transformers** in Python when you need the full Hugging Face ecosystem, access to thousands of models, or integration with PyTorch and TensorFlow.
 - **rust-bert** in Rust when you want to use transformer models from Rust, combine them with Rust's type system, or deploy NLP models in Rust applications.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both Transformers and rust-bert in their respective language runtimes:
+Project Mars supports both Transformers and rust-bert in their respective language runtimes:
 
 - **Python cells** can use Transformers with standard library imports
 - **Rust cells** can use rust-bert via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Models and tokenizers persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore Transformers and rust-bert in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore Transformers and rust-bert in Project Mars notebooks.

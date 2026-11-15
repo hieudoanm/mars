@@ -1,7 +1,7 @@
 ---
 title: "Iris Flower Classification: Your First ML Project"
 description: "Classify iris flowers into three species from sepal and petal measurements using k-nearest neighbors and logistic regression in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 35
 tags: ["machine-learning", "rust", "classification", "scikit-learn", "linfa"]

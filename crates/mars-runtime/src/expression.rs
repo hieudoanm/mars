@@ -173,7 +173,7 @@ fn mars_chart(spec_json: &str) {
 
 "#;
 
-/// Stable hash of a cell's source, embedded in the generated `// Mars cell`
+/// Stable hash of a cell's source, embedded in the generated `// Project Mars cell`
 /// marker so runtime diagnostics can be mapped back to notebook cells even
 /// when cells execute out of order.
 #[doc(hidden)]
@@ -194,7 +194,7 @@ pub(crate) fn render_program_with_last_output(
     let last_index = cells.len().saturating_sub(1);
     for (index, cell) in cells.iter().enumerate() {
         program.push_str(&format!(
-            "    // Mars cell {index} {}\n",
+            "    // Project Mars cell {index} {}\n",
             cell_source_hash(cell)
         ));
         // Only the current cell should auto-display its final expression.

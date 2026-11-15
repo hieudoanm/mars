@@ -26,7 +26,7 @@ describe('VS Code commands', () => {
     vi.mocked(vscode.commands.executeCommand).mockResolvedValue(undefined);
   });
 
-  it('creates a new Mars notebook in the notebook editor', async () => {
+  it('creates a new Project Mars notebook in the notebook editor', async () => {
     vi.mocked(vscode.workspace.openTextDocument).mockResolvedValue({
       uri: { scheme: 'untitled' },
     } as never);
@@ -53,7 +53,7 @@ describe('VS Code commands', () => {
     expect(activeMarsFilePath()).toBeUndefined();
   });
 
-  it('runs only Mars documents and shows CLI results', async () => {
+  it('runs only Project Mars documents and shows CLI results', async () => {
     await runNotebook();
     expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Open a .mars notebook first.');
     const output = { appendLine: vi.fn(), append: vi.fn(), show: vi.fn() };
@@ -67,7 +67,7 @@ describe('VS Code commands', () => {
     expect(output.appendLine).toHaveBeenCalledWith('$ mars run /work/book.mars');
     expect(output.append).toHaveBeenCalledWith('complete');
     expect(output.append).toHaveBeenCalledWith('warning');
-    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('Mars notebook completed.');
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('Project Mars notebook completed.');
   });
 
   it('exports HTML or Markdown and handles CLI failures', async () => {

@@ -81,7 +81,7 @@ pub fn let_bindings(cells: &[String]) -> Vec<String> {
 pub fn render_inspect_program(cells: &[String], names: &[String], with_values: bool) -> String {
     let mut program = String::from("fn main() {\n");
     for (index, cell) in cells.iter().enumerate() {
-        program.push_str(&format!("    // Mars cell {index}\n"));
+        program.push_str(&format!("    // Project Mars cell {index}\n"));
         let rendered = render_cell_with_output(cell, ExpressionOutput::Discard);
         for line in rendered.lines() {
             program.push_str("    ");
@@ -260,7 +260,7 @@ impl RustSession {
     }
 }
 
-/// Maps `// Mars cell N` marker lines in the generated program to cell
+/// Maps `// Project Mars cell N` marker lines in the generated program to cell
 /// indices so rustc line numbers become (cell, line-in-cell) pairs.
 #[doc(hidden)]
 pub fn cell_line_map(program: &str) -> Vec<(usize, usize)> {
@@ -268,7 +268,7 @@ pub fn cell_line_map(program: &str) -> Vec<(usize, usize)> {
         .lines()
         .enumerate()
         .filter_map(|(index, line)| {
-            let marker = line.trim().strip_prefix("// Mars cell ")?;
+            let marker = line.trim().strip_prefix("// Project Mars cell ")?;
             marker
                 .split_whitespace()
                 .next()?

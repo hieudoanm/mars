@@ -56,7 +56,7 @@ describe('MarsNotebookSerializer', () => {
       cells: [
         {
           kind: vscode.NotebookCellKind.Code,
-          value: 'println!("Mars");',
+          value: 'println!("Project Mars");',
           languageId: 'rust',
           metadata: { marsId: 'stable-id', custom: 'kept' },
           outputs: [
@@ -87,7 +87,7 @@ describe('MarsNotebookSerializer', () => {
         {
           id: 'stable-id',
           cell_type: 'code',
-          source: 'println!("Mars");',
+          source: 'println!("Project Mars");',
           metadata: { custom: 'kept' },
           outputs: [{ type: 'text', text: 'ok' }],
         },

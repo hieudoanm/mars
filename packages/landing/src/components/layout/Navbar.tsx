@@ -38,9 +38,9 @@ const Navbar: FC<NavbarProps> = ({ className = headerShell, showHome = false }) 
       <Link
         className='text-lg-plus font-bold-plus tracking-brand md-nav:justify-self-start inline-flex items-center gap-2.5 justify-self-center'
         href='/'
-        aria-label='Mars home'>
+        aria-label='Project Mars home'>
         <img className='h-7.5 w-7.5 rounded-lg' src={marsLogo.src} alt='' />
-        <span>Mars</span>
+        <span>Project Mars</span>
       </Link>
       <a
         className='text-orange-2 hover:text-ink text-sm-plus max-sm-nav:text-xs-plus md-nav:order-3 md-nav:justify-self-auto justify-self-end font-semibold'

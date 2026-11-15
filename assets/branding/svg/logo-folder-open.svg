@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">Mars folder logo (open)</title>
-  <desc id="desc">An open orange folder with the Mars planet mark at the bottom right.</desc>
+  <title id="title">Project Mars folder logo (open)</title>
+  <desc id="desc">An open orange folder with the Project Mars planet mark at the bottom right.</desc>
   <defs>
     <linearGradient id="folderBody" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#ffa14f"/>

@@ -1,7 +1,7 @@
 {
   "name": "tree-sitter-mars",
   "version": "0.0.1",
-  "description": "Tree-sitter grammar for Mars notebooks (.mars)",
+  "description": "Tree-sitter grammar for Project Mars notebooks (.mars)",
   "main": "build/parser.js",
   "scripts": {
     "build": "tree-sitter build --wasm"

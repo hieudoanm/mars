@@ -1,7 +1,7 @@
 ---
 title: "scikit-learn vs linfa: Classical ML in Python vs Rust"
 description: "Compare Python's scikit-learn with Rust's linfa for classical machine learning algorithms and pipelines in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 24
 tags: ["machine-learning", "scikit-learn", "linfa", "rust", "python", "mars"]
@@ -72,13 +72,13 @@ let labels = kmeans.predict(&dataset);
 - **scikit-learn** in Python when you need the broadest algorithm set, mature ecosystem, or integration with pandas and NumPy.
 - **linfa** in Rust when you need type-safe ML operations, performance for large datasets, or want to avoid the Python interpreter overhead.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both scikit-learn and linfa in their respective language runtimes:
+Project Mars supports both scikit-learn and linfa in their respective language runtimes:
 
 - **Python cells** can use scikit-learn with standard library imports
 - **Rust cells** can use linfa via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Models and datasets persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) and the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) to explore scikit-learn and linfa in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) and the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) to explore scikit-learn and linfa in Project Mars notebooks.

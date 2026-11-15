@@ -1,4 +1,4 @@
-// Capture Mars desktop UI screenshots into assets/demo/png/.
+// Capture Project Mars desktop UI screenshots into assets/demo/png/.
 //
 // Driven by scripts/sh/screenshot.sh, which starts the Vite dev server first.
 // Usage: node scripts/js/screenshot.mjs [baseUrl] [outDir]

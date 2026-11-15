@@ -100,7 +100,7 @@ const Demo: FC = () => {
             <div className='h-3 w-3 rounded-full bg-red-500' />
             <div className='h-3 w-3 rounded-full bg-yellow-500' />
             <div className='h-3 w-3 rounded-full bg-green-500' />
-            <div className='ml-4 text-xs-plus text-faint-4'>analysis.mars — Mars</div>
+            <div className='ml-4 text-xs-plus text-faint-4'>analysis.mars — Project Mars</div>
           </div>
 
           {/* Demo content */}

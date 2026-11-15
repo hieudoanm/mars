@@ -17,7 +17,7 @@ const Footer: FC<FooterProps> = ({
         className='text-lg-plus font-bold-plus tracking-brand text-ink-3 inline-flex items-center gap-2.5'
         href='/'>
         <img className='h-6 w-6 rounded-lg' src={marsLogo.src} alt='' />
-        <span>Mars</span>
+        <span>Project Mars</span>
       </Link>
       <span>Explore ideas. Execute code. Discover possibilities.</span>
       <span>MIT licensed · Built with Rust</span>

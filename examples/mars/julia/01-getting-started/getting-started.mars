@@ -1,21 +1,21 @@
 {
   "format_version": 2,
   "metadata": {
-    "title": "Getting started with Mars (Julia)",
+    "title": "Getting started with Project Mars (Julia)",
     "language": "julia"
   },
   "cells": [
     {
       "id": "intro",
       "cell_type": "markdown",
-      "source": "# Getting started with Mars (Julia)\n\n**Mars** is an interactive notebook where code cells share a persistent\nJulia session. A `.mars` notebook is a JSON document made of **markdown**,\n**code**, and **raw** cells. Code cells run from top to bottom in a shared\nmodule, so bindings created in one cell are available in every later cell —\nlike IJulia, but with Mars's own document format and kernel.\n\nThis notebook is a tour of the Julia basics: values and types, arrays and\nbroadcasting, dictionaries and sets, control flow, functions and multiple\ndispatch, structs, exceptions, and a few standard-library tools. It uses\nonly Julia Base, so it runs anywhere `julia` is installed.\n\n> Tip: the last visible expression of a cell is displayed automatically —\n> assignments and definitions are silent. Use `println()` for plain output.",
+      "source": "# Getting started with Project Mars (Julia)\n\n**Project Mars** is an interactive notebook where code cells share a persistent\nJulia session. A `.mars` notebook is a JSON document made of **markdown**,\n**code**, and **raw** cells. Code cells run from top to bottom in a shared\nmodule, so bindings created in one cell are available in every later cell —\nlike IJulia, but with Project Mars's own document format and kernel.\n\nThis notebook is a tour of the Julia basics: values and types, arrays and\nbroadcasting, dictionaries and sets, control flow, functions and multiple\ndispatch, structs, exceptions, and a few standard-library tools. It uses\nonly Julia Base, so it runs anywhere `julia` is installed.\n\n> Tip: the last visible expression of a cell is displayed automatically —\n> assignments and definitions are silent. Use `println()` for plain output.",
       "metadata": {},
       "outputs": []
     },
     {
       "id": "how-notebooks-work",
       "cell_type": "markdown",
-      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Julia source executed in a shared module session |\n| `raw` | Text preserved verbatim, without rendering or execution |\n\nWhen a code cell runs:\n\n1. Mars sends the source to the Julia driver.\n2. The driver parses it with `Meta.parseall` and evaluates each top-level\n   expression in order inside the `MarsKernel` module.\n3. `stdout`/`stderr` stream live; the trailing non-silent expression is\n   displayed via its MIME reprs, and `display(x)` publishes mime bundles.\n4. Errors are reported as cell errors and do not stop later cells — fix the\n   cell and re-run it.\n\n`ans` holds the last displayed value and `ans_prev` the one before it.",
+      "source": "## How a notebook works\n\n| Cell type | Purpose |\n| --------- | ------- |\n| `markdown` | Explanations, headings, lists, tables, links, and code snippets |\n| `code` | Julia source executed in a shared module session |\n| `raw` | Text preserved verbatim, without rendering or execution |\n\nWhen a code cell runs:\n\n1. Project Mars sends the source to the Julia driver.\n2. The driver parses it with `Meta.parseall` and evaluates each top-level\n   expression in order inside the `MarsKernel` module.\n3. `stdout`/`stderr` stream live; the trailing non-silent expression is\n   displayed via its MIME reprs, and `display(x)` publishes mime bundles.\n4. Errors are reported as cell errors and do not stop later cells — fix the\n   cell and re-run it.\n\n`ans` holds the last displayed value and `ans_prev` the one before it.",
       "metadata": {},
       "outputs": []
     },
@@ -43,7 +43,7 @@
     {
       "id": "setup-report",
       "cell_type": "code",
-      "source": "function report(title, lines...)\n    println(title)\n    for line in lines\n        println(\"  \", line)\n    end\nend\n\nreport(\"Mars Julia kernel is alive\", \"julia\", \"shared session\")",
+      "source": "function report(title, lines...)\n    println(title)\n    for line in lines\n        println(\"  \", line)\n    end\nend\n\nreport(\"Project Mars Julia kernel is alive\", \"julia\", \"shared session\")",
       "metadata": {
         "language": "julia"
       },
@@ -196,7 +196,7 @@
     {
       "id": "functions-demo",
       "cell_type": "code",
-      "source": "function greet(name; greeting=\"Hello\", punctuation=\"!\")\n    return greeting * \", \" * name * punctuation\nend\n\nsquare(x) = x^2\napply_twice(f, x) = f(f(x))\n\nreport(\n    \"functions\",\n    greet(\"Mars\"),\n    greet(\"Mars\"; greeting=\"Hi\", punctuation=\"?\"),\n    string(\"apply_twice(square, 3) = \", apply_twice(square, 3)),\n    string(\"typeof(square) = \", typeof(square)),\n)",
+      "source": "function greet(name; greeting=\"Hello\", punctuation=\"!\")\n    return greeting * \", \" * name * punctuation\nend\n\nsquare(x) = x^2\napply_twice(f, x) = f(f(x))\n\nreport(\n    \"functions\",\n    greet(\"Project Mars\"),\n    greet(\"Project Mars\"; greeting=\"Hi\", punctuation=\"?\"),\n    string(\"apply_twice(square, 3) = \", apply_twice(square, 3)),\n    string(\"typeof(square) = \", typeof(square)),\n)",
       "metadata": {
         "language": "julia"
       },

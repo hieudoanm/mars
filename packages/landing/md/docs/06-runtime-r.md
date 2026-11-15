@@ -1,14 +1,14 @@
 ---
 title: R Runtime
-description: Mars R runtime documentation
+description: Project Mars R runtime documentation
 order: 6
-author: Mars Team
+author: Project Mars Team
 tags: [runtime, r, execution, data-science]
 ---
 
 # R Runtime
 
-Mars provides an R execution runtime that maintains a persistent R subprocess
+Project Mars provides an R execution runtime that maintains a persistent R subprocess
 speaking newline-delimited JSON. Variables persist in `.GlobalEnv` across cells,
 enabling interactive R development in notebooks.
 
@@ -32,7 +32,7 @@ R must be installed and available on your system:
 # Or use your system package manager
 ```
 
-Mars discovers the R interpreter via:
+Project Mars discovers the R interpreter via:
 
 1. The `MARS_RSCRIPT` environment variable (takes precedence)
 2. The `Rscript` command on PATH
@@ -149,7 +149,7 @@ cat("<div>Hello</div>")
 
 ## R Data Science Ecosystem
 
-R has a rich data science ecosystem that works well in Mars notebooks:
+R has a rich data science ecosystem that works well in Project Mars notebooks:
 
 | Domain | R Packages |
 | --- | --- |

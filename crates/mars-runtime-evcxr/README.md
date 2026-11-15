@@ -1,6 +1,6 @@
 # mars-runtime-evcxr
 
-Evvxr-based Rust execution backend for the Mars notebook platform.
+Evvxr-based Rust execution backend for the Project Mars notebook platform.
 
 ## Purpose
 
@@ -24,4 +24,4 @@ mars-kernel = { path = "../mars-kernel", features = ["experimental-evcxr"] }
 
 ## Notes
 
-Evvxr is not a mandatory dependency for Mars. This crate exists to provide an alternative runtime backend option.
+Evvxr is not a mandatory dependency for Project Mars. This crate exists to provide an alternative runtime backend option.

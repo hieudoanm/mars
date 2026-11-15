@@ -3,11 +3,11 @@ import '@testing-library/jest-dom/vitest';
 import NotebookHeaderBrand from '../NotebookHeaderBrand';
 
 describe('NotebookHeaderBrand', () => {
-  it('renders the Mars logo, brand label, and headline', () => {
+  it('renders the Project Mars logo, brand label, and headline', () => {
     render(<NotebookHeaderBrand />);
-    const logo = screen.getByAltText('Mars');
+    const logo = screen.getByAltText('Project Mars');
     expect(logo).toHaveAttribute('src');
-    expect(screen.getByRole('heading', { level: 1, name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Project Mars' })).toBeInTheDocument();
     expect(screen.getByText('Explore ideas.')).toBeInTheDocument();
   });
 

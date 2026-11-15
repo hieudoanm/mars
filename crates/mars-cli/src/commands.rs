@@ -27,7 +27,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
             let mut notebook = Notebook::new();
             notebook.metadata.language = language.to_owned();
             notebook
-                .add_cell(Cell::new(CellType::Markdown, "# New Mars notebook"))
+                .add_cell(Cell::new(CellType::Markdown, "# New Project Mars notebook"))
                 .map_err(|error| error.to_string())?;
             save_atomic(&notebook, path).map_err(|error| error.to_string())?;
             println!("Created {path}");
@@ -78,6 +78,7 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
             Some("serve") => crate::mcp::serve_mcp(&args[2..]),
             _ => Err("usage: mars mcp serve [--runtime replay|evcxr] [--offline] [--notebook <file.mars>] [--language <lang>]".to_owned()),
         },
+        "lab" => crate::lab::run_lab(&args[1..]),
         "tools" => crate::mcp::run_tools(&args[1..]),
         "run" => {
             let path = args.get(1).ok_or_else(crate::util::usage)?;

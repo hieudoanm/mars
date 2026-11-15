@@ -1,6 +1,6 @@
 # mars-cli
 
-Command-line interface for the Mars notebook platform.
+Command-line interface for the Project Mars notebook platform.
 
 ## Purpose
 

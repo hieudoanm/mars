@@ -1,4 +1,4 @@
-name = "Mars"
+name = "Project Mars"
 grammar = "mars"
 path_suffixes = ["mars"]
 line_comments = ["//"]

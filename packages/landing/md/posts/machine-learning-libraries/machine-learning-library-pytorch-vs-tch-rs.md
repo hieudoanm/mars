@@ -1,7 +1,7 @@
 ---
 title: "PyTorch vs tch-rs: Deep Learning Frameworks Compared"
 description: "Compare Python's PyTorch with Rust's tch-rs for deep learning with tensor operations and training loops in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 25
 tags: ["machine-learning", "pytorch", "tch-rs", "rust", "python", "deep-learning", "mars"]
@@ -9,7 +9,7 @@ tags: ["machine-learning", "pytorch", "tch-rs", "rust", "python", "deep-learning
 
 # PyTorch vs tch-rs: Deep Learning Compared
 
-PyTorch is popular for research and production deep learning. **`tch-rs`** provides Rust bindings to the Torch ecosystem, enabling tensor computation and neural network workflows from Rust code. In Mars, developers can prototype model logic interactively while staying in a compiled language.
+PyTorch is popular for research and production deep learning. **`tch-rs`** provides Rust bindings to the Torch ecosystem, enabling tensor computation and neural network workflows from Rust code. In Project Mars, developers can prototype model logic interactively while staying in a compiled language.
 
 ## What PyTorch does
 
@@ -71,13 +71,13 @@ let y = x * 2;
 - **PyTorch** in Python when you need the full Torch ecosystem, rapid prototyping, or integration with Python ML workflows.
 - **tch-rs** in Rust when you want to use PyTorch from Rust, combine it with Rust's type system, or build Rust applications that leverage Torch.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both PyTorch and tch-rs in their respective language runtimes:
+Project Mars supports both PyTorch and tch-rs in their respective language runtimes:
 
 - **Python cells** can use PyTorch with standard library imports
 - **Rust cells** can use tch-rs via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Tensors and models persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore PyTorch and tch-rs in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore PyTorch and tch-rs in Project Mars notebooks.

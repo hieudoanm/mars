@@ -1,7 +1,7 @@
 ---
 title: "JAX vs dfdx: Composable ML and Autodiff"
 description: "Compare Python's JAX with Rust's dfdx for composable array/tensor transformations and autodiff-style workflows in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 31
 tags: ["machine-learning", "jax", "dfdx", "rust", "python", "autodiff", "mars"]
@@ -77,13 +77,13 @@ let grad_f = backward(&f, &x)?;
 - **JAX** in Python when you need composable transformations, JIT compilation, or integration with the JAX ecosystem (flax, optax).
 - **dfdx** in Rust when you need automatic differentiation with type safety, or want to build differentiable ML components in Rust.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both JAX and dfdx in their respective language runtimes:
+Project Mars supports both JAX and dfdx in their respective language runtimes:
 
 - **Python cells** can use JAX with standard library imports
 - **Rust cells** can use dfdx via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Tensors and gradients persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore JAX and dfdx in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore JAX and dfdx in Project Mars notebooks.

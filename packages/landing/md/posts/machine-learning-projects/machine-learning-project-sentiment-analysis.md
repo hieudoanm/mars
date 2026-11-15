@@ -1,7 +1,7 @@
 ---
 title: "Sentiment Analysis: NLP Classification Project"
 description: "Classify movie review sentiment as positive or negative using TF-IDF features and logistic regression in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 42
 tags: ["machine-learning", "rust", "nlp", "sentiment-analysis", "text-classification"]

@@ -1,6 +1,6 @@
 # mars-protocol
 
-Communication protocol between frontend and backend for the Mars notebook platform.
+Communication protocol between frontend and backend for the Project Mars notebook platform.
 
 ## Purpose
 

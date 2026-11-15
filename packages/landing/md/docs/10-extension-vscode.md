@@ -1,14 +1,14 @@
 ---
 title: VS Code Extension
-description: Mars VS Code extension documentation
+description: Project Mars VS Code extension documentation
 order: 10
-author: Mars Team
+author: Project Mars Team
 tags: [vscode, extension, notebook-editor, export, runtime-selection]
 ---
 
 # VS Code companion
 
-The Mars extension provides a notebook editor for `.mars` files in VS Code,
+The Project Mars extension provides a notebook editor for `.mars` files in VS Code,
 with Rust and Markdown cell editing, rich output rendering, and CLI-backed
 execution and export.
 
@@ -20,7 +20,7 @@ execution and export.
 - Add, delete, and reorder cells.
 - Standard notebook keyboard shortcuts, including `Shift+Enter` to run a cell.
 - Persist execution counts and outputs in the `.mars` file.
-- Export a notebook to HTML or Markdown through the Mars CLI.
+- Export a notebook to HTML or Markdown through the Project Mars CLI.
 - Kernel Variables sidebar for inspecting live runtime bindings.
 - Problems panel integration for compiler diagnostics.
 - Checkpoint create/restore functionality.
@@ -74,7 +74,7 @@ language metadata is present. Set
 }
 ```
 
-Evcxr is experimental and requires a Mars CLI built with
+Evcxr is experimental and requires a Project Mars CLI built with
 `--features experimental-evcxr`.
 
 Each code cell's `languageId` (or its `language` metadata) selects the kernel
@@ -83,7 +83,7 @@ runtimes require the corresponding backend available to the `mars` CLI.
 
 ## Export
 
-Run **Mars: Export Notebook to HTML** or **Mars: Export Notebook to Markdown**
+Run **Project Mars: Export Notebook to HTML** or **Project Mars: Export Notebook to Markdown**
 from the Command Palette or the notebook toolbar.
 
 For Markdown export, the output is written next to the notebook. It preserves
@@ -123,7 +123,7 @@ Manage Workspace Trust** to trust the folder if figures show as text.
 
 | Setting                   | Default    | Description                               |
 | ------------------------- | ---------- | ----------------------------------------- |
-| `mars.cliPath`            | `"mars"`   | Path to the Mars CLI executable           |
+| `mars.cliPath`            | `"mars"`   | Path to the Project Mars CLI executable           |
 | `mars.runArguments`       | `[]`       | Additional arguments passed to `mars run` |
 | `mars.previewAfterExport` | `true`     | Automatically open the exported file      |
 | `mars.executionTimeout`   | `30000`    | Execution timeout in milliseconds         |

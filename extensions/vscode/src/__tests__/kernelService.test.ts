@@ -100,7 +100,7 @@ describe('MarsKernelService', () => {
     );
 
     commandExists.mockResolvedValueOnce(false);
-    await expect(new MarsKernelService('missing').start()).rejects.toThrow('Mars CLI not found at');
+    await expect(new MarsKernelService('missing').start()).rejects.toThrow('Project Mars CLI not found at');
   });
 
   it('sends execution and reset requests and maps output failures', async () => {
@@ -130,6 +130,6 @@ describe('MarsKernelService', () => {
     await start;
     (process.child as unknown as EventEmitter).emit('error', new Error('spawn failed'));
     commandExists.mockResolvedValueOnce(false);
-    await expect(service.execute('1')).rejects.toThrow('Mars CLI not found at');
+    await expect(service.execute('1')).rejects.toThrow('Project Mars CLI not found at');
   });
 });

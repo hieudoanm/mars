@@ -1,6 +1,6 @@
-# Mars desktop
+# Project Mars desktop
 
-The Mars desktop application is the primary notebook experience for Mars. It
+The Project Mars desktop application is the primary notebook experience for Project Mars. It
 combines a React/CodeMirror interface with a Tauri 2 host, keeping notebook
 persistence and isolated Rust execution in the Rust workspace rather than in
 the browser process.
@@ -94,7 +94,7 @@ pnpm --filter @mars/desktop tauri build
 ```text
 packages/desktop/
 ├── src/              React UI, hooks, typed frontend services, and unit tests
-├── src-tauri/        Tauri host and typed commands backed by Mars crates
+├── src-tauri/        Tauri host and typed commands backed by Project Mars crates
 ├── public/           Packaged web assets and metadata
 ├── tests/            Playwright browser smoke tests
 └── playwright.config.ts

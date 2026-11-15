@@ -1,6 +1,6 @@
 # mars-runtime-r
 
-R execution backend for Mars notebooks with persistent sessions.
+R execution backend for Project Mars notebooks with persistent sessions.
 
 ## Purpose
 

@@ -1,7 +1,7 @@
 ---
 title: "Python: The Data Science Standard"
 description: "Python became the language of data science almost by accident. Here is why it won, what it costs, and why it still matters."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-07"
 order: 4
 tags: ["python", "data-science", "ecosystem", "history", "mars"]
@@ -48,8 +48,8 @@ The same properties that made Python approachable create real structural costs:
 
 None of this made Python a bad choice — it made it a *specific* choice, optimized for approachability and ecosystem breadth rather than raw performance or deployment simplicity.
 
-## Where Mars fits
+## Where Project Mars fits
 
-Mars does not ask you to leave Python behind. It imports and exports `.ipynb` notebooks, so existing Python work keeps working. What Mars offers is a notebook where the *code itself* is compiled Rust — for the cells where you want native speed, memory safety, and a single reproducible binary.
+Project Mars does not ask you to leave Python behind. It imports and exports `.ipynb` notebooks, so existing Python work keeps working. What Project Mars offers is a notebook where the *code itself* is compiled Rust — for the cells where you want native speed, memory safety, and a single reproducible binary.
 
-Python earned its place as the glue of data science. Mars is for the parts that deserve a sharper tool.
+Python earned its place as the glue of data science. Project Mars is for the parts that deserve a sharper tool.

@@ -1,6 +1,6 @@
 # mars-runtime-julia
 
-Julia execution backend for Mars notebooks with persistent sessions.
+Julia execution backend for Project Mars notebooks with persistent sessions.
 
 ## Purpose
 
@@ -13,7 +13,7 @@ Julia execution backend for Mars notebooks with persistent sessions.
 - **`session.rs`** — JuliaSession that spawns a long-lived `julia` subprocess with an embedded driver
 - **Driver protocol** — Newline-delimited JSON protocol for communication between Rust and Julia
 - **`MarsKernel` module** — Dedicated Julia module for isolated namespace and persistent bindings
-- **Shadowed functions** — `display()` and `readline()` are shadowed for Mars integration
+- **Shadowed functions** — `display()` and `readline()` are shadowed for Project Mars integration
 
 ### Execution Model
 

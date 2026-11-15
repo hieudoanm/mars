@@ -10,7 +10,7 @@ const Loading: FC & NextPage = () => {
           <img className='h-12 w-12 animate-pulse' src={marsLogo.src} alt='' />
           <span className='border-orange absolute inset-0 animate-spin rounded-full border-2 border-t-transparent' />
         </div>
-        <p className='text-muted text-sm-plus'>Loading Mars…</p>
+        <p className='text-muted text-sm-plus'>Loading Project Mars…</p>
       </div>
     </div>
   );

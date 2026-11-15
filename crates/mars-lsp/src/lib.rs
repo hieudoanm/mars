@@ -1,6 +1,6 @@
 //! Minimal Language Server Protocol client for rust-analyzer.
 //!
-//! Mars notebooks are not Cargo crates, so each session gets a scratch
+//! Project Mars notebooks are not Cargo crates, so each session gets a scratch
 //! project (`Cargo.toml` + `src/main.rs`) that the client keeps in sync.
 //! The client speaks JSON-RPC over stdio with `Content-Length` framing and
 //! supports initialize/shutdown, full-document sync, hover, completion, and

@@ -1,14 +1,14 @@
 ---
 title: Python Runtime
-description: Mars Python runtime documentation
+description: Project Mars Python runtime documentation
 order: 5
-author: Mars Team
+author: Project Mars Team
 tags: [runtime, python, execution, data-science]
 ---
 
 # Python Runtime
 
-Mars provides a Python execution runtime that maintains a persistent Python
+Project Mars provides a Python execution runtime that maintains a persistent Python
 subprocess speaking newline-delimited JSON. Variables persist in the driver's
 module namespace across cells, enabling interactive Python development in
 notebooks.
@@ -35,7 +35,7 @@ Python 3 must be installed and available on your system:
 python3 --version
 ```
 
-Mars discovers the Python interpreter via:
+Project Mars discovers the Python interpreter via:
 
 1. The `MARS_PYTHON` environment variable (takes precedence)
 2. The `python3` command on PATH
@@ -130,7 +130,7 @@ plt.plot([1, 2, 3, 4])
 plt.show()  # Displays as image/png
 ```
 
-Mars sets `MPLBACKEND=Agg` for matplotlib figure capture unless already set.
+Project Mars sets `MPLBACKEND=Agg` for matplotlib figure capture unless already set.
 
 ### IPython display
 
@@ -157,7 +157,7 @@ JSON({"key": "value"})
 
 ## Python Data Science Ecosystem
 
-Python has a rich data science ecosystem that works well in Mars notebooks:
+Python has a rich data science ecosystem that works well in Project Mars notebooks:
 
 | Domain | Python Packages |
 | --- | --- |

@@ -1,7 +1,7 @@
 ---
 title: "xarray vs ndarray: N-Dimensional Array Libraries"
 description: "Compare Python's xarray with Rust's ndarray for labeled multi-dimensional array workflows in notebook environments."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 22
 tags: ["data-science", "xarray", "ndarray", "rust", "python", "mars"]
@@ -9,7 +9,7 @@ tags: ["data-science", "xarray", "ndarray", "rust", "python", "mars"]
 
 # xarray vs ndarray: Labeled Arrays Compared
 
-xarray extends arrays with labels and dimensions for scientific datasets in Python. Rust workflows often compose **`ndarray`** with domain-specific crates to represent multi-dimensional data. In Mars, these array-centric workflows can live alongside Markdown, outputs, and reproducible execution.
+xarray extends arrays with labels and dimensions for scientific datasets in Python. Rust workflows often compose **`ndarray`** with domain-specific crates to represent multi-dimensional data. In Project Mars, these array-centric workflows can live alongside Markdown, outputs, and reproducible execution.
 
 ## What xarray does
 
@@ -75,13 +75,13 @@ let arr = Array::from_shape((2, 2)).unwrap();
 - **xarray** in Python when you need labeled arrays, coordinate systems, or integration with scientific data formats (NetCDF, Zarr).
 - **ndarray** in Rust when you need core array operations with type safety and performance, adding labels via domain-specific crates as needed.
 
-## How Mars supports both
+## How Project Mars supports both
 
-Mars supports both xarray and ndarray in their respective language runtimes:
+Project Mars supports both xarray and ndarray in their respective language runtimes:
 
 - **Python cells** can use xarray with standard library imports
 - **Rust cells** can use ndarray via Cargo dependencies
 - Both can coexist in the same `.mars` notebook
 - Arrays persist across cells within each language runtime
 
-Start with the [getting started guide](/docs/01-getting-started) to explore xarray and ndarray in Mars notebooks.
+Start with the [getting started guide](/docs/01-getting-started) to explore xarray and ndarray in Project Mars notebooks.

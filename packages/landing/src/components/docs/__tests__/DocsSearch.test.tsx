@@ -5,19 +5,19 @@ const docs = [
   {
     slug: '01-getting-started',
     title: 'Getting Started',
-    description: 'Mars getting-started documentation',
+    description: 'Project Mars getting-started documentation',
     content: '# Getting Started',
   },
   {
     slug: '02-cli',
     title: 'CLI',
-    description: 'Mars cli documentation',
+    description: 'Project Mars cli documentation',
     content: '# CLI',
   },
   {
     slug: '03-notebook-format',
     title: 'Notebook Format',
-    description: 'Mars notebook-format documentation',
+    description: 'Project Mars notebook-format documentation',
     content: '# Notebook Format',
   },
 ];

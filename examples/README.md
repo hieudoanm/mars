@@ -1,17 +1,17 @@
-# Mars Examples
+# Project Mars Examples
 
-This directory contains example notebooks demonstrating various features of the Mars notebook environment across multiple languages and use cases.
+This directory contains example notebooks demonstrating various features of the Project Mars notebook environment across multiple languages and use cases.
 
 ## Overview
 
-Mars examples are organized into two main categories:
+Project Mars examples are organized into two main categories:
 
-- **`mars/`** — Native `.mars` format examples for Mars
+- **`mars/`** — Native `.mars` format examples for Project Mars
 - **`jupyter/`** — Jupyter `.ipynb` notebooks for compatibility testing and import/export examples
 
-## Mars Examples (`mars/`)
+## Project Mars Examples (`mars/`)
 
-Native Mars notebook examples demonstrating multi-language support and various features.
+Native Project Mars notebook examples demonstrating multi-language support and various features.
 
 ### Structure
 
@@ -45,7 +45,7 @@ mars/
 | `julia/01-getting-started/getting-started.mars`  | Julia    | Comprehensive Julia tour: values, arrays, broadcasting, tuples, dicts, dispatch, structs, exceptions, and stdlib tools                                                                       |
 | `cpp/01-getting-started/getting-started.mars`    | C++      | C++ basics: types, containers, classes, templates, exceptions, and STL tools                                                                                                                 |
 
-### Running Mars Examples
+### Running Project Mars Examples
 
 #### Using the run script (recommended)
 
@@ -82,13 +82,13 @@ mars export rust/01-getting-started/getting-started.mars md rust/01-getting-star
 
 ### Requirements
 
-- **Mars CLI** installed and available in PATH
+- **Project Mars CLI** installed and available in PATH
 - **Rust toolchain** (for Rust dependencies)
 - **R + jsonlite** for R notebooks
 - **Julia** for Julia notebooks
 - **C++ compiler** (clang++ or g++) for C++ notebooks
 
-To install the Mars CLI:
+To install the Project Mars CLI:
 
 ```bash
 cd ../..
@@ -130,7 +130,7 @@ Or use the installation script:
 
 ## Jupyter Examples (`jupyter/`)
 
-Jupyter `.ipynb` notebooks for testing Mars import/export compatibility and demonstrating how to migrate from Jupyter to Mars.
+Jupyter `.ipynb` notebooks for testing Project Mars import/export compatibility and demonstrating how to migrate from Jupyter to Project Mars.
 
 ### Structure
 
@@ -162,18 +162,18 @@ See individual README files in each directory:
 - [Python Jupyter example](./jupyter/python/README.md)
 - [Rust Jupyter example](./jupyter/rust/README.md)
 
-### Importing to Mars
+### Importing to Project Mars
 
-Convert Jupyter notebooks to Mars format:
+Convert Jupyter notebooks to Project Mars format:
 
 ```bash
 mars import jupyter/python/notebook.ipynb mars-python.mars
 mars run mars-python.mars
 ```
 
-### Exporting from Mars
+### Exporting from Project Mars
 
-Convert Mars notebooks to Jupyter format:
+Convert Project Mars notebooks to Jupyter format:
 
 ```bash
 mars export mars/python/01-getting-started/getting-started.mars ipynb notebook.ipynb
@@ -183,7 +183,7 @@ mars export mars/python/01-getting-started/getting-started.mars ipynb notebook.i
 
 ### Notebook Format
 
-All Mars examples use the `.mars` format with:
+All Project Mars examples use the `.mars` format with:
 
 - Versioned JSON structure
 - Stable cell IDs
@@ -231,10 +231,10 @@ mars/rust/04-data-visualization/
 
 ## Troubleshooting
 
-### Mars CLI not found
+### Project Mars CLI not found
 
 ```bash
-# Install Mars CLI
+# Install Project Mars CLI
 cargo install --path crates/mars-cli
 
 # Or add to PATH
@@ -262,7 +262,7 @@ clang++ --version  # or g++ --version
 
 ### Dependency errors
 
-For Rust notebooks, Mars will automatically resolve dependencies. For other languages, install required packages:
+For Rust notebooks, Project Mars will automatically resolve dependencies. For other languages, install required packages:
 
 ```bash
 # Python
@@ -277,7 +277,7 @@ julia -e "using Pkg; Pkg.add('DataFrames')"
 
 ## Related Documentation
 
-- [Mars CLI documentation](../docs/12-cli.md)
+- [Project Mars CLI documentation](../docs/12-cli.md)
 - [Runtime documentation](../docs/06-runtime.md)
 - [Notebook format specification](../docs/03-notebook-format.md)
 - [Landing site examples](../packages/landing/md/docs/01-getting-started.md)
@@ -285,7 +285,7 @@ julia -e "using Pkg; Pkg.add('DataFrames')"
 
 ## Desktop Application
 
-For the best interactive notebook experience, use the Mars desktop application:
+For the best interactive notebook experience, use the Project Mars desktop application:
 
 ```bash
 cd ../packages/desktop

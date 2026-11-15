@@ -29,7 +29,7 @@ vi.mock('../lib/initialNotebook', () => ({
       {
         id: 'cell-code',
         cell_type: 'code',
-        source: 'println!("Hello from Mars!");',
+        source: 'println!("Hello from Project Mars!");',
         execution_count: null,
         outputs: [],
         metadata: {},
@@ -105,6 +105,7 @@ import App from '../App';
 describe('App', () => {
   beforeEach(() => {
     window.localStorage.clear();
+    window.localStorage.setItem('mars.product', 'notebook');
     const untitledId = crypto.randomUUID();
     window.localStorage.setItem(
       'mars.workspace.tabs',
@@ -131,7 +132,7 @@ describe('App', () => {
     saveDialog.mockResolvedValue('/notes/experiment.mars');
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Mars' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mars Notebook' })).toBeInTheDocument();
     expect(screen.getAllByText('Untitled.mars')).toHaveLength(2);
     expect(screen.getByText('2 cells')).toBeInTheDocument();
 
@@ -228,6 +229,7 @@ describe('App', () => {
 
   it('shows the welcome view when no notebooks are open and starts one', () => {
     window.localStorage.clear();
+    window.localStorage.setItem('mars.product', 'notebook');
     const { container } = render(<App />);
 
     const welcome = container.querySelector('[data-component="WelcomeView"]') as HTMLElement;

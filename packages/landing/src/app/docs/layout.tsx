@@ -8,18 +8,18 @@ import { getDocs } from '@/lib/docs';
 export const metadata: Metadata = {
   title: 'Documentation',
   description:
-    'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
+    'Guides for installing Project Mars, running notebooks, understanding the .mars format, and using the CLI.',
   openGraph: {
-    title: 'Mars Documentation',
+    title: 'Project Mars Documentation',
     description:
-      'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
+      'Guides for installing Project Mars, running notebooks, understanding the .mars format, and using the CLI.',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'Mars Documentation',
+    title: 'Project Mars Documentation',
     description:
-      'Guides for installing Mars, running notebooks, understanding the .mars format, and using the CLI.',
+      'Guides for installing Project Mars, running notebooks, understanding the .mars format, and using the CLI.',
   },
 };
 

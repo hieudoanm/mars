@@ -15,7 +15,7 @@ describe('NotFound', () => {
     );
   });
 
-  it('renders Mars logo', () => {
+  it('renders Project Mars logo', () => {
     render(<NotFound />);
     expect(screen.getByAltText('')).toBeInTheDocument();
   });

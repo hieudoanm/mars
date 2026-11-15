@@ -1,7 +1,7 @@
 ---
 title: "House Price Prediction: Regression ML Project"
 description: "Predict house sale prices from tabular features using linear regression and gradient boosting in Rust — the classic Kaggle regression project."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 36
 tags: ["machine-learning", "rust", "regression", "kaggle", "xgboost"]

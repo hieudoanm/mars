@@ -7,7 +7,7 @@ use std::time::Duration;
 
 #[test]
 fn annotates_panic_locations_with_cell_hashes() {
-    let program = "fn main() {\n    // Mars cell 0 111\n    let a = 1;\n    // Mars cell 1 222\n    panic!(\"boom\");\n}\n";
+    let program = "fn main() {\n    // Project Mars cell 0 111\n    let a = 1;\n    // Project Mars cell 1 222\n    panic!(\"boom\");\n}\n";
     let stderr = "thread 'main' panicked at src/main.rs:5:5:\nboom\n";
     let annotated = annotate_source_locations(stderr, program);
     // Line 5 is inside cell 1's region (marker at line 4, content starts line 5).
@@ -16,7 +16,7 @@ fn annotates_panic_locations_with_cell_hashes() {
 
 #[test]
 fn leaves_unmapped_locations_untouched() {
-    let program = "fn main() {\n    // Mars cell 0 111\n    let a = 1;\n}\n";
+    let program = "fn main() {\n    // Project Mars cell 0 111\n    let a = 1;\n}\n";
     let stderr = "note: run with RUST_BACKTRACE=1\n";
     assert_eq!(annotate_source_locations(stderr, program), stderr);
 }

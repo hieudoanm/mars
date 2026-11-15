@@ -1,6 +1,6 @@
 {
-  "name": "Mars",
-  "short_name": "Mars",
+  "name": "Project Mars",
+  "short_name": "Project Mars",
   "description": "A Rust-powered interactive notebook for exploratory programming and data science.",
   "start_url": "/",
   "display": "standalone",

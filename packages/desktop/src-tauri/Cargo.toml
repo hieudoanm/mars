@@ -1,8 +1,8 @@
 [package]
 name = "mars-tauri"
 version = "0.0.1"
-description = "Mars interactive notebook"
-authors = ["Mars contributors"]
+description = "Project Mars interactive notebook"
+authors = ["Project Mars contributors"]
 edition = "2024"
 
 [lib]
@@ -21,8 +21,11 @@ mars-protocol = { path = "../../../crates/mars-protocol" }
 mars-renderer = { path = "../../../crates/mars-renderer" }
 mars-runtime = { path = "../../../crates/mars-runtime" }
 mars-lsp = { path = "../../../crates/mars-lsp" }
+mars-lab = { path = "../../../crates/mars-lab" }
 serde.workspace = true
 serde_json.workspace = true
+tokio = { workspace = true, features = ["sync"] }
+uuid.workspace = true
 tauri = { version = "=2.12.5", features = [] }
 tauri-plugin-dialog = "=2.8.4"
 thiserror.workspace = true

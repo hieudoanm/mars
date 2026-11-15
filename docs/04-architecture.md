@@ -1,6 +1,6 @@
 # Architecture
 
-Mars is organized as a modular Rust workspace with independent React
+Project Mars is organized as a modular Rust workspace with independent React
 applications. The desktop product is a Tauri 2 shell around a React/Vite
 frontend; the CLI and the desktop backend share the same Rust domain crates.
 
@@ -74,7 +74,7 @@ placing business logic in the Tauri command handlers.
   and `OutputView.tsx` owns rich output rendering.
 - The optional `extensions/vscode` extension is a thin editor adapter. It provides
   syntax recognition, cell navigation, and CLI-backed preview/export while
-  keeping execution and persistence in Mars itself.
+  keeping execution and persistence in Project Mars itself.
 
 `App.tsx` now composes these hooks and renders the desktop surface; it does not
 own notebook history, persistence, execution orchestration, editor preference

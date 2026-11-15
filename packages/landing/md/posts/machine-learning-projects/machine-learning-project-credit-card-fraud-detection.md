@@ -1,7 +1,7 @@
 ---
 title: "Credit Card Fraud Detection: Anomaly Detection"
 description: "Detect fraudulent credit card transactions using autoencoders, isolation forests, and threshold tuning under extreme class imbalance in Rust."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-14"
 order: 43
 tags: ["machine-learning", "rust", "fraud-detection", "anomaly-detection", "imbalanced-data"]

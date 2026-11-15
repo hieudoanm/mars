@@ -10,8 +10,8 @@ pub enum JupyterError {
     UnsupportedFormat(u32),
     #[error("Jupyter cell type {0} is not supported")]
     UnsupportedCellType(String),
-    #[error("Mars output type {0} cannot be exported to Jupyter")]
+    #[error("Project Mars output type {0} cannot be exported to Jupyter")]
     UnsupportedOutput(String),
-    #[error("invalid Mars notebook")]
+    #[error("invalid Project Mars notebook")]
     Document(#[source] DocumentError),
 }

@@ -1,7 +1,7 @@
 ---
 title: "R: Statistical Computing and Graphics"
 description: "R was built by statisticians, for statisticians. It still owns a huge share of academic research and data analysis — and it has real strengths worth respecting."
-author: "Mars Team"
+author: "Project Mars Team"
 date: "2026-11-07"
 order: 5
 tags: ["r", "statistics", "data-science", "tidyverse", "mars"]
@@ -50,10 +50,10 @@ Honesty requires acknowledging R's structural weaknesses:
 
 These are not reasons to dismiss R — they are reasons R and Python both lean on native extensions for the heavy lifting.
 
-## Why Mars is thinking about R
+## Why Project Mars is thinking about R
 
-Mars's document model was designed to be language-agnostic from the start: a notebook is prose, code cells, and outputs, and the metadata declares which language the code is written in. Supporting R is a natural extension of that design, not a bolt-on.
+Project Mars's document model was designed to be language-agnostic from the start: a notebook is prose, code cells, and outputs, and the metadata declares which language the code is written in. Supporting R is a natural extension of that design, not a bolt-on.
 
-The case for R in Mars is the same case as Python: there is a large community of people whose data lives in R, whose models live in R, and whose notebooks currently force them into Jupyter. Giving them a first-class R runtime — with the same persistent sessions, rich outputs, and `.mars` reproducibility — means Mars serves the whole data science community, not just the Rust part of it.
+The case for R in Project Mars is the same case as Python: there is a large community of people whose data lives in R, whose models live in R, and whose notebooks currently force them into Jupyter. Giving them a first-class R runtime — with the same persistent sessions, rich outputs, and `.mars` reproducibility — means Project Mars serves the whole data science community, not just the Rust part of it.
 
-Rust remains Mars's primary language. But a notebook platform that only speaks one language is a tool with a ceiling. R is the next language on that list, and the architecture is already shaped to accept it.
+Rust remains Project Mars's primary language. But a notebook platform that only speaks one language is a tool with a ceiling. R is the next language on that list, and the architecture is already shaped to accept it.

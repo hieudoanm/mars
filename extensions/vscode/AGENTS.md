@@ -1,4 +1,4 @@
-# Mars VS Code extension
+# Project Mars VS Code extension
 
 Scope: `extensions/vscode/**`. Follow the repository-level `AGENTS.md` first;
 these rules cover the VS Code notebook integration.
@@ -16,10 +16,10 @@ these rules cover the VS Code notebook integration.
 - Keep output conversion behind `output.ts` and the focused `output/` modules.
   Preserve all recognized MIME bundles and a safe `text/plain` fallback; do not
   render executable HTML or SVG in untrusted workspaces.
-- Serialization must round-trip Mars cell IDs, cell types, sources, metadata,
+- Serialization must round-trip Project Mars cell IDs, cell types, sources, metadata,
   execution counts, outputs, notebook metadata, dependencies, and format
   version. Unknown metadata is intentionally preserved.
-- The extension delegates execution to the Mars CLI (`mars kernel serve`);
+- The extension delegates execution to the Project Mars CLI (`mars kernel serve`);
   never execute Rust code inside the extension host. Respect the configured CLI
   path, arguments, runtime, timeout, cancellation, and restart behaviour.
 - Keep production source files at or below 200 lines where practical (220 is
