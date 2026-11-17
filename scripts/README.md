@@ -19,6 +19,7 @@ scripts/
         ├── cli-check.sh
         ├── cli-build.sh
         ├── desktop-check.sh
+        ├── desktop-e2e.sh
         ├── desktop-build.sh
         ├── landing-build.sh
         ├── extensions-vscode.sh
@@ -145,6 +146,7 @@ Local equivalents of the jobs in
 | `ci/cli-check.sh`            | `cli-check`           | `cargo fmt --check`, `clippy --workspace -D warnings`, `cargo test --workspace` (installs webkit deps on Linux) |
 | `ci/cli-build.sh`            | `cli-build`           | `cargo build --release -p mars --locked`, renames binary to the target triple                                   |
 | `ci/desktop-check.sh`        | `desktop-check`       | `pnpm install` + typecheck/lint/test for `@mars/desktop`                                                        |
+| `ci/desktop-e2e.sh`          | `desktop-e2e`         | Tauri `--no-bundle` build + tauri-driver suite under Xvfb (Linux only; needs `webkit2gtk-driver`)               |
 | `ci/desktop-build.sh`        | `desktop-build`       | Host-OS Tauri bundles (dmg / deb,rpm,appimage / msi,nsis)                                                       |
 | `ci/landing-build.sh`        | `landing-build`       | `@mars/landing` typecheck/lint/test/build → `out/`                                                              |
 | `ci/extensions-vscode.sh`    | `extension-vscode`    | `mars-vscode` checks + `package` → `.vsix`                                                                      |
