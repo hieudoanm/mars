@@ -1,7 +1,7 @@
 [package]
 name = "mars-runtime-cpp"
 version = "0.0.1"
-edition = "2021"
+edition.workspace = true
 
 [dependencies]
 mars-core = { path = "../mars-core" }

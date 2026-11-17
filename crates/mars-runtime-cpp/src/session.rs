@@ -2,13 +2,13 @@ use crate::compilation::{compile_command, render_program};
 use crate::diagnostics::parse_compiler_diagnostics;
 use crate::manifest::generate_conanfile;
 use mars_core::Output;
-use mars_runtime::{error::RuntimeError, output::ExecutionResult, RuntimeBackend};
+use mars_runtime::{RuntimeBackend, error::RuntimeError, output::ExecutionResult};
 use std::{
     collections::HashMap,
     fs,
     path::Path,
     process::{Command, Stdio},
-    sync::{atomic::AtomicBool, Arc},
+    sync::{Arc, atomic::AtomicBool},
     time::Duration,
 };
 use tempfile::TempDir;
@@ -170,11 +170,11 @@ impl RuntimeBackend for CppSession {
         // Handle timeout and cancellation
         let start_time = std::time::Instant::now();
         loop {
-            if let Some(to) = timeout {
-                if start_time.elapsed() >= to {
-                    terminate_process_tree(child.id())?;
-                    return Err(RuntimeError::Backend("Execution timeout".to_owned()));
-                }
+            if let Some(to) = timeout
+                && start_time.elapsed() >= to
+            {
+                terminate_process_tree(child.id())?;
+                return Err(RuntimeError::Backend("Execution timeout".to_owned()));
             }
 
             if cancellation.load(std::sync::atomic::Ordering::Relaxed) {
@@ -248,10 +248,10 @@ impl RuntimeBackend for CppSession {
 }
 
 fn find_compiler() -> Result<String, RuntimeError> {
-    if let Ok(compiler) = std::env::var("MARS_CPP_COMPILER") {
-        if which::which(&compiler).is_ok() {
-            return Ok(compiler);
-        }
+    if let Ok(compiler) = std::env::var("MARS_CPP_COMPILER")
+        && which::which(&compiler).is_ok()
+    {
+        return Ok(compiler);
     }
 
     // Prefer clang++ for better diagnostics
