@@ -61,8 +61,9 @@ jobs:
             --all-targets \
             --ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
             --fail-under-lines 80 --fail-under-functions 80 \
-            --lcov --output-path lcov.info \
-            --html --output-dir coverage/html
+            --lcov --output-path lcov.info
+          # `report` reuses the profraw from the run above — no re-test.
+          cargo llvm-cov report --html --output-dir coverage/html
 
       - name: Upload Rust coverage report
         if: always()
@@ -73,6 +74,14 @@ jobs:
             lcov.info
             coverage/html/
           if-no-files-found: warn
+
+      - name: Upload Rust coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          files: lcov.info
+          flags: rust
+          fail_ci_if_error: false
 
   cli-build:
     name: CLI build (${{ matrix.os }})
@@ -154,6 +163,14 @@ jobs:
           name: desktop-coverage
           path: packages/desktop/coverage/
           if-no-files-found: warn
+
+      - name: Upload desktop coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          files: packages/desktop/coverage/lcov.info
+          flags: desktop
+          fail_ci_if_error: false
 
   desktop-e2e:
     name: Desktop e2e (tauri-driver)

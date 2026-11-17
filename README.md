@@ -3,7 +3,7 @@
 An interactive computing platform in Rust — **Mars Notebook** for multi-language
 executable notebooks and **Mars Lab** for machine learning.
 
-[![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/02-platform/mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
+[![CI][badge-ci]][link-ci]  [![License: MIT][badge-license]][link-license]  [![rust][badge-rust]][link-rust]  [![desktop][badge-desktop]][link-desktop]  [![MCP][badge-mcp]][link-mcp]  [![coverage][badge-coverage]][link-coverage]  [![rust coverage][badge-rust-coverage]][link-rust-coverage]  [![desktop coverage][badge-desktop-coverage]][link-desktop-coverage]
 
 Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
@@ -269,3 +269,21 @@ Visit the documentation at [`packages/landing/md/docs/`](packages/landing/md/doc
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+<!-- Badge reference links -->
+[badge-ci]: https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master
+[link-ci]: https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master
+[badge-license]: https://img.shields.io/badge/license-MIT-blue.svg
+[link-license]: LICENSE
+[badge-rust]: https://img.shields.io/badge/rust-1.85%2B-orange.svg
+[link-rust]: rust-toolchain.toml
+[badge-desktop]: https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg
+[link-desktop]: packages/desktop
+[badge-mcp]: https://img.shields.io/badge/MCP-supported-8b5cf6.svg
+[link-mcp]: docs/02-platform/mcp.md
+[badge-coverage]: https://codecov.io/gh/hieudoanm/mars/graph/badge.svg
+[link-coverage]: https://codecov.io/gh/hieudoanm/mars
+[badge-rust-coverage]: https://codecov.io/gh/hieudoanm/mars/graph/badge.svg?flag=rust
+[link-rust-coverage]: https://codecov.io/gh/hieudoanm/mars?flags%5B0%5D=rust
+[badge-desktop-coverage]: https://codecov.io/gh/hieudoanm/mars/graph/badge.svg?flag=desktop
+[link-desktop-coverage]: https://codecov.io/gh/hieudoanm/mars?flags%5B0%5D=desktop
