@@ -6,12 +6,13 @@ Node applications.
 
 ## Toolchain
 
-Install the latest stable Rust toolchain, Node.js 20 or newer, and pnpm
-10.12.1. From the repository root:
+Install the latest stable Rust toolchain, Node.js 26.13.1 (pinned in `.nvmrc`
+and `package.json` `engines`), and pnpm 12.21.0 (pinned via `packageManager`).
+From the repository root:
 
 ```bash
 corepack enable
-corepack prepare pnpm@10.12.1 --activate
+corepack prepare pnpm@12.21.0 --activate
 pnpm install
 
 cargo fmt --all --check
@@ -42,9 +43,9 @@ The workspace package names are:
 
 | Package         | Directory           | Main commands                                |
 | --------------- | ------------------- | -------------------------------------------- |
-| `@mars/desktop` | `packages/desktop`      | `dev`, `build`, `check`, `test:e2e`, `tauri` |
+| `@mars/desktop` | `packages/desktop`  | `dev`, `build`, `check`, `test:e2e`, `tauri` |
 | `@mars/vscode`  | `extensions/vscode` | `check`, `build`, `compile`, `package`       |
-| `@mars/landing` | `packages/landing`      | `dev`, `build`, `check`, `serve`             |
+| `@mars/landing` | `packages/landing`  | `dev`, `build`, `check`, `serve`             |
 
 Use Turbo filters when working on one package:
 

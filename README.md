@@ -1,4 +1,7 @@
-# Mars - Machine Learning in Rust
+# Project Mars
+
+An interactive computing platform in Rust — **Mars Notebook** for multi-language
+executable notebooks and **Mars Lab** for machine learning.
 
 [![CI](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  [![rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](rust-toolchain.toml)  [![desktop](https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg)](packages/desktop)  [![MCP](https://img.shields.io/badge/MCP-supported-8b5cf6.svg)](docs/02-platform/mcp.md)  [![coverage](https://img.shields.io/badge/coverage-89%25%20lines%20%C2%B7%2080%25%20functions-brightgreen.svg)](Makefile)
 
@@ -12,7 +15,7 @@ Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
 
 ## Table of Contents
 
-- [Mars - Machine Learning in Rust](#mars---machine-learning-in-rust)
+- [Project Mars](#project-mars)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Get Started](#get-started)
@@ -89,7 +92,7 @@ cargo test --workspace
 
 ```bash
 corepack enable
-corepack prepare pnpm@12.18.0 --activate
+corepack prepare pnpm@12.21.0 --activate
 pnpm install
 pnpm run check
 pnpm run build
@@ -108,7 +111,7 @@ mars lab algorithms --task classification
 
 ### Desktop application
 
-- Install stable Rust toolchain, Node.js 20+, and platform prerequisites in [`docs/05-development/development.md`](docs/05-development/development.md).
+- Install stable Rust toolchain, Node.js 26.13.1 (pinned in `.nvmrc`), and platform prerequisites in [`docs/05-development/development.md`](docs/05-development/development.md).
 - Run:
 
 ```bash

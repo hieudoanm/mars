@@ -31,7 +31,7 @@ const Hero: FC = () => {
       <div className='relative z-10 lg:col-span-5'>
         <motion.div className={eyebrow} {...reveal(0)}>
           <span className='bg-orange shadow-glow-orange h-2 w-2 rounded-full' /> Rust-powered
-          interactive notebooks
+          interactive computing
         </motion.div>
         <motion.h1
           className='text-hero font-bold-plus tracking-tightest max-md-nav:max-md-nav:text-hero-md max-sm-nav:max-sm-nav:text-hero-sm mt-6 mb-5.5 max-w-prose leading-none'
@@ -42,7 +42,8 @@ const Hero: FC = () => {
         </motion.h1>
         <motion.p className='max-w-prose-md max-sm-nav:text-base m-0 text-lg' {...reveal(0.16)}>
           Project Mars is a focused environment for exploring ideas, executing code, and discovering
-          possibilities - without giving up the power of a real developer tool.
+          possibilities — Mars Notebook for multi-language cells, Mars Lab for machine learning —
+          without giving up the power of a real developer tool.
         </motion.p>
         <motion.div className='my-8 flex flex-wrap gap-3' {...reveal(0.24)}>
           <a className={buttonPrimary} href='#get-started'>

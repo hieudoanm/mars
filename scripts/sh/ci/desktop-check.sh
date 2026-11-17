@@ -11,7 +11,7 @@ cd "$REPO_ROOT"
 
 for tool in node npm; do
   command -v "$tool" >/dev/null 2>&1 || {
-    echo "error: $tool not found; install Node.js 20+ (see .nvmrc)" >&2
+    echo "error: $tool not found; install Node.js 26.13.1 (see .nvmrc)" >&2
     exit 1
   }
 done

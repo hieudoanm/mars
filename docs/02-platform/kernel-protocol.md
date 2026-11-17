@@ -2,7 +2,13 @@
 
 ## Current boundary
 
-Project Mars does not (yet) expose a standalone kernel protocol. Today the layers are:
+`mars-protocol` is a real, standalone wire protocol: `mars kernel serve` exposes
+it as newline-delimited JSON over stdio or TCP (see below), and
+`mars-mcp` exposes notebook operations over MCP. What does not exist yet is a
+remote, authenticated transport (WebSocket/ZMQ) for browser or multi-user
+clients — that is the remaining "future direction".
+
+Inside the desktop app the layers are:
 
 ```
 React UI ──invoke()──> Tauri commands (src-tauri) ──> mars-kernel ──> mars-runtime
@@ -28,8 +34,7 @@ newline-delimited JSON — on stdin/stdout by default, or over TCP when
 because the protocol has no authentication; pass `--tcp-host <addr>`
 (e.g. `0.0.0.0`) to expose it to remote clients deliberately. Each TCP
 connection gets its own kernel session; connections are handled
-concurrently.
-one JSON message per line:
+concurrently. Each connection speaks one JSON message per line:
 
 - Requests: `{"id": "...", "request": {"type": "execute"|"reset"|"status", ...}}`
 - Responses: `{"id": "...", "response": {...}}`
@@ -39,9 +44,12 @@ one JSON message per line:
   before the final response envelope. Covered by
   `crates/mars-cli/tests/kernel_serve.rs`.
 
-Limitation: `mars_prompt` reads stdin, which is owned by the protocol channel,
-so interactive prompts cannot be answered through `kernel serve` — prompt
-events are surfaced for observability only.
+Interactive prompts **are** answered through `kernel serve`: `Input` requests
+are handled on the reader thread through each backend's `StdinWriter` fast
+path, so a cell blocked on `input()`/`mars_prompt` does not deadlock behind the
+in-flight `execute`. Prompt `event` lines are still emitted for observability.
+An `Input` request that reaches the executor (no live execution) returns an
+error response.
 
 ## Future direction: a kernel transport
 
@@ -57,8 +65,10 @@ The intended next architectural step is to put a transport in front of
 - **Session/multiplexing** — one transport should support multiple kernel
   sessions so tabs keep their per-notebook kernels.
 
-`mars-protocol` already defines the typed message shapes this transport would
-carry; the work is framing, session routing, and a reference client.
+`mars-protocol` already defines the typed message shapes these transports
+carry; the JSONL adapter in `mars-cli` proves the framing works. The
+remaining work is a browser-friendly transport (WebSocket), optional
+authentication for remote exposure, and a reference client.
 
 ## Explicit scope decisions
 
@@ -71,9 +81,9 @@ The following are deliberately **out of scope** for now:
   and `KernelStreamEvent::Comm` streams widget traffic during `Execute`.
 - **Extension ecosystem** — no plugin API is planned until the kernel
   transport stabilizes.
-- **Second language runtime** — implemented: `rust`, `python`, `r`,
-  `julia`, and `cpp` backends are registered in `mars-kernel`'s language
-  registry; `kernel serve` multiplexes one kernel per language.
+- **Additional language runtimes** — implemented: `rust`, `python`, `r`,
+  `julia`, `cpp`, and `sql` backends are registered in `mars-kernel`'s
+  language registry; `kernel serve` multiplexes one kernel per language.
 - **Debugger/breakpoints** — Rust debugging integration is a separate large
   project.
 

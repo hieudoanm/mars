@@ -18,7 +18,7 @@ const organizationSchema = {
   url: 'https://hieudoanm.github.io/mars',
   logo: 'https://hieudoanm.github.io/mars/icons/mars-logo.png',
   description:
-    'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
+    'Project Mars is a Rust-powered interactive computing platform — Mars Notebook for multi-language notebooks and Mars Lab for machine learning — for exploring ideas, executing code, and discovering possibilities.',
   sameAs: ['https://github.com/hieudoanm/mars'],
 };
 
@@ -28,7 +28,7 @@ const websiteSchema = {
   name: 'Project Mars',
   url: 'https://hieudoanm.github.io/mars',
   description:
-    'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
+    'Project Mars is a Rust-powered interactive computing platform — Mars Notebook for multi-language notebooks and Mars Lab for machine learning — for exploring ideas, executing code, and discovering possibilities.',
   publisher: {
     '@type': 'Organization',
     name: 'Project Mars',
@@ -43,7 +43,7 @@ const softwareSchema = {
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'macOS, Windows, Linux',
   description:
-    'A Rust-first interactive notebook platform with multi-language support, rich output rendering, and CLI automation.',
+    'A Rust-first interactive computing platform: multi-language notebooks with rich output rendering, plus Mars Lab — a studio that trains ML models in pure Rust and exports ONNX.',
   url: 'https://hieudoanm.github.io/mars',
   downloadUrl: 'https://hieudoanm.github.io/mars/downloads/',
   offers: {
@@ -52,7 +52,8 @@ const softwareSchema = {
     priceCurrency: 'USD',
   },
   featureList: [
-    'Multi-language support: Rust, Python, R, Julia, C++',
+    'Multi-language support: Rust, Python, R, Julia, C++, SQL',
+    'Mars Lab: 83 ML algorithms with ONNX export',
     'Desktop application',
     'CLI for headless execution',
     'Rich output rendering',
@@ -82,7 +83,7 @@ const faqSchema = {
       name: 'What is Project Mars?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities. It supports multiple programming languages including Rust, Python, R, Julia, and C++.',
+        text: 'Project Mars is a Rust-powered interactive computing platform for exploring ideas, executing code, and discovering possibilities. It has two products: Mars Notebook, a multi-language notebook environment supporting Rust, Python, R, Julia, C++, and SQL, and Mars Lab, a machine-learning studio with 83 algorithms and ONNX export.',
       },
     },
     {
@@ -98,7 +99,15 @@ const faqSchema = {
       name: 'What programming languages does Project Mars support?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Project Mars supports Rust, Python, R, Julia, and C++ with native runtimes for each language. It also has Jupyter compatibility for importing and exporting .ipynb files.',
+        text: 'Mars Notebook supports Rust, Python, R, Julia, C++, and SQL with native runtimes for each language. It also has Jupyter compatibility for importing and exporting .ipynb files.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is Mars Lab?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Mars Lab is the machine-learning studio inside Project Mars: upload a CSV dataset, profile it, pick from 83 algorithms across classification, regression, clustering, anomaly detection, and more, train a model, and export it as ONNX — all in pure Rust.',
       },
     },
     {
@@ -114,7 +123,7 @@ const faqSchema = {
       name: 'Can I use Project Mars for data science and machine learning?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes, Project Mars is designed for data science, machine learning, scientific computing, and education. It supports rich output rendering including charts, tables, LaTeX equations, and interactive visualizations.',
+        text: 'Yes. Mars Notebook is designed for data science, machine learning, scientific computing, and education with rich output rendering including charts, tables, LaTeX equations, and visualizations — and Mars Lab covers the training side, turning CSV datasets into ONNX models.',
       },
     },
   ],

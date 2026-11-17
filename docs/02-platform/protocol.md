@@ -27,7 +27,6 @@ The current request types are:
 - `diagnose` — compile-check a candidate cell source without committing it and
   return typed diagnostics (`cell_index`, line/column spans, severity, code,
   message).
-- `input` — write one line to the stdin of the currently running cell program.
 
 An execute response carries the execution status, execution count, duration,
 and zero or more typed outputs. Errors are represented as outputs rather than

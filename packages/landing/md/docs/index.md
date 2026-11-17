@@ -7,10 +7,12 @@ order: 0
 
 # Project Mars documentation
 
-Project Mars is a Rust-powered interactive notebook for exploring ideas, executing
-code, and discovering possibilities — plus **Mars Lab**, a machine learning studio
-that turns CSV datasets into trained ONNX models. It combines executable cells,
-Markdown, mathematics, tables, charts, and rich output in a native `.mars` document.
+Project Mars is a Rust-powered interactive computing platform for exploring ideas,
+executing code, and discovering possibilities — **Mars Notebook** for
+multi-language notebooks, plus **Mars Lab**, a machine learning studio that turns
+CSV datasets into trained ONNX models. Mars Notebook combines executable cells,
+Markdown, mathematics, tables, charts, and rich output in a native `.mars`
+document.
 
 ## Documentation chapters
 

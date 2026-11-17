@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | Project Mars',
   },
   description:
-    'Project Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
+    'Project Mars is a Rust-powered interactive computing platform — Mars Notebook for multi-language notebooks and Mars Lab for machine learning — for exploring ideas, executing code, and discovering possibilities.',
   keywords: [
     'interactive notebook',
     'Jupyter alternative',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Project Mars - Explore ideas. Execute code.',
     description:
-      'A Rust-first interactive notebook with isolated execution, rich output, and its own native document format.',
+      'A Rust-first interactive computing platform: multi-language notebooks plus a machine-learning studio, with isolated execution and rich output.',
     images: [{ url: marsOg.src, width: 1200, height: 630, alt: 'Project Mars' }],
     type: 'website',
     siteName: 'Project Mars',
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Project Mars - Explore ideas. Execute code.',
     description:
-      'A Rust-first interactive notebook with isolated execution, rich output, and its own native document format.',
+      'A Rust-first interactive computing platform: multi-language notebooks plus a machine-learning studio, with isolated execution and rich output.',
     images: [marsOg.src],
   },
 };
@@ -74,14 +74,14 @@ const JSON_LD = {
       name: 'Project Mars',
       url: 'https://hieudoanm.github.io/mars',
       description:
-        'Project Mars is a Rust-powered interactive notebook for exploring ideas, executing code, and discovering possibilities.',
+        'Project Mars is a Rust-powered interactive computing platform — Mars Notebook for multi-language notebooks and Mars Lab for machine learning.',
     },
     {
       '@type': 'SoftwareApplication',
       name: 'Project Mars',
       applicationCategory: 'DeveloperApplication',
       description:
-        'Rust-powered interactive notebook with isolated execution, rich output, and a native .mars document format.',
+        'Rust-powered interactive computing platform: multi-language notebooks (Mars Notebook) plus a machine-learning studio (Mars Lab).',
       url: 'https://hieudoanm.github.io/mars',
       codeRepository: 'https://github.com/hieudoanm/mars',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },

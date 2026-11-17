@@ -10,7 +10,9 @@ describe('Hero', () => {
 
   it('renders eyebrow and description', () => {
     render(<Hero />);
-    expect(screen.getByText(/rust-powered interactive notebooks/i)).toBeInTheDocument();
+    expect(screen.getByText(/rust-powered interactive computing/i)).toBeInTheDocument();
+    expect(screen.getByText(/mars notebook/i)).toBeInTheDocument();
+    expect(screen.getByText(/mars lab/i)).toBeInTheDocument();
     expect(screen.getByText(/focused environment/i)).toBeInTheDocument();
   });
 

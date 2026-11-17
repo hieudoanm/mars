@@ -236,7 +236,7 @@ if [[ "$INSTALL_JETBRAINS" -eq 1 ]]; then
   require_command java "Please install a JDK 17+ (Temurin recommended) for the JetBrains plugin build."
 fi
 if [[ "$INSTALL_VSCODE" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
-  require_command node "Please install Node.js 20 or newer."
+  require_command node "Please install Node.js 26.13.1 (see .nvmrc)."
   require_command npm "Please install npm with Node.js."
 fi
 if [[ "$INSTALL_VSCODE" -eq 1 ]]; then

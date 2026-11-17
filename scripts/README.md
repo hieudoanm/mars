@@ -73,7 +73,8 @@ MARS_CARGO_FEATURES=experimental-evcxr ./scripts/sh/install.sh
 ### Requirements
 
 - Rust and Cargo — needed for CLI, desktop, and Zed builds
-- Node.js 20+ with pnpm — needed for extensions and the desktop app
+- Node.js 26.13.1 (pinned in `.nvmrc`) with pnpm 12.21.0 (`packageManager`) —
+  needed for extensions and the desktop app
 - VS Code with `code` on `PATH` — needed for `--vscode`
 - JDK 17+ (Temurin recommended) — needed for `--jetbrains`
 - Tauri desktop prerequisites — needed for `--desktop`; see
