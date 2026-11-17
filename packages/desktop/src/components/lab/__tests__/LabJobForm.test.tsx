@@ -86,4 +86,86 @@ describe('LabJobForm', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Clustering' }));
     expect(screen.queryByText(/Logistic Regression —/)).not.toBeInTheDocument();
   });
+
+  it('rejects invalid hyperparameter JSON', () => {
+    const onTrain = renderForm();
+    fireEvent.click(screen.getByLabelText(/sepal_length/));
+    fireEvent.change(screen.getByDisplayValue('Select…'), {
+      target: { value: 'species' },
+    });
+    // Break the hyperparameters JSON
+    const hp = screen.getByRole('textbox', { name: '' });
+    fireEvent.change(hp, { target: { value: '{bad' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Train model' }));
+    expect(screen.getByText('Hyperparameters must be valid JSON.')).toBeInTheDocument();
+    expect(onTrain).not.toHaveBeenCalled();
+  });
+
+  it('rejects an out-of-range split ratio and non-integer seed', () => {
+    const onTrain = renderForm();
+    fireEvent.click(screen.getByLabelText(/sepal_length/));
+    fireEvent.change(screen.getByDisplayValue('Select…'), {
+      target: { value: 'species' },
+    });
+    const split = screen.getByLabelText(/Split ratio/);
+    fireEvent.change(split, { target: { value: '1.5' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Train model' }));
+    expect(screen.getByText('Split ratio must be between 0 and 1.')).toBeInTheDocument();
+
+    fireEvent.change(split, { target: { value: '0.3' } });
+    const seed = screen.getByLabelText(/^Seed/);
+    fireEvent.change(seed, { target: { value: '4.5' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Train model' }));
+    expect(screen.getByText('Seed must be an integer.')).toBeInTheDocument();
+    expect(onTrain).not.toHaveBeenCalled();
+  });
+
+  it('submits a reinforcement-learning request with rl columns', () => {
+    const rlAlgorithms: LabAlgorithm[] = [
+      {
+        id: 'q_learning',
+        name: 'Q-Learning',
+        taskType: 'reinforcement_learning',
+        family: 'rl',
+        description: 'RL',
+        defaultHyperparameters: {},
+        exports: ['onnx'],
+      },
+    ];
+    const onTrain = vi.fn();
+    render(
+      <LabJobForm
+        datasets={[dataset]}
+        algorithms={rlAlgorithms}
+        training={false}
+        initialDatasetId='ds-1'
+        onUploadDataset={() => {}}
+        onTrain={onTrain}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Reinforcement learning' }));
+    fireEvent.click(screen.getByLabelText(/sepal_length/));
+    fireEvent.click(screen.getByLabelText(/sepal_width/));
+    // RL requires action + reward before submit
+    fireEvent.click(screen.getByRole('button', { name: 'Train model' }));
+    expect(screen.getByText('Select action and reward columns.')).toBeInTheDocument();
+    expect(onTrain).not.toHaveBeenCalled();
+  });
+
+  it('renders an upload prompt when there are no datasets', () => {
+    const onUpload = vi.fn();
+    render(
+      <LabJobForm
+        datasets={[]}
+        algorithms={[]}
+        training={false}
+        initialDatasetId={null}
+        onUploadDataset={onUpload}
+        onTrain={() => {}}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'Train model' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Upload CSV' }));
+    expect(onUpload).toHaveBeenCalled();
+  });
 });

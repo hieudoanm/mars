@@ -16,6 +16,7 @@ import {
   type LabDatasetPreview,
   type LabJob,
   type LabJobDetail,
+  type LabJobProgress,
 } from '../../lib/kernelService';
 import { useLab } from '../useLab';
 
@@ -227,7 +228,7 @@ describe('useLab', () => {
       dataset: dataset({ id: 'ds-2', originalFilename: 'new.csv' }),
       profile: { rowCount: 1, columnCount: 1, totalMissing: 0, columns: [], warnings: [] },
     });
-    let uploaded: LabDataset | null = null;
+    let uploaded: LabDataset | null | undefined;
     await act(async () => {
       uploaded = await result.current.uploadDataset('/tmp/new.csv');
     });
@@ -338,7 +339,7 @@ describe('useLab', () => {
     const { result } = renderHook(() => useLab());
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    let progressHandler: ((event: { jobId: string; stage: string }) => void) | undefined;
+    let progressHandler: ((event: LabJobProgress) => void) | undefined;
     const unlisten = vi.fn();
     vi.mocked(listenLabProgress).mockImplementation(async (handler) => {
       progressHandler = handler;
@@ -363,7 +364,7 @@ describe('useLab', () => {
       name: null,
     };
 
-    let detail: LabJobDetail | null = null;
+    let detail: LabJobDetail | null | undefined;
     await act(async () => {
       detail = await result.current.train(request);
     });

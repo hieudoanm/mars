@@ -1,86 +1,63 @@
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/vitest';
-import LabCharts from '../LabCharts';
-import LabCompare from '../LabCompare';
-import type { LabJobDetail } from '../../../lib/kernelService';
+import { describe, expect, it } from 'vitest';
+import { BarChart, Histogram, LineChart, ScatterPlot } from '../charts/primitives';
 
-describe('LabCharts', () => {
-  it('renders nothing for empty charts', () => {
-    const { container } = render(<LabCharts charts={null} />);
+describe('LineChart', () => {
+  it('returns null for mismatched or empty data', () => {
+    const { container } = render(<LineChart x={[1, 2]} y={[1]} />);
     expect(container).toBeEmptyDOMElement();
+    const empty = render(<LineChart x={[]} y={[]} />);
+    expect(empty.container).toBeEmptyDOMElement();
   });
 
-  it('renders a confusion matrix and feature importance', () => {
-    render(
-      <LabCharts
-        charts={{
-          classes: ['a', 'b'],
-          confusionMatrix: [
-            [8, 2],
-            [1, 9],
-          ],
-          featureImportance: {
-            feature: ['f1', 'f2'],
-            importance: [0.7, 0.3],
-            method: 'weights',
-          },
-        }}
-      />,
-    );
-    expect(screen.getByText('Confusion matrix')).toBeInTheDocument();
-    expect(screen.getByText('true \\ pred')).toBeInTheDocument();
-    expect(screen.getByText(/Feature importance/)).toBeInTheDocument();
-  });
-
-  it('renders mlp progress as a line chart', () => {
-    const { container } = render(
-      <LabCharts charts={{ mlpProgress: { epoch: [1, 2, 3], loss: [0.9, 0.5, 0.2] } }} />,
-    );
-    expect(screen.getByText('Training loss')).toBeInTheDocument();
-    expect(container.querySelector('polyline')).not.toBeNull();
+  it('renders a line chart with axes', () => {
+    render(<LineChart x={[0, 1, 2]} y={[0, 1, 0]} xLabel='step' yLabel='loss' />);
+    expect(screen.getByRole('img', { name: 'loss' })).toBeInTheDocument();
   });
 });
 
-describe('LabCompare', () => {
-  const detail = (id: string, accuracy: number): LabJobDetail => ({
-    job: {
-      id,
-      datasetId: 'ds',
-      taskType: 'classification',
-      algorithmId: `algo-${id}`,
-      featureColumns: ['x'],
-      labelColumn: 'y',
-      rlColumns: null,
-      hyperparameters: {},
-      splitRatio: 0.2,
-      randomSeed: 42,
-      status: 'completed',
-      errorCode: null,
-      errorMessage: null,
-      name: null,
-      createdAt: '2026-01-01T00:00:00Z',
-      updatedAt: '2026-01-01T00:00:00Z',
-    },
-    metrics: {
-      jobId: id,
-      metrics: { accuracy },
-      charts: null,
-      createdAt: '2026-01-01T00:00:00Z',
-    },
-    artefacts: [],
+describe('BarChart', () => {
+  it('returns null for empty values', () => {
+    const { container } = render(<BarChart labels={[]} values={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('shows loading state with no details', () => {
-    render(<LabCompare details={[]} />);
-    expect(screen.getByText('Loading jobs…')).toBeInTheDocument();
+  it('renders vertical bars with labels', () => {
+    render(<BarChart labels={['a', 'b']} values={[1, 2]} />);
+    expect(screen.getByText('a')).toBeInTheDocument();
+    expect(screen.getByText('b')).toBeInTheDocument();
   });
 
-  it('compares metric values across jobs', () => {
-    render(<LabCompare details={[detail('a', 0.9), detail('b', 0.8)]} />);
-    expect(screen.getByText('accuracy')).toBeInTheDocument();
-    expect(screen.getByText('0.900000')).toBeInTheDocument();
-    expect(screen.getByText('0.800000')).toBeInTheDocument();
-    expect(screen.getByText('algo-a')).toBeInTheDocument();
-    expect(screen.getByText('algo-b')).toBeInTheDocument();
+  it('renders horizontal bars', () => {
+    render(<BarChart labels={['x', 'y']} values={[1, -2]} horizontal />);
+    expect(screen.getByText('x')).toBeInTheDocument();
+  });
+});
+
+describe('ScatterPlot', () => {
+  it('returns null for empty data', () => {
+    const { container } = render(<ScatterPlot x={[]} y={[]} />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('renders points with group and highlight colors', () => {
+    render(
+      <ScatterPlot x={[0, 1, 2]} y={[0, 1, 0]} groups={[0, 1]} highlight={[false, false, true]} />,
+    );
+    expect(screen.getByRole('img', { name: 'scatter plot' })).toBeInTheDocument();
+  });
+});
+
+describe('Histogram', () => {
+  it('returns null with too few edges', () => {
+    const { container } = render(<Histogram edges={[0]} counts={[1]} />);
+    expect(container).toBeEmptyDOMElement();
+    const noCounts = render(<Histogram edges={[0, 1]} counts={[]} />);
+    expect(noCounts.container).toBeEmptyDOMElement();
+  });
+
+  it('renders bars and a threshold line', () => {
+    render(<Histogram edges={[0, 1, 2]} counts={[2, 5]} threshold={0.5} />);
+    expect(screen.getByRole('img', { name: 'histogram' })).toBeInTheDocument();
   });
 });
