@@ -119,6 +119,59 @@ jobs:
       - name: Test
         run: pnpm --filter @mars/desktop run test
 
+  desktop-e2e:
+    name: Desktop e2e (tauri-driver)
+    runs-on: ubuntu-latest
+    needs: desktop-check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6.1.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo dependencies and build outputs
+        uses: Swatinem/rust-cache@v2.9.3
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl wget file libssl-dev \
+            libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf \
+            libglib2.0-dev libwebkit2gtk-4.1-dev libxdo-dev xvfb
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build Tauri app (no bundles)
+        working-directory: packages/desktop
+        run: pnpm exec tauri build --no-bundle
+
+      - name: Install tauri-driver
+        run: cargo install tauri-driver --locked
+
+      - name: Run tauri-driver e2e suite
+        working-directory: packages/desktop
+        run: xvfb-run -a pnpm run test:e2e:tauri
+
+      - name: Upload e2e artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: mars-desktop-e2e-artifacts
+          path: packages/desktop/e2e/artifacts
+          if-no-files-found: ignore
+
   desktop-build:
     name: Desktop build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

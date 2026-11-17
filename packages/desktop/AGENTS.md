@@ -71,5 +71,12 @@ cargo test -p mars-tauri
 ```
 
 Run `pnpm --filter @mars/desktop test:e2e` for changed end-user notebook flows
-when the local browser/runtime prerequisites are available. Do not commit
-`dist/`, `coverage/`, or other generated build artifacts.
+when the local browser/runtime prerequisites are available.
+
+`pnpm --filter @mars/desktop test:e2e:tauri` runs the true end-to-end suite
+(`e2e/*.e2e.ts` via `wdio.conf.ts`) against the real Tauri binary through
+`tauri-driver`. It requires a built `target/release/mars-tauri` (or
+`MARS_TAURI_APP`), `tauri-driver` on PATH (`cargo install tauri-driver`), and a
+display (use `xvfb-run` on headless Linux). WebDriver automation of the webview
+is only supported on Linux and Windows — not macOS. Do not commit `dist/`,
+`coverage/`, `e2e/artifacts/`, or other generated build artifacts.
