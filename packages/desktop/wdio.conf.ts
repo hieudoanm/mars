@@ -15,7 +15,10 @@ export const config: WebdriverIO.Config = {
   maxInstances: 1,
   capabilities: [
     {
-      browserName: 'wry',
+      // No `browserName`: on Linux tauri-driver rewrites `tauri:options` into
+      // `webkitgtk:browserOptions` for capability matching, and a client-side
+      // browserName makes WebKitWebDriver reject the session. The `wry` label
+      // is assigned by the server after the session is created.
       'tauri:options': {
         application,
       },

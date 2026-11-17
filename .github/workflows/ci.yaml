@@ -53,15 +53,25 @@ jobs:
       # fail-under gates) and additionally emits lcov + HTML reports.
       - name: Rust coverage
         run: |
-          cargo llvm-cov \
-            -p mars-core -p mars-document -p mars-runtime -p mars-runtime-evcxr \
-            -p mars-runtime-julia -p mars-runtime-python -p mars-runtime-r \
-            -p mars-runtime-cpp -p mars-protocol -p mars-kernel -p mars-mcp \
-            -p mars-jupyter -p mars-renderer -p mars-lsp -p mars \
-            --all-targets \
-            --ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
-            --fail-under-lines 80 --fail-under-functions 80 \
-            --lcov --output-path lcov.info
+          run_coverage() {
+            cargo llvm-cov \
+              -p mars-core -p mars-document -p mars-runtime -p mars-runtime-evcxr \
+              -p mars-runtime-julia -p mars-runtime-python -p mars-runtime-r \
+              -p mars-runtime-cpp -p mars-protocol -p mars-kernel -p mars-mcp \
+              -p mars-jupyter -p mars-renderer -p mars-lsp -p mars \
+              --all-targets \
+              --ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
+              --fail-under-lines 80 --fail-under-functions 80 \
+              --lcov --output-path lcov.info
+          }
+          # A killed test child can leave a truncated profraw that fails
+          # llvm-profdata merge — clean first and retry once on failure.
+          cargo llvm-cov clean
+          run_coverage || {
+            echo '::warning::coverage run failed; cleaning profraw and retrying once'
+            cargo llvm-cov clean
+            run_coverage
+          }
           # `report` reuses the profraw from the run above — no re-test.
           cargo llvm-cov report --html --output-dir coverage/html
 

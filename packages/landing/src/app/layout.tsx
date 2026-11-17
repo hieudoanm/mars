@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import type { FC, ReactNode } from 'react';
 import marsOg from '@/assets/png/mars-og.png';
 import './globals.css';
@@ -100,6 +101,11 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
         {children}
+        <Script
+          src='https://cloud.umami.is/script.js'
+          data-website-id='0389c421-f626-468e-9b8d-c1eb25cb8d30'
+          strategy='afterInteractive'
+        />
       </body>
     </html>
   );
