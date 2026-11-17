@@ -17,6 +17,7 @@
 pub mod client;
 pub mod exec;
 pub mod handlers;
+pub mod http;
 pub mod jsonrpc;
 pub mod lab;
 pub mod mcp;
@@ -25,5 +26,6 @@ pub mod session;
 pub mod tools;
 
 pub use client::McpClient;
+pub use http::serve_http;
 pub use server::{MarsMcpServer, serve, serve_stdio};
 pub use session::MarsSession;

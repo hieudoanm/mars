@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-pub const PROTOCOL_VERSION: &str = "2025-03-26";
+pub const PROTOCOL_VERSION: &str = "2025-11-25";
 pub const SERVER_NAME: &str = "mars";
 pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -25,6 +25,8 @@ pub struct Annotations {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tool {
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(rename = "inputSchema")]
@@ -75,10 +77,29 @@ impl CallToolResult {
     }
 }
 
+/// Human-readable display title derived from the tool name
+/// (`mars_notebook_new` -> `Mars Notebook New`).
+pub(crate) fn titleize(name: &str) -> String {
+    name.split(['_', '-'])
+        .filter(|part| !part.is_empty())
+        .map(|part| {
+            let mut chars = part.chars();
+            match chars.next() {
+                Some(first) => first.to_uppercase().chain(chars).collect::<String>(),
+                None => String::new(),
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 pub fn initialize_result() -> Value {
     serde_json::json!({
         "protocolVersion": PROTOCOL_VERSION,
-        "capabilities": { "tools": { "listChanged": false } },
+        "capabilities": {
+            "tools": { "listChanged": false },
+            "prompts": { "listChanged": false }
+        },
         "serverInfo": { "name": SERVER_NAME, "version": SERVER_VERSION },
     })
 }

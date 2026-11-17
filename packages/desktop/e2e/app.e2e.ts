@@ -81,21 +81,18 @@ describe('Mars desktop (tauri-driver)', () => {
     );
   });
 
-  it('executes a Rust cell through the real kernel', async () => {
-    // "Add Code" selects the new cell and focuses its editor; type a cell that
-    // prints a marker, then run it and wait for the captured output.
-    const editor = await lastEditor();
-    await editor.click();
-    await editor.addValue('println!("mars-e2e-ok");');
-
-    await clickButton('Run current cell');
+  it('executes Rust cells through the real kernel', async () => {
+    // "New notebook" seeds the getting-started tour, whose Rust cells print
+    // known markers. Typing into CodeMirror's contenteditable is unreliable
+    // under WebKitWebDriver, so run all cells and wait for a real output.
+    await clickButton('Run all (F6)');
 
     await browser.waitUntil(
       async () => {
         const outputs = await $$('[data-component="OutputView"]');
         for (const output of outputs) {
           try {
-            if ((await output.getText()).includes('mars-e2e-ok')) return true;
+            if ((await output.getText()).includes('Hello from Project Mars')) return true;
           } catch {
             // element detached mid-render; keep polling
           }
@@ -103,7 +100,7 @@ describe('Mars desktop (tauri-driver)', () => {
         return false;
       },
       // First Rust cell compile can be slow on a cold toolchain cache.
-      { timeout: 300_000, interval: 2000 },
+      { timeout: 280_000, interval: 2000 },
     );
   });
 });

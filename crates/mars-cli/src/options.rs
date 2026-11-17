@@ -156,6 +156,8 @@ pub struct McpOptions {
     pub offline: bool,
     pub notebook: Option<String>,
     pub language: Option<String>,
+    pub http: Option<String>,
+    pub token: Option<String>,
 }
 
 pub fn parse_mcp_options(args: &[String]) -> Result<McpOptions, String> {
@@ -164,6 +166,8 @@ pub fn parse_mcp_options(args: &[String]) -> Result<McpOptions, String> {
         offline: false,
         notebook: None,
         language: None,
+        http: None,
+        token: None,
     };
     let mut index = 0;
     while index < args.len() {
@@ -184,6 +188,20 @@ pub fn parse_mcp_options(args: &[String]) -> Result<McpOptions, String> {
                     .get(index + 1)
                     .ok_or_else(|| "missing value for --notebook".to_owned())?;
                 options.notebook = Some(value.clone());
+                index += 2;
+            }
+            "--http" => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| "missing value for --http".to_owned())?;
+                options.http = Some(value.clone());
+                index += 2;
+            }
+            "--token" => {
+                let value = args
+                    .get(index + 1)
+                    .ok_or_else(|| "missing value for --token".to_owned())?;
+                options.token = Some(value.clone());
                 index += 2;
             }
             "--language" => {

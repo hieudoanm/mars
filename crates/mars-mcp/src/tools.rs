@@ -28,6 +28,7 @@ fn tool(
 ) -> Tool {
     Tool {
         name: name.to_owned(),
+        title: Some(crate::mcp::titleize(name)),
         description: Some(description.to_owned()),
         input_schema: schema,
         annotations,

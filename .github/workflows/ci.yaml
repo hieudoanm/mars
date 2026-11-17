@@ -239,7 +239,7 @@ jobs:
           if-no-files-found: ignore
 
   desktop-build:
-    name: Desktop build (${{ matrix.os }})
+    name: Desktop - Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     # Release bundles are only needed for the master-branch release job;
     # PRs are covered by the `desktop-quality` job.

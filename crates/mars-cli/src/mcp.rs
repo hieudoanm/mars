@@ -12,6 +12,16 @@ pub fn serve_mcp(args: &[String]) -> Result<(), String> {
             .preload_notebook(Path::new(notebook))
             .map_err(|error| format!("failed to open notebook {notebook}: {error}"))?;
     }
+    if let Some(addr) = options.http {
+        return mars_mcp::serve_http(
+            &addr,
+            options
+                .token
+                .or_else(|| std::env::var("MCP_AUTH_TOKEN").ok()),
+            &mut server,
+        )
+        .map_err(|error| error.to_string());
+    }
     mars_mcp::serve_stdio(&mut server).map_err(|error| error.to_string())
 }
 

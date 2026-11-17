@@ -63,6 +63,8 @@ impl MarsMcpServer {
             "ping" => Some(Response::ok(id, json!({}))),
             "tools/list" => Some(Response::ok(id, json!({ "tools": tools::definitions() }))),
             "tools/call" => Some(self.call_tool(id, request.params)),
+            "prompts/list" => Some(Response::ok(id, prompts_list())),
+            "prompts/get" => Some(self.call_prompt(id, request.params)),
             "notifications/initialized" | "notifications/cancelled" => None,
             other => Some(Response::err(
                 id,
@@ -70,6 +72,32 @@ impl MarsMcpServer {
                 format!("method not found: {other}"),
             )),
         }
+    }
+
+    fn call_prompt(&mut self, id: Value, params: Option<Value>) -> Response {
+        let name = params
+            .as_ref()
+            .and_then(|p| p.get("name"))
+            .and_then(Value::as_str)
+            .unwrap_or("");
+        let text = match name {
+            "notebook_walkthrough" => {
+                "Walk me through the notebook currently open in this session.                  For each code cell, explain what it does, what it produces,                  and how the cells connect. Use the mars_* tools to read cell                  contents and outputs before answering."
+            }
+            "debug_cell" => {
+                "A cell in this notebook failed or produced unexpected output.                  Inspect the notebook and kernel state with the mars_* tools,                  identify the failing cell, explain the likely cause, and                  propose a fix."
+            }
+            _ => return Response::err(id, INVALID_PARAMS, format!("unknown prompt: {name}")),
+        };
+        Response::ok(
+            id,
+            json!({
+                "description": format!("Mars prompt: {name}"),
+                "messages": [
+                    { "role": "user", "content": { "type": "text", "text": text } }
+                ]
+            }),
+        )
     }
 
     fn call_tool(&mut self, id: Value, params: Option<Value>) -> Response {
@@ -130,6 +158,25 @@ pub fn serve<R: BufRead, W: Write>(
             jsonrpc::write_message(&mut writer, &response)?;
         }
     }
+}
+
+fn prompts_list() -> Value {
+    json!({
+        "prompts": [
+            {
+                "name": "notebook_walkthrough",
+                "title": "Notebook Walkthrough",
+                "description": "Explain every cell in the open notebook and how they connect",
+                "arguments": []
+            },
+            {
+                "name": "debug_cell",
+                "title": "Debug Cell",
+                "description": "Diagnose a failing or surprising cell using kernel state",
+                "arguments": []
+            }
+        ]
+    })
 }
 
 /// Serve MCP on the process's stdin/stdout. All diagnostics must go to stderr.
