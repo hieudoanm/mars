@@ -59,16 +59,16 @@ kernel session keyed by `language`.
 Mars Lab tools (datasets, training jobs, and artefacts backed by the Lab
 SQLite database — same data as `mars lab`):
 
-| Tool                     | Purpose                                                        |
-| ------------------------ | -------------------------------------------------------------- |
-| `mars_lab_algorithms`    | List the algorithm catalogue, optional `task` filter           |
-| `mars_lab_dataset_upload`| Upload a CSV file as a dataset (`path`)                        |
-| `mars_lab_datasets`      | List stored datasets                                           |
-| `mars_lab_dataset`       | Dataset record + stored insight + computed profile             |
-| `mars_lab_train`         | Train a model (`dataset_id`, `task`, `algorithm`, `features`, optional `label`, `hyperparameters`, `split_ratio`, `seed`) and export ONNX |
-| `mars_lab_jobs`          | List training jobs (`limit`)                                   |
-| `mars_lab_job`           | Job record + metrics + artefacts                               |
-| `mars_lab_export`        | Copy a job artefact (`onnx`/`pkl`/`joblib`) to `output`        |
+| Tool                      | Purpose                                                                                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `mars_lab_algorithms`     | List the algorithm catalogue, optional `task` filter                                                                                      |
+| `mars_lab_dataset_upload` | Upload a CSV file as a dataset (`path`)                                                                                                   |
+| `mars_lab_datasets`       | List stored datasets                                                                                                                      |
+| `mars_lab_dataset`        | Dataset record + stored insight + computed profile                                                                                        |
+| `mars_lab_train`          | Train a model (`dataset_id`, `task`, `algorithm`, `features`, optional `label`, `hyperparameters`, `split_ratio`, `seed`) and export ONNX |
+| `mars_lab_jobs`           | List training jobs (`limit`)                                                                                                              |
+| `mars_lab_job`            | Job record + metrics + artefacts                                                                                                          |
+| `mars_lab_export`         | Copy a job artefact (`onnx`/`pkl`/`joblib`) to `output`                                                                                   |
 
 Lab tools share the `mars-lab` settings (`DATABASE_URL`, `MARS_LAB_DATA_DIR`),
 so MCP clients see the same datasets and jobs as the CLI and desktop app.
@@ -93,3 +93,11 @@ notebooks they have not seen before.
   (bounded by `timeout_ms`). Interactive stdin prompts (`input()`) are not
   supported over MCP yet.
 - Cancellation mid-execution is not exposed as a tool; use `timeout_ms`.
+
+### Streamable HTTP
+
+`mars mcp serve --http 127.0.0.1:8080` also accepts `--http <addr>` (and `--token <token>`, or the
+`MCP_AUTH_TOKEN` environment variable) to serve the same MCP surface over
+streamable HTTP at `http://<addr>/mcp` — the transport used by ChatGPT
+connectors and remote Claude clients. When a token is configured, every
+request must carry `Authorization: Bearer <token>`.

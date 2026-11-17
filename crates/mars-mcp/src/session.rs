@@ -78,6 +78,13 @@ impl MarsSession {
         );
     }
 
+    /// Paths of all notebooks currently open in the session.
+    pub fn open_paths(&self) -> Vec<PathBuf> {
+        let mut paths: Vec<PathBuf> = self.notebooks.keys().cloned().collect();
+        paths.sort();
+        paths
+    }
+
     pub fn notebook(&self, path: &Path) -> Option<&Notebook> {
         self.notebooks.get(path).map(|entry| &entry.notebook)
     }

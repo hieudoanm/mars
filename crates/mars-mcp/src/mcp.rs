@@ -98,7 +98,8 @@ pub fn initialize_result() -> Value {
         "protocolVersion": PROTOCOL_VERSION,
         "capabilities": {
             "tools": { "listChanged": false },
-            "prompts": { "listChanged": false }
+            "prompts": { "listChanged": false },
+            "resources": { "listChanged": false }
         },
         "serverInfo": { "name": SERVER_NAME, "version": SERVER_VERSION },
     })

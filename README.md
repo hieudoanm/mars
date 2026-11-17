@@ -43,7 +43,7 @@ Jupyter `.ipynb` import/export.
 
 ### Mars Lab
 
-*Machine learning in Rust* — a studio that turns CSV datasets into trained
+_Machine learning in Rust_ — a studio that turns CSV datasets into trained
 ONNX models.
 
 - **Pipeline:** CSV upload → profiling → column mapping → algorithm selection
@@ -295,6 +295,7 @@ supporting independent open-source software.
 [MIT](LICENSE) © hieudoan
 
 <!-- Badge reference links -->
+
 [badge-ci]: https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master
 [link-ci]: https://github.com/hieudoanm/mars/actions/workflows/ci.yaml?branch=master
 [badge-license]: https://img.shields.io/badge/license-MIT-blue.svg
@@ -305,3 +306,11 @@ supporting independent open-source software.
 [link-desktop]: https://github.com/hieudoanm/mars/tree/master/packages/desktop
 [badge-mcp]: https://img.shields.io/badge/MCP-supported-8b5cf6.svg
 [link-mcp]: docs/02-platform/mcp.md
+
+### Streamable HTTP
+
+`mars mcp serve --http 127.0.0.1:8080` also accepts `--http <addr>` (and `--token <token>`, or the
+`MCP_AUTH_TOKEN` environment variable) to serve the same MCP surface over
+streamable HTTP at `http://<addr>/mcp` — the transport used by ChatGPT
+connectors and remote Claude clients. When a token is configured, every
+request must carry `Authorization: Bearer <token>`.

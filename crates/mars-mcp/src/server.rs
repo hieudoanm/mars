@@ -65,12 +65,71 @@ impl MarsMcpServer {
             "tools/call" => Some(self.call_tool(id, request.params)),
             "prompts/list" => Some(Response::ok(id, prompts_list())),
             "prompts/get" => Some(self.call_prompt(id, request.params)),
+            "resources/list" => Some(Response::ok(id, self.resources_list())),
+            "resources/read" => Some(self.read_resource(id, request.params)),
             "notifications/initialized" | "notifications/cancelled" => None,
             other => Some(Response::err(
                 id,
                 METHOD_NOT_FOUND,
                 format!("method not found: {other}"),
             )),
+        }
+    }
+
+    /// Open notebooks exposed as `mars://notebook/<path>` resources.
+    fn resources_list(&self) -> Value {
+        let resources: Vec<Value> = self
+            .session
+            .open_paths()
+            .iter()
+            .map(|path| {
+                json!({
+                    "uri": format!("mars://notebook/{}", path.display()),
+                    "name": path
+                        .file_name()
+                        .map(|n| n.to_string_lossy().into_owned())
+                        .unwrap_or_else(|| path.display().to_string()),
+                    "description": format!("Mars notebook {}", path.display()),
+                    "mimeType": "application/json",
+                })
+            })
+            .collect();
+        json!({ "resources": resources })
+    }
+
+    fn read_resource(&mut self, id: Value, params: Option<Value>) -> Response {
+        let uri = params
+            .as_ref()
+            .and_then(|p| p.get("uri"))
+            .and_then(Value::as_str)
+            .unwrap_or("");
+        let Some(path_str) = uri.strip_prefix("mars://notebook/") else {
+            return Response::err(id, INVALID_PARAMS, format!("unknown resource: {uri}"));
+        };
+        let path = std::path::PathBuf::from(path_str);
+        let Some(notebook) = self.session.notebook(&path) else {
+            return Response::err(
+                id,
+                INVALID_PARAMS,
+                format!("notebook is not open: {}", path.display()),
+            );
+        };
+        match mars_document::persistence::to_json_pretty(notebook) {
+            Ok(text) => Response::ok(
+                id,
+                json!({
+                    "contents": [{
+                        "uri": uri,
+                        "mimeType": "application/json",
+                        "text": text,
+                    }]
+                }),
+            ),
+            Err(error) => Response::err(
+                id,
+                INVALID_PARAMS,
+                format!("could not serialize notebook: {error}"),
+            ),
         }
     }
 
