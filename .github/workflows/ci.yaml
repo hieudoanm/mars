@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload Rust coverage to Codecov
         if: always()
-        uses: codecov/codecov-action@v5.5.5
+        uses: codecov/codecov-action@v7.1.1
         with:
           files: lcov.info
           flags: rust
@@ -166,7 +166,7 @@ jobs:
 
       - name: Upload desktop coverage to Codecov
         if: always()
-        uses: codecov/codecov-action@v5.5.5
+        uses: codecov/codecov-action@v7.1.1
         with:
           files: packages/desktop/coverage/lcov.info
           flags: desktop
