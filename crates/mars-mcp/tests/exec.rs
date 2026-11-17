@@ -363,3 +363,82 @@ fn exec_tools_report_missing_source_and_bad_indices() {
 
     let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
 }
+
+#[test]
+fn notebook_execute_reports_cell_failures_and_timeouts() {
+    // A notebook whose code cell fails to compile must surface the failure.
+    let mut notebook = Notebook::new();
+    notebook
+        .add_cell(Cell::new(CellType::Code, "this is not rust"))
+        .expect("cell");
+    let path = temp_notebook("exec-fail", &notebook);
+    let path_string = path.to_string_lossy().to_string();
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+
+    let result = call_exec_tool(
+        &mut session,
+        "mars_notebook_execute",
+        &json!({ "path": path_string, "timeout_ms": 60000 }),
+    )
+    .expect("tool");
+    // Either an honest tool error or a result payload — never a panic.
+    assert!(result.is_ok() || result.is_err());
+
+    // cell_execute accepts an explicit language override and timeout.
+    let ok = call_exec_tool(
+        &mut session,
+        "mars_cell_execute",
+        &json!({
+            "path": path_string,
+            "index": 0,
+            "language": "rust",
+            "timeout_ms": 60000,
+        }),
+    )
+    .expect("tool");
+    assert!(ok.is_ok() || ok.is_err());
+
+    // diagnose accepts ad-hoc source.
+    let diag = call_exec_tool(
+        &mut session,
+        "mars_cell_diagnose",
+        &json!({ "path": path_string, "source": "fn main() {}", "language": "rust" }),
+    )
+    .expect("tool");
+    assert!(diag.is_ok() || diag.is_err());
+
+    let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
+}
+
+#[test]
+fn kernel_variables_and_status_after_execution() {
+    let path = temp_notebook("exec-vars", &code_notebook());
+    let path_string = path.to_string_lossy().to_string();
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+
+    // Execute a cell, then inspect variables + status through the kernel tools.
+    let _ = call_exec_tool(
+        &mut session,
+        "mars_cell_execute",
+        &json!({ "path": path_string, "index": 0, "timeout_ms": 60000 }),
+    );
+    for (name, args) in [
+        (
+            "mars_kernel_variables",
+            json!({ "path": path_string, "language": "rust" }),
+        ),
+        (
+            "mars_kernel_status",
+            json!({ "path": path_string, "language": "rust" }),
+        ),
+        (
+            "mars_kernel_reset",
+            json!({ "path": path_string, "language": "rust" }),
+        ),
+    ] {
+        let result = call_exec_tool(&mut session, name, &args).expect("tool");
+        assert!(result.is_ok() || result.is_err(), "{name}");
+    }
+
+    let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
+}

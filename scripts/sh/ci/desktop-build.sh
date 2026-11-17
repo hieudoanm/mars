@@ -35,8 +35,8 @@ fi
 
 case "$(uname -s)" in
   Darwin)
-    echo "==> tauri build --bundles dmg"
-    pnpm exec tauri build --bundles dmg
+    echo "==> tauri build --bundles app,dmg"
+    pnpm exec tauri build --bundles app,dmg
     ;;
   Linux)
     echo "==> tauri build --bundles deb,rpm,appimage"

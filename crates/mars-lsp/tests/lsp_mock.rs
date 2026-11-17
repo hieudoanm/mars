@@ -121,7 +121,7 @@ fn cells() -> Vec<CellSource> {
 
 #[test]
 fn session_round_trips_against_mock_server() {
-    let _guard = ENV_LOCK.lock().expect("env lock");
+    let _guard = ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let base = std::env::temp_dir().join(format!("mars-lsp-mock-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&base);
     std::fs::create_dir_all(&base).expect("temp dir");
@@ -189,6 +189,27 @@ fn session_round_trips_against_mock_server() {
     assert!(!actions.is_empty(), "expected code actions");
     assert_eq!(actions[0].edits[0].cell_id, "c1");
 
+    // A second sync sends didChange (not didOpen) and regenerates the
+    // manifest with real dependency entries.
+    let mut deps = std::collections::HashMap::new();
+    deps.insert("serde".to_owned(), "1".to_owned());
+    deps.insert("anyhow".to_owned(), "1".to_owned());
+    session.sync(&cells(), &deps).expect("re-sync");
+    let manifest = std::fs::read_to_string(base.join("mock").join("Cargo.toml")).expect("manifest");
+    assert!(manifest.contains("serde"), "{manifest}");
+    assert!(manifest.contains("anyhow"), "{manifest}");
+
+    // Non-code cells have no document span: position mapping short-circuits.
+    assert!(session.hover("md1", 0, 0).expect("md hover").is_none());
+    assert!(
+        session
+            .completion("md1", 0, 0)
+            .expect("md completion")
+            .is_none()
+    );
+    // Out-of-range line inside a real cell also maps to None.
+    assert!(session.hover("c1", 999, 0).expect("oob hover").is_none());
+
     // Unknown cells short-circuit to empty results without server calls.
     assert!(session.hover("nope", 0, 0).expect("hover").is_none());
     assert!(
@@ -213,7 +234,7 @@ fn session_round_trips_against_mock_server() {
 
 #[test]
 fn spawn_fails_for_missing_binary() {
-    let _guard = ENV_LOCK.lock().expect("env lock");
+    let _guard = ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let base = std::env::temp_dir().join(format!("mars-lsp-missing-{}", std::process::id()));
     std::fs::create_dir_all(&base).expect("temp dir");
     // SAFETY: test-only env mutation.

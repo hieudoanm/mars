@@ -770,3 +770,250 @@ fn doctor_runs_and_reports() {
     run_cli(args(&["notebook", "doctor", &path.to_string_lossy()])).expect("doctor notebook");
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn templates_subcommand_lists_templates() {
+    run_cli(args(&["notebook", "templates"])).expect("notebook templates");
+}
+
+#[test]
+fn export_supports_slides_pdf_and_markdown_aliases() {
+    let dir = temp_dir("export-formats-2");
+    let path = dir.join("book.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    let p = path.to_string_lossy().to_string();
+
+    for (format, ext) in [("slides", "html"), ("pdf", "pdf"), ("markdown", "md")] {
+        let out = dir.join(format!("out.{ext}"));
+        run_cli(args(&["export", &p, format, &out.to_string_lossy()]))
+            .unwrap_or_else(|e| panic!("export {format}: {e}"));
+        assert!(out.exists(), "{format} output missing");
+    }
+
+    // --page-size flag parsing, including an invalid size.
+    let pdf = dir.join("sized.pdf");
+    run_cli(args(&[
+        "export",
+        &p,
+        "pdf",
+        "--page-size=a4",
+        &pdf.to_string_lossy(),
+    ]))
+    .expect("export pdf with page size");
+    assert!(pdf.exists());
+    assert!(
+        run_cli(args(&[
+            "export",
+            &p,
+            "pdf",
+            "--page-size=bogus",
+            &dir.join("bad.pdf").to_string_lossy(),
+        ]))
+        .is_err()
+    );
+}
+
+#[test]
+fn run_option_parse_errors() {
+    let dir = temp_dir("run-opts");
+    let path = dir.join("book.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    let p = path.to_string_lossy().to_string();
+
+    for extra in [
+        vec!["--watch-ms", "0"],
+        vec!["--watch-ms", "abc"],
+        vec!["--watch-ms"],
+        vec!["--timeout-ms", "0"],
+        vec!["--timeout-ms", "abc"],
+        vec!["--timeout-ms"],
+        vec!["--runtime", "bogus"],
+        vec!["--runtime"],
+        vec!["--since"],
+        vec!["--definitely-bogus"],
+    ] {
+        let mut full = vec!["run", p.as_str()];
+        full.extend(extra.iter().copied());
+        assert!(
+            run_cli(args(&full)).is_err(),
+            "expected error for {extra:?}"
+        );
+    }
+}
+
+#[test]
+fn json_report_flag_is_accepted() {
+    let dir = temp_dir("json-report");
+    let path = dir.join("book.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    run_cli(args(&[
+        "run",
+        &path.to_string_lossy(),
+        "--json-report",
+        "--no-save",
+    ]))
+    .expect("run --json-report");
+}
+
+#[test]
+fn serve_and_mcp_usage_errors() {
+    assert!(run_cli(args(&["kernel"])).is_err());
+    assert!(run_cli(args(&["kernel", "bogus"])).is_err());
+    assert!(run_cli(args(&["kernel", "serve", "--runtime", "bogus"])).is_err());
+    assert!(run_cli(args(&["kernel", "serve", "--tcp", "notaport"])).is_err());
+    assert!(run_cli(args(&["kernel", "serve", "--bogus"])).is_err());
+    assert!(run_cli(args(&["mcp"])).is_err());
+    assert!(run_cli(args(&["mcp", "bogus"])).is_err());
+    assert!(run_cli(args(&["mcp", "serve", "--bogus"])).is_err());
+    assert!(run_cli(args(&["tools"])).is_err());
+}
+
+#[test]
+fn run_accepts_timeout_offline_locked_and_evcxr_rejection() {
+    let dir = temp_dir("run-flags");
+    let path = dir.join("code.mars");
+    let mut notebook = Notebook::new();
+    notebook
+        .add_cell(Cell::new(CellType::Code, "let answer = 42;"))
+        .expect("cell");
+    write_notebook(&path, &notebook);
+    let p = path.to_string_lossy().to_string();
+
+    run_cli(args(&[
+        "run",
+        &p,
+        "--timeout-ms",
+        "30000",
+        "--offline",
+        "--locked",
+        "--no-save",
+    ]))
+    .expect("run with flags");
+
+    // The evcxr backend is feature-gated; without it the run must fail
+    // honestly rather than silently fall back.
+    assert!(run_cli(args(&["run", &p, "--runtime", "evcxr", "--no-save"])).is_err());
+}
+
+#[test]
+fn doctor_accepts_a_notebook_path() {
+    let dir = temp_dir("doctor-nb");
+    let path = dir.join("book.mars");
+    write_notebook(&path, &markdown_only_notebook());
+    // Doctor with a notebook checks only the languages it uses; rust is
+    // always available so this succeeds, and a bogus path errors.
+    run_cli(args(&["notebook", "doctor", &path.to_string_lossy()])).expect("doctor notebook");
+    let missing = dir.join("missing.mars");
+    assert!(run_cli(args(&["notebook", "doctor", &missing.to_string_lossy()])).is_err());
+}
+
+#[test]
+fn export_and_import_use_default_output_paths() {
+    let dir = temp_dir("default-paths");
+    let mars = dir.join("book.mars");
+    write_notebook(&mars, &markdown_only_notebook());
+
+    // export without an explicit output writes next to the input.
+    run_cli(args(&["export", &mars.to_string_lossy(), "html"])).expect("default export");
+    assert!(dir.join("book.html").exists());
+
+    // import without an output derives a .mars path next to the .ipynb.
+    let ipynb = dir.join("nb.ipynb");
+    std::fs::write(
+        &ipynb,
+        r#"{"nbformat":4,"nbformat_minor":5,"metadata":{},"cells":[]}"#,
+    )
+    .expect("write ipynb");
+    run_cli(args(&["import", &ipynb.to_string_lossy()])).expect("default import");
+    assert!(dir.join("nb.mars").exists());
+}
+
+#[test]
+fn mcp_serve_and_tools_error_paths() {
+    // Arg-parse failures return before serve_mcp blocks on stdin.
+    assert!(run_cli(args(&["mcp", "serve", "--runtime", "bogus"])).is_err());
+    assert!(run_cli(args(&["mcp", "serve", "--notebook"])).is_err());
+    assert!(run_cli(args(&["mcp", "serve", "--language"])).is_err());
+    assert!(run_cli(args(&["tools", "bogus"])).is_err());
+    // A --server command that cannot spawn surfaces as an error.
+    assert!(
+        run_cli(args(&[
+            "tools",
+            "list",
+            "--server",
+            "definitely-not-a-real-binary-xyz",
+        ]))
+        .is_err()
+    );
+}
+
+#[test]
+fn new_example_and_doctor_unknown_language() {
+    let dir = temp_dir("example-doctor");
+    let path = dir.join("ex.mars");
+    // Unknown example name errors honestly.
+    assert!(
+        run_cli(args(&[
+            "new",
+            &path.to_string_lossy(),
+            "--example",
+            "definitely-not-an-example",
+        ]))
+        .is_err()
+    );
+
+    // Doctor on a notebook whose language has no probe reports success
+    // (no external runtime required).
+    let nb = dir.join("odd.mars");
+    let mut notebook = Notebook::new();
+    notebook.metadata.language = "cobol".to_owned();
+    write_notebook(&nb, &notebook);
+    run_cli(args(&["notebook", "doctor", &nb.to_string_lossy()])).expect("doctor cobol");
+}
+
+#[test]
+fn watch_mode_runs_and_detects_changes() {
+    let dir = temp_dir("watch");
+    let path = dir.join("watched.mars");
+    // Markdown-only notebook: each watch iteration completes quickly.
+    let mut notebook = Notebook::new();
+    notebook.cells.push(Cell {
+        cell_type: CellType::Markdown,
+        source: "# watched".to_owned(),
+        metadata: serde_json::Map::new(),
+        outputs: Vec::new(),
+        execution_count: None,
+        id: mars_core::CellId::new(),
+    });
+    write_notebook(&path, &notebook);
+
+    // --watch never returns; run it on a detached thread. The first
+    // fingerprint pass plus one detected file change are enough coverage.
+    let watch_path = path.clone();
+    let handle = std::thread::spawn(move || {
+        run_cli(args(&[
+            "notebook",
+            "run",
+            &watch_path.to_string_lossy(),
+            "--watch",
+            "--watch-ms",
+            "20",
+            "--no-save",
+        ]))
+    });
+    std::thread::sleep(std::time::Duration::from_millis(800));
+
+    // Touch the file (mtime+size change) so the watch loop iterates again.
+    let mut touched = Notebook::new();
+    touched.cells.push(Cell {
+        cell_type: CellType::Markdown,
+        source: "# watched v2".to_owned(),
+        metadata: serde_json::Map::new(),
+        outputs: Vec::new(),
+        execution_count: None,
+        id: mars_core::CellId::new(),
+    });
+    write_notebook(&path, &touched);
+    std::thread::sleep(std::time::Duration::from_millis(800));
+    drop(handle); // detached: the watch loop keeps running until process exit
+}

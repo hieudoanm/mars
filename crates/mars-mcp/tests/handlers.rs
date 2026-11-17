@@ -287,3 +287,78 @@ fn read_defaults_to_include_outputs_and_strips_on_request() {
 
     let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
 }
+
+#[test]
+fn document_tools_cover_update_move_read_inspect_save() {
+    let path = temp_notebook_path("doc-more");
+    let path_string = path.to_string_lossy().to_string();
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+
+    call(
+        &mut session,
+        "mars_notebook_new",
+        json!({ "path": path_string, "language": "rust" }),
+    )
+    .expect("new");
+    call(
+        &mut session,
+        "mars_cell_add",
+        json!({ "path": path_string, "cell_type": "markdown", "source": "# Hi" }),
+    )
+    .expect("add md");
+    call(
+        &mut session,
+        "mars_cell_add",
+        json!({
+            "path": path_string,
+            "cell_type": "code",
+            "source": "let x = 1;",
+            "index": 0,
+            "language": "rust",
+        }),
+    )
+    .expect("add code at index");
+
+    // Update source and cell type; move cells; read a single cell.
+    call(
+        &mut session,
+        "mars_cell_update",
+        json!({ "path": path_string, "index": 0, "source": "let y = 2;" }),
+    )
+    .expect("update source");
+    call(
+        &mut session,
+        "mars_cell_update",
+        json!({ "path": path_string, "index": 1, "cell_type": "raw" }),
+    )
+    .expect("update type");
+    call(
+        &mut session,
+        "mars_cell_move",
+        json!({ "path": path_string, "from": 0, "to": 1 }),
+    )
+    .expect("move");
+    let single = call(
+        &mut session,
+        "mars_notebook_read",
+        json!({ "path": path_string, "cell_index": 0, "include_outputs": false }),
+    )
+    .expect("read cell");
+    assert!(single.is_object());
+
+    // Inspect + save round out the document tools.
+    call(
+        &mut session,
+        "mars_notebook_inspect",
+        json!({ "path": path_string }),
+    )
+    .expect("inspect");
+    call(
+        &mut session,
+        "mars_notebook_save",
+        json!({ "path": path_string }),
+    )
+    .expect("save");
+
+    let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
+}

@@ -172,3 +172,35 @@ fn notifications_and_non_request_json_get_no_response_or_parse_error() {
     let second: serde_json::Value = serde_json::from_str(lines[1]).expect("json");
     assert!(second["error"].is_object());
 }
+
+#[test]
+fn tools_call_dispatches_lab_tools() {
+    // Point lab storage at a temp dir; settings are process-global but no
+    // other test in this binary touches lab state.
+    let dir = std::env::temp_dir().join(format!("mars-mcp-server-lab-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    mars_lab::config::set_settings(mars_lab::config::Settings::new(
+        format!("sqlite://{}", dir.join("lab.db").display()),
+        dir.join("data"),
+    ));
+
+    let input = concat!(
+        r#"{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"mars_lab_algorithms","arguments":{}}}"#,
+        "\n",
+        r#"{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"mars_lab_datasets","arguments":{}}}"#,
+        "\n",
+        r#"{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"mars_lab_jobs","arguments":{"limit":10}}}"#,
+        "\n",
+    );
+    let output = run_session(input);
+    let lines: Vec<&str> = output.lines().collect();
+    assert_eq!(lines.len(), 3);
+    for line in lines {
+        let value: Value = serde_json::from_str(line).expect("json");
+        assert!(value.get("error").is_none(), "unexpected error: {value}");
+        assert!(value["result"]["content"].is_array());
+    }
+
+    let _ = std::fs::remove_dir_all(&dir);
+}

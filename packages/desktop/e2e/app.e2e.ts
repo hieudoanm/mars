@@ -6,7 +6,10 @@
 // The specs share one app session and run sequentially: each builds on the
 // notebook opened by the previous one.
 
-const button = (text: string) => $(`//button[contains(normalize-space(.), "${text}")]`);
+// IconButton renders its label as `aria-label` (the visible text lives in a
+// tooltip span), so match either button text or the aria-label attribute.
+const button = (text: string) =>
+  $(`//button[contains(normalize-space(.), "${text}") or @aria-label="${text}"]`);
 
 const visible = async (selector: string) => {
   const el = $(selector);
@@ -15,6 +18,12 @@ const visible = async (selector: string) => {
 };
 
 const lastEditor = async () => {
+  // Cells mount asynchronously after NotebookSession appears; poll for the
+  // first editor before indexing into the list.
+  await browser.waitUntil(async () => (await $$('.cm-content')).length > 0, {
+    timeout: 30_000,
+    interval: 500,
+  });
   const editors = await $$('.cm-content');
   const editor = editors[editors.length - 1];
   await editor.waitForDisplayed({ timeout: 15_000 });

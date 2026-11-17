@@ -1,5 +1,44 @@
+use mars_lab::config::{Settings, set_settings};
 use mars_mcp::lab::{LabBackend, call_lab_tool};
 use serde_json::{Value, json};
+use std::path::PathBuf;
+use std::sync::{Mutex, OnceLock};
+
+static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+
+fn serial() -> std::sync::MutexGuard<'static, ()> {
+    LOCK.get_or_init(|| Mutex::new(()))
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+}
+
+fn temp_dir(name: &str) -> PathBuf {
+    let dir = std::env::temp_dir().join(format!("mars-mcp-lab-{}-{}", std::process::id(), name));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    dir
+}
+
+/// Point lab storage at a private temp dir (settings are process-global).
+fn isolate_storage(name: &str) -> PathBuf {
+    let dir = temp_dir(name);
+    set_settings(Settings::new(
+        format!("sqlite://{}", dir.join("lab.db").display()),
+        dir.join("data"),
+    ));
+    dir
+}
+
+fn write_csv(dir: &PathBuf, name: &str) -> PathBuf {
+    let path = dir.join(name);
+    let mut csv = String::from("a,b,label\n");
+    for i in 0..30 {
+        let label = if i % 2 == 0 { "cat" } else { "dog" };
+        csv.push_str(&format!("{},{} ,{}\n", i as f64, (i * 3) as f64, label));
+    }
+    std::fs::write(&path, csv).expect("write csv");
+    path
+}
 
 fn backend() -> LabBackend {
     LabBackend::with_in_memory_database().expect("lab backend")
@@ -128,4 +167,297 @@ fn invalid_arguments_and_ids_are_rejected() {
 fn unknown_lab_prefix_tool_is_not_dispatched() {
     let mut backend = backend();
     assert!(call_lab_tool(&mut backend, "mars_unknown", &json!({})).is_none());
+}
+
+#[test]
+fn dataset_upload_inspect_train_job_export_flow() {
+    let _guard = serial();
+    let dir = isolate_storage("flow");
+    let csv = write_csv(&dir, "pets.csv");
+    let mut backend = backend();
+
+    // Upload
+    let uploaded = call(
+        &mut backend,
+        "mars_lab_dataset_upload",
+        json!({ "path": csv.to_string_lossy() }),
+    )
+    .expect("upload");
+    let dataset_id = uploaded["dataset"]["id"]
+        .as_str()
+        .expect("dataset id")
+        .to_string();
+
+    // Inspect (profile from stored CSV)
+    let inspected = call(
+        &mut backend,
+        "mars_lab_dataset",
+        json!({ "dataset_id": dataset_id }),
+    )
+    .expect("inspect");
+    assert!(
+        inspected["profile"].is_object(),
+        "profile should be present"
+    );
+
+    // Train
+    let trained = call(
+        &mut backend,
+        "mars_lab_train",
+        json!({
+            "dataset_id": dataset_id,
+            "task": "classification",
+            "algorithm": "logistic_regression",
+            "features": ["a", "b"],
+            "label": "label",
+            "hyperparameters": {},
+        }),
+    )
+    .expect("train");
+    assert_eq!(trained["status"], "completed");
+    let job_id = trained["job"]["id"].as_str().expect("job id").to_string();
+
+    // Jobs list contains the job
+    let jobs = call(&mut backend, "mars_lab_jobs", json!({})).expect("jobs");
+    assert!(
+        jobs["jobs"]
+            .as_array()
+            .expect("array")
+            .iter()
+            .any(|j| j["id"] == job_id)
+    );
+
+    // Job detail includes metric + artefact
+    let job = call(&mut backend, "mars_lab_job", json!({ "job_id": job_id })).expect("job");
+    assert!(job["metric"].is_object());
+    assert_eq!(job["artefacts"].as_array().expect("array").len(), 1);
+
+    // Export ONNX artefact to disk
+    let output = dir.join("model.onnx");
+    let exported = call(
+        &mut backend,
+        "mars_lab_export",
+        json!({
+            "job_id": job_id,
+            "output": output.to_string_lossy(),
+            "format": "onnx",
+        }),
+    )
+    .expect("export");
+    assert_eq!(exported["format"], "onnx");
+    assert!(output.exists());
+    assert!(output.metadata().expect("meta").len() > 0);
+}
+
+#[test]
+fn lab_tools_reject_bad_arguments_and_states() {
+    let _guard = serial();
+    isolate_storage("errors");
+    let mut backend = backend();
+    let missing = "00000000-0000-0000-0000-000000000000";
+
+    // Parse-level errors
+    assert!(call(&mut backend, "mars_lab_dataset_upload", json!({})).is_err());
+    assert!(call(
+        &mut backend,
+        "mars_lab_train",
+        json!({ "dataset_id": missing, "task": "classification", "algorithm": "logistic_regression" }),
+    )
+    .is_err());
+
+    // Unknown algorithm / task mismatch / bad uuids
+    let csv = write_csv(&temp_dir("errors-csv"), "x.csv");
+    let uploaded = call(
+        &mut backend,
+        "mars_lab_dataset_upload",
+        json!({ "path": csv.to_string_lossy() }),
+    )
+    .expect("upload");
+    let dataset_id = uploaded["dataset"]["id"].as_str().unwrap().to_string();
+
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_train",
+            json!({
+                "dataset_id": dataset_id, "task": "classification",
+                "algorithm": "nope", "features": ["a"],
+            }),
+        )
+        .is_err()
+    );
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_train",
+            json!({
+                "dataset_id": dataset_id, "task": "regression",
+                "algorithm": "logistic_regression", "features": ["a"],
+            }),
+        )
+        .is_err()
+    );
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_train",
+            json!({
+                "dataset_id": dataset_id, "task": "classification",
+                "algorithm": "logistic_regression", "features": [],
+            }),
+        )
+        .is_err()
+    );
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_train",
+            json!({
+                "dataset_id": "not-a-uuid", "task": "classification",
+                "algorithm": "logistic_regression", "features": ["a"],
+            }),
+        )
+        .is_err()
+    );
+
+    // Missing job / artefact format
+    assert!(call(&mut backend, "mars_lab_job", json!({ "job_id": missing }),).is_err());
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_export",
+            json!({ "job_id": missing, "output": "/tmp/x.onnx", "format": "onnx" }),
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn lab_jobs_limit_and_export_default_format() {
+    let _guard = serial();
+    isolate_storage("limits");
+    let mut backend = backend();
+
+    // jobs with explicit limit (clamped) and empty result shape.
+    let jobs = call(&mut backend, "mars_lab_jobs", json!({ "limit": 5 })).expect("jobs");
+    assert!(jobs["jobs"].is_array());
+    assert!(jobs["next_cursor"].is_null() || jobs["next_cursor"].is_string());
+
+    // export without "format" defaults to onnx; unknown job errors.
+    let missing = "00000000-0000-0000-0000-000000000000";
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_export",
+            json!({ "job_id": missing, "output": "/tmp/x.onnx" }),
+        )
+        .is_err()
+    );
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_export",
+            json!({ "job_id": missing, "output": "/tmp/x", "format": "pkl" }),
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn lab_dataset_upload_rejects_missing_and_bad_files() {
+    let _guard = serial();
+    isolate_storage("upload-errors");
+    let mut backend = backend();
+
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_dataset_upload",
+            json!({ "path": "/nonexistent/definitely-missing.csv" }),
+        )
+        .is_err()
+    );
+
+    let dir = temp_dir("bad-upload");
+    let bad = dir.join("bad.csv");
+    std::fs::write(&bad, "a,b\n1,\"unclosed\n").expect("write");
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_dataset_upload",
+            json!({ "path": bad.to_string_lossy() }),
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn lab_train_and_export_surface_io_failures() {
+    let _guard = serial();
+    let dir = isolate_storage("io-failures");
+    let mut backend = backend();
+    let csv = write_csv(&dir, "pets.csv");
+
+    let uploaded = call(
+        &mut backend,
+        "mars_lab_dataset_upload",
+        json!({ "path": csv.to_string_lossy() }),
+    )
+    .expect("upload");
+    let dataset_id = uploaded["dataset"]["id"].as_str().unwrap().to_string();
+    let storage_key = uploaded["storage_key"].as_str().unwrap().to_string();
+
+    // Train against a dataset id that does not exist.
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_train",
+            json!({
+                "dataset_id": "00000000-0000-0000-0000-000000000000",
+                "task": "classification",
+                "algorithm": "logistic_regression",
+                "features": ["a"],
+            }),
+        )
+        .is_err()
+    );
+
+    // Delete the stored CSV: training must fail at load time.
+    std::fs::remove_file(mars_lab::storage::dataset_path(&storage_key)).expect("remove stored");
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_train",
+            json!({
+                "dataset_id": dataset_id,
+                "task": "classification",
+                "algorithm": "logistic_regression",
+                "features": ["a"],
+                "label": "label",
+            }),
+        )
+        .is_err()
+    );
+
+    // jobs limit of wrong type is a parse error; export args validate too.
+    assert!(call(&mut backend, "mars_lab_jobs", json!({ "limit": "x" })).is_err());
+    assert!(call(&mut backend, "mars_lab_export", json!({ "job_id": 5 })).is_err());
+    assert!(call(&mut backend, "mars_lab_job", json!({})).is_err());
+    assert!(call(&mut backend, "mars_lab_dataset", json!({})).is_err());
+}
+
+#[test]
+fn lab_dataset_upload_rejects_directory_path() {
+    let _guard = serial();
+    isolate_storage("dir-upload");
+    let mut backend = backend();
+    let dir = temp_dir("dir-target");
+    assert!(
+        call(
+            &mut backend,
+            "mars_lab_dataset_upload",
+            json!({ "path": dir.to_string_lossy() }),
+        )
+        .is_err()
+    );
 }

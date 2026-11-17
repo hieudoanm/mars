@@ -123,3 +123,47 @@ fn kernel_for_rejects_unknown_languages() {
     // Status is read-only: no kernel created, so None.
     assert!(session.kernel_status(None, "rust").is_none());
 }
+
+#[test]
+fn notebook_accessors_and_sql_kernel_branch() {
+    let dir = temp_dir("accessors");
+    let path = dir.join("nb.mars");
+    let mut notebook = Notebook::new();
+    notebook
+        .add_cell(Cell::new(CellType::Code, "select 1"))
+        .expect("cell");
+    mars_document::save_atomic(&notebook, &path).expect("save");
+
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, false, None);
+
+    // notebook() before open -> None; after open -> Some; second open hits
+    // the cache branch.
+    assert!(session.notebook(&path).is_none());
+    session.open_notebook(&path).expect("open");
+    assert!(session.notebook(&path).is_some());
+    session.open_notebook(&path).expect("re-open cached");
+
+    // notebook_mut on an unopened path auto-loads and marks dirty.
+    let other = dir.join("other.mars");
+    mars_document::save_atomic(&Notebook::new(), &other).expect("save other");
+    session.notebook_mut(&other).expect("mut");
+    assert!(session.is_dirty(&other));
+    assert!(session.save_notebook(&other).expect("save"));
+    assert!(!session.is_dirty(&other));
+
+    // sql + rust kernels scoped to a notebook path exercise the
+    // configuration branches (sql sources, cargo metadata).
+    session.kernel_for(Some(&path), "sql").expect("sql kernel");
+    session
+        .kernel_for(Some(&path), "rust")
+        .expect("rust kernel");
+    // Re-requesting the same kernel hits the cache branch.
+    session.kernel_for(Some(&path), "sql").expect("sql cached");
+
+    // save_notebook on a path that cannot be opened errors.
+    let missing = dir.join("missing.mars");
+    assert!(session.save_notebook(&missing).is_err());
+    assert!(session.notebook_mut(&missing).is_err());
+
+    let _ = std::fs::remove_dir_all(&dir);
+}

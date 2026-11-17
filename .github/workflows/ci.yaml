@@ -283,12 +283,20 @@ jobs:
       - name: Build macOS bundles
         if: runner.os == 'macOS'
         working-directory: packages/desktop
-        run: pnpm exec tauri build --bundles dmg
+        run: pnpm exec tauri build --bundles app,dmg
 
       - name: Zip macOS app bundle
         if: runner.os == 'macOS'
         working-directory: target/release/bundle/macos
-        run: zip -r "Project Mars.app.zip" "Project Mars.app"
+        run: |
+          shopt -s nullglob
+          apps=(*.app)
+          if [ "${#apps[@]}" -ne 1 ]; then
+            echo "expected exactly one .app bundle, found: ${apps[*]:-none}"
+            ls -la
+            exit 1
+          fi
+          zip -r "${apps[0]%.app}.app.zip" "${apps[0]}"
 
       - name: Build Linux bundles
         if: runner.os == 'Linux'
@@ -307,7 +315,7 @@ jobs:
           name: mars-desktop-macos
           path: |
             target/release/bundle/dmg/*.dmg
-            target/release/bundle/macos/Project Mars.app.zip
+            target/release/bundle/macos/*.app.zip
           if-no-files-found: error
 
       - name: Upload Linux artifacts

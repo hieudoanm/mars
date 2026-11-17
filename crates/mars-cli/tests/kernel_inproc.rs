@@ -310,3 +310,195 @@ fn input_request_answers_live_python_prompt() {
 
     drop(requests);
 }
+
+#[test]
+fn comm_request_dispatches_to_language_kernel() {
+    // A comm request for an unknown language errors; for the default rust
+    // kernel it is handled (replay backend returns an empty comm list or an
+    // honest error — either way the arm is exercised).
+    let input = concat!(
+        r#"{"id":"c1","request":{"type":"comm","comm_id":"w1","comm_type":"comm_msg","data":{"x":1}}}"#,
+        "\n",
+        r#"{"id":"c2","request":{"type":"comm","comm_id":"w1","comm_type":"comm_msg","data":{},"language":"cobol"}}"#,
+        "\n",
+    );
+    let responses = serve(input, None, None);
+    assert_eq!(responses.len(), 2);
+    let kind_for = |id: &str| {
+        responses
+            .iter()
+            .find(|r| r["id"] == id)
+            .and_then(|r| r["response"]["type"].as_str())
+            .unwrap_or("")
+            .to_owned()
+    };
+    assert!(kind_for("c1") == "comm" || kind_for("c1") == "error");
+    assert_eq!(kind_for("c2"), "error");
+}
+
+#[test]
+fn execute_accepts_options_and_rejects_unknown_language_with_options() {
+    let input = concat!(
+        r#"{"id":"o1","request":{"type":"execute","source":"  ","options":{"python":{"version":"3.12"}}}}"#,
+        "\n",
+        r#"{"id":"o2","request":{"type":"execute","source":"1","language":"cobol","options":{"cobol":{}}}}"#,
+        "\n",
+    );
+    let responses = serve(input, None, None);
+    assert_eq!(responses.len(), 2);
+    for response in &responses {
+        assert_eq!(response["response"]["type"], "error");
+    }
+}
+
+#[test]
+fn serve_kernel_tcp_fails_when_port_is_taken() {
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("bind probe");
+    let port = listener.local_addr().expect("addr").port();
+    // Port is still bound by `listener`, so serve_kernel_tcp must fail fast
+    // instead of blocking in accept().
+    let result = mars::kernel::serve_kernel_tcp(port, None, RuntimeBackendKind::Replay, None, None);
+    assert!(result.is_err());
+}
+
+#[test]
+fn sql_and_python_language_branches_dispatch() {
+    // SQL uses the in-process SQLite backend; python options come from the
+    // request. Both exercise build_kernel's per-language branches — an
+    // honest execution or error is acceptable for either.
+    let input = concat!(
+        r#"{"id":"sql","request":{"type":"execute","source":"select 1 as one;","language":"sql"}}"#,
+        "\n",
+        r#"{"id":"py","request":{"type":"execute","source":"1 + 1","language":"python","options":{"python":{"version":"3"}}}}"#,
+        "\n",
+        r#"{"id":"py2","request":{"type":"execute","source":"1 + 1","language":"python"}}"#,
+        "\n",
+    );
+    let responses = serve(input, None, None);
+    let finals: Vec<&Value> = responses
+        .iter()
+        .filter(|r| r.get("event").is_none())
+        .collect();
+    assert_eq!(finals.len(), 3);
+    for response in finals {
+        let kind = response["response"]["type"].as_str().unwrap_or("");
+        assert!(kind == "execution" || kind == "error", "{response}");
+    }
+}
+
+#[test]
+fn notebook_metadata_supplies_python_options() {
+    // A notebook whose metadata declares python options exercises the
+    // notebook-config branch of build_kernel.
+    let dir =
+        std::env::temp_dir().join(format!("mars-kernel-inproc-{}-pyopts", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let path = dir.join("book.mars");
+    let mut notebook = mars_document::Notebook::new();
+    notebook.metadata.language = "python".to_owned();
+    notebook.metadata.extra.insert(
+        "python".to_owned(),
+        serde_json::json!({ "version": "3", "interpreter": "python3" }),
+    );
+    mars_document::save_atomic(&notebook, &path).expect("save");
+
+    let input = r#"{"id":"p","request":{"type":"execute","source":"6 * 7","language":"python"}}"#;
+    let responses = serve(
+        &format!("{input}\n"),
+        Some(path.to_string_lossy().into_owned()),
+        None,
+    );
+    let finals: Vec<&Value> = responses
+        .iter()
+        .filter(|r| r.get("event").is_none())
+        .collect();
+    assert_eq!(finals.len(), 1);
+    let kind = finals[0]["response"]["type"].as_str().unwrap_or("");
+    assert!(kind == "execution" || kind == "error", "{finals:?}");
+}
+
+#[test]
+fn status_reset_variables_cover_populated_kernels() {
+    // Execute first so the per-language kernel map is non-empty; status then
+    // aggregates across kernels and reset/variables hit the populated arms.
+    let input = concat!(
+        r#"{"id":"e1","request":{"type":"execute","source":"let z = 1;"}}"#,
+        "\n",
+        r#"{"id":"e2","request":{"type":"execute","source":"let q = 2;","language":"sql"}}"#,
+        "\n",
+        r#"{"id":"s","request":{"type":"status"}}"#,
+        "\n",
+        r#"{"id":"v","request":{"type":"variables"}}"#,
+        "\n",
+        r#"{"id":"r","request":{"type":"reset"}}"#,
+        "\n",
+        r#"{"id":"s2","request":{"type":"status"}}"#,
+        "\n",
+    );
+    let responses = serve(input, None, None);
+    let kind_for = |id: &str| {
+        responses
+            .iter()
+            .find(|r| r["id"] == id && r.get("response").is_some())
+            .and_then(|r| r["response"]["type"].as_str())
+            .unwrap_or("")
+            .to_owned()
+    };
+    assert_eq!(kind_for("e1"), "execution");
+    assert!(kind_for("e2") == "execution" || kind_for("e2") == "error");
+    assert_eq!(kind_for("s"), "status");
+    assert_eq!(kind_for("v"), "variables");
+    assert_eq!(kind_for("r"), "reset");
+    assert_eq!(kind_for("s2"), "status");
+}
+
+#[test]
+fn missing_notebook_path_errors_and_timeout_interrupts() {
+    // A notebook path that does not exist fails during session setup.
+    let result = std::panic::catch_unwind(|| {
+        serve_connection(
+            BufReader::new(Cursor::new(
+                "{\"id\":\"x\",\"request\":{\"type\":\"status\"}}\n"
+                    .as_bytes()
+                    .to_vec(),
+            )),
+            BufWriter::new(Vec::new()),
+            RuntimeBackendKind::Replay,
+            Some("/nonexistent/definitely-mars.mars".to_owned()),
+            None,
+        )
+    });
+    // serve_connection returns Err rather than panicking.
+    match result {
+        Ok(Err(_)) | Err(_) => {}
+        Ok(Ok(())) => panic!("expected error for missing notebook"),
+    }
+
+    // A 1ms timeout interrupts the compile/run wait.
+    let input = r#"{"id":"t","request":{"type":"execute","source":"fn main() { std::thread::sleep(std::time::Duration::from_secs(5)); }","timeout_millis":1}}"#;
+    let responses = serve(&format!("{input}\n"), None, None);
+    let final_response = responses
+        .iter()
+        .find(|r| r.get("response").is_some())
+        .expect("response");
+    let kind = final_response["response"]["type"].as_str().unwrap_or("");
+    assert!(kind == "execution" || kind == "error", "{final_response}");
+}
+
+#[test]
+fn cancel_during_execute_is_acknowledged() {
+    // A long-running cell followed immediately by cancel: the reader thread
+    // answers `cancelled` while the executor is still busy.
+    let input = concat!(
+        r#"{"id":"run","request":{"type":"execute","source":"std::thread::sleep(std::time::Duration::from_secs(3));","timeout_millis":10000}}"#,
+        "\n",
+        r#"{"id":"x","request":{"type":"cancel"}}"#,
+        "\n",
+    );
+    let responses = serve(input, None, None);
+    let cancelled = responses
+        .iter()
+        .any(|r| r["id"] == "x" && r["response"]["type"] == "cancelled");
+    assert!(cancelled, "expected cancelled ack: {responses:?}");
+}

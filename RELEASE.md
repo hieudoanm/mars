@@ -24,9 +24,12 @@ app, MCP server, and VS Code/Zed/JetBrains extensions.
 ### Quick start
 
 ```sh
-mars notebook create demo.mars
+mars notebook new demo.mars
 mars notebook run demo.mars
-mars lab train --dataset data.csv --algorithm random_forest
+mars lab dataset data.csv    # prints the dataset UUID
+mars lab train --dataset-id <uuid> --task classification \
+  --algorithm random_forest_classifier --features age,income --label target
+mars lab export --job-id <uuid> --output model.onnx
 mars mcp
 ```
 

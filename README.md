@@ -1,274 +1,298 @@
 # Project Mars
 
-An interactive computing platform in Rust — **Mars Notebook** for multi-language
-executable notebooks and **Mars Lab** for machine learning.
+**Mars is a Rust-powered interactive computing platform that combines
+multi-language executable notebooks with an integrated machine-learning
+studio.** It is an independent open-source project — not a Jupyter frontend —
+with its own document format, execution engine, protocol, CLI, desktop app,
+and rendering pipeline.
 
-[![CI][badge-ci]][link-ci]  [![License: MIT][badge-license]][link-license]  [![rust][badge-rust]][link-rust]  [![desktop][badge-desktop]][link-desktop]  [![MCP][badge-mcp]][link-mcp]  [![coverage][badge-coverage]][link-coverage]  [![rust coverage][badge-rust-coverage]][link-rust-coverage]  [![desktop coverage][badge-desktop-coverage]][link-desktop-coverage]
+[![CI][badge-ci]][link-ci] [![License: MIT][badge-license]][link-license] [![Rust][badge-rust]][link-rust] [![Desktop][badge-desktop]][link-desktop] [![MCP][badge-mcp]][link-mcp]
 
-Topics: `notebook`, `rust`, `tauri`, `mcp`, `vscode-extension`
+**Explore ideas. Execute code. Discover possibilities.**
 
-![Project Mars — a Rust-powered interactive notebook platform](assets/branding/png/og.png)
+- [Live demo](https://hieudoanm.github.io/mars/)
+- [Install](#installation)
+- [Releases](https://github.com/hieudoanm/mars/releases)
+- [Support Mars](#support-mars)
 
-**Live demo:** <https://hieudoanm.github.io/mars/>
+Topics: `notebook` · `rust` · `tauri` · `mcp` · `vscode-extension` · `machine-learning`
 
-**Project Mars** — Explore ideas. Execute code. Discover possibilities.
+---
 
-## Table of Contents
+## Two products, one platform
 
-- [Project Mars](#project-mars)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Get Started](#get-started)
-    - [CLI](#cli)
-    - [Node workspace](#node-workspace)
-    - [Desktop application](#desktop-application)
-  - [Demo](#demo)
-  - [VS Code extension](#vs-code-extension)
-  - [Documentation](#documentation)
-  - [Landing site](#landing-site)
-  - [License](#license)
+### Mars Notebook
 
-**Supported languages:** Rust · Python · R · Julia · C++
+An interactive notebook environment for code, Markdown, mathematics, tables,
+charts, and rich output — in a native, versioned `.mars` document with
+Jupyter `.ipynb` import/export.
 
-## Features
+- **Languages:** Rust, Python, R, Julia, C++, and SQL — each behind a
+  `RuntimeBackend` trait, running in an isolated child process (SQL is
+  in-process SQLite).
+- **Execution:** `mars-kernel` owns persistent per-language sessions;
+  `mars-protocol` defines typed requests/responses; `mars-renderer` produces
+  HTML, Markdown, slides, PDF, and `.ipynb` exports.
+- **Editing:** a Tauri 2 + React desktop app with a CodeMirror editor,
+  rust-analyzer diagnostics over LSP, cell comments, run-from-cell, and
+  slides export.
+- **Automation:** `mars notebook …` works fully headless — create, run,
+  inspect, diff, export — plus `mars kernel serve` (JSONL over stdio/TCP)
+  and an MCP server for AI assistants.
+- **Ecosystem:** VS Code, Zed, and JetBrains extensions.
 
-**Mars Notebook** — Interactive computing platform:
+### Mars Lab
 
-- Multi-language notebook platform supporting Rust, Python, R, Julia, and C++.
-- Typed notebook documents, validation, and atomic persistence.
-- Isolated execution with per-language persistent sessions.
-- Rust: replay-based and experimental Evcxr backends with Cargo dependencies.
-- Python: persistent driver with matplotlib and top-level await.
-- R: persistent driver with plot capture and `.GlobalEnv` binding.
-- Julia: persistent driver with MIME bundles and interactive input.
-- C++: replay-based compilation with Conan/vcpkg dependencies.
-- Jupyter conversion with common rich MIME outputs.
-- Sanitized HTML rendering with KaTeX math and Vega-Lite charts.
-- Model Context Protocol (MCP) server for AI assistant integration.
+*Machine learning in Rust* — a studio that turns CSV datasets into trained
+ONNX models.
 
-**Mars Lab** — Machine learning training studio:
+- **Pipeline:** CSV upload → profiling → column mapping → algorithm selection
+  → training → metrics/charts → ONNX export.
+- **Catalogue:** 83 algorithms across classification, regression,
+  semi-supervised learning, clustering, anomaly detection, and offline
+  reinforcement learning.
+- **Surfaces:** `mars lab …` CLI and a Lab view inside the desktop app.
+- **Storage:** SQLite (sqlx, WAL) for datasets, jobs, metrics, and artefacts;
+  dataset files under `.mars-lab-data/`.
 
-- 83 ML algorithms across 6 task types (classification, regression, clustering, anomaly detection, semi-supervised, reinforcement learning).
-- CSV dataset management with automatic type inference and missing value detection.
-- Pure Rust training pipeline with metrics, charts, and ONNX export.
-- SQLite persistence for datasets, jobs, and artefacts.
-- Job comparison and model versioning.
-- Desktop UI and CLI access for headless training.
+---
 
-**Shared platform:**
+## Why Mars
 
-- Functional Tauri desktop editor with multi-notebook workspace, LSP integration, and rich UI.
-- Next.js landing site with comprehensive documentation and VS Code/Zed/JetBrains extensions.
+Mars grew out of a personal interest in Rust and its potential for data
+science, machine learning, and interactive computing. The ambition is to
+explore how Rust can become an increasingly practical and approachable choice
+for ML and scientific computing — and to find out, honestly, where it works
+well and where it doesn't.
 
-## Get Started
+It is a personal open-source project developed in spare time. Expect a fast,
+opinionated codebase, real documentation, and a willingness to change course
+based on what the community finds useful. Bug reports, feature ideas, and
+architecture discussions are all welcome — see [Contributing](#contributing).
 
-### CLI
+---
 
-- Install Rust 1.85 or newer.
-- Run Project Mars directly from the workspace:
+## See it in action
+
+Real captures of the current application — no mockups.
+
+**Mars Notebook** — Markdown cells render as prose, Rust cells get syntax
+highlighting and persistent variables, and outputs (text, errors, tables,
+images, charts) appear inline beneath each cell:
+
+![Mars Notebook editor running the Getting started notebook](assets/demo/png/desktop-notebook.png)
+
+**Mars Lab** — upload CSV datasets, train models with 83 algorithms, and
+export ONNX artefacts:
+
+![Mars Lab interface with datasets and training jobs](assets/demo/png/desktop-lab.png)
+![Mars Lab new training job form](assets/demo/png/desktop-lab-new-job.png)
+
+**From the terminal** — the same `mars` CLI drives everything headless:
+
+![Project Mars CLI session: mars notebook new, run, inspect, export](assets/demo/png/terminal.png)
+
+Or watch the animated capture: [`assets/demo/gif/demo.gif`](assets/demo/gif/demo.gif).
+
+The desktop welcome screen routes between the two products:
+
+![Project Mars desktop welcome screen](assets/demo/png/desktop-welcome.png)
+
+Demo assets live in [`assets/demo/`](assets/demo/) and are regenerated with
+[`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh) and
+[`assets/demo/svg-to-gif.sh`](assets/demo/svg-to-gif.sh).
+
+---
+
+## Features & architecture
+
+The repository is a Cargo workspace (`crates/`) plus a pnpm/Turborepo Node
+workspace (`packages/`, `extensions/`). Domain logic lives in Rust; the
+desktop frontend stays thin.
+
+| Crate                                                          | Responsibility                                         |
+| -------------------------------------------------------------- | ------------------------------------------------------ |
+| `mars-core`                                                    | Shared domain types, IDs, errors                       |
+| `mars-document`                                                | `.mars` notebook model, validation, atomic persistence |
+| `mars-runtime` + `mars-runtime-{python,r,julia,cpp,sql,evcxr}` | Per-language execution backends                        |
+| `mars-kernel`                                                  | Session lifecycle, language dispatch, cancellation     |
+| `mars-protocol`                                                | Typed frontend↔kernel messages                         |
+| `mars-renderer`                                                | HTML / Markdown / slides / PDF / `.ipynb` export       |
+| `mars-jupyter`                                                 | `.ipynb` import/export                                 |
+| `mars-lsp`                                                     | rust-analyzer LSP client for the editor                |
+| `mars-cli`                                                     | The `mars` binary (notebook, lab, kernel, mcp, tools)  |
+| `mars-mcp`                                                     | MCP server (JSON-RPC over stdio)                       |
+| `mars-lab`                                                     | Mars Lab core + SQLite repositories                    |
+| `mars-tauri` (`packages/desktop/src-tauri`)                    | Tauri host for the desktop app                         |
+
+Notable capabilities:
+
+- **Native `.mars` format** — versioned JSON with stable cell IDs, metadata
+  (comments, attachments, previews, SQL tables), migrations, and atomic saves.
+- **Multi-language cells** — Rust (replay + opt-in Evcxr backend), Python,
+  R, Julia, C++, and SQL; sessions persist variables across cells.
+- **Rich output** — text, errors, HTML (sanitized), images, tables, LaTeX,
+  Vega-Lite charts, MIME bundles.
+- **Cell-aware tooling** — `mars notebook diff`, `--changed-only`/`--since`
+  execution, `--watch` re-runs, `--report`/`--json-report` for CI, and
+  `mars notebook doctor` runtime probes.
+- **Publish anywhere** — `export html`/`slides` produce fully self-contained
+  documents (inline CSS, data-URI attachments).
+- **MCP server** — notebook and kernel operations exposed to AI assistants;
+  `mars tools list|call` is a built-in MCP client.
+- **Mars Lab** — 83 algorithms, dataset profiling, job comparison, metrics and
+  charts, ONNX export; deterministic seeded trainers, no I/O in trainers.
+
+Experimental / opt-in: the **Evcxr** Rust backend (`experimental-evcxr`
+Cargo feature) and the **evcxr-experiment** appendix doc. Everything else is
+the default, tested path.
+
+---
+
+## Installation
+
+> **Status:** there is no official GitHub release yet — the release pipeline
+> exists but no tagged build has been published. Install from source for now;
+> watch [Releases](https://github.com/hieudoanm/mars/releases) for binaries.
+
+### A. CLI users
+
+Prerequisites: [Rust](https://rustup.rs/) (MSRV 1.85; the repo pins 1.100.0
+via `rust-toolchain.toml`), plus the language runtimes you intend to use
+(`python3`, `Rscript`, `julia`, `clang++`/`g++` — check with
+`mars notebook doctor`).
 
 ```bash
-# Notebook commands
-cargo run -p mars -- notebook new analysis.mars
-cargo run -p mars -- notebook inspect analysis.mars
-cargo run -p mars -- notebook run analysis.mars
-cargo run -p mars -- notebook import notebook.ipynb analysis.mars
-cargo run -p mars -- notebook export analysis.mars ipynb notebook.ipynb
-cargo run -p mars -- notebook export analysis.mars html analysis.html
-cargo run -p mars -- notebook export analysis.mars md analysis.md
+git clone https://github.com/hieudoanm/mars.git
+cd mars
+cargo install --path crates/mars-cli        # installs the `mars` binary
 
-# Lab commands
-cargo run -p mars -- lab algorithms --task classification
-cargo run -p mars -- lab dataset data.csv
-cargo run -p mars -- lab train --dataset-id <uuid> --task classification --algorithm random_forest_classifier --features age,income --label target
-
-cargo test --workspace
+mars notebook new analysis.mars             # verify the install
+mars notebook run analysis.mars
+mars notebook templates                     # built-in templates + examples
+mars lab algorithms --task classification   # Mars Lab catalogue
 ```
 
-### Node workspace
+### B. Desktop users
 
-- Uses pnpm and Turborepo.
-- Core commands:
+The desktop app (Tauri 2) currently builds from source; prebuilt installers
+will ship with the first release. Supported hosts: macOS, Linux, Windows.
+
+Prerequisites: Rust, Node.js **26.13.1** (pinned in `.nvmrc`), pnpm **12.21.0**
+(pinned via `packageManager`), and the Tauri platform prerequisites for your OS
+(see [`docs/05-development/development.md`](docs/05-development/development.md)).
 
 ```bash
 corepack enable
 corepack prepare pnpm@12.21.0 --activate
 pnpm install
-pnpm run check
-pnpm run build
+pnpm --filter @mars/desktop dev              # dev server + Tauri shell
+# or: ./scripts/sh/install-local.sh --desktop  (release build + install)
 ```
 
-- Workspace packages: `@mars/desktop`, `@mars/vscode`, `@mars/landing`.
-- `pnpm run dev` starts development tasks in parallel.
-- Filter a task with `pnpm turbo run build --filter=@mars/landing`.
-- Installed CLI binary:
+The desktop app embeds the kernel — no separate `mars` CLI install needed.
+
+### C. Contributors
+
+See [Contributing](#contributing) and
+[`docs/05-development/development.md`](docs/05-development/development.md).
+
+| Tool                 | Version                               |
+| -------------------- | ------------------------------------- |
+| Rust (MSRV)          | 1.85 (`rust-version` in `Cargo.toml`) |
+| Rust (dev toolchain) | 1.100.0 (`rust-toolchain.toml`)       |
+| Node.js              | 26.13.1 (`.nvmrc`, `engines`)         |
+| pnpm                 | 12.21.0 (`packageManager`)            |
+| JDK                  | 17+ (JetBrains extension only)        |
 
 ```bash
-cargo install --path crates/mars-cli
-mars notebook new analysis.mars
-mars lab algorithms --task classification
+git clone https://github.com/hieudoanm/mars.git && cd mars
+cargo test --workspace          # Rust tests + coverage gate: make coverage
+pnpm install && pnpm run check  # typecheck/lint/test across Node packages
 ```
 
-### Desktop application
+Per-job CI equivalents live in [`scripts/sh/ci/`](scripts/sh/ci/).
 
-- Install stable Rust toolchain, Node.js 26.13.1 (pinned in `.nvmrc`), and platform prerequisites in [`docs/05-development/development.md`](docs/05-development/development.md).
-- Run:
-
-```bash
-cd packages/desktop
-npm install
-npm run tauri dev
-```
-
-- Root workspace equivalent:
-
-```bash
-pnpm --filter @mars/desktop dev
-```
-
-- Desktop application is the canonical interactive notebook experience.
-- Native release bundles:
-
-```bash
-npm run tauri build
-```
-
-- See [`docs/05-development/release.md`](docs/05-development/release.md) for signing, platform targets, and artifact verification.
-
-- `mars notebook run` reports each executable cell's position, execution count, duration, output count, and captured output.
-- Failed cells persist partial results and exit unsuccessfully after reporting.
-- Long-running cells can be bounded with `mars notebook run analysis.mars --timeout-ms 5000`.
-- Timed-out cells are marked interrupted and not committed to the persistent runtime session.
-
-- The Rust cell editor integrates rust-analyzer over LSP: diagnostics,
-  hover, completion, signature help, go-to-definition, quick fixes, inlay
-  hints, and semantic-token highlighting; Markdown cells render GFM with
-  heading anchors and `> [!NOTE]`-style alerts; long functions pin their
-  signature via sticky scroll, bracket-pair colorization, and inlay hints;
-  `mars_*` display helpers autocomplete with snippets, table outputs filter
-  and sort, and the problems panel cycles diagnostics.
-- See `AGENTS.md` for product architecture and development strategy.
-- Contributor docs: `CONTRIBUTING.md`, `docs/01-foundations/architecture.md`, `docs/01-foundations/notebook-format.md`, `docs/02-platform/runtime.md`, `docs/02-platform/cli.md`, `docs/02-platform/protocol.md`, `docs/05-development/development.md`, `docs/05-development/release.md`, `docs/06-appendix/branding.md`.
-
-- Execution runtime recompiles accumulated cells in an isolated temporary program.
-- Preserves Rust bindings between cells without executing notebook code in the CLI process.
-- Earlier side effects are replayed.
-- Conservative final expression rendered automatically with `Debug`, with `Display` fallback.
-- Multiline expressions and trailing line comments supported.
-- Item declarations and statement-only cells require explicit output.
-- Runtime timeouts cover both compilation and execution, terminating the active child process when the total cell limit expires.
-
-- HTML export renders Markdown, code, text, errors, tables, images (including base64 PNG and inline SVG MIME bundles), sanitized HTML outputs, common LaTeX expressions, and supported line/point/bar chart specifications into a standalone dark-themed document.
-- Markdown export preserves Markdown cells, fences Rust code, and converts outputs into Markdown tables, `$$` LaTeX blocks, and data-URI images for portability across Git forges and static-site generators.
-- Unknown MIME bundles represented safely as fallback blocks.
-
-- Rust notebooks may declare registry dependencies in `metadata.dependencies`, for example `{ "serde": "1" }`.
-- Project Mars creates a temporary Cargo project for those notebooks.
-- Dependency resolution uses Cargo's configured cache and registry and may require network access.
-
-- Desktop shell under `packages/desktop`.
-- Run `npm install` there for package-local workflow, or install root pnpm workspace as above.
-- Run `npm run tauri dev` to launch Tauri application.
-- Editor keeps notebook cells in frontend and delegates Rust execution, reset, and status to typed Tauri commands backed by `mars-kernel`.
-
-- Desktop editor supports running one cell, all cells, cells above or below the current cell, clearing outputs, and core notebook keyboard shortcuts.
-- Notebook toolbar accepts optional execution limit in milliseconds; blank preserves unlimited execution.
-- While a cell runs, Stop requests cancellation of the active compiler or runtime process.
-- Opened notebooks show unsaved state and autosave after a short idle period.
-- Untitled notebooks require an explicit Save destination.
-- Opening another notebook while current one is dirty offers Cancel, Open without saving, and Save and open.
-- Closing the desktop window uses the same protection.
-
-- Desktop browser smoke tests use Playwright and cover editor shell and basic cell workflows:
-
-```bash
-cd packages/desktop
-npm run test:e2e
-```
-
-- Tests run against Vite and do not yet launch the native Tauri shell.
-
-## Demo
-
-Project Mars fits into a real workflow — start in the terminal, then move to the desktop when you want a visual editor.
-
-**From the command line.** Create a notebook, run every cell, inspect it, and export it to HTML — all headless, scriptable, and CI-friendly.
-
-![Project Mars CLI session: mars notebook new, run, inspect, export, and kernel restart](assets/demo/png/terminal.png)
-
-Or watch it run: [`assets/demo/gif/demo.gif`](assets/demo/gif/demo.gif) animates the same session line by line.
-
-**Into the desktop app.** Launch `mars-desktop` (or the Tauri build) and pick your workspace — Notebook for interactive computing or Lab for machine learning.
-
-![Project Mars desktop welcome screen showing Notebook and Lab options](assets/demo/png/desktop-welcome.png)
-
-**Mars Notebook.** Markdown cells render as prose, Rust cells get syntax highlighting and persistent variables, and outputs — text, errors, tables, images, and charts — appear inline beneath each cell.
-
-![Project Mars notebook editor running the Getting started notebook](assets/demo/png/desktop-notebook.png)
-
-**Mars Lab.** Upload CSV datasets, train models with 83 algorithms, and export ONNX artefacts — all in a visual interface.
-
-![Project Mars Lab interface with datasets and training jobs](assets/demo/png/desktop-lab.png)
-
-![Project Mars Lab new training job form](assets/demo/png/desktop-lab-new-job.png)
-
-Demo assets live in [`assets/demo/`](assets/demo/) (SVG sources in `svg/`, PNG exports in `png/`, animated captures in `gif/`). Regenerate the terminal SVG/PNG/GIF with [`assets/demo/svg-to-gif.sh`](assets/demo/svg-to-gif.sh) (requires `rsvg-convert` and `ffmpeg`). Regenerate the app captures with [`scripts/sh/screenshot.sh`](scripts/sh/screenshot.sh), which records the desktop UI at a 1280x640 ratio via the Vite dev server and Playwright. The social preview card is [`assets/branding/png/og.png`](assets/branding/png/og.png).
-
-## VS Code extension
-
-- Optional companion extension under [`extensions/vscode`](extensions/vscode).
-- Provides `.mars` syntax highlighting, cell navigation, and CLI-backed HTML export.
-- Tauri desktop app remains canonical notebook experience.
-- Extension reuses Project Mars CLI rather than duplicating runtime or persistence layer.
+---
 
 ## Documentation
 
-Documents are grouped into numbered chapter folders; see [`docs/README.md`](docs/README.md) for the full index.
+Full docs are grouped into numbered chapters — index at
+[`docs/README.md`](docs/README.md). Highlights:
 
-| Document                                                                                 | Purpose                                                      |
-| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [`docs/01-foundations/getting-started.md`](docs/01-foundations/getting-started.md)       | Install, first notebook, and examples                        |
-| [`docs/01-foundations/notebook-format.md`](docs/01-foundations/notebook-format.md)       | `.mars` schema, validation, migrations, and Jupyter mapping  |
-| [`docs/01-foundations/architecture.md`](docs/01-foundations/architecture.md)             | Crate boundaries, application boundaries, and data flow      |
-| [`docs/02-platform/protocol.md`](docs/02-platform/protocol.md)                           | Typed kernel messages and JSONL transport                    |
-| [`docs/02-platform/kernel-protocol.md`](docs/02-platform/kernel-protocol.md)             | Detailed kernel protocol and transport options               |
-| [`docs/02-platform/runtime.md`](docs/02-platform/runtime.md)                             | Runtime architecture overview                                |
-| [`docs/02-platform/runtime-rust.md`](docs/02-platform/runtime-rust.md)                   | Rust replay and Evcxr backends                               |
-| [`docs/02-platform/runtime-python.md`](docs/02-platform/runtime-python.md)               | Python persistent driver                                     |
-| [`docs/02-platform/runtime-r.md`](docs/02-platform/runtime-r.md)                         | R `.GlobalEnv` persistence                                   |
-| [`docs/02-platform/runtime-julia.md`](docs/02-platform/runtime-julia.md)                 | Julia `MarsKernel` module                                    |
-| [`docs/02-platform/runtime-cpp.md`](docs/02-platform/runtime-cpp.md)                     | C++ replay compilation                                       |
-| [`docs/02-platform/runtime-sql.md`](docs/02-platform/runtime-sql.md)                     | In-process SQLite runtime                                    |
-| [`docs/02-platform/runtime-helpers.md`](docs/02-platform/runtime-helpers.md)             | Runtime helpers (`mars_table`, `mars_csv`, `mars_display_*`) |
-| [`docs/02-platform/cli.md`](docs/02-platform/cli.md)                                     | CLI commands, options, exit behavior, and examples           |
-| [`docs/02-platform/mcp.md`](docs/02-platform/mcp.md)                                     | Model Context Protocol integration                           |
-| [`docs/03-lab/lab-overview.md`](docs/03-lab/lab-overview.md)                             | Mars Lab features and architecture                           |
-| [`docs/03-lab/lab-cli.md`](docs/03-lab/lab-cli.md)                                       | Mars Lab CLI commands and examples                           |
-| [`docs/03-lab/lab-algorithms.md`](docs/03-lab/lab-algorithms.md)                         | Complete algorithm catalogue                                 |
-| [`docs/03-lab/lab-workflows.md`](docs/03-lab/lab-workflows.md)                           | Common training workflows                                    |
-| [`docs/04-extensions/extension-vscode.md`](docs/04-extensions/extension-vscode.md)       | VS Code extension guide                                      |
-| [`docs/04-extensions/extension-zed.md`](docs/04-extensions/extension-zed.md)             | Zed extension guide                                          |
-| [`docs/04-extensions/extension-jetbrains.md`](docs/04-extensions/extension-jetbrains.md) | JetBrains plugin guide                                       |
-| [`docs/05-development/development.md`](docs/05-development/development.md)               | Toolchains, local development, tests, and architecture rules |
-| [`docs/05-development/release.md`](docs/05-development/release.md)                       | Native artifacts, verification, signing, and release CI      |
-| [`docs/06-appendix/evcxr-experiment.md`](docs/06-appendix/evcxr-experiment.md)           | Evcxr backend experiment analysis                            |
-| [`docs/06-appendix/branding.md`](docs/06-appendix/branding.md)                           | Canonical logo and social-preview assets                     |
+- [Getting started](docs/01-foundations/getting-started.md) ·
+  [Notebook format](docs/01-foundations/notebook-format.md) ·
+  [Architecture](docs/01-foundations/architecture.md)
+- [CLI reference](docs/02-platform/cli.md) ·
+  [Protocol](docs/02-platform/protocol.md) ·
+  [Kernel protocol](docs/02-platform/kernel-protocol.md) ·
+  [Runtime architecture](docs/02-platform/runtime.md)
+- [Mars Lab overview](docs/03-lab/lab-overview.md) ·
+  [Lab CLI](docs/03-lab/lab-cli.md) ·
+  [Algorithms](docs/03-lab/lab-algorithms.md) ·
+  [Workflows](docs/03-lab/lab-workflows.md)
+- [VS Code](docs/04-extensions/extension-vscode.md) ·
+  [Zed](docs/04-extensions/extension-zed.md) ·
+  [JetBrains](docs/04-extensions/extension-jetbrains.md)
+- [Development](docs/05-development/development.md) ·
+  [Release process](docs/05-development/release.md)
 
-## Landing site
+The same content is published on the
+[landing site](https://hieudoanm.github.io/mars/docs/) with a blog.
 
-The Next.js landing site (`packages/landing`) provides:
+---
 
-- Getting started guide and CLI reference
-- Runtime documentation for all seven languages
-- MCP integration documentation
-- Extension guides for VS Code, Zed, and JetBrains
-- Blog posts on language choices and ecosystem comparisons
+## Project status
 
-Visit the documentation at [`packages/landing/md/docs/`](packages/landing/md/docs/).
+- **Working today:** the `mars` CLI (notebook + lab + kernel serve + MCP),
+  the Tauri desktop app, all six language runtimes, Jupyter import/export,
+  HTML/Markdown/slides/PDF export, editor extensions, and Mars Lab's full
+  train→ONNX pipeline.
+- **In progress:** the first tagged release (pipeline exists, no published
+  binaries yet), WebSocket/remote kernel transport, real-time collaboration.
+- **Known limitations:** Rust execution replays accumulated cells (side
+  effects re-run for `variables` inspection); the Evcxr backend is opt-in and
+  experimental; desktop e2e automation is Linux/Windows-only.
+
+CI runs format, clippy, workspace tests, coverage gates, desktop checks,
+landing build, extension builds, and the Tauri e2e suite on every push/PR.
+
+---
+
+## Contributing
+
+Mars is a personal project, but it is built to be picked up. Good first
+contributions:
+
+- **Bug reports and docs fixes** — [Issues](https://github.com/hieudoanm/mars/issues)
+- **Runtime/language integrations** — new `RuntimeBackend` implementations
+- **Mars Lab** — algorithms, metrics, ONNX export improvements
+- **Architecture discussions** — [Discussions](https://github.com/hieudoanm/mars/discussions) if enabled, otherwise Issues
+
+Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) first — it covers the
+toolchain, workspace conventions, and the Rust coverage gate (80% lines and
+functions).
+
+---
+
+## Support Mars
+
+Mars is an independent open-source project developed in my spare time. If you
+find it useful or would like to support its development, consider donating on
+[Ko-fi](https://ko-fi.com/hieudoan) or [PayPal](https://paypal.me/hieudoanm).
+
+My current funding goal is to obtain an **Apple Developer Program**
+membership so I can improve the macOS distribution experience and explore
+wider distribution options for Mars.
+
+Contributions help cover development and distribution costs. Thank you for
+supporting independent open-source software.
+
+---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) © hieudoan
 
 <!-- Badge reference links -->
 [badge-ci]: https://github.com/hieudoanm/mars/actions/workflows/ci.yaml/badge.svg?branch=master
@@ -276,14 +300,8 @@ This project is licensed under the [MIT License](LICENSE).
 [badge-license]: https://img.shields.io/badge/license-MIT-blue.svg
 [link-license]: LICENSE
 [badge-rust]: https://img.shields.io/badge/rust-1.85%2B-orange.svg
-[link-rust]: rust-toolchain.toml
+[link-rust]: https://github.com/hieudoanm/mars/blob/master/rust-toolchain.toml
 [badge-desktop]: https://img.shields.io/badge/desktop-Tauri%202-24c8d8.svg
-[link-desktop]: packages/desktop
+[link-desktop]: https://github.com/hieudoanm/mars/tree/master/packages/desktop
 [badge-mcp]: https://img.shields.io/badge/MCP-supported-8b5cf6.svg
 [link-mcp]: docs/02-platform/mcp.md
-[badge-coverage]: https://codecov.io/gh/hieudoanm/mars/graph/badge.svg
-[link-coverage]: https://codecov.io/gh/hieudoanm/mars
-[badge-rust-coverage]: https://codecov.io/gh/hieudoanm/mars/graph/badge.svg?flag=rust
-[link-rust-coverage]: https://codecov.io/gh/hieudoanm/mars?flags%5B0%5D=rust
-[badge-desktop-coverage]: https://codecov.io/gh/hieudoanm/mars/graph/badge.svg?flag=desktop
-[link-desktop-coverage]: https://codecov.io/gh/hieudoanm/mars?flags%5B0%5D=desktop
