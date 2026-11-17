@@ -23,7 +23,7 @@ pub enum AttributeValue<'a> {
 
 impl AttributeProto {
     /// Convert to typed value
-    pub fn as_value(&self) -> AttributeValue {
+    pub fn as_value(&self) -> AttributeValue<'_> {
         match self.type_.enum_value() {
             Ok(o) => match o {
                 AttributeType::UNDEFINED => AttributeValue::Unknown(0),
@@ -74,7 +74,7 @@ pub enum TensorValue<'p> {
 
 impl TensorProto {
     /// Convert to typed value
-    pub fn as_value(&self) -> TensorValue {
+    pub fn as_value(&self) -> TensorValue<'_> {
         match DataType::from_i32(self.data_type) {
             Some(o) => {
                 match o {

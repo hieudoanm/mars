@@ -144,7 +144,7 @@ describe('App', () => {
     await waitFor(() =>
       expect(saveFile).toHaveBeenCalledWith('/notes/experiment.mars', expect.any(String)),
     );
-    expect(screen.getAllByText('experiment.mars')).toHaveLength(3);
+    await waitFor(() => expect(screen.getAllByText('experiment.mars')).toHaveLength(3));
 
     fireEvent.click(screen.getByRole('button', { name: /Run cell/ }));
     await screen.findByText('42');

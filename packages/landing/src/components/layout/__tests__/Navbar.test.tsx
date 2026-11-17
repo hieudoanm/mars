@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Navbar from '../Navbar';
 
 describe('Navbar', () => {
@@ -27,5 +27,30 @@ describe('Navbar', () => {
   it('renders header with primary navigation aria-label', () => {
     render(<Navbar />);
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeInTheDocument();
+  });
+
+  it('toggles the mobile drawer via the hamburger button', () => {
+    render(<Navbar />);
+    const toggle = screen.getByRole('button', { name: /toggle navigation menu/i });
+    const drawer = () => document.getElementById('mobile-navigation');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(drawer()).toHaveAttribute('aria-hidden', 'true');
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(drawer()).toHaveAttribute('aria-hidden', 'false');
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(drawer()).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('closes the mobile drawer on Escape', () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByRole('button', { name: /toggle navigation menu/i }));
+    expect(document.getElementById('mobile-navigation')).toHaveAttribute('aria-hidden', 'false');
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(document.getElementById('mobile-navigation')).toHaveAttribute('aria-hidden', 'true');
   });
 });

@@ -5,6 +5,11 @@
 use mars_lsp::session::{CellSource, LspSession};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+
+/// Tests in this binary mutate `MARS_RUST_ANALYZER`; serialize them so the
+/// env var cannot be overwritten mid-test by a parallel test.
+static ENV_LOCK: Mutex<()> = Mutex::new(());
 
 const MOCK_SERVER: &str = r#"#!/usr/bin/env python3
 import sys, json
@@ -116,6 +121,7 @@ fn cells() -> Vec<CellSource> {
 
 #[test]
 fn session_round_trips_against_mock_server() {
+    let _guard = ENV_LOCK.lock().expect("env lock");
     let base = std::env::temp_dir().join(format!("mars-lsp-mock-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&base);
     std::fs::create_dir_all(&base).expect("temp dir");
@@ -207,6 +213,7 @@ fn session_round_trips_against_mock_server() {
 
 #[test]
 fn spawn_fails_for_missing_binary() {
+    let _guard = ENV_LOCK.lock().expect("env lock");
     let base = std::env::temp_dir().join(format!("mars-lsp-missing-{}", std::process::id()));
     std::fs::create_dir_all(&base).expect("temp dir");
     // SAFETY: test-only env mutation.

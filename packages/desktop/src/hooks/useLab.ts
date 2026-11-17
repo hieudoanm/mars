@@ -185,8 +185,8 @@ export const useLab = () => {
         setSelectedJob(detail);
         return detail;
       } catch (cause) {
-        setError(cause instanceof Error ? cause.message : 'Training failed');
         await refresh();
+        setError(cause instanceof Error ? cause.message : 'Training failed');
         return null;
       } finally {
         unlisten?.();

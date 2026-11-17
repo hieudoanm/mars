@@ -11,7 +11,8 @@ vi.mock('next/navigation', () => ({
   notFound: notFoundMock,
 }));
 
-import DocPage from '../page';
+import DocPage, { generateMetadata, generateStaticParams } from '../page';
+import { getDoc, getDocs } from '@/lib/docs';
 
 describe('DocPage', () => {
   beforeEach(() => {
@@ -62,5 +63,32 @@ describe('DocPage', () => {
       }),
     ).rejects.toThrow('NEXT_NOT_FOUND');
     expect(notFoundMock).toHaveBeenCalled();
+  });
+});
+
+describe('generateStaticParams', () => {
+  it('returns a param for every doc', () => {
+    const params = generateStaticParams();
+    expect(params).toHaveLength(getDocs().length);
+    expect(params.every((p) => typeof p.slug === 'string')).toBe(true);
+  });
+});
+
+describe('generateMetadata', () => {
+  it('builds article metadata for a valid slug', async () => {
+    const doc = getDoc('getting-started')!;
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: 'getting-started' }),
+    });
+    expect(metadata.title).toContain(doc.title);
+    expect(metadata.alternates?.canonical).toContain('/docs/getting-started');
+    expect(metadata.openGraph?.url).toContain('/docs/getting-started');
+  });
+
+  it('returns empty metadata for a missing slug', async () => {
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ slug: 'missing-doc' }),
+    });
+    expect(metadata).toEqual({});
   });
 });

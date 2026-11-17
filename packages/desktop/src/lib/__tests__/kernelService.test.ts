@@ -19,6 +19,17 @@ import {
   importNotebookIpynb,
   inspectVariables,
   kernelStatus,
+  labAlgorithms,
+  labDatasetInsights,
+  labDatasetPreview,
+  labExportArtefact,
+  labGetJob,
+  labListDatasets,
+  labListJobs,
+  labListJobsPage,
+  labTrain,
+  labUploadDataset,
+  listenLabProgress,
   listenKernelStream,
   listNotebookCheckpoints,
   listNotebookFiles,
@@ -36,6 +47,7 @@ import {
   openInTerminal,
   openPathExternal,
   readNotebookCheckpoint,
+  readTablePreview,
   renameNotebookFile,
   resetKernel,
   restoreNotebookCheckpoint,
@@ -308,5 +320,93 @@ describe('kernelService', () => {
     expect(handler).toHaveBeenCalledWith({ type: 'phase' });
     stop();
     expect(unlisten).toHaveBeenCalled();
+  });
+
+  it('lab commands forward to their Tauri handlers', async () => {
+    invoke.mockResolvedValue([]);
+    await labAlgorithms('classification');
+    expect(invoke).toHaveBeenLastCalledWith('lab_algorithms', { task: 'classification' });
+    await labAlgorithms();
+    expect(invoke).toHaveBeenLastCalledWith('lab_algorithms', { task: null });
+
+    invoke.mockResolvedValue({ dataset: { id: 'd' }, profile: {} });
+    await labUploadDataset('/tmp/x.csv');
+    expect(invoke).toHaveBeenLastCalledWith('lab_upload_dataset', { path: '/tmp/x.csv' });
+
+    invoke.mockResolvedValue([{ id: 'd1' }]);
+    await labListDatasets();
+    expect(invoke).toHaveBeenLastCalledWith('lab_list_datasets');
+
+    await labDatasetInsights('d1');
+    expect(invoke).toHaveBeenLastCalledWith('lab_dataset_insights', { datasetId: 'd1' });
+
+    invoke.mockResolvedValue([{ id: 'j1' }]);
+    await labListJobs();
+    expect(invoke).toHaveBeenLastCalledWith('lab_list_jobs');
+
+    invoke.mockResolvedValue({ job: { id: 'j1' }, metrics: null, artefacts: [] });
+    await labGetJob('j1');
+    expect(invoke).toHaveBeenLastCalledWith('lab_get_job', { jobId: 'j1' });
+
+    const request = { datasetId: 'd1', taskType: 'classification' };
+    await labTrain(request as never);
+    expect(invoke).toHaveBeenLastCalledWith('lab_train', { request });
+
+    await labExportArtefact('j1', 'onnx', '/tmp/m.onnx');
+    expect(invoke).toHaveBeenLastCalledWith('lab_export_artefact', {
+      jobId: 'j1',
+      format: 'onnx',
+      outputPath: '/tmp/m.onnx',
+    });
+
+    invoke.mockResolvedValue({ items: [], nextCursor: 'c' });
+    await labListJobsPage({ statuses: ['failed'], q: 'rf' }, 'cursor', 10);
+    expect(invoke).toHaveBeenLastCalledWith('lab_list_jobs_page', {
+      filters: { statuses: ['failed'], q: 'rf' },
+      cursor: 'cursor',
+      limit: 10,
+    });
+
+    invoke.mockResolvedValue({ columns: ['a'], rows: [['1']] });
+    await labDatasetPreview('d1', 5, 15);
+    expect(invoke).toHaveBeenLastCalledWith('lab_dataset_preview', {
+      datasetId: 'd1',
+      offset: 5,
+      limit: 15,
+    });
+  });
+
+  it('listenLabProgress no-ops outside Tauri and subscribes inside', async () => {
+    delete (window as unknown as Record<string, unknown>)['__TAURI_INTERNALS__'];
+    const handler = vi.fn();
+    const stop = await listenLabProgress(handler);
+    expect(listen).not.toHaveBeenCalled();
+    stop();
+
+    (window as unknown as Record<string, unknown>)['__TAURI_INTERNALS__'] = {};
+    const unlisten = vi.fn();
+    listen.mockResolvedValue(unlisten);
+    const stop2 = await listenLabProgress(handler);
+    expect(listen).toHaveBeenCalledWith('lab-job-progress', expect.any(Function));
+    const callback = listen.mock.calls.at(-1)![1] as (e: { payload: unknown }) => void;
+    callback({ payload: { jobId: 'j', stage: 'training' } });
+    expect(handler).toHaveBeenCalledWith({ jobId: 'j', stage: 'training' });
+    stop2();
+    expect(unlisten).toHaveBeenCalled();
+    delete (window as unknown as Record<string, unknown>)['__TAURI_INTERNALS__'];
+  });
+
+  it('readTablePreview forwards path and limit', async () => {
+    invoke.mockResolvedValue({ columns: ['a'], rows: [] });
+    await readTablePreview('/tmp/data.csv', 25);
+    expect(invoke).toHaveBeenLastCalledWith('read_table_preview', {
+      path: '/tmp/data.csv',
+      limit: 25,
+    });
+    await readTablePreview('/tmp/data.csv');
+    expect(invoke).toHaveBeenLastCalledWith('read_table_preview', {
+      path: '/tmp/data.csv',
+      limit: 50,
+    });
   });
 });

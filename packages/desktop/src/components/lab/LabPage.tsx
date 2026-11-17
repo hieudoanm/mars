@@ -1,5 +1,5 @@
 import { useEffect, type FC } from 'react';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLab, type LabRouteView } from '../../hooks/useLab';
 import LabView from './LabView';
 
@@ -39,9 +39,13 @@ const LabPage: FC = () => {
   const lab = useLab();
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams<{ jobId?: string }>();
   const [searchParams] = useSearchParams();
-  const view = viewFromLocation(location.pathname, params.jobId, searchParams);
+  // The /lab/* splat route does not expose named params, so derive the job id
+  // from the pathname directly.
+  const jobId = location.pathname.startsWith('/lab/jobs/')
+    ? location.pathname.slice('/lab/jobs/'.length).split('/')[0]
+    : undefined;
+  const view = viewFromLocation(location.pathname, jobId || undefined, searchParams);
 
   useEffect(() => {
     if (view.kind === 'job') void lab.selectJob(view.jobId);

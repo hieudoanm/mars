@@ -1,0 +1,2 @@
+# Build artifacts if this crate is ever built standalone
+/target
