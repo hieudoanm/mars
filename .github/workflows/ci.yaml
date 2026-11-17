@@ -43,8 +43,14 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      # The coverage step below already runs every test target (unit +
+      # integration) for all instrumented crates, so this step only covers
+      # mars-tauri (no coverage gate), mars-lab, and mars-runtime-sql, which
+      # are kept out of the coverage package set because their trainers and
+      # session code are not yet at the 80% gate. mars-zed is tested in
+      # extension-zed.
       - name: Test
-        run: cargo test --workspace
+        run: cargo test -p mars-lab -p mars-runtime-sql -p mars-tauri
 
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
@@ -183,7 +189,7 @@ jobs:
           fail_ci_if_error: false
 
   desktop-e2e:
-    name: Desktop e2e (tauri-driver)
+    name: Desktop - E2E (tauri-driver)
     runs-on: ubuntu-latest
     needs: desktop-quality
     steps:
