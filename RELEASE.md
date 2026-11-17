@@ -8,11 +8,18 @@ app, MCP server, and VS Code/Zed/JetBrains extensions.
 
 ### Download
 
-- **CLI**: `mars-x86_64-unknown-linux-gnu`,
-  `mars-aarch64-apple-darwin`, `mars-x86_64-pc-windows-msvc.exe`
-- **Desktop**: macOS app bundle/zip, Linux `.deb`/`.rpm`/`.AppImage`,
-  Windows `.msi`/`.exe` — see assets
-- **Extensions**: VS Code `.vsix`, Zed `.wasm`, JetBrains plugin zip
+- **CLI**:
+  - `mars-x86_64-unknown-linux-gnu`
+  - `mars-aarch64-apple-darwin`
+  - `mars-x86_64-pc-windows-msvc.exe`
+- **Desktop**:
+  - macOS app bundle/zip
+  - Linux `.deb`/`.rpm`/`.AppImage`
+  - Windows `.msi`/`.exe`
+- **Extensions**:
+  - JetBrains plugin zip
+  - VS Code `.vsix`
+  - Zed `.wasm`
 
 ### Quick start
 

@@ -266,7 +266,7 @@ jobs:
           if-no-files-found: error
 
   landing-build:
-    name: Landing build
+    name: Landing - Build Page
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -304,7 +304,7 @@ jobs:
           path: packages/landing/out
 
   landing-deploy:
-    name: Deploy landing site
+    name: Landing - Deploy Page
     needs: landing-build
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -317,7 +317,7 @@ jobs:
         uses: actions/deploy-pages@v5.0.1
 
   extension-vscode:
-    name: VS Code extension
+    name: Extension - VS Code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -359,7 +359,7 @@ jobs:
           if-no-files-found: error
 
   extension-zed:
-    name: Zed extension
+    name: Extension - Zed
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -398,7 +398,7 @@ jobs:
           if-no-files-found: error
 
   extension-jetbrains:
-    name: JetBrains extension
+    name: Extension - JetBrains
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
