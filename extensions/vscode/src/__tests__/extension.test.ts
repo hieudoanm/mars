@@ -30,3 +30,22 @@ describe('extension activation', () => {
     expect(deactivate()).toBeUndefined();
   });
 });
+
+describe('command callbacks', () => {
+  it('restart, interrupt, and refresh callbacks run without a kernel', async () => {
+    const context = { subscriptions: [] as { dispose?: () => void }[] } as vscode.ExtensionContext;
+    activate(context);
+    const registered = vi.mocked(vscode.commands.registerCommand).mock.calls;
+    const callbackFor = (id: string) =>
+      registered.find(([commandId]) => commandId === id)?.[1] as () => Promise<unknown>;
+
+    await callbackFor('mars.restartKernel')();
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      'Project Mars kernel restarted',
+    );
+    await callbackFor('mars.interruptExecution')();
+    // refreshVariables invalidates completions and reloads variables; the
+    // kernel is absent so reload records an error internally.
+    await callbackFor('mars.refreshVariables')();
+  });
+});

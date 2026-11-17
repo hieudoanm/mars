@@ -10,6 +10,18 @@ pub const PROTOCOL_VERSION: &str = "2025-03-26";
 pub const SERVER_NAME: &str = "mars";
 pub const SERVER_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// MCP tool annotations — the four hints hosts use to warn users before a
+/// call. Every tool declares all four explicitly so directories that require
+/// them accept the listing.
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Annotations {
+    pub read_only_hint: bool,
+    pub destructive_hint: bool,
+    pub idempotent_hint: bool,
+    pub open_world_hint: bool,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tool {
     pub name: String,
@@ -17,6 +29,10 @@ pub struct Tool {
     pub description: Option<String>,
     #[serde(rename = "inputSchema")]
     pub input_schema: Value,
+    /// Always serialized; defaults when parsing tools from servers that omit
+    /// annotations (the field is optional in the MCP spec).
+    #[serde(default)]
+    pub annotations: Annotations,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

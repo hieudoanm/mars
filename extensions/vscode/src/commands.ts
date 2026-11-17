@@ -10,7 +10,7 @@ import { clearNotebookDiagnostics, publishCellDiagnostics } from './diagnostics'
 import { MarsNotebookController } from './notebookController';
 import { NOTEBOOK_TEMPLATES } from './notebookTemplates';
 
-export async function createNotebook(): Promise<void> {
+export const createNotebook = async (): Promise<void> => {
   const pick = await vscode.window.showQuickPick(
     NOTEBOOK_TEMPLATES.map((template) => ({
       label: template.name,
@@ -25,9 +25,9 @@ export async function createNotebook(): Promise<void> {
     language: 'mars',
   });
   await vscode.commands.executeCommand('vscode.openWith', document.uri, 'mars-notebook');
-}
+};
 
-export async function runNotebook(): Promise<void> {
+export const runNotebook = async (): Promise<void> => {
   const document = vscode.window.activeTextEditor?.document;
   if (!document || !document.fileName.endsWith('.mars')) {
     void vscode.window.showErrorMessage('Open a .mars notebook first.');
@@ -59,9 +59,9 @@ export async function runNotebook(): Promise<void> {
       failure.message ?? 'Project Mars notebook execution failed',
     );
   }
-}
+};
 
-export function activeMarsFilePath(): string | undefined {
+export const activeMarsFilePath = (): string | undefined => {
   const notebook = vscode.window.activeNotebookEditor?.notebook;
   if (notebook?.uri.scheme === 'file' && notebook.uri.fsPath.endsWith('.mars')) {
     return notebook.uri.fsPath;
@@ -69,9 +69,9 @@ export function activeMarsFilePath(): string | undefined {
   const document = vscode.window.activeTextEditor?.document;
   if (document?.fileName.endsWith('.mars')) return document.fileName;
   return undefined;
-}
+};
 
-export async function exportNotebook(format: 'html' | 'md', extension: string): Promise<void> {
+export const exportNotebook = async (format: 'html' | 'md', extension: string): Promise<void> => {
   const filePath = activeMarsFilePath();
   if (!filePath) {
     void vscode.window.showErrorMessage('Open a .mars notebook first.');
@@ -91,17 +91,17 @@ export async function exportNotebook(format: 'html' | 'md', extension: string): 
     const message = error instanceof Error ? error.message : 'Project Mars export failed';
     void vscode.window.showErrorMessage(message);
   }
-}
+};
 
-export async function exportHtml(): Promise<void> {
+export const exportHtml = async (): Promise<void> => {
   await exportNotebook('html', 'html');
-}
+};
 
-export async function exportMarkdown(): Promise<void> {
+export const exportMarkdown = async (): Promise<void> => {
   await exportNotebook('md', 'md');
-}
+};
 
-export async function openCell(): Promise<void> {
+export const openCell = async (): Promise<void> => {
   const editor = vscode.window.activeTextEditor;
   if (!editor) return;
   const input = await vscode.window.showInputBox({ prompt: 'Cell number' });
@@ -117,15 +117,15 @@ export async function openCell(): Promise<void> {
   const position = editor.document.positionAt(match.index);
   editor.selection = new vscode.Selection(position, position);
   editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
-}
+};
 
-function controller(): MarsNotebookController | null {
+const controller = (): MarsNotebookController | null => {
   return MarsNotebookController.instance;
-}
+};
 
-function notebookPathOf(notebook: vscode.NotebookDocument): string | null {
+const notebookPathOf = (notebook: vscode.NotebookDocument): string | null => {
   return notebook.uri.scheme === 'file' ? notebook.uri.fsPath : null;
-}
+};
 
 /**
  * Runs the kernel's compile check for the given code cells and publishes the
@@ -133,10 +133,10 @@ function notebookPathOf(notebook: vscode.NotebookDocument): string | null {
  * next cell appended after the committed cells, so diagnostics whose
  * `cellIndex` points at an earlier committed cell are filtered out.
  */
-async function diagnoseCells(
+const diagnoseCells = async (
   cells: vscode.NotebookCell[],
   notebookPath: string | null,
-): Promise<void> {
+): Promise<void> => {
   const kernel = controller();
   if (!kernel || cells.length === 0) return;
   const committed = await kernel.kernelExecutionCount(notebookPath);
@@ -149,9 +149,9 @@ async function diagnoseCells(
       ),
     );
   }
-}
+};
 
-export async function checkCell(): Promise<void> {
+export const checkCell = async (): Promise<void> => {
   const editor = vscode.window.activeNotebookEditor;
   if (!editor) {
     void vscode.window.showWarningMessage('Open a Project Mars notebook first.');
@@ -172,9 +172,9 @@ export async function checkCell(): Promise<void> {
       error instanceof Error ? error.message : 'Project Mars diagnostics failed',
     );
   }
-}
+};
 
-export async function checkNotebook(): Promise<void> {
+export const checkNotebook = async (): Promise<void> => {
   const notebook = vscode.window.activeNotebookEditor?.notebook;
   if (!notebook) {
     void vscode.window.showWarningMessage('Open a Project Mars notebook first.');
@@ -200,9 +200,9 @@ export async function checkNotebook(): Promise<void> {
       error instanceof Error ? error.message : 'Project Mars diagnostics failed',
     );
   }
-}
+};
 
-export async function sendKernelInput(): Promise<void> {
+export const sendKernelInput = async (): Promise<void> => {
   const text = await vscode.window.showInputBox({
     prompt: 'Send a line to the running Project Mars kernel',
     ignoreFocusOut: true,
@@ -215,9 +215,9 @@ export async function sendKernelInput(): Promise<void> {
       error instanceof Error ? error.message : 'Failed to send kernel input',
     );
   }
-}
+};
 
-export async function createCheckpoint(): Promise<void> {
+export const createCheckpoint = async (): Promise<void> => {
   const filePath = activeMarsFilePath();
   if (!filePath) {
     void vscode.window.showErrorMessage('Open a .mars notebook first.');
@@ -231,7 +231,7 @@ export async function createCheckpoint(): Promise<void> {
       error instanceof Error ? error.message : 'Failed to create checkpoint',
     );
   }
-}
+};
 
 const formatCheckpointName = (checkpointPath: string): string => {
   const name = checkpointPath.split(/[\\/]/).pop() ?? checkpointPath;
@@ -240,7 +240,7 @@ const formatCheckpointName = (checkpointPath: string): string => {
   return new Date(Number(match[1])).toLocaleString();
 };
 
-export async function restoreCheckpoint(): Promise<void> {
+export const restoreCheckpoint = async (): Promise<void> => {
   const filePath = activeMarsFilePath();
   if (!filePath) {
     void vscode.window.showErrorMessage('Open a .mars notebook first.');
@@ -276,4 +276,4 @@ export async function restoreCheckpoint(): Promise<void> {
       error instanceof Error ? error.message : 'Failed to restore checkpoint',
     );
   }
-}
+};

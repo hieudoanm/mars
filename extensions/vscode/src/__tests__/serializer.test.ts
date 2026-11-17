@@ -4,9 +4,9 @@ import { MarsNotebookSerializer } from '../notebookSerializer';
 const serializer = new MarsNotebookSerializer();
 const token = {} as vscode.CancellationToken;
 
-function decode(bytes: Uint8Array) {
+const decode = (bytes: Uint8Array) => {
   return JSON.parse(new TextDecoder().decode(bytes)) as Record<string, unknown>;
-}
+};
 
 describe('MarsNotebookSerializer', () => {
   it('deserializes cell types, metadata, IDs, and outputs', async () => {

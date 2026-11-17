@@ -33,7 +33,9 @@ class MarsKernelClient(private val cliPath: String, private val notebookPath: St
     private var stdout: BufferedReader? = null
     private var stderrReader: Thread? = null
     private val pending = ConcurrentHashMap<String, (JsonObject) -> Unit>()
-    private val listener = Executors.newSingleThreadExecutor { r -> thread(start = true, isDaemon = true) { r.run() } }
+    private val listener = Executors.newSingleThreadExecutor { r ->
+        Thread(r, "mars-kernel-reader").apply { isDaemon = true }
+    }
     private var requestCounter = 0L
     private var onStderr: ((String) -> Unit)? = null
 

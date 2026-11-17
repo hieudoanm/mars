@@ -12,19 +12,19 @@ vi.mock('../kernelService', () => ({ MarsKernelService: KernelService }));
 
 import { MarsNotebookController } from '../notebookController';
 
-function configure(values: Record<string, unknown> = {}) {
+const configure = (values: Record<string, unknown> = {}) => {
   vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
     get: (key: string, fallback: unknown) => values[key] ?? fallback,
   } as never);
-}
+};
 
-function createCell(source: string) {
+const createCell = (source: string) => {
   return {
     document: { getText: () => source },
   } as unknown as vscode.NotebookCell;
-}
+};
 
-function executionHandler() {
+const executionHandler = () => {
   const controller = new MarsNotebookController();
   const mockController = vi
     .mocked(vscode.notebooks.createNotebookController)
@@ -33,7 +33,7 @@ function executionHandler() {
     controller,
     handler: mockController.executeHandler as NonNullable<typeof mockController.executeHandler>,
   };
-}
+};
 
 describe('Project Mars notebook execution controller', () => {
   beforeEach(() => {

@@ -2,11 +2,11 @@ import { EventEmitter } from 'node:events';
 import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import { sendKernelRequest, type KernelRequest } from '../kernelProtocol';
 
-function fakeProcess(send: (write: string, stdout: EventEmitter) => void) {
+const fakeProcess = (send: (write: string, stdout: EventEmitter) => void) => {
   const stdout = new EventEmitter();
   const stdin = { write: vi.fn((value: string) => send(value, stdout)) };
   return { process: { stdout, stdin } as unknown as ChildProcessWithoutNullStreams, stdin, stdout };
-}
+};
 
 describe('kernel JSON-line protocol', () => {
   const request: KernelRequest = {

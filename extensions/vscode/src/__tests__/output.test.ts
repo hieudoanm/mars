@@ -6,13 +6,13 @@ import {
   type MarsOutput,
 } from '../output';
 
-function itemText(item: vscode.NotebookCellOutputItem): string {
+const itemText = (item: vscode.NotebookCellOutputItem): string => {
   return Buffer.from(item.data).toString('utf-8');
-}
+};
 
-function outputItem(bytes: string, mime: string) {
+const outputItem = (bytes: string, mime: string) => {
   return new vscode.NotebookCellOutputItem(Buffer.from(bytes), mime);
-}
+};
 
 describe('Project Mars and VS Code notebook outputs', () => {
   it('encodes text, HTML, LaTeX, charts, tables, and structured errors', () => {

@@ -14,11 +14,11 @@ const MIME_PRIORITY = [
   'text/plain',
 ];
 
-function textItem(value: string, mime: string): vscode.NotebookCellOutputItem {
+const textItem = (value: string, mime: string): vscode.NotebookCellOutputItem => {
   return new vscode.NotebookCellOutputItem(Buffer.from(value, 'utf-8'), mime);
-}
+};
 
-function imageItem(mimeType: string, value: string): vscode.NotebookCellOutputItem {
+const imageItem = (mimeType: string, value: string): vscode.NotebookCellOutputItem => {
   const data = value.trim();
   if (data.startsWith('data:')) {
     const uri = parseDataUri(data);
@@ -44,24 +44,24 @@ function imageItem(mimeType: string, value: string): vscode.NotebookCellOutputIt
     );
   }
   return new vscode.NotebookCellOutputItem(Buffer.from(data, 'base64'), mimeType);
-}
+};
 
-function parseDataUri(value: string): { base64: boolean; payload: string } | null {
+const parseDataUri = (value: string): { base64: boolean; payload: string } | null => {
   const comma = value.indexOf(',');
   if (comma === -1) return null;
   const header = value.slice(5, comma);
   return { base64: header.endsWith(';base64'), payload: value.slice(comma + 1) };
-}
+};
 
-function decodeDataUriText(payload: string): string {
+const decodeDataUriText = (payload: string): string => {
   try {
     return decodeURIComponent(payload);
   } catch {
     return payload;
   }
-}
+};
 
-function mimeValueToString(value: unknown): string | null {
+const mimeValueToString = (value: unknown): string | null => {
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) {
     const parts: string[] = [];
@@ -72,9 +72,9 @@ function mimeValueToString(value: unknown): string | null {
     return parts.join('');
   }
   return null;
-}
+};
 
-function mimeItem(mimeType: string, value: unknown): vscode.NotebookCellOutputItem | null {
+const mimeItem = (mimeType: string, value: unknown): vscode.NotebookCellOutputItem | null => {
   if (mimeType.startsWith('image/')) {
     const text = mimeValueToString(value);
     return text === null ? null : imageItem(mimeType, text);
@@ -82,26 +82,26 @@ function mimeItem(mimeType: string, value: unknown): vscode.NotebookCellOutputIt
   const text = mimeValueToString(value);
   if (text !== null) return textItem(text, mimeType);
   return textItem(JSON.stringify(value), mimeType);
-}
+};
 
-function tableToHtml(columns: string[], rows: string[][]): string {
+const tableToHtml = (columns: string[], rows: string[][]): string => {
   const headers = columns.map((column) => `<th>${escapeHtml(column)}</th>`).join('');
   const body = rows
     .map((row) => `<tr>${row.map((value) => `<td>${escapeHtml(value)}</td>`).join('')}</tr>`)
     .join('');
   return `<table><thead><tr>${headers}</tr></thead><tbody>${body}</tbody></table>`;
-}
+};
 
-function escapeHtml(value: string): string {
+const escapeHtml = (value: string): string => {
   return value
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
-}
+};
 
-export function marsOutputToNotebookOutput(output: MarsOutput): vscode.NotebookCellOutput {
+export const marsOutputToNotebookOutput = (output: MarsOutput): vscode.NotebookCellOutput => {
   const items: vscode.NotebookCellOutputItem[] = [];
   switch (output.type) {
     case 'text':
@@ -146,9 +146,9 @@ export function marsOutputToNotebookOutput(output: MarsOutput): vscode.NotebookC
     }
   }
   return new vscode.NotebookCellOutput(items);
-}
+};
 
-function mimeRank(mimeType: string): number {
+const mimeRank = (mimeType: string): number => {
   const index = MIME_PRIORITY.indexOf(mimeType);
   return index === -1 ? MIME_PRIORITY.length : index;
-}
+};

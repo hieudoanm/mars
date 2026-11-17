@@ -14,4 +14,12 @@ export default defineConfig([
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
   tseslint.configs.recommended,
+  {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    rules: {
+      // Arrow functions only: no `function` declarations; function expressions
+      // remain allowed for constructor mocks (e.g. `vi.fn(function () {})`).
+      'func-style': ['error', 'expression', { allowArrowFunctions: true }],
+    },
+  },
 ]);

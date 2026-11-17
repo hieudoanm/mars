@@ -52,7 +52,13 @@ describe('Mars desktop (tauri-driver)', () => {
     // enters the notebook workspace, which shows its own WelcomeView.
     await button('Mars Notebook').click();
     await visible('[data-component="WelcomeView"]');
-    await clickButton('New notebook');
+    // "New notebook" also exists as an aria-label in the file explorer; scope
+    // the click to the welcome view so we hit the session-creating button.
+    const welcomeButtons = await $$(
+      '[data-component="WelcomeView"] //button[contains(normalize-space(.), "New notebook")]',
+    );
+    await welcomeButtons[0].waitForDisplayed({ timeout: 15_000 });
+    await welcomeButtons[0].click();
     await visible('[data-component="NotebookSession"]');
     await lastEditor();
   });

@@ -3,6 +3,7 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 plugins {
     kotlin("jvm") version "2.4.21"
     id("org.jetbrains.intellij.platform") version "2.20.1"
+    id("org.jetbrains.kotlinx.kover") version "0.9.7"
 }
 
 group = "com.mars.idea"
@@ -25,6 +26,35 @@ dependencies {
         bundledModule("com.intellij.modules.json")
     }
     implementation("com.google.code.gson:gson:2.15.0")
+    testImplementation("junit:junit:4.13.2")
+}
+
+tasks.test {
+    useJUnit()
+}
+
+// Coverage is gated on the pure-Kotlin cell locator and kernel client;
+// IntelliJ UI/actions classes and the ApplicationManager-bound kernel
+// manager require the IDE test framework and are excluded from the gate.
+kover {
+    reports {
+        filters {
+            excludes {
+                classes(
+                    "com.mars.idea.ui.*",
+                    "com.mars.idea.actions.*",
+                    "com.mars.idea.Mars*",
+                    "com.mars.idea.kernel.MarsKernelManager",
+                )
+            }
+        }
+        verify {
+            rule {
+                minBound(80, coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE)
+                minBound(80, coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.BRANCH)
+            }
+        }
+    }
 }
 
 intellijPlatform {

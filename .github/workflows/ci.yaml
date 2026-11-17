@@ -417,7 +417,7 @@ jobs:
         run: pnpm --filter mars-vscode run lint
 
       - name: Test
-        run: pnpm --filter mars-vscode run test
+        run: pnpm --filter mars-vscode run test:coverage
 
       - name: Build
         run: pnpm --filter mars-vscode run build
@@ -453,8 +453,14 @@ jobs:
       - name: Clippy
         run: cargo clippy -p mars-zed --all-targets -- -D warnings
 
+      - name: Install llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
       - name: Test
         run: cargo test -p mars-zed
+
+      - name: Coverage
+        run: cargo llvm-cov -p mars-zed --tests --fail-under-lines 80 --fail-under-functions 80
 
       # rust-toolchain.toml pins the toolchain, so the dtolnay `targets` input
       # above installs the target for `stable`, not for the pinned channel.
@@ -496,6 +502,10 @@ jobs:
       - name: Build plugin
         working-directory: extensions/jetbrains
         run: ./gradlew buildPlugin --no-daemon --console=plain
+
+      - name: Test plugin
+        working-directory: extensions/jetbrains
+        run: ./gradlew test koverVerify --no-daemon --console=plain
 
       - name: Upload plugin artifact
         uses: actions/upload-artifact@v7.0.2

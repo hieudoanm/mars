@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { CHART_MIME_TYPES, ERROR_MIME } from './constants';
 import type { MarsOutput } from './types';
 
-export function notebookOutputToMarsOutput(output: vscode.NotebookCellOutput): MarsOutput {
+export const notebookOutputToMarsOutput = (output: vscode.NotebookCellOutput): MarsOutput => {
   const items = output.items;
   if (items.length === 0) return { type: 'text', text: '' };
   if (items.length === 1) return itemToMarsOutput(items[0]);
@@ -14,18 +14,18 @@ export function notebookOutputToMarsOutput(output: vscode.NotebookCellOutput): M
     data[mimeType] = itemToMarsValue(item);
   }
   return { type: 'mime_bundle', data, metadata: {} };
-}
+};
 
-function itemToMarsValue(item: vscode.NotebookCellOutputItem): string {
+const itemToMarsValue = (item: vscode.NotebookCellOutputItem): string => {
   const mimeType = item.mime ?? 'text/plain';
   const bytes = Buffer.from(item.data);
   if (mimeType.startsWith('image/') && mimeType !== 'image/svg+xml') {
     return bytes.toString('base64');
   }
   return bytes.toString('utf-8');
-}
+};
 
-function itemToMarsOutput(item: vscode.NotebookCellOutputItem): MarsOutput {
+const itemToMarsOutput = (item: vscode.NotebookCellOutputItem): MarsOutput => {
   const mimeType = item.mime ?? 'text/plain';
   const bytes = Buffer.from(item.data);
   const text = bytes.toString('utf-8');
@@ -38,9 +38,9 @@ function itemToMarsOutput(item: vscode.NotebookCellOutputItem): MarsOutput {
   if (CHART_MIME_TYPES.includes(mimeType)) return { type: 'chart', spec: parseSpec(text) };
   if (mimeType === 'text/plain' || mimeType === 'text/markdown') return { type: 'text', text };
   return { type: 'mime_bundle', data: { [mimeType]: text }, metadata: {} };
-}
+};
 
-function parseErrorOutput(text: string): MarsOutput {
+const parseErrorOutput = (text: string): MarsOutput => {
   try {
     const parsed: unknown = JSON.parse(text);
     if (typeof parsed === 'object' && parsed !== null) {
@@ -54,9 +54,9 @@ function parseErrorOutput(text: string): MarsOutput {
     // Malformed error payloads are retained as plain error text.
   }
   return { type: 'error', name: 'Error', message: text, traceback: [] };
-}
+};
 
-function parseSpec(text: string): Record<string, unknown> {
+const parseSpec = (text: string): Record<string, unknown> => {
   try {
     const parsed: unknown = JSON.parse(text);
     if (typeof parsed === 'object' && parsed !== null) return parsed as Record<string, unknown>;
@@ -64,4 +64,4 @@ function parseSpec(text: string): Record<string, unknown> {
     // Invalid chart payloads become an empty chart specification.
   }
   return {};
-}
+};

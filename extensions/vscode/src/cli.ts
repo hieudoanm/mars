@@ -3,10 +3,10 @@ import { promisify } from 'node:util';
 
 export const execFileAsync = promisify(execFile);
 
-export async function commandExists(
+export const commandExists = async (
   command: string,
   runCommand: (file: string, args: string[]) => Promise<unknown> = execFileAsync,
-): Promise<boolean> {
+): Promise<boolean> => {
   const checkCommand = process.platform === 'win32' ? 'where' : 'which';
   try {
     await runCommand(checkCommand, [command]);
@@ -14,4 +14,4 @@ export async function commandExists(
   } catch {
     return false;
   }
-}
+};

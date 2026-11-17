@@ -9,7 +9,10 @@ vi.mock('../cli', () => ({ commandExists, execFileAsync: vi.fn() }));
 import { MarsKernelService } from '../kernelService';
 import type { KernelRequest } from '../kernelProtocol';
 
-function childProcess() {
+const childProcess = (
+  respond?: (type: string) => Record<string, unknown>,
+  outputs: Record<string, unknown>[] = [{ type: 'text', text: '42' }],
+) => {
   const child = new EventEmitter();
   const stdout = new EventEmitter();
   const writes: string[] = [];
@@ -17,25 +20,45 @@ function childProcess() {
     write: (value: string) => {
       writes.push(value);
       const request = JSON.parse(value) as KernelRequest;
-      queueMicrotask(() =>
-        stdout.emit(
-          'data',
-          Buffer.from(
-            JSON.stringify({
-              id: request.id,
-              response:
-                request.request.type === 'reset'
-                  ? { type: 'reset', status: 'ready' }
-                  : {
-                      type: 'execution',
-                      outputs: [{ type: 'text', text: '42' }],
-                      execution_count: 2,
-                      duration_millis: 1,
-                    },
-            }) + '\n',
-          ),
-        ),
-      );
+      queueMicrotask(() => {
+        const response =
+          respond?.(request.request.type) ??
+          (request.request.type === 'reset'
+            ? { type: 'reset', status: 'ready' }
+            : request.request.type === 'status'
+              ? { type: 'status', status: 'ready', execution_count: 7 }
+              : request.request.type === 'variables'
+                ? {
+                    type: 'variables',
+                    variables: [{ name: 'v', typeName: 'i32', value: '1' }],
+                  }
+                : request.request.type === 'diagnose'
+                  ? {
+                      type: 'diagnostics',
+                      diagnostics: [
+                        {
+                          line: 1,
+                          column: 1,
+                          endLine: 1,
+                          endColumn: 2,
+                          severity: 'error',
+                          message: 'd',
+                          cellIndex: null,
+                        },
+                      ],
+                    }
+                  : request.request.type === 'input'
+                    ? { type: 'input' }
+                    : request.request.type === 'cancel'
+                      ? { type: 'cancelled' }
+                      : {
+                          type: 'execution',
+                          outputs,
+                          execution_count: 2,
+                          duration_millis: 1,
+                        });
+        stdout.emit('data', Buffer.from(JSON.stringify({ id: request.id, response }) + '\n'));
+      });
       return true;
     },
   };
@@ -46,7 +69,7 @@ function childProcess() {
     writes,
     kill,
   };
-}
+};
 
 describe('MarsKernelService', () => {
   beforeEach(() => {
@@ -133,5 +156,72 @@ describe('MarsKernelService', () => {
     (process.child as unknown as EventEmitter).emit('error', new Error('spawn failed'));
     commandExists.mockResolvedValueOnce(false);
     await expect(service.execute('1')).rejects.toThrow('Project Mars CLI not found at');
+  });
+});
+
+describe('MarsKernelService request surface', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    spawn.mockReset();
+    commandExists.mockReset().mockResolvedValue(true);
+    vi.mocked(vscode.workspace.getConfiguration).mockReturnValue({
+      get: (_key: string, fallback: unknown) => fallback,
+    } as never);
+  });
+  afterEach(() => vi.useRealTimers());
+
+  const started = async (
+    respond?: (type: string) => Record<string, unknown>,
+    outputs?: Record<string, unknown>[],
+  ) => {
+    const process = childProcess(respond, outputs);
+    spawn.mockReturnValue(process.child);
+    const service = new MarsKernelService('mars');
+    const start = service.start();
+    await vi.runAllTimersAsync();
+    await start;
+    return { service, process };
+  };
+
+  it('queries status, variables, and diagnostics', async () => {
+    const { service } = await started();
+    expect(service.isRunning()).toBe(true);
+    await expect(service.status()).resolves.toEqual({
+      status: 'ready',
+      execution_count: 7,
+    });
+    const variables = await service.variables();
+    expect(variables[0].name).toBe('v');
+    const diagnostics = await service.diagnose('let x = ;');
+    expect(diagnostics[0].message).toBe('d');
+    await service.input('answer');
+    await service.cancel();
+    service.stop();
+    expect(service.isRunning()).toBe(false);
+    // cancel/input/stop are no-ops without a process.
+    await service.cancel();
+    await service.input('ignored');
+    service.stop();
+  });
+
+  it('marks executions containing error outputs as failed', async () => {
+    const { service } = await started(undefined, [
+      { type: 'text', text: 'partial' },
+      { type: 'error', name: 'E', message: 'boom', traceback: [] },
+    ]);
+    const result = await service.execute('bad()');
+    expect(result.status).toBe('error');
+    service.stop();
+  });
+
+  it('rejects unexpected response types and kernel errors', async () => {
+    const { service } = await started(() => ({ type: 'bogus' }));
+    await expect(service.status()).rejects.toThrow('Unexpected kernel response');
+    await expect(service.execute('x')).rejects.toThrow('Unexpected kernel response');
+    service.stop();
+
+    const errored = await started(() => ({ type: 'error', message: 'kernel exploded' }));
+    await expect(errored.service.execute('x')).rejects.toThrow('kernel exploded');
+    errored.service.stop();
   });
 });

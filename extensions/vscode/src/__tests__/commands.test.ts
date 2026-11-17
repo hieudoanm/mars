@@ -3,14 +3,23 @@ import * as vscode from 'vscode';
 const { execFileAsync } = vi.hoisted(() => ({ execFileAsync: vi.fn() }));
 vi.mock('../cli', () => ({ execFileAsync, commandExists: vi.fn() }));
 
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import {
   activeMarsFilePath,
+  checkCell,
+  checkNotebook,
+  createCheckpoint,
   createNotebook,
   exportHtml,
   exportMarkdown,
   openCell,
+  restoreCheckpoint,
   runNotebook,
+  sendKernelInput,
 } from '../commands';
+import { MarsNotebookController } from '../notebookController';
 
 const windowApi = vscode.window as unknown as Record<string, unknown>;
 const setWindow = (name: string, value: unknown) => {
@@ -122,5 +131,130 @@ describe('VS Code commands', () => {
     await openCell();
     expect(editor.document.positionAt).toHaveBeenCalledWith(source.lastIndexOf('"cell_type"'));
     expect(editor.revealRange).toHaveBeenCalled();
+  });
+
+  it('checks cells and notebooks through the kernel diagnose path', async () => {
+    const fake = {
+      kernelExecutionCount: vi.fn(async () => 3),
+      diagnoseSource: vi.fn(async () => [
+        {
+          line: 1,
+          column: 1,
+          endLine: 1,
+          endColumn: 4,
+          severity: 'error',
+          message: 'bad',
+          cellIndex: 3,
+        },
+        {
+          line: 2,
+          column: 1,
+          endLine: 2,
+          endColumn: 4,
+          severity: 'warning',
+          message: 'stale',
+          cellIndex: 0,
+        },
+      ]),
+      sendInput: vi.fn(async () => {}),
+    };
+    MarsNotebookController.instance = fake as never;
+    const codeCell = {
+      kind: vscode.NotebookCellKind.Code,
+      document: { getText: () => 'let x = 1;' },
+    };
+    const mdCell = { kind: vscode.NotebookCellKind.Markup, document: { getText: () => '#' } };
+    const notebook = {
+      uri: { scheme: 'file', fsPath: '/work/book.mars' },
+      getCells: () => [codeCell, mdCell],
+    };
+    setWindow('activeNotebookEditor', {
+      notebook,
+      selection: { start: 0, end: 0 },
+    });
+    await checkCell();
+    expect(fake.diagnoseSource).toHaveBeenCalledWith('let x = 1;', '/work/book.mars');
+
+    await checkNotebook();
+    expect(fake.kernelExecutionCount).toHaveBeenCalled();
+
+    fake.diagnoseSource.mockRejectedValueOnce(new Error('diag failed'));
+    await checkCell();
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('diag failed');
+
+    setWindow('activeNotebookEditor', undefined);
+    await checkCell();
+    await checkNotebook();
+    setWindow('activeNotebookEditor', {
+      notebook: { ...notebook, getCells: () => [mdCell] },
+      selection: { start: 0, end: 0 },
+    });
+    await checkCell();
+    await checkNotebook();
+    MarsNotebookController.instance = null;
+  });
+
+  it('sends kernel input and reports failures', async () => {
+    const sendInput = vi.fn(async () => {});
+    MarsNotebookController.instance = { sendInput } as never;
+    vi.mocked(vscode.window.showInputBox).mockResolvedValueOnce(undefined);
+    await sendKernelInput();
+    expect(sendInput).not.toHaveBeenCalled();
+
+    vi.mocked(vscode.window.showInputBox).mockResolvedValueOnce('42');
+    await sendKernelInput();
+    expect(sendInput).toHaveBeenCalledWith('42');
+
+    sendInput.mockRejectedValueOnce(new Error('no kernel'));
+    vi.mocked(vscode.window.showInputBox).mockResolvedValueOnce('x');
+    await sendKernelInput();
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('no kernel');
+    MarsNotebookController.instance = null;
+  });
+
+  it('creates and restores checkpoints end to end', async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'mars-cmd-cp-'));
+    const notebookPath = path.join(dir, 'book.mars');
+    await fs.writeFile(notebookPath, '{"cells":[{"cell_type":"code"}]}');
+    setWindow('activeTextEditor', { document: { fileName: notebookPath } });
+
+    await createCheckpoint();
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      expect.stringContaining('Checkpoint saved:'),
+    );
+
+    const other = path.join(dir, 'other.mars');
+    await fs.writeFile(other, '{}');
+    setWindow('activeTextEditor', { document: { fileName: other } });
+    await restoreCheckpoint();
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      'No checkpoints found for this notebook.',
+    );
+
+    setWindow('activeTextEditor', { document: { fileName: notebookPath } });
+    vi.mocked(vscode.window.showQuickPick).mockResolvedValueOnce(undefined);
+    await restoreCheckpoint();
+    const checkpointDir = path.join(dir, 'book.mars.checkpoints');
+    const checkpointFile = (await fs.readdir(checkpointDir))[0];
+    const pick = { checkpoint: path.join(checkpointDir, checkpointFile) } as never;
+    vi.mocked(vscode.window.showQuickPick).mockResolvedValue(pick);
+    vi.mocked(vscode.window.showWarningMessage).mockResolvedValueOnce('Cancel' as never);
+    await restoreCheckpoint();
+    vi.mocked(vscode.window.showWarningMessage).mockResolvedValueOnce('Restore' as never);
+    await restoreCheckpoint();
+    expect(vscode.commands.executeCommand).toHaveBeenCalledWith(
+      'vscode.open',
+      expect.objectContaining({ fsPath: notebookPath }),
+    );
+
+    setWindow('activeTextEditor', undefined);
+    setWindow('activeNotebookEditor', undefined);
+    await createCheckpoint();
+    await restoreCheckpoint();
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith('Open a .mars notebook first.');
+
+    setWindow('activeTextEditor', { document: { fileName: '/nonexistent-dir-x/book.mars' } });
+    await createCheckpoint();
+    expect(vscode.window.showErrorMessage).toHaveBeenCalled();
   });
 });

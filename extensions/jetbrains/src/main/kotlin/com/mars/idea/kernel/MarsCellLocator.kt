@@ -37,7 +37,7 @@ fun notebookLanguage(text: String): String? {
     return try {
         val root = JsonParser.parseString(text).asJsonObject
         root.getAsJsonObject("metadata")?.get("language")
-            ?.takeIf { it.isJsonPrimitive }?.asString
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
     } catch (_: Exception) {
         null
     }
@@ -78,11 +78,11 @@ fun cellEntries(text: String): List<CellEntry> {
     } catch (_: Exception) {
         return emptyList()
     }
-    val arr = root.getAsJsonArray("cells") ?: return emptyList()
+    val arr = root.get("cells")?.takeIf { it.isJsonArray }?.asJsonArray ?: return emptyList()
     val all = arr.mapIndexed { i, el ->
-        val obj = el.asJsonObject
-        val type = obj.get("cell_type")?.takeIf { it.isJsonPrimitive }?.asString ?: "code"
-        MarsCell(i, type, obj.get("language")?.takeIf { it.isJsonPrimitive }?.asString, sourceOf(obj))
+        val obj = el.takeIf { it.isJsonObject }?.asJsonObject
+        val type = obj?.get("cell_type")?.takeIf { it.isJsonPrimitive }?.asString ?: "code"
+        MarsCell(i, type, obj?.get("language")?.takeIf { it.isJsonPrimitive }?.asString, obj?.let { sourceOf(it) } ?: "")
     }
 
     val sourceKey = Regex("\"source\"\\s*:")

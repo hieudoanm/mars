@@ -59,10 +59,10 @@ interface WireEnvelope {
   event?: unknown;
 }
 
-export async function sendKernelRequest(
+export const sendKernelRequest = async (
   process: ChildProcessWithoutNullStreams,
   request: KernelRequest,
-): Promise<KernelResponse> {
+): Promise<KernelResponse> => {
   return new Promise((resolve, reject) => {
     let buffer = '';
     const cleanup = () => {
@@ -109,4 +109,4 @@ export async function sendKernelRequest(
     process.stdout.on('error', onError);
     process.stdin.write(`${JSON.stringify(request)}\n`);
   });
-}
+};

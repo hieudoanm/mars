@@ -32,7 +32,23 @@ fn initialize_and_list_tools() {
     let init: Value = serde_json::from_str(lines[0]).expect("init json");
     assert_eq!(init["result"]["serverInfo"]["name"], "mars");
     let list: Value = serde_json::from_str(lines[1]).expect("list json");
-    assert!(list["result"]["tools"].as_array().expect("tools").len() >= 10);
+    let tools = list["result"]["tools"].as_array().expect("tools");
+    assert!(tools.len() >= 10);
+    for tool in tools {
+        let annotations = &tool["annotations"];
+        for hint in [
+            "readOnlyHint",
+            "destructiveHint",
+            "idempotentHint",
+            "openWorldHint",
+        ] {
+            assert!(
+                annotations.get(hint).is_some_and(|v| v.is_boolean()),
+                "{} missing boolean annotation {hint}: {annotations}",
+                tool["name"]
+            );
+        }
+    }
 }
 
 #[test]

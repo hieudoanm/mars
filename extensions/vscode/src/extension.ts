@@ -17,7 +17,7 @@ import { MarsNotebookSerializer } from './notebookSerializer';
 import { MarsVariablesProvider } from './variablesView';
 import { MarsCompletionProvider } from './completions';
 
-export function activate(context: vscode.ExtensionContext): void {
+export const activate = (context: vscode.ExtensionContext): void => {
   context.subscriptions.push(
     vscode.workspace.registerNotebookSerializer('mars-notebook', new MarsNotebookSerializer()),
   );
@@ -59,6 +59,6 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('mars.createCheckpoint', createCheckpoint),
     vscode.commands.registerCommand('mars.restoreCheckpoint', restoreCheckpoint),
   );
-}
+};
 
-export function deactivate(): void {}
+export const deactivate = (): void => {};

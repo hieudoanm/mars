@@ -44,3 +44,61 @@ fn tool_definitions_use_camel_case_schema_key() {
         assert!(value.get("input_schema").is_none());
     }
 }
+
+const EXPECTED_TOOLS: &[&str] = &[
+    "mars_notebook_new",
+    "mars_notebook_open",
+    "mars_notebook_read",
+    "mars_notebook_save",
+    "mars_notebook_inspect",
+    "mars_cell_add",
+    "mars_cell_update",
+    "mars_cell_delete",
+    "mars_cell_move",
+    "mars_cell_execute",
+    "mars_notebook_execute",
+    "mars_cell_diagnose",
+    "mars_kernel_status",
+    "mars_kernel_reset",
+    "mars_kernel_variables",
+    "mars_lab_algorithms",
+    "mars_lab_dataset_upload",
+    "mars_lab_datasets",
+    "mars_lab_dataset",
+    "mars_lab_train",
+    "mars_lab_jobs",
+    "mars_lab_job",
+    "mars_lab_export",
+];
+
+#[test]
+fn tool_definitions_cover_expected_catalog() {
+    let definitions = tools::definitions();
+    let mut names: Vec<&str> = definitions.iter().map(|tool| tool.name.as_str()).collect();
+    names.sort_unstable();
+    let mut expected = EXPECTED_TOOLS.to_vec();
+    expected.sort_unstable();
+    assert_eq!(names, expected);
+}
+
+#[test]
+fn tool_definitions_serialize_all_four_annotation_hints() {
+    for tool in tools::definitions() {
+        let value = serde_json::to_value(&tool).expect("serialize tool");
+        let annotations = &value["annotations"];
+        for hint in [
+            "readOnlyHint",
+            "destructiveHint",
+            "idempotentHint",
+            "openWorldHint",
+        ] {
+            assert!(
+                annotations.get(hint).is_some_and(|v| v.is_boolean()),
+                "{} missing boolean annotation {hint}: {annotations}",
+                tool.name
+            );
+        }
+        // Every mars tool operates on local notebooks, kernels, and lab data.
+        assert_eq!(annotations["openWorldHint"], false, "{}", tool.name);
+    }
+}

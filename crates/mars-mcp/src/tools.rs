@@ -1,6 +1,6 @@
 //! MCP tool definitions exposed by `mars mcp serve`.
 
-use crate::mcp::Tool;
+use crate::mcp::{Annotations, Tool};
 use serde_json::json;
 
 fn object_schema(properties: serde_json::Value, required: &[&str]) -> serde_json::Value {
@@ -20,11 +20,17 @@ fn str_prop(description: &str) -> serde_json::Value {
     json!({ "type": "string", "description": description })
 }
 
-fn tool(name: &str, description: &str, schema: serde_json::Value) -> Tool {
+fn tool(
+    name: &str,
+    description: &str,
+    schema: serde_json::Value,
+    annotations: Annotations,
+) -> Tool {
     Tool {
         name: name.to_owned(),
         description: Some(description.to_owned()),
         input_schema: schema,
+        annotations,
     }
 }
 
@@ -40,11 +46,23 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_notebook_open",
             "Open a .mars notebook into the session and return its summary.",
             object_schema(json!({ "path": path_prop() }), &["path"]),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_notebook_read",
@@ -57,16 +75,34 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path"],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_notebook_save",
             "Persist session changes to disk (atomic write).",
             object_schema(json!({ "path": path_prop() }), &["path"]),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_notebook_inspect",
             "Inspect notebook metadata: format version, language, cell count, dependencies.",
             object_schema(json!({ "path": path_prop() }), &["path"]),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_cell_add",
@@ -81,6 +117,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path", "cell_type"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_cell_update",
@@ -94,6 +136,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path", "index"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_cell_delete",
@@ -105,6 +153,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path", "index"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: true,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_cell_move",
@@ -117,6 +171,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path", "from", "to"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_cell_execute",
@@ -131,6 +191,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_notebook_execute",
@@ -142,6 +208,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_cell_diagnose",
@@ -155,6 +227,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["path"],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_kernel_status",
@@ -166,6 +244,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &[],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_kernel_reset",
@@ -177,6 +261,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &[],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: true,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_kernel_variables",
@@ -188,6 +278,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &[],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_algorithms",
@@ -198,6 +294,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &[],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_dataset_upload",
@@ -206,11 +308,23 @@ pub fn definitions() -> Vec<Tool> {
                 json!({ "path": str_prop("Path to the .csv file") }),
                 &["path"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_datasets",
             "List datasets stored in the Mars Lab database.",
             object_schema(json!({}), &[]),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_dataset",
@@ -219,6 +333,12 @@ pub fn definitions() -> Vec<Tool> {
                 json!({ "dataset_id": str_prop("Dataset UUID") }),
                 &["dataset_id"],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_train",
@@ -236,6 +356,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["dataset_id", "task", "algorithm", "features"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: false,
+                idempotent_hint: false,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_jobs",
@@ -246,11 +372,23 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &[],
             ),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_job",
             "Inspect a training job: record, metrics, and artefacts.",
             object_schema(json!({ "job_id": str_prop("Job UUID") }), &["job_id"]),
+            Annotations {
+                read_only_hint: true,
+                destructive_hint: false,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
         tool(
             "mars_lab_export",
@@ -263,6 +401,12 @@ pub fn definitions() -> Vec<Tool> {
                 }),
                 &["job_id", "output"],
             ),
+            Annotations {
+                read_only_hint: false,
+                destructive_hint: true,
+                idempotent_hint: true,
+                open_world_hint: false,
+            },
         ),
     ]
 }
