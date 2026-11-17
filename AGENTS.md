@@ -13,7 +13,7 @@ Project Mars is an umbrella project with two products:
 - **Mars Notebook** — a Jupyter Notebook alternative: an interactive environment
   combining executable cells, Markdown, mathematics, tables, charts, and rich
   output in a native `.mars` document, with `.ipynb` import/export.
-- **Mars Lab** — *Machine Learning in Rust*: a studio that turns CSV datasets
+- **Mars Lab** — _Machine Learning in Rust_: a studio that turns CSV datasets
   into trained ONNX models (83 algorithms across six task types).
 
 ## Mars Notebook
@@ -69,6 +69,22 @@ mars/
 ├── vendor/onnx-protobuf/    # Vendored patch (protobuf 3.7.x compat)
 └── docs/                    # Canonical documentation (numbered chapters)
 ```
+
+## Git hooks
+
+- `.husky/pre-commit` runs `pnpm exec lint-staged` on every commit (auto-installed
+  by `pnpm install` via the `prepare` script).
+- Config lives in the root `package.json` `lint-staged` key: staged
+  JS/TS/JSON/Markdown/CSS/HTML/YAML files get `prettier --write` (per-package
+  `.prettierrc.json` applies, including the Tailwind plugin); staged `.rs`
+  files outside `vendor/` get `rustfmt --edition 2024`.
+- Root `.prettierignore` excludes `vendor/`, `pnpm-lock.yaml`, and generated
+  directories — do not remove those entries.
+- `.husky/commit-msg` runs `commitlint` (`commitlint.config.mjs`): commits
+  must use Conventional Commits — `type(scope): subject`, lower-case
+  imperative subject.
+- `.pre-commit-config.yaml` is a separate, optional Python `pre-commit` suite
+  (fmt/clippy/tests/build checks); it is not installed by default.
 
 ## Documentation
 

@@ -461,3 +461,193 @@ fn lab_dataset_upload_rejects_directory_path() {
         .is_err()
     );
 }
+
+#[test]
+fn lab_database_connect_failure_surfaces_for_all_db_tools() {
+    let _guard = serial();
+    // Point the database URL at an unwritable location so Database::connect
+    // fails inside the lazy `database()` initializer.
+    let dir = temp_dir("bad-db");
+    let blocker = dir.join("not-a-dir");
+    std::fs::write(&blocker, "file").expect("blocker file");
+    set_settings(Settings::new(
+        format!("sqlite://{}/lab.db", blocker.display()),
+        dir.join("data"),
+    ));
+    // `LabBackend::new` (lazy db) rather than the in-memory helper.
+    let mut backend = LabBackend::new().expect("backend");
+    for tool in [
+        "mars_lab_datasets",
+        "mars_lab_jobs",
+        "mars_lab_dataset",
+        "mars_lab_job",
+        "mars_lab_export",
+        "mars_lab_train",
+    ] {
+        let args = match tool {
+            "mars_lab_dataset" => json!({ "dataset_id": uuid::Uuid::new_v4().to_string() }),
+            "mars_lab_job" | "mars_lab_export" => {
+                json!({ "job_id": uuid::Uuid::new_v4().to_string(), "output": "o.onnx" })
+            }
+            "mars_lab_train" => json!({
+                "dataset_id": uuid::Uuid::new_v4().to_string(),
+                "task": "classification",
+                "algorithm": "logistic_regression",
+                "features": ["a"]
+            }),
+            _ => json!({}),
+        };
+        let error = call(&mut backend, tool, args).expect_err("db failure");
+        assert!(!error.is_empty(), "{tool}");
+    }
+}
+
+#[test]
+fn lab_tools_cover_not_found_and_edge_paths() {
+    let _guard = serial();
+    isolate_storage("edge");
+    let mut backend = backend();
+    let missing = uuid::Uuid::new_v4().to_string();
+
+    // Unknown dataset/job ids hit the `ok_or_else` not-found closures.
+    let err = call(
+        &mut backend,
+        "mars_lab_dataset",
+        json!({ "dataset_id": missing }),
+    )
+    .expect_err("missing dataset");
+    assert!(err.contains("dataset not found"), "{err}");
+    let err =
+        call(&mut backend, "mars_lab_job", json!({ "job_id": missing })).expect_err("missing job");
+    assert!(err.contains("job not found"), "{err}");
+    let err = call(
+        &mut backend,
+        "mars_lab_train",
+        json!({
+            "dataset_id": missing,
+            "task": "classification",
+            "algorithm": "logistic_regression",
+            "features": ["a"]
+        }),
+    )
+    .expect_err("missing train dataset");
+    assert!(err.contains("dataset not found"), "{err}");
+
+    // Empty/blank feature list.
+    let err = call(
+        &mut backend,
+        "mars_lab_train",
+        json!({
+            "dataset_id": missing,
+            "task": "classification",
+            "algorithm": "logistic_regression",
+            "features": ["  ", ""]
+        }),
+    )
+    .expect_err("empty features");
+    assert!(err.contains("feature"), "{err}");
+
+    // Malformed args for each typed payload.
+    for (tool, args) in [
+        ("mars_lab_algorithms", json!({ "task": 5 })),
+        ("mars_lab_dataset", json!({})),
+        ("mars_lab_dataset_upload", json!({ "path": 9 })),
+        ("mars_lab_train", json!({ "dataset_id": 1 })),
+        ("mars_lab_jobs", json!({ "limit": "many" })),
+        ("mars_lab_job", json!({ "job_id": "not-a-uuid" })),
+        ("mars_lab_export", json!({ "job_id": "x", "output": "o" })),
+    ] {
+        let err = call(&mut backend, tool, args.clone()).expect_err(&format!("{tool} {args}"));
+        assert!(!err.is_empty());
+    }
+
+    // jobs limit clamp and next_cursor on empty page.
+    let jobs = call(&mut backend, "mars_lab_jobs", json!({ "limit": 0 })).expect("jobs");
+    assert_eq!(jobs["jobs"], json!([]));
+}
+
+#[test]
+fn lab_export_and_artefact_failures_surface_errors() {
+    let _guard = serial();
+    let dir = isolate_storage("export-fail");
+    let csv_path = write_csv(&dir, "data.csv");
+    let mut backend = backend();
+
+    let uploaded = call(
+        &mut backend,
+        "mars_lab_dataset_upload",
+        json!({ "path": csv_path.to_string_lossy() }),
+    )
+    .expect("upload");
+    let dataset_id = uploaded["dataset"]["id"].as_str().expect("id").to_string();
+
+    // Sabotage the artefacts dir so export_artefact's ensure_dirs fails after
+    // a successful train: swap the directory for a regular file.
+    let artefacts_dir = dir.join("data").join("artefacts");
+    let _ = std::fs::remove_dir_all(&artefacts_dir);
+    std::fs::write(&artefacts_dir, "blocker").expect("blocker");
+    let err = call(
+        &mut backend,
+        "mars_lab_train",
+        json!({
+            "dataset_id": dataset_id,
+            "task": "classification",
+            "algorithm": "logistic_regression",
+            "features": ["a", "b"],
+            "label": "label",
+            "seed": 7
+        }),
+    )
+    .expect_err("export should fail");
+    assert!(err.contains("EXPORT_FAILED") || !err.is_empty(), "{err}");
+
+    // Restore storage, train again, then hit export's fs::write failure
+    // (output parent missing) and fs::read failure (ghost artefact file).
+    let _ = std::fs::remove_file(&artefacts_dir);
+    std::fs::create_dir_all(&artefacts_dir).expect("restore artefacts dir");
+    let trained = call(
+        &mut backend,
+        "mars_lab_train",
+        json!({
+            "dataset_id": dataset_id,
+            "task": "classification",
+            "algorithm": "logistic_regression",
+            "features": ["a", "b"],
+            "label": "label",
+            "seed": 7
+        }),
+    )
+    .expect("train");
+    let job_id = trained["job"]["id"].as_str().expect("job id").to_string();
+    let job_uuid = uuid::Uuid::parse_str(&job_id).expect("uuid");
+
+    let bad_output = dir.join("missing").join("deep").join("model.onnx");
+    call(
+        &mut backend,
+        "mars_lab_export",
+        json!({
+            "job_id": job_id,
+            "output": bad_output.to_string_lossy(),
+            "format": "onnx",
+        }),
+    )
+    .expect_err("export write should fail");
+
+    // Delete the stored artefact file → fs::read error branch.
+    let artefact_path = mars_lab::storage::artefact_path(
+        trained["artefact"]["storageKey"].as_str().expect("key"),
+        job_uuid,
+    );
+    std::fs::remove_file(&artefact_path).expect("remove artefact");
+    let err = call(
+        &mut backend,
+        "mars_lab_export",
+        json!({
+            "job_id": job_id,
+            "output": dir.join("out.onnx").to_string_lossy(),
+            "format": "onnx",
+        }),
+    )
+    .expect_err("ghost artefact read should fail");
+    assert!(err.contains("failed to read artefact"), "{err}");
+}

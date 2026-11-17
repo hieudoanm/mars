@@ -168,3 +168,56 @@ fn client_reports_server_closed_connection() {
         "err: {err}"
     );
 }
+
+const MALFORMED_SERVER: &str = r#"
+import sys, json
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        msg = json.loads(line)
+    except Exception:
+        continue
+    mid = msg.get("id")
+    if mid is None:
+        continue
+    method = msg.get("method")
+    if method == "initialize":
+        result = {"protocolVersion": "2025-06-18", "capabilities": {}, "serverInfo": {"name": "mock", "version": "0"}}
+        sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": mid, "result": result}) + "\n")
+    elif method == "tools/list":
+        # Malformed: tools is not an array.
+        sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": mid, "result": {"tools": "nope"}}) + "\n")
+    elif method == "tools/call":
+        # Garbage JSON line first, then a malformed result payload.
+        sys.stdout.write("this is not json\n")
+        sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": mid, "result": {"content": 42}}) + "\n")
+    else:
+        sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": mid, "result": {}}) + "\n")
+    sys.stdout.flush()
+"#;
+
+#[test]
+fn client_surfaces_malformed_server_payloads() {
+    let Some(python) = python3() else {
+        eprintln!("python3 unavailable; skipping");
+        return;
+    };
+    let mut client = McpClient::spawn(&[
+        python,
+        "-u".to_owned(),
+        "-c".to_owned(),
+        MALFORMED_SERVER.to_owned(),
+    ])
+    .expect("spawn malformed server");
+    client.initialize().expect("initialize");
+
+    let error = client.list_tools().expect_err("bad tools list");
+    assert!(error.contains("invalid tools/list"), "{error}");
+
+    let error = client
+        .call_tool("anything", json!({}))
+        .expect_err("bad call result");
+    assert!(error.contains("invalid JSON from server"), "{error}");
+}

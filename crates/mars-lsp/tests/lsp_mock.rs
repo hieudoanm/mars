@@ -51,7 +51,13 @@ while True:
             send({"jsonrpc": "2.0", "method": "textDocument/publishDiagnostics",
                   "params": {"uri": doc_uri, "diagnostics": [
                       {"range": {"start": {"line": 1, "character": 0}, "end": {"line": 1, "character": 5}},
-                       "severity": 1, "message": "mock error"}]}})
+                       "severity": 1, "message": "mock error"},
+                      {"range": {"start": {"line": 1, "character": 6}, "end": {"line": 1, "character": 9}},
+                       "severity": 2, "message": "mock warning"},
+                      {"range": {"start": {"line": 1, "character": 9}, "end": {"line": 1, "character": 12}},
+                       "message": "no severity"},
+                      {"range": {"start": {"line": 1, "character": 12}, "end": {"line": 1, "character": 15}},
+                       "severity": 9, "message": "odd severity"}]}})
         continue
     if method == "initialize":
         result = {"capabilities": {"hoverProvider": True}, "serverInfo": {"name": "mock-lsp", "version": "0"}}
@@ -64,14 +70,18 @@ while True:
     elif method == "textDocument/signatureHelp":
         result = {"signatures": [{"label": "helper(x: i32) -> i32", "parameters": []}], "activeSignature": 0, "activeParameter": 0}
     elif method == "textDocument/definition":
-        result = [{"uri": doc_uri, "range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 9}}}]
+        result = [{"targetUri": doc_uri, "targetRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 9}},
+                   "targetSelectionRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 9}}}]
     elif method == "textDocument/inlayHint":
         result = [{"position": {"line": 1, "character": 4}, "label": [{"value": "i32"}], "kind": 1, "paddingLeft": False, "paddingRight": True}]
     elif method == "textDocument/semanticTokens/full":
-        result = {"data": [1, 0, 4, 9, 0, 0, 5, 3, 12, 0]}
+        result = {"data": [1, 0, 4, 9, 0, 0, 5, 3, 12, 0, 0, 0, 1, 99, 0]}
     elif method == "textDocument/codeAction":
         result = [{"title": "Remove unused variable", "kind": "quickfix",
-                   "edit": {"changes": {doc_uri: [{"range": {"start": {"line": 1, "character": 0}, "end": {"line": 1, "character": 10}}, "newText": ""}]}}}]
+                   "edit": {"changes": {doc_uri: [{"range": {"start": {"line": 1, "character": 0}, "end": {"line": 1, "character": 10}}, "newText": ""}]}}},
+                  {"title": "Inline via documentChanges", "kind": "quickfix",
+                   "edit": {"documentChanges": [{"textDocument": {"uri": doc_uri, "version": 1},
+                       "edits": [{"range": {"start": {"line": 1, "character": 0}, "end": {"line": 1, "character": 3}}, "newText": "let"}]}]}}]
     else:
         result = None
     send({"jsonrpc": "2.0", "id": mid, "result": result})
@@ -240,6 +250,66 @@ fn spawn_fails_for_missing_binary() {
     // SAFETY: test-only env mutation.
     unsafe { std::env::set_var("MARS_RUST_ANALYZER", "/nonexistent/mars-lsp-xyz") };
     let result = LspSession::open(&base, "missing");
+    unsafe { std::env::remove_var("MARS_RUST_ANALYZER") };
+    assert!(result.is_err());
+    let _ = std::fs::remove_dir_all(&base);
+}
+
+#[test]
+fn open_surfaces_filesystem_errors() {
+    let base = std::env::temp_dir().join(format!("mars-lsp-openerr-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&base);
+    std::fs::create_dir_all(&base).expect("temp dir");
+
+    // base_dir that is a regular file → create_dir_all fails.
+    let file = base.join("afile");
+    std::fs::write(&file, "x").expect("file");
+    assert!(LspSession::open(&file, "s").is_err());
+
+    // Root exists but is read-only → manifest write fails.
+    let ro = base.join("ro");
+    std::fs::create_dir_all(ro.join("src")).expect("ro src");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&ro, std::fs::Permissions::from_mode(0o555)).expect("chmod");
+    }
+    assert!(LspSession::open(&base, "ro").is_err());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&ro, std::fs::Permissions::from_mode(0o755)).expect("chmod back");
+    }
+
+    // src/ read-only → main.rs write fails after the manifest succeeds.
+    let ro2 = base.join("ro2");
+    std::fs::create_dir_all(ro2.join("src")).expect("ro2 src");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(ro2.join("src"), std::fs::Permissions::from_mode(0o555))
+            .expect("chmod src");
+    }
+    assert!(LspSession::open(&base, "ro2").is_err());
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(ro2.join("src"), std::fs::Permissions::from_mode(0o755))
+            .expect("chmod src back");
+    }
+
+    let _ = std::fs::remove_dir_all(&base);
+}
+
+#[test]
+fn spawn_error_covers_non_not_found_failures() {
+    let _guard = ENV_LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let base = std::env::temp_dir().join(format!("mars-lsp-spawnerr-{}", std::process::id()));
+    std::fs::create_dir_all(&base).expect("temp dir");
+    // A directory as the "binary" fails spawn with PermissionDenied, not
+    // NotFound — covers the non-BinaryNotFound error branch.
+    unsafe { std::env::set_var("MARS_RUST_ANALYZER", &base) };
+    let result = LspSession::open(&base, "spawnerr");
     unsafe { std::env::remove_var("MARS_RUST_ANALYZER") };
     assert!(result.is_err());
     let _ = std::fs::remove_dir_all(&base);

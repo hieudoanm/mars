@@ -59,7 +59,7 @@ jobs:
               -p mars-runtime-julia -p mars-runtime-python -p mars-runtime-r \
               -p mars-runtime-cpp -p mars-protocol -p mars-kernel -p mars-mcp \
               -p mars-jupyter -p mars-renderer -p mars-lsp -p mars \
-              --all-targets \
+              --tests \
               --ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
               --fail-under-lines 80 --fail-under-functions 80 \
               --lcov --output-path lcov.info
@@ -482,7 +482,7 @@ jobs:
         uses: actions/setup-java@v6.3.0
         with:
           distribution: temurin
-          java-version: "25.0.5+8.0.LTS"
+          java-version: '25.0.5+8.0.LTS'
 
       - name: Cache Gradle
         uses: actions/cache@v6.1.0
@@ -506,14 +506,7 @@ jobs:
 
   release:
     name: Release
-    needs:
-      [
-        cli-build,
-        desktop-build,
-        extension-vscode,
-        extension-zed,
-        extension-jetbrains,
-      ]
+    needs: [cli-build, desktop-build, extension-vscode, extension-zed, extension-jetbrains]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:

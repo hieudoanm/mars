@@ -31,7 +31,7 @@ coverage:
 	# Benchmark binaries and the evcxr evaluator-bound glue (backend/session/
 	# context) require the optional evcxr evaluator binary and are exercised by
 	# the opt-in MARS_EVCXR_RUN_INTEGRATION=1 suite instead.
-	cargo llvm-cov $(COVERAGE_PACKAGES:%=-p %) --all-targets \
+	cargo llvm-cov $(COVERAGE_PACKAGES:%=-p %) --tests \
 		--ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
 		--fail-under-lines $(COVERAGE_MIN_LINES) \
 		--fail-under-functions $(COVERAGE_MIN_FUNCTIONS)

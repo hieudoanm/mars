@@ -442,3 +442,101 @@ fn kernel_variables_and_status_after_execution() {
 
     let _ = std::fs::remove_dir_all(path.parent().expect("parent"));
 }
+
+#[test]
+fn exec_tools_reject_malformed_arguments() {
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, None);
+    // parse::<RunArgs> and parse::<DiagnoseArgs> error closures.
+    for (tool, args) in [
+        ("mars_notebook_execute", json!({ "path": 1 })),
+        ("mars_cell_diagnose", json!({ "index": "x" })),
+        ("mars_cell_diagnose", json!({ "path": "p", "source": 5 })),
+        ("mars_kernel_status", json!({ "language": 3 })),
+        ("mars_kernel_reset", json!({ "path": ["a"] })),
+        ("mars_kernel_variables", json!({ "path": {} })),
+    ] {
+        let result = call_exec_tool(&mut session, tool, &args)
+            .expect("dispatch")
+            .expect_err("should reject");
+        assert!(result.contains("invalid arguments"), "{tool}: {result}");
+    }
+}
+
+#[test]
+fn language_resolution_covers_all_fallbacks() {
+    let dir = std::env::temp_dir().join(format!("mars-mcp-lang-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let path = dir.join("lang.mars");
+    std::fs::write(
+        &path,
+        r#"{"format_version":1,"metadata":{"language":"python"},"cells":[]}"#,
+    )
+    .expect("write notebook");
+    let path_string = path.to_string_lossy().to_string();
+
+    // No explicit language, no path → default language.
+    let mut session = MarsSession::new(RuntimeBackendKind::Replay, true, Some("rust".to_owned()));
+    let status = call_exec_tool(&mut session, "mars_kernel_status", &json!({}))
+        .expect("dispatch")
+        .expect("status");
+    assert_eq!(status["language"], "rust");
+
+    // Path of an open notebook → notebook metadata language (python kernel is
+    // lazy; status still resolves the name through the fallback chain).
+    session.open_notebook(&path).expect("open");
+    let status = call_exec_tool(
+        &mut session,
+        "mars_kernel_status",
+        &json!({ "path": path_string }),
+    )
+    .expect("dispatch")
+    .expect("status");
+    assert_eq!(status["language"], "python");
+
+    // Explicit language wins over both.
+    let status = call_exec_tool(
+        &mut session,
+        "mars_kernel_status",
+        &json!({ "path": path_string, "language": "rust" }),
+    )
+    .expect("dispatch")
+    .expect("status");
+    assert_eq!(status["language"], "rust");
+
+    // Variables/reset on a missing-path kernel exercise the same fallbacks.
+    let vars = call_exec_tool(
+        &mut session,
+        "mars_kernel_variables",
+        &json!({ "language": "rust" }),
+    )
+    .expect("dispatch")
+    .expect("variables");
+    assert!(vars["response"].is_object());
+
+    // Diagnose with index out of range and with source-only.
+    let range = call_exec_tool(
+        &mut session,
+        "mars_cell_diagnose",
+        &json!({ "path": path_string, "index": 9 }),
+    )
+    .expect("dispatch");
+    assert!(range.is_err());
+    let src = call_exec_tool(
+        &mut session,
+        "mars_cell_diagnose",
+        &json!({ "path": path_string, "source": "1 + 1", "language": "rust" }),
+    )
+    .expect("dispatch")
+    .expect("diagnose");
+    assert_eq!(src["language"], "rust");
+    // Neither index nor source.
+    assert!(
+        call_exec_tool(
+            &mut session,
+            "mars_cell_diagnose",
+            &json!({ "path": path_string })
+        )
+        .expect("dispatch")
+        .is_err()
+    );
+}
