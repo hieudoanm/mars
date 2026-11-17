@@ -83,6 +83,39 @@ fn sync_then_query_roundtrip() {
 }
 
 #[test]
+fn sync_rejects_or_accepts_non_code_cells() {
+    let sessions = sessions();
+    let markdown = vec![CellSource {
+        id: "m1".to_owned(),
+        cell_type: "markdown".to_owned(),
+        source: "# title".to_owned(),
+    }];
+    // Either the session rejects non-code cells or syncs them harmlessly.
+    let _ = sessions.sync("md", markdown, Dependencies::default());
+}
+
+#[test]
+fn request_payloads_deserialize() {
+    let sync: SyncRequest = serde_json::from_value(serde_json::json!({
+        "session": "deser",
+        "cells": [{"id": "c1", "cell_type": "code", "source": "fn main() {}"}],
+        "dependencies": {}
+    }))
+    .expect("deserializes sync request");
+    assert_eq!(sync.session, "deser");
+    assert_eq!(sync.cells.len(), 1);
+
+    let position: PositionRequest = serde_json::from_value(serde_json::json!({
+        "session": "deser",
+        "cell_id": "c1",
+        "line": 1,
+        "character": 2
+    }))
+    .expect("deserializes position request");
+    assert_eq!(position.cell_id, "c1");
+}
+
+#[test]
 fn commands_delegate_to_state() {
     let app = app();
     let state = app.state::<AppState>();

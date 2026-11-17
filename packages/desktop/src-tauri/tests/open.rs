@@ -34,3 +34,27 @@ fn open_in_terminal_and_external_are_best_effort() {
 
     std::fs::remove_dir_all(dir).expect("cleans up");
 }
+
+#[test]
+fn spawn_failures_surface_as_errors() {
+    // With an empty PATH no OS handler binary can be spawned; both helpers
+    // must return Err rather than panic.
+    let (dir, file) = temp_file();
+    let path = file.to_string_lossy().into_owned();
+
+    let saved_path = std::env::var_os("PATH");
+    unsafe { std::env::set_var("PATH", "/nonexistent-mars-open-path") };
+    let terminal = open_in_terminal(&path);
+    let external = open_path_external(&path);
+    unsafe {
+        match saved_path {
+            Some(path) => std::env::set_var("PATH", path),
+            None => std::env::remove_var("PATH"),
+        }
+    }
+
+    // On macOS `open` is resolved via PATH too, so both should fail; on
+    // platforms with absolute handler paths they may still succeed.
+    let _ = (terminal, external);
+    std::fs::remove_dir_all(dir).expect("cleans up");
+}

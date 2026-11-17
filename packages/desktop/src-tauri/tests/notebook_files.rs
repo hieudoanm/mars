@@ -45,6 +45,10 @@ fn lists_notebooks_and_rust_project_files() {
     );
     assert!(!names.contains(&"target"));
     assert!(!names.contains(&"notes.txt"));
+
+    // Entries cross the Tauri boundary as JSON.
+    assert!(serde_json::to_value(&entries).is_ok());
+    let _ = format!("{entries:?}");
     std::fs::remove_dir_all(directory).expect("removes temporary directory");
 }
 

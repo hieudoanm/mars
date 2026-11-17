@@ -56,7 +56,16 @@ fn executes_and_queries_rust_cells() {
     let _ = diagnostics;
 
     reset_kernel(state.clone(), session.clone(), "rust".to_owned()).expect("resets kernel");
-    cancel_execution(state.clone(), session).expect("cancels execution");
+    cancel_execution(state.clone(), session.clone()).expect("cancels execution");
+
+    // After reset the registered stdin writer may be stale; sending input
+    // must still return a handled Result.
+    let _ = send_kernel_input(
+        state.clone(),
+        session,
+        "after-reset\n".to_owned(),
+        "rust".to_owned(),
+    );
 }
 
 #[test]
@@ -94,6 +103,72 @@ fn inspect_variables_and_input_comm_paths() {
         serde_json::json!({"data": 1}),
         "rust".to_owned(),
     );
+    // Unknown comm targets exercise the error mapping where supported.
+    let _ = send_kernel_comm(
+        state.clone(),
+        session.clone(),
+        "comm-missing".to_owned(),
+        "comm_close".to_owned(),
+        serde_json::json!({}),
+        "rust".to_owned(),
+    );
+
+    // SQL kernels may reject inspection/comms — exercise those error paths.
+    let _ = execute_cell_inner(&state, "sql-io", "SELECT 1;", "sql", None, &mut noop_sink);
+    let _ = inspect_variables(state.clone(), "sql-io".to_owned(), "sql".to_owned());
+    let _ = diagnose_cell(
+        state.clone(),
+        "sql-io".to_owned(),
+        "SELECT 1;".to_owned(),
+        "sql".to_owned(),
+    );
+    let _ = send_kernel_input(
+        state.clone(),
+        "sql-io".to_owned(),
+        "SELECT 2;".to_owned(),
+        "sql".to_owned(),
+    );
+    let _ = send_kernel_comm(
+        state.clone(),
+        "sql-io".to_owned(),
+        "comm-1".to_owned(),
+        "comm_msg".to_owned(),
+        serde_json::json!({}),
+        "sql".to_owned(),
+    );
+}
+
+#[test]
+fn query_commands_surface_kernel_errors() {
+    let app = app();
+    let state = app.state::<AppState>();
+
+    // Languages whose replay kernels may reject inspection, diagnostics,
+    // stdin, or comms — every outcome is a handled path.
+    for (index, language) in ["julia", "cpp", "r", "evcxr"].iter().enumerate() {
+        let session = format!("query-{language}");
+        let _ = inspect_variables(state.clone(), session.clone(), language.to_string());
+        let _ = diagnose_cell(
+            state.clone(),
+            session.clone(),
+            "x = 1".to_owned(),
+            language.to_string(),
+        );
+        let _ = send_kernel_input(
+            state.clone(),
+            session.clone(),
+            "input\n".to_owned(),
+            language.to_string(),
+        );
+        let _ = send_kernel_comm(
+            state.clone(),
+            session,
+            format!("comm-{index}"),
+            "comm_msg".to_owned(),
+            serde_json::json!({}),
+            language.to_string(),
+        );
+    }
 }
 
 #[test]

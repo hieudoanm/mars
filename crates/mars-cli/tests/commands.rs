@@ -1017,3 +1017,37 @@ fn watch_mode_runs_and_detects_changes() {
     std::thread::sleep(std::time::Duration::from_millis(800));
     drop(handle); // detached: the watch loop keeps running until process exit
 }
+
+#[test]
+fn diff_against_another_mars_file() {
+    let dir = temp_dir("diff-file");
+    let current_path = dir.join("current.mars");
+    let baseline_path = dir.join("baseline.mars");
+
+    let mut current = markdown_only_notebook();
+    current
+        .add_cell(Cell::new(CellType::Code, "let x = 1;"))
+        .expect("cell");
+    write_notebook(&current_path, &current);
+    write_notebook(&baseline_path, &markdown_only_notebook());
+
+    run_cli(args(&[
+        "notebook",
+        "diff",
+        &current_path.to_string_lossy(),
+        &baseline_path.to_string_lossy(),
+    ]))
+    .expect("diff against file");
+
+    // A missing baseline file surfaces a load error.
+    let missing = dir.join("missing.mars");
+    assert!(
+        run_cli(args(&[
+            "notebook",
+            "diff",
+            &current_path.to_string_lossy(),
+            &missing.to_string_lossy(),
+        ]))
+        .is_err()
+    );
+}

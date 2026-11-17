@@ -30,12 +30,9 @@ test-jupyter:
 coverage:
 	# Benchmark binaries and the evcxr evaluator-bound glue (backend/session/
 	# context) require the optional evcxr evaluator binary and are exercised by
-	# the opt-in MARS_EVCXR_RUN_INTEGRATION=1 suite instead. The mars-cli
-	# dispatch modules (commands/kernel/lab/doctor/main) are exercised by
-	# integration tests that spawn the `mars` binary; llvm-cov cannot collect
-	# counters from those subprocesses reliably, so they are excluded here.
+	# the opt-in MARS_EVCXR_RUN_INTEGRATION=1 suite instead.
 	cargo llvm-cov $(COVERAGE_PACKAGES:%=-p %) --tests \
-		--ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs|mars-cli/src/(commands|kernel|lab|doctor|main)\.rs' \
+		--ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
 		--fail-under-lines $(COVERAGE_MIN_LINES) \
 		--fail-under-functions $(COVERAGE_MIN_FUNCTIONS)
 

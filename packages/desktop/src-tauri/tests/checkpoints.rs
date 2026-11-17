@@ -97,3 +97,37 @@ fn rejects_invalid_paths_and_failed_restore() {
 
     std::fs::remove_dir_all(dir).expect("cleans up");
 }
+
+#[cfg(unix)]
+#[test]
+fn io_errors_under_unwritable_checkpoint_dir() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let (dir, notebook) = temp_notebook("v1");
+    let path = notebook.to_string_lossy().into_owned();
+    let checkpoint_dir = dir.join("analysis.mars.checkpoints");
+    let checkpoint = create_checkpoint(&path).expect("creates checkpoint");
+
+    // Inaccessible checkpoint dir: listing, reading, and creating all fail.
+    std::fs::set_permissions(&checkpoint_dir, std::fs::Permissions::from_mode(0o000))
+        .expect("makes checkpoint dir inaccessible");
+    assert!(list_checkpoints(&path).is_err());
+    assert!(read_checkpoint(&path, &checkpoint).is_err());
+    assert!(create_checkpoint(&path).is_err());
+
+    std::fs::set_permissions(&checkpoint_dir, std::fs::Permissions::from_mode(0o700))
+        .expect("restores permissions");
+
+    // An unreadable checkpoint file fails at read_to_string.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&checkpoint, std::fs::Permissions::from_mode(0o000))
+            .expect("makes checkpoint unreadable");
+        assert!(read_checkpoint(&path, &checkpoint).is_err());
+        std::fs::set_permissions(&checkpoint, std::fs::Permissions::from_mode(0o600))
+            .expect("restores checkpoint permissions");
+    }
+
+    std::fs::remove_dir_all(dir).expect("cleans up");
+}

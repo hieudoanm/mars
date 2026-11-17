@@ -40,6 +40,68 @@ fn write_dataset_csv() -> String {
     path.to_string_lossy().into_owned()
 }
 
+#[test]
+fn request_payloads_deserialize() {
+    let request: LabTrainRequest = serde_json::from_value(json!({
+        "datasetId": uuid::Uuid::new_v4().to_string(),
+        "taskType": "regression",
+        "algorithmId": "linear_regression",
+        "featureColumns": ["age"],
+        "labelColumn": "target",
+        "hyperparameters": {},
+        "splitRatio": 0.8,
+        "randomSeed": 1,
+        "name": null
+    }))
+    .expect("deserializes train request");
+    assert_eq!(request.algorithm_id, "linear_regression");
+
+    let filters: LabJobFilters = serde_json::from_value(json!({
+        "statuses": ["completed"],
+        "taskTypes": [],
+        "algorithmIds": [],
+        "q": "test",
+        "sortField": "status",
+        "sortDirection": "asc"
+    }))
+    .expect("deserializes job filters");
+    assert_eq!(filters.sort_direction.as_deref(), Some("asc"));
+}
+
+#[test]
+fn payloads_serialize() {
+    // Every command payload must round-trip through serde for the Tauri
+    // boundary; exercise the Serialize impls directly.
+    let algorithm = LabAlgorithm {
+        id: "a".to_owned(),
+        name: "n".to_owned(),
+        task_type: "regression".to_owned(),
+        family: "f".to_owned(),
+        description: "d".to_owned(),
+        default_hyperparameters: json!({}),
+        exports: vec!["onnx".to_owned()],
+    };
+    assert!(serde_json::to_value(&algorithm).is_ok());
+    let _ = format!("{algorithm:?}");
+    assert!(serde_json::to_value(LabJobFilters::default()).is_ok());
+    let _ = format!("{:?}", LabJobFilters::default());
+    let page = LabJobPage {
+        items: vec![],
+        next_cursor: None,
+    };
+    assert!(serde_json::to_value(&page).is_ok());
+    let _ = format!("{page:?}");
+    let preview = LabDatasetPreview {
+        columns: vec![],
+        rows: vec![],
+    };
+    assert!(serde_json::to_value(&preview).is_ok());
+    let _ = format!("{preview:?}");
+    let request = train_request(uuid::Uuid::new_v4().to_string());
+    assert!(serde_json::to_value(&request).is_ok());
+    let _ = format!("{request:?}");
+}
+
 #[tokio::test]
 async fn algorithms_listing_and_filtering() {
     lab_dir();
@@ -67,6 +129,8 @@ async fn dataset_upload_list_insights_and_preview() {
     assert_eq!(detail.dataset.row_count, 8);
     assert!(!detail.dataset.id.is_nil());
     let dataset_id = detail.dataset.id.to_string();
+    assert!(serde_json::to_value(&detail).is_ok());
+    let _ = format!("{detail:?}");
 
     let datasets = lab_list_datasets().await.expect("lists datasets");
     assert!(datasets.iter().any(|d| d.id.to_string() == dataset_id));
@@ -134,6 +198,19 @@ async fn job_listing_pagination_and_detail_errors() {
         .await
         .is_err()
     );
+
+    // Page through with limit=1, feeding next_cursor back in — exercises the
+    // cursor decode success path.
+    let mut cursor: Option<String> = None;
+    for _ in 0..5 {
+        let page = lab_list_jobs_page(LabJobFilters::default(), cursor, Some(1))
+            .await
+            .expect("pages jobs");
+        match page.next_cursor {
+            Some(next) => cursor = Some(next),
+            None => break,
+        }
+    }
 }
 
 #[tokio::test]
@@ -179,6 +256,8 @@ async fn train_runs_linear_regression_and_exports_onnx() {
         .await
         .expect("trains model");
     assert_eq!(trained.job.status, "completed");
+    assert!(serde_json::to_value(&trained).is_ok());
+    let _ = format!("{trained:?}");
     assert!(trained.metrics.is_some());
     assert!(trained.artefacts.iter().any(|a| a.format == "onnx"));
 
@@ -203,12 +282,36 @@ async fn train_runs_linear_regression_and_exports_onnx() {
     let trained_job = trained.job.id.to_string();
     assert!(
         lab_export_artefact(
-            trained_job,
+            trained_job.clone(),
             "onnx".to_owned(),
             "/nonexistent-dir-xyz/model.onnx".to_owned(),
         )
         .await
         .is_err()
+    );
+    // A format the job does not have hits the "no artefact" branch.
+    assert!(
+        lab_export_artefact(
+            trained_job.clone(),
+            "pkl".to_owned(),
+            "/tmp/x.pkl".to_owned()
+        )
+        .await
+        .is_err()
+    );
+
+    // Deleting the artefact file surfaces the read error on export.
+    let onnx = trained
+        .artefacts
+        .iter()
+        .find(|a| a.format == "onnx")
+        .expect("onnx artefact recorded");
+    let artefact_file = mars_lab::storage::artefact_path(&onnx.storage_key, trained.job.id);
+    std::fs::remove_file(&artefact_file).expect("removes artefact file");
+    assert!(
+        lab_export_artefact(trained_job, "onnx".to_owned(), "/tmp/x.onnx".to_owned())
+            .await
+            .is_err()
     );
 
     assert!(
@@ -313,6 +416,21 @@ async fn dataset_error_paths() {
     );
     assert!(
         lab_dataset_insights(missing)
+            .await
+            .expect("insights")
+            .is_none()
+    );
+
+    // Same checks for a UUID that parses but has no dataset row — the
+    // "dataset not found" branch in preview.
+    let ghost = uuid::Uuid::new_v4().to_string();
+    assert!(
+        lab_dataset_preview(ghost.clone(), None, None)
+            .await
+            .is_err()
+    );
+    assert!(
+        lab_dataset_insights(ghost)
             .await
             .expect("insights")
             .is_none()

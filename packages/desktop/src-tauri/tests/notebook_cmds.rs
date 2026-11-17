@@ -198,6 +198,45 @@ fn ipynb_roundtrip_and_open_external_error() {
 }
 
 #[test]
+fn export_and_import_error_paths() {
+    let dir = temp_dir();
+    let missing_dir = dir.join("no-such-dir");
+    let bad_out = missing_dir.join("out.html").to_string_lossy().into_owned();
+    let content = notebook_json();
+
+    // Invalid notebook JSON fails at from_json in every export command.
+    assert!(export_notebook_markdown(bad_out.clone(), "junk".to_owned()).is_err());
+    assert!(export_notebook_html(bad_out.clone(), "junk".to_owned()).is_err());
+    assert!(export_notebook_slides(bad_out.clone(), "junk".to_owned()).is_err());
+    assert!(export_notebook_pdf(bad_out.clone(), "junk".to_owned()).is_err());
+    assert!(export_notebook_ipynb(bad_out.clone(), "junk".to_owned()).is_err());
+    assert!(present_notebook_slides("junk".to_owned()).is_err());
+
+    // Valid JSON but an unwritable destination fails at the write step.
+    assert!(export_notebook_markdown(bad_out.clone(), content.clone()).is_err());
+    assert!(export_notebook_html(bad_out.clone(), content.clone()).is_err());
+    assert!(export_notebook_slides(bad_out.clone(), content.clone()).is_err());
+    assert!(export_notebook_pdf(bad_out.clone(), content.clone()).is_err());
+    assert!(export_notebook_ipynb(bad_out.clone(), content.clone()).is_err());
+
+    // ipynb import: malformed JSON inside a real file.
+    let bad_ipynb = dir.join("bad.ipynb");
+    std::fs::write(&bad_ipynb, "{not json").expect("writes bad ipynb");
+    assert!(import_notebook_ipynb(bad_ipynb.to_string_lossy().into_owned()).is_err());
+
+    // File commands against a path blocked by a regular file.
+    let blocker = dir.join("blocker");
+    std::fs::write(&blocker, "x").expect("writes blocker");
+    let blocked = blocker.join("child").to_string_lossy().into_owned();
+    assert!(create_notebook_file(blocked.clone()).is_err());
+    assert!(create_directory(blocked.clone()).is_err());
+    assert!(write_text_file(blocked.clone(), "x".to_owned()).is_err());
+    assert!(save_notebook(blocked, notebook_json()).is_err());
+
+    std::fs::remove_dir_all(dir).expect("cleans up");
+}
+
+#[test]
 fn present_slides_and_terminal_open_best_effort() {
     // Valid notebook: renders slides, writes a temp file, then attempts to
     // open it externally. The open is best-effort — either outcome is fine,
