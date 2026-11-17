@@ -4,6 +4,13 @@ import type { Metadata } from 'next';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import { repositoryUrl, siteUrl } from '@/lib/site';
+import {
+  cliDownloads,
+  desktopDownloads,
+  extensionDownloads,
+  type DownloadItem,
+} from '@/lib/downloads';
+import { FaApple, FaWindows, FaLinux, FaCode, FaTerminal, FaTools } from 'react-icons/fa';
 
 export const metadata: Metadata = {
   title: 'Downloads',
@@ -29,62 +36,67 @@ export const metadata: Metadata = {
 
 const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 
-import { FaApple, FaWindows, FaLinux } from 'react-icons/fa';
-import { FaCode, FaTerminal, FaTools } from 'react-icons/fa';
+const desktopIcons: Record<string, FC> = {
+  macOS: FaApple,
+  Windows: FaWindows,
+  Linux: FaLinux,
+};
 
-const desktopDownloads = [
-  {
-    platform: 'macOS',
-    icon: FaApple,
-    description: 'Universal build for Apple Silicon and Intel',
-    links: [{ label: 'Download .dmg', href: `${repositoryUrl}/releases` }],
-  },
-  {
-    platform: 'Windows',
-    icon: FaWindows,
-    description: 'x64 installer',
-    links: [{ label: 'Download .msi', href: `${repositoryUrl}/releases` }],
-  },
-  {
-    platform: 'Linux',
-    icon: FaLinux,
-    description: 'AppImage and .deb packages',
-    links: [{ label: 'Download', href: `${repositoryUrl}/releases` }],
-  },
-];
+const extensionIcons: Record<string, FC> = {
+  'VS Code': FaCode,
+  Zed: FaTerminal,
+  JetBrains: FaTools,
+};
 
-const extensionDownloads = [
-  {
-    platform: 'VS Code',
-    icon: FaCode,
-    description: 'Full notebook editor with execution and rich output',
-    links: [
-      {
-        label: 'VS Code Marketplace',
-        href: 'https://marketplace.visualstudio.com/items?itemName=mars.mars',
-      },
-      { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/vscode` },
-    ],
-  },
-  {
-    platform: 'Zed',
-    icon: FaTerminal,
-    description: 'Syntax highlighting, grammar support, and MCP integration',
-    links: [
-      { label: 'Extension Marketplace', href: 'https://zed.dev/extensions' },
-      { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/zed` },
-    ],
-  },
-  {
-    platform: 'JetBrains',
-    icon: FaTools,
-    description: 'File type, cell execution, and kernel tool window',
-    links: [
-      { label: 'Marketplace', href: 'https://plugins.jetbrains.com' },
-      { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/jetbrains` },
-    ],
-  },
-];
+const cliIcons: Record<string, FC> = {
+  'Linux x86_64': FaLinux,
+  macOS: FaApple,
+  'Windows x64': FaWindows,
+};
+
+function DownloadCard({ item, icon }: { item: DownloadItem; icon: FC }) {
+  const Icon = icon;
+  return (
+    <article className='border-line-2 bg-feature-card rounded-xl border p-7'>
+      <div className='mb-6 text-3xl'>
+        <Icon />
+      </div>
+      <h3 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h3>
+      <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
+      <div className='flex flex-col gap-2'>
+        {item.links.map((link) => (
+          <a
+            key={link.label}
+            className='border-orange bg-orange text-sm-plus font-bold-plus text-ink-4 shadow-btn-orange inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
+            href={link.href}>
+            {link.label} <span aria-hidden='true'>↗</span>
+          </a>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function DownloadGrid({
+  title,
+  items,
+  icons,
+}: {
+  title: string;
+  items: DownloadItem[];
+  icons: Record<string, FC>;
+}) {
+  return (
+    <div className='mb-12'>
+      <h2 className='font-semibold-plus tracking-tight-plus mb-6 text-xl'>{title}</h2>
+      <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
+        {items.map((item) => (
+          <DownloadCard key={item.platform} item={item} icon={icons[item.platform]!} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const DownloadsPage: FC & NextPage = () => {
   const breadcrumbSchema = {
@@ -128,73 +140,44 @@ const DownloadsPage: FC & NextPage = () => {
               Get Project Mars for your platform
             </h1>
             <p className='text-muted-2 text-lg'>
-              Download the desktop app, install extensions, or use the CLI from source.
+              Download the desktop app, CLI binaries, install extensions, or build from source.
             </p>
           </div>
 
-          <div className='mb-12'>
-            <h2 className='font-semibold-plus tracking-tight-plus mb-6 text-xl'>
-              Desktop Application
-            </h2>
-            <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
-              {desktopDownloads.map((item) => (
-                <article
-                  key={item.platform}
-                  className='border-line-2 bg-feature-card rounded-xl border p-7'>
-                  <div className='mb-6 text-3xl'>
-                    <item.icon />
-                  </div>
-                  <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
-                  <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
-                  <div className='flex flex-col gap-2'>
-                    {item.links.map((link) => (
-                      <a
-                        key={link.label}
-                        className='border-orange bg-orange text-sm-plus font-bold-plus text-ink-4 shadow-btn-orange inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
-                        href={link.href}>
-                        {link.label} <span aria-hidden='true'>↗</span>
-                      </a>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
+          <DownloadGrid title='Desktop Application' items={desktopDownloads} icons={desktopIcons} />
+
+          <div className='border-line-2 bg-panel-3 mb-12 rounded-xl border p-7'>
+            <h2 className='mb-2 text-lg'>macOS: unsigned app workaround</h2>
+            <p className='text-sm-plus text-muted-2'>
+              The macOS builds are not signed or notarized, so Gatekeeper will block the first
+              launch. Either right-click the app and choose{' '}
+              <strong className='text-ink-2'>Open</strong>, or remove the quarantine attribute:
+            </p>
+            <code className='border-line-2 bg-bg-alt mt-4 block rounded-lg border px-4 py-3 font-mono text-sm'>
+              xattr -dr com.apple.quarantine /Applications/Project\ Mars.app
+            </code>
           </div>
 
-          <div className='mb-12'>
-            <h2 className='font-semibold-plus tracking-tight-plus mb-6 text-xl'>
-              Editor Extensions
-            </h2>
-            <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
-              {extensionDownloads.map((item) => (
-                <article
-                  key={item.platform}
-                  className='border-line-2 bg-feature-card rounded-xl border p-7'>
-                  <div className='mb-6 text-3xl'>
-                    <item.icon />
-                  </div>
-                  <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
-                  <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
-                  <div className='flex flex-col gap-2'>
-                    {item.links.map((link) => (
-                      <a
-                        key={link.label}
-                        className='border-line-2 bg-bg-alt text-sm-plus font-bold-plus text-ink-2 inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
-                        href={link.href}>
-                        {link.label} <span aria-hidden='true'>↗</span>
-                      </a>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+          <DownloadGrid title='CLI' items={cliDownloads} icons={cliIcons} />
+
+          <DownloadGrid
+            title='Editor Extensions'
+            items={extensionDownloads}
+            icons={extensionIcons}
+          />
 
           <div className='border-line-2 bg-panel-3 mt-12 rounded-xl border p-7'>
-            <h3 className='mb-2 text-lg'>Install via Cargo</h3>
-            <p className='text-sm-plus text-muted-2 mb-4'>Build and install the CLI from source</p>
+            <h3 className='mb-2 text-lg'>Install via script or Cargo</h3>
+            <p className='text-sm-plus text-muted-2 mb-4'>
+              Install prebuilt binaries, or build everything from source
+            </p>
+            <code className='border-line-2 bg-bg-alt mb-3 block rounded-lg border px-4 py-3 font-mono text-sm'>
+              curl -fsSL
+              https://raw.githubusercontent.com/hieudoanm/mars/master/scripts/sh/install.sh | bash
+              -s -- --release
+            </code>
             <code className='border-line-2 bg-bg-alt block rounded-lg border px-4 py-3 font-mono text-sm'>
-              cargo install --git https://github.com/hieudoanm/mars mars-cli
+              cargo install --git {repositoryUrl} mars-cli
             </code>
           </div>
         </section>

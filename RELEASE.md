@@ -4,6 +4,10 @@ Mars is an interactive computing platform: **Mars Notebook** (a Jupyter alternat
 
 ## Download
 
+> **macOS:** the desktop builds are not signed or notarized. On first launch,
+> right-click the app → **Open**, or run
+> `xattr -dr com.apple.quarantine /Applications/Project\ Mars.app`.
+
 Or install everything prebuilt: `curl -fsSL https://raw.githubusercontent.com/hieudoanm/mars/master/scripts/sh/install.sh | bash -s -- --release`
 
 - [All assets][release]

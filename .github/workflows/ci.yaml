@@ -630,18 +630,21 @@ jobs:
         run: |
           set -euo pipefail
           cd dist
-          shopt -s nullglob
+          # Artifacts keep their bundle subdirectories (deb/, rpm/, msi/, ...),
+          # so match recursively and move results to the dist root.
+          shopt -s nullglob globstar
           # macOS bundles are already renamed per-arch at build time; the
           # Project.Mars* globs below only match Linux/Windows leftovers.
-          for f in Project.Mars*.deb; do mv "$f" desktop-mars-x86_64-unknown-linux-gnu.deb; done
-          for f in Project.Mars*.rpm; do mv "$f" desktop-mars-x86_64-unknown-linux-gnu.rpm; done
-          for f in Project.Mars*.AppImage; do mv "$f" desktop-mars-x86_64-unknown-linux-gnu.AppImage; done
-          for f in Project.Mars*.msi; do mv "$f" desktop-mars-x86_64-pc-windows-msvc.msi; done
-          for f in Project.Mars*-setup.exe; do mv "$f" desktop-mars-x86_64-pc-windows-msvc-setup.exe; done
-          for f in *.vsix; do mv "$f" extension-vscode-mars.vsix; done
-          for f in *.wasm; do mv "$f" extension-zed-mars.wasm; done
-          for f in *jetbrains*.zip; do
-            version="${f##*-}"
+          for f in **/Project.Mars*.deb; do mv "$f" desktop-mars-x86_64-unknown-linux-gnu.deb; done
+          for f in **/Project.Mars*.rpm; do mv "$f" desktop-mars-x86_64-unknown-linux-gnu.rpm; done
+          for f in **/Project.Mars*.AppImage; do mv "$f" desktop-mars-x86_64-unknown-linux-gnu.AppImage; done
+          for f in **/Project.Mars*.msi; do mv "$f" desktop-mars-x86_64-pc-windows-msvc.msi; done
+          for f in **/Project.Mars*-setup.exe; do mv "$f" desktop-mars-x86_64-pc-windows-msvc-setup.exe; done
+          for f in **/*.vsix; do mv "$f" extension-vscode-mars.vsix; done
+          for f in **/*.wasm; do mv "$f" extension-zed-mars.wasm; done
+          for f in **/*jetbrains*.zip; do
+            version="$(basename "$f")"
+            version="${version##*-}"
             version="${version%.zip}"
             mv "$f" "extension-jetbrains-mars-${version}.zip"
           done
