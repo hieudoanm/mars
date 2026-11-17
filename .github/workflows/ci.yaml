@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
   pull_request:
-    branches: [master]
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
@@ -27,8 +29,13 @@ jobs:
         with:
           components: rustfmt, clippy
 
+      # Distinct cache key: this job and cli-coverage build different
+      # artifact sets (target/ vs target/llvm-cov-target/) and would
+      # otherwise evict each other's entries on save.
       - name: Cache Cargo dependencies and build outputs
         uses: Swatinem/rust-cache@v2.9.3
+        with:
+          key: cli-quality
 
       # src-tauri is a workspace member, so workspace-wide cargo commands
       # compile the Tauri backend and need its system libraries on Linux.
@@ -43,14 +50,32 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
-      # The coverage step below already runs every test target (unit +
-      # integration) for all instrumented crates, so this step only covers
-      # mars-tauri (no coverage gate), mars-lab, and mars-runtime-sql, which
-      # are kept out of the coverage package set because their trainers and
-      # session code are not yet at the 80% gate. mars-zed is tested in
+      # cli-coverage already runs every test target (unit + integration)
+      # for the instrumented crates, so this step only covers mars-tauri
+      # (no coverage gate), mars-lab, and mars-runtime-sql, which are kept
+      # out of the coverage package set because their trainers and session
+      # code are not yet at the 80% gate. mars-zed is tested in
       # extension-zed.
       - name: Test
         run: cargo test -p mars-lab -p mars-runtime-sql -p mars-tauri
+
+  # Coverage runs in its own job so PRs get fmt/clippy/test feedback in
+  # ~7 min instead of waiting ~12 min for the instrumented build. The
+  # instrumented packages never compile mars-tauri, so no system deps.
+  cli-coverage:
+    name: CLI - Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo dependencies and build outputs
+        uses: Swatinem/rust-cache@v2.9.3
+        with:
+          key: cli-coverage
 
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
@@ -109,7 +134,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
@@ -254,7 +282,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
@@ -522,7 +553,13 @@ jobs:
 
   release:
     name: Release
-    needs: [cli-build, desktop-build, extension-vscode, extension-zed, extension-jetbrains]
+    needs:
+      - cli-build
+      - cli-coverage
+      - desktop-build
+      - extension-vscode
+      - extension-zed
+      - extension-jetbrains
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
