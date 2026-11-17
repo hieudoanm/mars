@@ -8,5 +8,5 @@ rust-version.workspace = true
 [dependencies]
 mars-core = { path = "../mars-core" }
 mars-runtime = { path = "../mars-runtime" }
-rusqlite = { version = "=0.32.1", features = ["bundled"] }
+rusqlite = { version = "=0.43.0", features = ["bundled"] }
 csv = "=1.4.0"
