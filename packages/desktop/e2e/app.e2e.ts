@@ -90,7 +90,7 @@ describe('Mars desktop (tauri-driver)', () => {
     const markerFound = await browser
       .waitUntil(
         async () => {
-          const outputs = await $$('[data-component="OutputView"]');
+          const outputs = await $$('[data-component="CodeBlock"]');
           for (const output of outputs) {
             try {
               if ((await output.getText()).includes('language = Rust')) return true;
@@ -110,7 +110,7 @@ describe('Mars desktop (tauri-driver)', () => {
       // Dump whatever the UI is showing so CI logs explain the failure.
       const parts: string[] = [];
       for (const selector of [
-        '[data-component="OutputView"]',
+        '[data-component="CodeBlock"]',
         '[data-component="NotebookStatusBar"]',
         '[role="dialog"]',
         '[role="alert"]',
