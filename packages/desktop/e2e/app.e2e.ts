@@ -22,13 +22,17 @@ const lastEditor = async () => {
 };
 
 describe('Mars desktop (tauri-driver)', () => {
-  it('shows the welcome view on first launch', async () => {
-    await visible('[data-component="WelcomeView"]');
-    await button('New notebook').waitForDisplayed({ timeout: 15_000 });
-    await button('Open notebook…').waitForDisplayed();
+  it('shows the product welcome on first launch', async () => {
+    await visible('[data-component="ProductWelcome"]');
+    await button('Mars Notebook').waitForDisplayed({ timeout: 15_000 });
+    await button('Mars Lab').waitForDisplayed();
   });
 
-  it('opens a notebook from the welcome view', async () => {
+  it('opens the notebook workspace and a new notebook', async () => {
+    // First launch routes to the product picker; the Mars Notebook card
+    // enters the notebook workspace, which shows its own WelcomeView.
+    await button('Mars Notebook').click();
+    await visible('[data-component="WelcomeView"]');
     await button('New notebook').click();
     await visible('[data-component="NotebookSession"]');
     await lastEditor();
