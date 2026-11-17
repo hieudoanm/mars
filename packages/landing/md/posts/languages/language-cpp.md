@@ -11,6 +11,23 @@ tags: ['cpp', 'performance', 'systems', 'history', 'mars']
 
 C++ was designed in 1979 as "C with Classes" — a pragmatic evolution of C that added object-oriented features without abandoning C's low-level control. It became the default language for systems programming, high-performance computing, and embedded systems. The reasons say a lot about what happens when you optimize a language for zero-cost abstractions and direct hardware access.
 
+## Set up the C++ runtime
+
+C++ cells need a C++17-capable compiler — `clang++` (preferred) or `g++`:
+
+```bash
+xcode-select --install                    # macOS
+brew install llvm && brew link --force llvm
+
+sudo apt install clang                    # Debian / Ubuntu (provides clang++)
+# or: sudo apt install g++
+sudo dnf install clang                    # Fedora
+sudo pacman -S clang                      # Arch Linux
+winget install LLVM.LLVM                  # Windows
+```
+
+Verify with `clang++ --version` (or `g++ --version`), or run `mars notebook doctor`. C++ dependencies come from Conan or vcpkg — see the [C++ runtime docs](/docs/runtime-cpp).
+
 ## Performance by design
 
 C++'s most famous design principle is "you don't pay for what you don't use, and you don't pay for what you do use indirectly." A virtual function call costs only when you actually declare a function virtual. A template generates no runtime overhead. Memory layout is explicit and controllable:

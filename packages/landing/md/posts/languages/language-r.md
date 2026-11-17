@@ -11,6 +11,20 @@ tags: ['r', 'statistics', 'data-science', 'tidyverse', 'mars']
 
 Python gets most of the attention in data science, but a large share of academic research, biostatistics, and social science still runs on R. That is not inertia — R was designed by statisticians for statistical work, and in that domain it remains genuinely excellent.
 
+## Set up the R runtime
+
+R cells need `Rscript` on your PATH:
+
+```bash
+brew install r              # macOS
+sudo apt install r-base     # Debian / Ubuntu
+sudo dnf install R          # Fedora
+sudo pacman -S r            # Arch Linux
+# or download a binary from https://cran.r-project.org/bin/
+```
+
+Verify with `Rscript --version`. The driver needs the `jsonlite` package — install it once inside an R cell with `install.packages("jsonlite")`, or run `mars notebook doctor` to check all runtimes.
+
 ## Built for statistics, not general-purpose code
 
 R's core data structures are statistical objects. A data frame is not a library add-on; it is a native concept. The language was designed around the workflow of applied statistics:

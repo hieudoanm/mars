@@ -51,7 +51,8 @@ machine-readable summary for scripts and CI.
 `mars notebook doctor [file.mars]` checks which language runtimes are
 installed (`cargo`, `python3`, `Rscript`, `julia`, `clang++`/`g++`) and
 prints versions or install hints — pass a notebook path to check only the
-languages it uses.
+languages it uses. See the [runtime docs](./runtime.md) for per-language
+installation instructions.
 
 ## Run a notebook
 

@@ -8,7 +8,7 @@
     {
       "id": "cell-1",
       "cell_type": "markdown",
-      "source": "# Why Python?\n\nPython was not designed for data science. It was designed in the late 1980s as a general-purpose scripting language — readable, batteries-included, friendly to beginners. It became the default language for scientific computing anyway, and the reasons say a lot about what people actually need from a tool.\n\n## Readability as a feature\n\nPython's most famous design choice is that it uses whitespace for structure. There are no curly braces, no `end` keywords, no semicolons. A function looks like what it does:",
+      "source": "# Why Python?\n\nPython was not designed for data science. It was designed in the late 1980s as a general-purpose scripting language — readable, batteries-included, friendly to beginners. It became the default language for scientific computing anyway, and the reasons say a lot about what people actually need from a tool.\n\n## Set up the Python runtime\n\nPython cells need `python3` (3.10 or newer) on your PATH:\n\n```bash\nbrew install python                  # macOS\nsudo apt install python3 python3-venv python3-pip   # Debian / Ubuntu\nsudo dnf install python3 python3-pip # Fedora\nsudo pacman -S python python-pip     # Arch Linux\nwinget install Python.Python.3       # Windows\n```\n\nVerify with `python3 --version`, or run `mars notebook doctor`. Packages for a notebook go through `%pip install …` inside a cell — no environment setup needed.\n## Readability as a feature\n\nPython's most famous design choice is that it uses whitespace for structure. There are no curly braces, no `end` keywords, no semicolons. A function looks like what it does:",
       "metadata": {}
     },
     {

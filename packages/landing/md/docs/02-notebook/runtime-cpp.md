@@ -28,13 +28,33 @@ with a replay-based execution model:
 
 ## Installation
 
-A C++ compiler must be installed and available on your system:
+A C++17-capable compiler must be installed and available on your system.
+Install `clang++` (preferred — better diagnostics) or `g++`:
 
 ```bash
-# Install clang++ (preferred) or g++
-# macOS: xcode-select --install
-# Linux: sudo apt install clang++ or sudo apt install g++
-# Windows: Install Visual Studio or MinGW
+# macOS
+xcode-select --install
+# or: brew install llvm && brew link --force llvm   # provides clang++
+
+# Debian / Ubuntu
+sudo apt install clang          # provides clang++
+# or: sudo apt install g++
+
+# Fedora
+sudo dnf install clang          # or: sudo dnf install gcc-c++
+
+# Arch Linux
+sudo pacman -S clang            # or: sudo pacman -S gcc
+
+# Windows
+winget install LLVM.LLVM        # provides clang++
+# or install Visual Studio Build Tools / MinGW-w64
+```
+
+Then verify:
+
+```bash
+clang++ --version   # or: g++ --version
 ```
 
 Project Mars discovers the C++ compiler via:
@@ -111,6 +131,18 @@ sum  // Displays: 15
 ## Dependencies
 
 C++ dependency management is more complex than Rust's Cargo. Project Mars supports two
+package managers — install whichever you prefer before declaring dependencies:
+
+```bash
+# Conan 2 (preferred)
+pip install conan2            # or: brew install conan
+
+# vcpkg
+git clone https://github.com/microsoft/vcpkg
+./vcpkg/bootstrap-vcpkg.sh    # Windows: bootstrap-vcpkg.bat
+./vcpkg/vcpkg integrate install
+```
+
 package managers:
 
 ### Conan (Preferred)

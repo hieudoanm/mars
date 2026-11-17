@@ -25,11 +25,29 @@ long-lived driver subprocess:
 
 ## Installation
 
-R must be installed and available on your system:
+R must be installed and available on your system. Install it with your
+platform's package manager or from CRAN:
 
 ```bash
-# Install R from https://cran.r-project.org/
-# Or use your system package manager
+# macOS
+brew install r
+
+# Debian / Ubuntu
+sudo apt install r-base
+
+# Fedora
+sudo dnf install R
+
+# Arch Linux
+sudo pacman -S r
+
+# Or download a binary from https://cran.r-project.org/bin/
+```
+
+Then verify:
+
+```bash
+Rscript --version
 ```
 
 Project Mars discovers the R interpreter via:

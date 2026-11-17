@@ -4,7 +4,7 @@
 //! `tools/list`, and `tools/call` over newline-delimited JSON-RPC.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 pub const PROTOCOL_VERSION: &str = "2025-11-25";
 pub const SERVER_NAME: &str = "mars";
@@ -83,8 +83,8 @@ impl CallToolResult {
             Value::Array(items) => json!({ "items": items }),
             other => json!({ "value": other }),
         };
-        let mut result = Self::ok(serde_json::to_string_pretty(value)
-            .unwrap_or_else(|_| value.to_string()));
+        let mut result =
+            Self::ok(serde_json::to_string_pretty(value).unwrap_or_else(|_| value.to_string()));
         result.structured_content = Some(structured);
         result
     }

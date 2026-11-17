@@ -12,6 +12,28 @@ Project Mars provides two Rust execution backends: the replay runtime (default) 
 experimental Evcxr runtime. Both maintain persistent sessions without running
 arbitrary notebook code inside the desktop process.
 
+## Installation
+
+Rust cells need a Rust toolchain — `rustc` and `cargo` — on your system.
+Install it with rustup:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# then restart your shell or run: source "$HOME/.cargo/env"
+
+# or via your package manager
+brew install rustup-init     # macOS
+sudo apt install rustc cargo # Debian / Ubuntu
+sudo dnf install rust cargo  # Fedora
+sudo pacman -S rust          # Arch Linux
+```
+
+Verify:
+
+```bash
+rustc --version && cargo --version
+```
+
 ## What the runtime guarantees
 
 - Successful cells can define bindings used by later cells.

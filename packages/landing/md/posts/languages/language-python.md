@@ -11,6 +11,20 @@ tags: ['python', 'data-science', 'ecosystem', 'history', 'mars']
 
 Python was not designed for data science. It was designed in the late 1980s as a general-purpose scripting language — readable, batteries-included, friendly to beginners. It became the default language for scientific computing anyway, and the reasons say a lot about what people actually need from a tool.
 
+## Set up the Python runtime
+
+Python cells need `python3` (3.10 or newer) on your PATH:
+
+```bash
+brew install python                  # macOS
+sudo apt install python3 python3-venv python3-pip   # Debian / Ubuntu
+sudo dnf install python3 python3-pip # Fedora
+sudo pacman -S python python-pip     # Arch Linux
+winget install Python.Python.3       # Windows
+```
+
+Verify with `python3 --version`, or run `mars notebook doctor`. Packages for a notebook go through `%pip install …` inside a cell — no environment setup needed.
+
 ## Readability as a feature
 
 Python's most famous design choice is that it uses whitespace for structure. There are no curly braces, no `end` keywords, no semicolons. A function looks like what it does:

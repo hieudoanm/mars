@@ -11,6 +11,20 @@ tags: ['julia', 'data-science', 'performance', 'multiple-dispatch', 'mars']
 
 Julia was designed from the ground up for scientific computing. It walks like Python, runs like C, and makes high-performance numerical work feel natural. The reasons it exists say a lot about what data scientists actually need: approachability without sacrificing speed.
 
+## Set up the Julia runtime
+
+Julia cells need the `julia` executable on your PATH:
+
+```bash
+brew install julia          # macOS
+sudo apt install julia      # Debian / Ubuntu
+sudo dnf install julia      # Fedora
+sudo pacman -S julia        # Arch Linux
+# or download the official installer from https://julialang.org/downloads/
+```
+
+Verify with `julia --version`, or run `mars notebook doctor` to check every runtime at once.
+
 ## Walks like Python
 
 Julia's syntax is intentionally familiar to Python and MATLAB users. No semicolons, no type annotations required, and a REPL that encourages exploration:

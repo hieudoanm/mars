@@ -11,7 +11,7 @@ const docs = [
   },
   {
     slug: 'cli',
-    chapter: 'platform',
+    chapter: 'notebook',
     title: 'CLI',
     description: 'Project Mars cli documentation',
     content: '# CLI',
@@ -83,7 +83,7 @@ describe('DocsSearch', () => {
   it('groups docs by chapter when not searching', () => {
     render(<DocsSearch docs={docs} />);
     expect(screen.getByText('Foundations')).toBeInTheDocument();
-    expect(screen.getByText('Platform')).toBeInTheDocument();
+    expect(screen.getByText('Notebook')).toBeInTheDocument();
   });
 
   it('matches search case-insensitively', () => {

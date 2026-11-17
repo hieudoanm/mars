@@ -8,7 +8,7 @@
     {
       "id": "cell-1",
       "cell_type": "markdown",
-      "source": "# Why Julia?\n\nJulia was designed from the ground up for scientific computing. It walks like Python, runs like C, and makes high-performance numerical work feel natural. The reasons it exists say a lot about what data scientists actually need: approachability without sacrificing speed.\n\n## Walks like Python\n\nJulia's syntax is intentionally familiar to Python and MATLAB users. No semicolons, no type annotations required, and a REPL that encourages exploration:",
+      "source": "# Why Julia?\n\nJulia was designed from the ground up for scientific computing. It walks like Python, runs like C, and makes high-performance numerical work feel natural. The reasons it exists say a lot about what data scientists actually need: approachability without sacrificing speed.\n\n## Set up the Julia runtime\n\nJulia cells need the `julia` executable on your PATH:\n\n```bash\nbrew install julia          # macOS\nsudo apt install julia      # Debian / Ubuntu\nsudo dnf install julia      # Fedora\nsudo pacman -S julia        # Arch Linux\n# or download the official installer from https://julialang.org/downloads/\n```\n\nVerify with `julia --version`, or run `mars notebook doctor` to check every runtime at once.\n## Walks like Python\n\nJulia's syntax is intentionally familiar to Python and MATLAB users. No semicolons, no type annotations required, and a REPL that encourages exploration:",
       "metadata": {}
     },
     {

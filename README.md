@@ -1,3 +1,5 @@
+![Project Mars](assets/branding/png/logo-horizontal.png)
+
 # Project Mars
 
 **Mars is a Rust-powered interactive computing platform that combines
@@ -16,6 +18,8 @@ and rendering pipeline.
 - [Support Mars](#support-mars)
 
 Topics: `notebook` · `rust` · `tauri` · `mcp` · `vscode-extension` · `machine-learning`
+
+![Project Mars — Explore ideas. Execute code. Discover possibilities.](assets/branding/png/og.png)
 
 ---
 
@@ -140,6 +144,10 @@ Notable capabilities:
   documents (inline CSS, data-URI attachments).
 - **MCP server** — notebook and kernel operations exposed to AI assistants;
   `mars tools list|call` is a built-in MCP client.
+  - `mars mcp serve --http <addr>` (optional `--token <token>` or
+    `MCP_AUTH_TOKEN`) also serves the same surface over streamable HTTP at
+    `http://<addr>/mcp` — the transport used by ChatGPT connectors and
+    remote Claude clients (`Authorization: Bearer <token>` when configured).
 - **Mars Lab** — 83 algorithms, dataset profiling, job comparison, metrics and
   charts, ONNX export; deterministic seeded trainers, no I/O in trainers.
 
@@ -306,11 +314,3 @@ supporting independent open-source software.
 [link-desktop]: https://github.com/hieudoanm/mars/tree/master/packages/desktop
 [badge-mcp]: https://img.shields.io/badge/MCP-supported-8b5cf6.svg
 [link-mcp]: docs/02-platform/mcp.md
-
-### Streamable HTTP
-
-`mars mcp serve --http 127.0.0.1:8080` also accepts `--http <addr>` (and `--token <token>`, or the
-`MCP_AUTH_TOKEN` environment variable) to serve the same MCP surface over
-streamable HTTP at `http://<addr>/mcp` — the transport used by ChatGPT
-connectors and remote Claude clients. When a token is configured, every
-request must carry `Authorization: Bearer <token>`.

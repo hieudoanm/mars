@@ -11,6 +11,29 @@ tags: ['languages', 'rust', 'python', 'r', 'julia', 'cpp', 'overview', 'mars']
 
 Project Mars supports multiple programming languages because different tasks benefit from different tools. This post explores why we chose Rust, Python, R, Julia, and C++ as our primary language runtimes, and how they complement each other in a multi-language notebook environment.
 
+## Set up the runtimes
+
+Each language runs in its own session, so each needs its own toolchain on your PATH. Install only what you plan to use:
+
+```bash
+# Rust — rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source "$HOME/.cargo/env"
+
+# Python — python3 (3.10+)
+brew install python                        # macOS — or your distro's python3 package
+
+# R — Rscript
+brew install r                             # macOS — or r-base on Debian/Ubuntu
+
+# Julia — julia
+brew install julia                         # macOS — or your distro's julia package
+
+# C++ — clang++ or g++
+xcode-select --install                     # macOS — or install clang/g++ for your distro
+```
+
+Then run `mars notebook doctor` — it probes every runtime and prints versions or install hints for whatever is missing.
+
 ## Language Overview
 
 | Language | Primary Strengths                                    | Best For                                                     | Project Mars Integration                                    |

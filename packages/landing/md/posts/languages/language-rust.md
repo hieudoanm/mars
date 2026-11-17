@@ -11,6 +11,23 @@ tags: ['rust', 'performance', 'safety', 'ml', 'systems']
 
 Rust is a systems programming language that compiles to native machine code, runs without a garbage collector, and prevents a whole class of bugs at compile time. It is not a new idea — its design borrows from ML, C++, and functional programming — but it packages those ideas into something that _just works_.
 
+## Set up the Rust runtime
+
+Rust cells need `rustc` and `cargo` on your PATH. Install the toolchain with rustup:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+
+# or via your package manager
+brew install rustup-init        # macOS
+sudo apt install rustc cargo    # Debian / Ubuntu
+sudo dnf install rust cargo     # Fedora
+sudo pacman -S rust             # Arch Linux
+```
+
+Verify with `rustc --version && cargo --version`, or run `mars notebook doctor` to check every runtime at once.
+
 ## What makes Rust different
 
 Three properties show up in every Rust program:

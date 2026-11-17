@@ -21,7 +21,7 @@ describe('docs layout', () => {
         slug: 'runtime',
         title: 'Runtime',
         description: 'Project Mars runtime documentation',
-        chapter: 'platform',
+        chapter: 'notebook',
       },
     ]);
   });

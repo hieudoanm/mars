@@ -151,13 +151,13 @@ describe('docs lib (mocked fs)', () => {
   it('getDocs discovers docs inside chapter folders', () => {
     mockFs._setStore({
       'foundations/getting-started.md': withFrontmatter('Getting Started', 1),
-      'platform/runtime.md': withFrontmatter('Runtime', 2),
+      'notebook/runtime.md': withFrontmatter('Runtime', 2),
       'index.md': '---\ntitle: Index\n---\n# Index\n\nindex',
     });
     const docs = getDocs();
     expect(docs.map((d) => d.slug)).toEqual(['getting-started', 'runtime']);
     expect(docs[0].chapter).toBe('foundations');
-    expect(docs[1].chapter).toBe('platform');
+    expect(docs[1].chapter).toBe('notebook');
     expect(getDoc('runtime')?.title).toBe('Runtime');
   });
 

@@ -28,11 +28,30 @@ with a long-lived driver subprocess:
 
 ## Installation
 
-Python 3 must be installed and available on your system:
+Python 3 must be installed and available on your system. If it is missing,
+install it with your platform's package manager:
 
 ```bash
-# Python is typically pre-installed on most systems
-python3 --version
+# macOS
+brew install python
+
+# Debian / Ubuntu
+sudo apt install python3 python3-venv python3-pip
+
+# Fedora
+sudo dnf install python3 python3-pip
+
+# Arch Linux
+sudo pacman -S python python-pip
+
+# Windows (winget)
+winget install Python.Python.3
+```
+
+Then verify:
+
+```bash
+python3 --version   # Python 3.10+
 ```
 
 Project Mars discovers the Python interpreter via:

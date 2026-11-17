@@ -26,11 +26,29 @@ with a long-lived driver subprocess:
 
 ## Installation
 
-Julia must be installed and available on your system:
+Julia must be installed and available on your system. Install it with your
+platform's package manager or the official installer:
 
 ```bash
-# Install Julia from https://julialang.org/downloads/
-# Or use your system package manager
+# macOS
+brew install julia
+
+# Debian / Ubuntu
+sudo apt install julia
+
+# Fedora
+sudo dnf install julia
+
+# Arch Linux
+sudo pacman -S julia
+
+# Or download the official installer from https://julialang.org/downloads/
+```
+
+Then verify:
+
+```bash
+julia --version
 ```
 
 Project Mars discovers the Julia interpreter via:

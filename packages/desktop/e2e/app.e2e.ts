@@ -87,20 +87,50 @@ describe('Mars desktop (tauri-driver)', () => {
     // so run all cells and wait for a marker the tour actually prints.
     await clickButton('Run all (F6)');
 
-    await browser.waitUntil(
-      async () => {
-        const outputs = await $$('[data-component="OutputView"]');
-        for (const output of outputs) {
+    const markerFound = await browser
+      .waitUntil(
+        async () => {
+          const outputs = await $$('[data-component="OutputView"]');
+          for (const output of outputs) {
+            try {
+              if ((await output.getText()).includes('language = Rust')) return true;
+            } catch {
+              // element detached mid-render; keep polling
+            }
+          }
+          return false;
+        },
+        // First Rust cell compile can be slow on a cold toolchain cache.
+        { timeout: 280_000, interval: 2000 },
+      )
+      .then(() => true)
+      .catch(() => false);
+
+    if (!markerFound) {
+      // Dump whatever the UI is showing so CI logs explain the failure.
+      const parts: string[] = [];
+      for (const selector of [
+        '[data-component="OutputView"]',
+        '[data-component="NotebookStatusBar"]',
+        '[role="dialog"]',
+        '[role="alert"]',
+      ]) {
+        for (const el of await $$(selector)) {
           try {
-            if ((await output.getText()).includes('language = Rust')) return true;
+            parts.push(`${selector}: ${(await el.getText()).slice(0, 800)}`);
           } catch {
-            // element detached mid-render; keep polling
+            // detached
           }
         }
-        return false;
-      },
-      // First Rust cell compile can be slow on a cold toolchain cache.
-      { timeout: 280_000, interval: 2000 },
-    );
+      }
+      try {
+        await browser.saveScreenshot('e2e/artifacts/tauri-e2e-failure.png');
+      } catch {
+        // screenshot unsupported by this driver
+      }
+      throw new Error(
+        `kernel execution did not produce output within 280s.\n${parts.join('\n---\n') || '(no state captured)'}`,
+      );
+    }
   });
 });
