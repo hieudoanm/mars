@@ -64,6 +64,28 @@ What it does:
 - The desktop app embeds the kernel and does not need the CLI.
 - `./scripts/sh/install.sh --help` lists every option.
 
+### Installing prebuilt release assets
+
+`--release` skips all source builds and downloads the matching assets from the
+latest GitHub release (`releases/latest/download/<asset>`), using the
+`<component>-mars-<target>` naming scheme:
+
+```bash
+./scripts/sh/install.sh --release              # everything, prebuilt
+./scripts/sh/install.sh --release --cli        # CLI binary only
+./scripts/sh/install.sh --release --desktop    # desktop app only
+```
+
+- Platform is auto-detected (`cli-mars-x86_64-unknown-linux-gnu`,
+  `cli-mars-aarch64-apple-darwin`, `cli-mars-x86_64-apple-darwin`,
+  `cli-mars-x86_64-pc-windows-msvc.exe`).
+- Desktop: macOS installs the `.dmg`'s `.app` to `/Applications` (or
+  `~/Applications`); Linux installs the `.AppImage` as `~/.local/bin/mars-desktop`.
+- Only `curl` is required up front; `code` for `--vscode`, `unzip` for
+  `--jetbrains`. No Rust/Node/JDK toolchain needed.
+- The JetBrains zip name embeds a version, so its URL is resolved via the
+  GitHub API — an API outage makes that target fail while others still work.
+
 Optional Cargo features go through `MARS_CARGO_FEATURES`:
 
 ```bash

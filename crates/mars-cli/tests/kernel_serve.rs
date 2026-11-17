@@ -188,48 +188,101 @@ fn serve_executes_in_requested_language() {
 
 #[test]
 fn serve_tcp_handles_status() {
-    // Find a free port, then hand it to the kernel.
-    let port = {
-        let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("bind probe");
-        listener.local_addr().expect("local addr").port()
-    };
-    let mut child = Command::new(env!("CARGO_BIN_EXE_mars"))
-        .args(["kernel", "serve", "--tcp", &port.to_string()])
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .spawn()
-        .expect("spawn mars kernel serve --tcp");
+    // The CLI only accepts a fixed port, so the probe-then-release race is
+    // unavoidable; retry with a fresh port if the kernel loses the bind, and
+    // retry the exchange itself since an accepted socket can be torn down
+    // before the request is written.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    'attempt: loop {
+        let port = {
+            let listener = std::net::TcpListener::bind("127.0.0.1:0").expect("bind probe");
+            listener.local_addr().expect("local addr").port()
+        };
+        let mut child = Command::new(env!("CARGO_BIN_EXE_mars"))
+            .args(["kernel", "serve", "--tcp", &port.to_string()])
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("spawn mars kernel serve --tcp");
 
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
-    let stream = loop {
-        match std::net::TcpStream::connect(("127.0.0.1", port)) {
-            Ok(stream) => break stream,
-            Err(_) if std::time::Instant::now() < deadline => {
-                std::thread::sleep(std::time::Duration::from_millis(50));
+        // Wait for the listener; if the port was stolen between probe and
+        // bind the child exits and we retry with a new port.
+        let connect_deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        let stream = loop {
+            if child.try_wait().expect("poll child").is_some() {
+                let _ = child.wait();
+                if std::time::Instant::now() < deadline {
+                    continue 'attempt;
+                }
+                panic!("kernel serve --tcp exited before listening");
             }
-            Err(error) => panic!("connect to kernel tcp port: {error}"),
-        }
-    };
-    stream
-        .set_read_timeout(Some(std::time::Duration::from_secs(10)))
-        .expect("set read timeout");
-    let mut reader = BufReader::new(stream.try_clone().expect("clone stream"));
-    let mut writer = stream;
-    writeln!(
-        writer,
-        "{}",
-        json!({ "id": "tcp-1", "request": { "type": "status" } })
-    )
-    .expect("write request");
-    writer.flush().expect("flush");
-    let mut line = String::new();
-    let read = reader.read_line(&mut line).expect("read response");
-    assert!(read > 0, "kernel closed tcp connection");
-    let response: Value = serde_json::from_str(line.trim()).expect("parse json line");
-    assert_eq!(response["id"], "tcp-1");
-    assert!(response["response"]["type"].is_string());
+            match std::net::TcpStream::connect(("127.0.0.1", port)) {
+                Ok(stream) => break stream,
+                Err(_) if std::time::Instant::now() < connect_deadline => {
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                }
+                Err(_) => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    if std::time::Instant::now() < deadline {
+                        continue 'attempt;
+                    }
+                    panic!("connect to kernel tcp port: timeout");
+                }
+            }
+        };
 
-    let _ = child.kill();
-    let _ = child.wait();
+        // The exchange itself can hit a reset socket; retry within budget.
+        let exchange_deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+        let result = loop {
+            let attempt = (|| -> std::io::Result<Value> {
+                stream
+                    .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+                    .expect("set read timeout");
+                let mut reader = BufReader::new(stream.try_clone().expect("clone stream"));
+                let mut writer = stream.try_clone().expect("clone stream");
+                writeln!(
+                    writer,
+                    "{}",
+                    json!({ "id": "tcp-1", "request": { "type": "status" } })
+                )?;
+                writer.flush()?;
+                let mut line = String::new();
+                if reader.read_line(&mut line)? == 0 {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::UnexpectedEof,
+                        "empty response",
+                    ));
+                }
+                serde_json::from_str(line.trim())
+                    .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidData, error))
+            })();
+            match attempt {
+                Ok(response) => break Ok(response),
+                Err(_) if std::time::Instant::now() < exchange_deadline => {
+                    std::thread::sleep(std::time::Duration::from_millis(100));
+                }
+                Err(error) => break Err(error),
+            }
+        };
+
+        match result {
+            Ok(response) => {
+                assert_eq!(response["id"], "tcp-1");
+                assert!(response["response"]["type"].is_string());
+                let _ = child.kill();
+                let _ = child.wait();
+                return;
+            }
+            Err(error) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                if std::time::Instant::now() < deadline {
+                    continue 'attempt;
+                }
+                panic!("tcp exchange failed: {error}");
+            }
+        }
+    }
 }

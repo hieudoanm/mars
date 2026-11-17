@@ -12,12 +12,15 @@ LOCAL_BIN="$HOME/.local/bin"
 CARGO_BIN="$HOME/.cargo/bin"
 MARS_CARGO_FEATURES="${MARS_CARGO_FEATURES:-}"
 MARS_INSTALL_VERBOSE="${MARS_INSTALL_VERBOSE:-}"
+RELEASE_BASE="https://github.com/hieudoanm/mars/releases/latest/download"
+RELEASE_API="https://api.github.com/repos/hieudoanm/mars/releases/latest"
 
 INSTALL_CLI=0
 INSTALL_VSCODE=0
 INSTALL_DESKTOP=0
 INSTALL_ZED=0
 INSTALL_JETBRAINS=0
+RELEASE_MODE=0
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -93,6 +96,39 @@ tool_version() {
   fi
 }
 
+download_asset() {
+  local asset="$1"
+  local dest="$2"
+  info "Downloading $asset"
+  curl -fL --retry 3 --connect-timeout 15 -o "$dest" "$RELEASE_BASE/$asset"
+}
+
+# Maps the current platform to the Rust target triple used in release asset
+# names. Returns non-zero on unsupported platforms.
+release_target_triple() {
+  case "$(uname -s)" in
+    Linux)
+      case "$(uname -m)" in
+        x86_64|amd64) echo "x86_64-unknown-linux-gnu" ;;
+        *) return 1 ;;
+      esac
+      ;;
+    Darwin)
+      case "$(uname -m)" in
+        arm64)  echo "aarch64-apple-darwin" ;;
+        x86_64) echo "x86_64-apple-darwin" ;;
+        *) return 1 ;;
+      esac
+      ;;
+    MINGW*|MSYS*|CYGWIN*)
+      echo "x86_64-pc-windows-msvc"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 on_error() {
   error "Installation failed (exit $1) near line $2."
   error "Fix the error above and re-run ./scripts/install.sh."
@@ -112,6 +148,8 @@ Options:
   --zed                Install only the Zed extension
   --jetbrains          Install only the JetBrains plugin
   --desktop            Install only the desktop app
+  --release            Download prebuilt release assets instead of building
+                       from source (combine with target flags to limit scope)
   -h, --help           Show this help
 
 Environment:
@@ -175,6 +213,10 @@ while [[ $# -gt 0 ]]; do
       INSTALL_JETBRAINS=1
       shift
       ;;
+    --release|--prebuilt)
+      RELEASE_MODE=1
+      shift
+      ;;
     -h|--help)
       usage
       exit 0
@@ -197,8 +239,12 @@ if [[ "$INSTALL_CLI" -eq 0 && "$INSTALL_VSCODE" -eq 0 && "$INSTALL_DESKTOP" -eq 
   INSTALL_JETBRAINS=1
 fi
 
-# One dependency step plus one step per selected target plus the summary.
-STEP_TOTAL=$((1 + INSTALL_CLI + INSTALL_VSCODE + INSTALL_DESKTOP + INSTALL_ZED + INSTALL_JETBRAINS + 1))
+# One dependency step (skipped in release mode), one step per selected target,
+# and the summary.
+STEP_TOTAL=$((INSTALL_CLI + INSTALL_VSCODE + INSTALL_DESKTOP + INSTALL_ZED + INSTALL_JETBRAINS + 1))
+if [[ "$RELEASE_MODE" -eq 0 ]]; then
+  STEP_TOTAL=$((STEP_TOTAL + 1))
+fi
 
 # ---------------------------------------------------------------------------
 # Environment
@@ -210,10 +256,15 @@ log "Platform:   $(uname -s) $(uname -m)"
 log "Shell:      bash $BASH_VERSION"
 log "Time:       $(date '+%Y-%m-%d %H:%M:%S %Z')"
 log "Targets:    CLI=$INSTALL_CLI VS Code=$INSTALL_VSCODE Desktop=$INSTALL_DESKTOP Zed=$INSTALL_ZED JetBrains=$INSTALL_JETBRAINS"
-if [ -n "$MARS_CARGO_FEATURES" ]; then
-  log "Cargo features: $MARS_CARGO_FEATURES"
+if [[ "$RELEASE_MODE" -eq 1 ]]; then
+  log "Mode:       release (prebuilt assets from GitHub Releases)"
 else
-  debug "Cargo features: <none> (set MARS_CARGO_FEATURES to override)"
+  log "Mode:       source build"
+  if [ -n "$MARS_CARGO_FEATURES" ]; then
+    log "Cargo features: $MARS_CARGO_FEATURES"
+  else
+    debug "Cargo features: <none> (set MARS_CARGO_FEATURES to override)"
+  fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -229,34 +280,51 @@ require_command() {
   debug "Found $1 at $(command -v "$1")"
 }
 
-if [[ "$INSTALL_CLI" -eq 1 || "$INSTALL_DESKTOP" -eq 1 || "$INSTALL_ZED" -eq 1 ]]; then
-  require_command cargo "Please install Rust from https://rustup.rs/"
-fi
-if [[ "$INSTALL_JETBRAINS" -eq 1 ]]; then
-  require_command java "Please install a JDK 17+ (Temurin recommended) for the JetBrains plugin build."
-fi
-if [[ "$INSTALL_VSCODE" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
-  require_command node "Please install Node.js 26.13.1 (see .nvmrc)."
-  require_command npm "Please install npm with Node.js."
-fi
-if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
-  require_command code "Please install Visual Studio Code and ensure the 'code' command is in PATH."
+require_command curl "Please install curl; it is required to download release assets."
+
+if [[ "$RELEASE_MODE" -eq 1 ]]; then
+  if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
+    require_command code "Please install Visual Studio Code and ensure the 'code' command is in PATH."
+  fi
+  if [[ "$INSTALL_JETBRAINS" -eq 1 ]]; then
+    require_command unzip "Please install unzip to extract the JetBrains plugin archive."
+  fi
+  if [[ "$INSTALL_DESKTOP" -eq 1 && "$(uname -s)" != "Darwin" && "$(uname -s)" != "Linux" ]]; then
+    warn "Desktop release assets are only published for macOS and Linux;"
+    warn "download manually from $RELEASE_BASE/ (see RELEASE.md)."
+  fi
+else
+  if [[ "$INSTALL_CLI" -eq 1 || "$INSTALL_DESKTOP" -eq 1 || "$INSTALL_ZED" -eq 1 ]]; then
+    require_command cargo "Please install Rust from https://rustup.rs/"
+  fi
+  if [[ "$INSTALL_JETBRAINS" -eq 1 ]]; then
+    require_command java "Please install a JDK 17+ (Temurin recommended) for the JetBrains plugin build."
+  fi
+  if [[ "$INSTALL_VSCODE" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
+    require_command node "Please install Node.js 26.13.1 (see .nvmrc)."
+    require_command npm "Please install npm with Node.js."
+  fi
+  if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
+    require_command code "Please install Visual Studio Code and ensure the 'code' command is in PATH."
+  fi
 fi
 
-if [[ "$INSTALL_CLI" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
-  info "cargo: $(tool_version cargo --version)"
-fi
-if [[ "$INSTALL_VSCODE" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
-  info "node:  $(tool_version node --version)"
-  info "npm:   $(tool_version npm --version)"
-fi
-if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
-  info "code:  $(tool_version code --version)"
-fi
-if command -v pnpm >/dev/null 2>&1; then
-  info "pnpm:  $(tool_version pnpm --version) ($(command -v pnpm))"
-else
-  debug "pnpm not found; will fall back to npm"
+if [[ "$RELEASE_MODE" -eq 0 ]]; then
+  if [[ "$INSTALL_CLI" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
+    info "cargo: $(tool_version cargo --version)"
+  fi
+  if [[ "$INSTALL_VSCODE" -eq 1 || "$INSTALL_DESKTOP" -eq 1 ]]; then
+    info "node:  $(tool_version node --version)"
+    info "npm:   $(tool_version npm --version)"
+  fi
+  if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
+    info "code:  $(tool_version code --version)"
+  fi
+  if command -v pnpm >/dev/null 2>&1; then
+    info "pnpm:  $(tool_version pnpm --version) ($(command -v pnpm))"
+  else
+    debug "pnpm not found; will fall back to npm"
+  fi
 fi
 
 if [[ "$(uname -s)" == "Darwin" && "$INSTALL_DESKTOP" -eq 1 ]]; then
@@ -284,46 +352,50 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# JavaScript dependencies
+# JavaScript dependencies (source builds only)
 # ---------------------------------------------------------------------------
 
-step "Installing JavaScript dependencies"
-
-if command -v pnpm >/dev/null 2>&1; then
-  # The repository pins a pnpm version through packageManager. Disable pnpm's
-  # self-managed version switch so an interpreter without an executable shim
-  # (or an offline machine) can still use the installed pnpm.
-  cd "$REPO_ROOT"
-  info "Using pnpm with the repository lockfile"
-  run env CI=1 npm_config_manage_package_manager_versions=false pnpm install --frozen-lockfile
+if [[ "$RELEASE_MODE" -eq 1 ]]; then
+  log "Release mode: skipping source build; downloading prebuilt assets"
 else
-  info "pnpm not available; installing workspace packages with npm instead"
-  # Fall back to independent npm installs. Remove pnpm-linked packages first so
-  # npm does not try to rebuild another package manager's symlinked tree.
-  if [[ "$INSTALL_DESKTOP" -eq 1 ]]; then
-    info "Removing $DESKTOP_DIR/node_modules"
-    rm -rf "$DESKTOP_DIR/node_modules"
+  step "Installing JavaScript dependencies"
+
+  if command -v pnpm >/dev/null 2>&1; then
+    # The repository pins a pnpm version through packageManager. Disable pnpm's
+    # self-managed version switch so an interpreter without an executable shim
+    # (or an offline machine) can still use the installed pnpm.
+    cd "$REPO_ROOT"
+    info "Using pnpm with the repository lockfile"
+    run env CI=1 npm_config_manage_package_manager_versions=false pnpm install --frozen-lockfile
+  else
+    info "pnpm not available; installing workspace packages with npm instead"
+    # Fall back to independent npm installs. Remove pnpm-linked packages first so
+    # npm does not try to rebuild another package manager's symlinked tree.
+    if [[ "$INSTALL_DESKTOP" -eq 1 ]]; then
+      info "Removing $DESKTOP_DIR/node_modules"
+      rm -rf "$DESKTOP_DIR/node_modules"
+    fi
+    if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
+      info "Removing $VSCODE_DIR/node_modules"
+      rm -rf "$VSCODE_DIR/node_modules"
+    fi
+    if [[ "$INSTALL_DESKTOP" -eq 1 ]]; then
+      info "Installing desktop dependencies"
+      (
+        cd "$DESKTOP_DIR"
+        run npm install --no-audit --no-fund --package-lock=false
+      )
+    fi
+    if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
+      info "Installing VS Code extension dependencies"
+      (
+        cd "$VSCODE_DIR"
+        run npm install --no-audit --no-fund --package-lock=false
+      )
+    fi
   fi
-  if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
-    info "Removing $VSCODE_DIR/node_modules"
-    rm -rf "$VSCODE_DIR/node_modules"
-  fi
-  if [[ "$INSTALL_DESKTOP" -eq 1 ]]; then
-    info "Installing desktop dependencies"
-    (
-      cd "$DESKTOP_DIR"
-      run npm install --no-audit --no-fund --package-lock=false
-    )
-  fi
-  if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
-    info "Installing VS Code extension dependencies"
-    (
-      cd "$VSCODE_DIR"
-      run npm install --no-audit --no-fund --package-lock=false
-    )
-  fi
+  finish_step "JavaScript dependencies installed"
 fi
-finish_step "JavaScript dependencies installed"
 
 VSIX=""
 INSTALLED_APP=""
@@ -333,17 +405,35 @@ INSTALLED_APP=""
 # ---------------------------------------------------------------------------
 
 if [[ "$INSTALL_CLI" -eq 1 ]]; then
-  step "Building and installing the Project Mars CLI"
-  cd "$REPO_ROOT"
-  info "Running: cargo ${CARGO_ARGS[*]}"
-  run cargo "${CARGO_ARGS[@]}"
+  step "Installing the Project Mars CLI"
 
-  CLI_BINARY="$REPO_ROOT/target/release/mars"
-  if [ ! -f "$CLI_BINARY" ]; then
-    error "Expected CLI binary at $CLI_BINARY but it does not exist."
-    exit 1
+  if [[ "$RELEASE_MODE" -eq 1 ]]; then
+    CLI_TMP="$(mktemp -d)"
+    if [[ "$(uname -s)" == MINGW* || "$(uname -s)" == MSYS* || "$(uname -s)" == CYGWIN* ]]; then
+      CLI_ASSET="cli-mars-x86_64-pc-windows-msvc.exe"
+    else
+      triple="$(release_target_triple)" || {
+        error "No prebuilt CLI for this platform ($(uname -s) $(uname -m))."
+        error "See $RELEASE_BASE/ for available assets."
+        exit 1
+      }
+      CLI_ASSET="cli-mars-${triple}"
+    fi
+    CLI_BINARY="$CLI_TMP/$CLI_ASSET"
+    download_asset "$CLI_ASSET" "$CLI_BINARY"
+    chmod +x "$CLI_BINARY"
+  else
+    cd "$REPO_ROOT"
+    info "Running: cargo ${CARGO_ARGS[*]}"
+    run cargo "${CARGO_ARGS[@]}"
+
+    CLI_BINARY="$REPO_ROOT/target/release/mars"
+    if [ ! -f "$CLI_BINARY" ]; then
+      error "Expected CLI binary at $CLI_BINARY but it does not exist."
+      exit 1
+    fi
   fi
-  info "Built CLI: $CLI_BINARY ($(human_size "$CLI_BINARY"))"
+  info "CLI binary: $CLI_BINARY ($(human_size "$CLI_BINARY"))"
 
   mkdir -p "$LOCAL_BIN"
   install -m 755 "$CLI_BINARY" "$LOCAL_BIN/mars"
@@ -368,7 +458,7 @@ if [[ "$INSTALL_CLI" -eq 1 ]]; then
 
   finish_step "Project Mars CLI installed"
 else
-  log "Skipping CLI build/install (--cli not selected)"
+  log "Skipping CLI install (--cli not selected)"
 fi
 
 # ---------------------------------------------------------------------------
@@ -376,25 +466,33 @@ fi
 # ---------------------------------------------------------------------------
 
 if [[ "$INSTALL_VSCODE" -eq 1 ]]; then
-  step "Building and installing the VS Code extension"
-  cd "$VSCODE_DIR"
-  info "Removing old build output (out/, vsix/)"
-  rm -rf out vsix
-  info "Running: npm run package"
-  run npm run package
+  step "Installing the VS Code extension"
 
-  VSIX="$(find "$VSCODE_DIR/vsix" -maxdepth 1 -type f -name '*.vsix' -print -quit 2>/dev/null || true)"
-  if [ -z "$VSIX" ]; then
-    error "No VSIX file was produced in $VSCODE_DIR/vsix"
-    exit 1
+  if [[ "$RELEASE_MODE" -eq 1 ]]; then
+    VSIX_TMP="$(mktemp -d)"
+    VSIX="$VSIX_TMP/extension-vscode-mars.vsix"
+    download_asset "extension-vscode-mars.vsix" "$VSIX"
+    info "Downloaded extension: $VSIX ($(human_size "$VSIX"))"
+  else
+    cd "$VSCODE_DIR"
+    info "Removing old build output (out/, vsix/)"
+    rm -rf out vsix
+    info "Running: npm run package"
+    run npm run package
+
+    VSIX="$(find "$VSCODE_DIR/vsix" -maxdepth 1 -type f -name '*.vsix' -print -quit 2>/dev/null || true)"
+    if [ -z "$VSIX" ]; then
+      error "No VSIX file was produced in $VSCODE_DIR/vsix"
+      exit 1
+    fi
+    info "Built extension: $VSIX ($(human_size "$VSIX"))"
   fi
-  info "Built extension: $VSIX ($(human_size "$VSIX"))"
 
   info "Installing extension with: code --install-extension"
   run code --install-extension "$VSIX" --force
   finish_step "Project Mars VS Code extension installed from $VSIX"
 else
-  log "Skipping VS Code extension build/install (--vscode not selected)"
+  log "Skipping VS Code extension install (--vscode not selected)"
 fi
 
 # ---------------------------------------------------------------------------
@@ -403,21 +501,29 @@ fi
 
 ZED_INSTALL_DIR=""
 if [[ "$INSTALL_ZED" -eq 1 ]]; then
-  step "Building and installing the Zed extension"
-  cd "$REPO_ROOT"
-  if command -v rustup >/dev/null 2>&1; then
-    info "Ensuring the wasm32-wasip1 Rust target is installed"
-    run rustup target add wasm32-wasip1
-  fi
-  info "Running: cargo build --release --target wasm32-wasip1 -p mars-zed"
-  run cargo build --release --target wasm32-wasip1 -p mars-zed
+  step "Installing the Zed extension"
 
-  WASM="$REPO_ROOT/target/wasm32-wasip1/release/mars_zed.wasm"
+  if [[ "$RELEASE_MODE" -eq 1 ]]; then
+    ZED_TMP="$(mktemp -d)"
+    WASM="$ZED_TMP/extension.wasm"
+    download_asset "extension-zed-mars.wasm" "$WASM"
+    info "Downloaded extension wasm: $WASM ($(human_size "$WASM"))"
+  else
+    cd "$REPO_ROOT"
+    if command -v rustup >/dev/null 2>&1; then
+      info "Ensuring the wasm32-wasip1 Rust target is installed"
+      run rustup target add wasm32-wasip1
+    fi
+    info "Running: cargo build --release --target wasm32-wasip1 -p mars-zed"
+    run cargo build --release --target wasm32-wasip1 -p mars-zed
+
+    WASM="$REPO_ROOT/target/wasm32-wasip1/release/mars_zed.wasm"
+  fi
+
   if [ ! -f "$WASM" ]; then
-    error "Expected Zed extension wasm at $WASM but it does not exist."
+    error "Expected Zed extension wasm but it does not exist."
     exit 1
   fi
-  info "Built extension wasm: $WASM ($(human_size "$WASM"))"
 
   # Stage the installed-extension layout: extension.toml + extension.wasm +
   # languages/ + grammars/. Zed compiles the Tree-sitter grammar itself.
@@ -449,7 +555,7 @@ if [[ "$INSTALL_ZED" -eq 1 ]]; then
   fi
   finish_step "Zed extension installed"
 else
-  log "Skipping Zed extension build/install (--zed not selected)"
+  log "Skipping Zed extension install (--zed not selected)"
 fi
 
 # ---------------------------------------------------------------------------
@@ -459,17 +565,34 @@ fi
 JETBRAINS_PLUGIN_ZIP=""
 JETBRAINS_INSTALLED=""
 if [[ "$INSTALL_JETBRAINS" -eq 1 ]]; then
-  step "Building and installing the JetBrains plugin"
-  cd "$JETBRAINS_DIR"
-  info "Running: ./gradlew buildPlugin"
-  run ./gradlew buildPlugin --console=plain
+  step "Installing the JetBrains plugin"
 
-  JETBRAINS_PLUGIN_ZIP="$(find "$JETBRAINS_DIR/build/distributions" -maxdepth 1 -type f -name '*.zip' -print -quit 2>/dev/null || true)"
-  if [ -z "$JETBRAINS_PLUGIN_ZIP" ]; then
-    error "No plugin zip was produced in $JETBRAINS_DIR/build/distributions"
-    exit 1
+  if [[ "$RELEASE_MODE" -eq 1 ]]; then
+    JB_TMP="$(mktemp -d)"
+    # The JetBrains asset name embeds the plugin version, so resolve the
+    # concrete URL via the GitHub API instead of guessing it.
+    JB_URL="$(curl -fsSL "$RELEASE_API" | grep -o '"browser_download_url": *"[^"]*extension-jetbrains-mars-[^"]*"' | head -n 1 | sed 's/.*: *"//; s/"$//')"
+    if [ -z "$JB_URL" ]; then
+      error "Could not find the JetBrains plugin asset on the latest release."
+      error "See $RELEASE_BASE/ for available assets."
+      exit 1
+    fi
+    JETBRAINS_PLUGIN_ZIP="$JB_TMP/$(basename "$JB_URL")"
+    info "Downloading $(basename "$JB_URL")"
+    curl -fL --retry 3 --connect-timeout 15 -o "$JETBRAINS_PLUGIN_ZIP" "$JB_URL"
+    info "Downloaded plugin: $JETBRAINS_PLUGIN_ZIP ($(human_size "$JETBRAINS_PLUGIN_ZIP"))"
+  else
+    cd "$JETBRAINS_DIR"
+    info "Running: ./gradlew buildPlugin"
+    run ./gradlew buildPlugin --console=plain
+
+    JETBRAINS_PLUGIN_ZIP="$(find "$JETBRAINS_DIR/build/distributions" -maxdepth 1 -type f -name '*.zip' -print -quit 2>/dev/null || true)"
+    if [ -z "$JETBRAINS_PLUGIN_ZIP" ]; then
+      error "No plugin zip was produced in $JETBRAINS_DIR/build/distributions"
+      exit 1
+    fi
+    info "Built plugin: $JETBRAINS_PLUGIN_ZIP ($(human_size "$JETBRAINS_PLUGIN_ZIP"))"
   fi
-  info "Built plugin: $JETBRAINS_PLUGIN_ZIP ($(human_size "$JETBRAINS_PLUGIN_ZIP"))"
 
   case "$(uname -s)" in
     Darwin) JB_CONFIG_ROOT="$HOME/Library/Application Support/JetBrains" ;;
@@ -500,7 +623,7 @@ if [[ "$INSTALL_JETBRAINS" -eq 1 ]]; then
   fi
   finish_step "JetBrains plugin installed"
 else
-  log "Skipping JetBrains plugin build/install (--jetbrains not selected)"
+  log "Skipping JetBrains plugin install (--jetbrains not selected)"
 fi
 
 # ---------------------------------------------------------------------------
@@ -508,51 +631,109 @@ fi
 # ---------------------------------------------------------------------------
 
 if [[ "$INSTALL_DESKTOP" -eq 1 ]]; then
-  step "Building and installing the desktop application"
-  cd "$DESKTOP_DIR"
-  info "Removing old frontend build output (dist/)"
-  rm -rf dist
-  info "Running: npm run tauri -- ${TAURI_ARGS[*]}"
-  run npm run tauri -- "${TAURI_ARGS[@]}"
+  step "Installing the desktop application"
 
-  APP_BUNDLE=""
-  for bundle_dir in \
-    "$REPO_ROOT/target/release/bundle/macos" \
-    "$DESKTOP_DIR/src-tauri/target/release/bundle/macos"; do
-    debug "Looking for .app bundles in $bundle_dir"
-    if [ -d "$bundle_dir" ]; then
-      APP_BUNDLE="$(find "$bundle_dir" -maxdepth 1 -type d -name '*.app' -print -quit)"
-      if [ -n "$APP_BUNDLE" ]; then
-        break
-      fi
-    else
-      debug "Bundle directory does not exist: $bundle_dir"
-    fi
-  done
+  if [[ "$RELEASE_MODE" -eq 1 ]]; then
+    case "$(uname -s)" in
+      Darwin)
+        triple="$(release_target_triple)" || {
+          error "No prebuilt desktop app for this Mac architecture ($(uname -m))."
+          exit 1
+        }
+        DESKTOP_TMP="$(mktemp -d)"
+        DMG="$DESKTOP_TMP/desktop-mars-${triple}.dmg"
+        download_asset "desktop-mars-${triple}.dmg" "$DMG"
 
-  if [ -z "$APP_BUNDLE" ]; then
-    error "No macOS .app bundle was produced by 'npm run tauri build'."
-    error "Check the Tauri build output for the bundle location on this platform."
-    exit 1
-  fi
-  info "Built app bundle: $APP_BUNDLE ($(human_size "$APP_BUNDLE"))"
+        MOUNT_DIR="$DESKTOP_TMP/mnt"
+        mkdir -p "$MOUNT_DIR"
+        hdiutil attach "$DMG" -nobrowse -quiet -mountpoint "$MOUNT_DIR"
+        APP_BUNDLE="$(find "$MOUNT_DIR" -maxdepth 1 -type d -name '*.app' -print -quit)"
+        if [ -z "$APP_BUNDLE" ]; then
+          hdiutil detach "$MOUNT_DIR" -quiet || true
+          error "No .app bundle found inside desktop-mars-${triple}.dmg"
+          exit 1
+        fi
+        info "Found app bundle: $APP_BUNDLE ($(human_size "$APP_BUNDLE"))"
 
-  if [ ! -w "/Applications" ]; then
-    INSTALL_ROOT="$HOME/Applications"
-    warn "/Applications is not writable; installing to $INSTALL_ROOT"
-    mkdir -p "$INSTALL_ROOT"
+        if [ ! -w "/Applications" ]; then
+          INSTALL_ROOT="$HOME/Applications"
+          warn "/Applications is not writable; installing to $INSTALL_ROOT"
+          mkdir -p "$INSTALL_ROOT"
+        else
+          INSTALL_ROOT="/Applications"
+        fi
+        APP_NAME="$(basename "$APP_BUNDLE")"
+        INSTALLED_APP="$INSTALL_ROOT/$APP_NAME"
+        info "Copying app bundle to $INSTALLED_APP"
+        rm -rf "$INSTALLED_APP"
+        run ditto "$APP_BUNDLE" "$INSTALLED_APP"
+        hdiutil detach "$MOUNT_DIR" -quiet || true
+        finish_step "Project Mars desktop application installed to $INSTALLED_APP"
+        ;;
+      Linux)
+        DESKTOP_TMP="$(mktemp -d)"
+        APPIMAGE="$DESKTOP_TMP/desktop-mars-x86_64-unknown-linux-gnu.AppImage"
+        download_asset "desktop-mars-x86_64-unknown-linux-gnu.AppImage" "$APPIMAGE"
+        chmod +x "$APPIMAGE"
+        mkdir -p "$LOCAL_BIN"
+        install -m 755 "$APPIMAGE" "$LOCAL_BIN/mars-desktop"
+        success "Desktop AppImage installed to $LOCAL_BIN/mars-desktop"
+        warn "Run 'mars-desktop' to launch. If it fails with a FUSE error,"
+        warn "install libfuse2 or extract it once with --appimage-extract."
+        finish_step "Project Mars desktop application installed"
+        ;;
+      *)
+        error "No prebuilt desktop app for $(uname -s)."
+        error "See $RELEASE_BASE/ for available assets."
+        exit 1
+        ;;
+    esac
   else
-    INSTALL_ROOT="/Applications"
-  fi
+    cd "$DESKTOP_DIR"
+    info "Removing old frontend build output (dist/)"
+    rm -rf dist
+    info "Running: npm run tauri -- ${TAURI_ARGS[*]}"
+    run npm run tauri -- "${TAURI_ARGS[@]}"
 
-  APP_NAME="$(basename "$APP_BUNDLE")"
-  INSTALLED_APP="$INSTALL_ROOT/$APP_NAME"
-  info "Copying app bundle to $INSTALLED_APP"
-  rm -rf "$INSTALLED_APP"
-  run ditto "$APP_BUNDLE" "$INSTALLED_APP"
-  finish_step "Project Mars desktop application installed to $INSTALLED_APP"
+    APP_BUNDLE=""
+    for bundle_dir in \
+      "$REPO_ROOT/target/release/bundle/macos" \
+      "$DESKTOP_DIR/src-tauri/target/release/bundle/macos"; do
+      debug "Looking for .app bundles in $bundle_dir"
+      if [ -d "$bundle_dir" ]; then
+        APP_BUNDLE="$(find "$bundle_dir" -maxdepth 1 -type d -name '*.app' -print -quit)"
+        if [ -n "$APP_BUNDLE" ]; then
+          break
+        fi
+      else
+        debug "Bundle directory does not exist: $bundle_dir"
+      fi
+    done
+
+    if [ -z "$APP_BUNDLE" ]; then
+      error "No macOS .app bundle was produced by 'npm run tauri build'."
+      error "Check the Tauri build output for the bundle location on this platform."
+      exit 1
+    fi
+    info "Built app bundle: $APP_BUNDLE ($(human_size "$APP_BUNDLE"))"
+
+    if [ ! -w "/Applications" ]; then
+      INSTALL_ROOT="$HOME/Applications"
+      warn "/Applications is not writable; installing to $INSTALL_ROOT"
+      mkdir -p "$INSTALL_ROOT"
+    else
+      INSTALL_ROOT="/Applications"
+    fi
+
+    APP_NAME="$(basename "$APP_BUNDLE")"
+    INSTALLED_APP="$INSTALL_ROOT/$APP_NAME"
+    info "Copying app bundle to $INSTALLED_APP"
+    rm -rf "$INSTALLED_APP"
+    run ditto "$APP_BUNDLE" "$INSTALLED_APP"
+    finish_step "Project Mars desktop application installed to $INSTALLED_APP"
+  fi
 else
-  log "Skipping desktop app build/install (--desktop not selected)"
+  log "Skipping desktop app install (--desktop not selected)"
 fi
 
 # ---------------------------------------------------------------------------
@@ -566,6 +747,9 @@ fi
 if [[ -n "$INSTALLED_APP" ]]; then
   success "Desktop app:       $INSTALLED_APP"
 fi
+if [[ "$INSTALL_DESKTOP" -eq 1 && "$RELEASE_MODE" -eq 1 && -z "$INSTALLED_APP" ]]; then
+  success "Desktop app:       $LOCAL_BIN/mars-desktop (AppImage)"
+fi
 if [[ -n "$VSIX" ]]; then
   success "VS Code extension: $VSIX"
 fi
@@ -578,7 +762,7 @@ fi
 if [[ -n "$JETBRAINS_PLUGIN_ZIP" && -z "$JETBRAINS_INSTALLED" ]]; then
   success "JetBrains plugin:  $JETBRAINS_PLUGIN_ZIP (manual install required)"
 fi
-if [ -n "$MARS_CARGO_FEATURES" ]; then
+if [[ "$RELEASE_MODE" -eq 0 && -n "$MARS_CARGO_FEATURES" ]]; then
   success "Cargo features:    $MARS_CARGO_FEATURES"
 fi
 log "Total time: $((SECONDS - INSTALL_START))s"
