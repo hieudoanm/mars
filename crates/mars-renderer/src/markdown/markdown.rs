@@ -7,7 +7,9 @@ pub fn render_markdown(source: &str) -> String {
     let mut rendered = String::new();
     let options = Options::ENABLE_TABLES | Options::ENABLE_STRIKETHROUGH;
     html::push_html(&mut rendered, Parser::new_ext(source, options));
-    ammonia::clean(&rendered)
+    crate::util::markdown_sanitizer()
+        .clean(&rendered)
+        .to_string()
 }
 
 /// Render a notebook as a portable Markdown document.

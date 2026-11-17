@@ -1,5 +1,18 @@
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use serde_json::Value;
+use std::sync::LazyLock;
+
+/// Shared sanitizer for rendered Markdown: ammonia defaults plus the `data:`
+/// URL scheme, so `attachment:` references inlined as data URIs (and
+/// user-authored data-URI images) survive sanitisation.
+pub(crate) fn markdown_sanitizer() -> &'static ammonia::Builder<'static> {
+    static SANITIZER: LazyLock<ammonia::Builder<'static>> = LazyLock::new(|| {
+        let mut builder = ammonia::Builder::new();
+        builder.add_url_schemes(["data"]);
+        builder
+    });
+    &SANITIZER
+}
 
 pub fn escape_html(value: &str) -> String {
     value
