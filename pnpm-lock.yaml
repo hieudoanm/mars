@@ -327,10 +327,10 @@ importers:
         specifier: 0.16.8
         version: 0.16.8
       '@types/mocha':
-        specifier: ^10.0.10
+        specifier: 10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: ^26.6.6
+        specifier: 26.6.6
         version: 26.6.6
       '@types/react':
         specifier: 19.3.0
@@ -345,22 +345,22 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(vitest@5.1.0)
       '@wdio/cli':
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0(@types/node@26.6.6)(bare-buffer@3.7.2)(expect-webdriverio@8.1.0(@wdio/types@10.2.0)(webdriverio@10.2.0(bare-buffer@3.7.2)(supports-color@8.1.1)(yauzl@3.4.0)))(supports-color@8.1.1)(yauzl@3.4.0)
       '@wdio/globals':
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0(expect-webdriverio@8.1.0(@wdio/types@10.2.0)(webdriverio@10.2.0(bare-buffer@3.7.2)(supports-color@8.1.1)(yauzl@3.4.0)))(webdriverio@10.2.0(bare-buffer@3.7.2)(supports-color@8.1.1)(yauzl@3.4.0))
       '@wdio/local-runner':
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0(supports-color@8.1.1)(tsx@4.23.15)(webdriverio@10.2.0(bare-buffer@3.7.2)(supports-color@8.1.1)(yauzl@3.4.0))(yauzl@3.4.0)
       '@wdio/mocha-framework':
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0(supports-color@8.1.1)(yauzl@3.4.0)
       '@wdio/spec-reporter':
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0
       '@wdio/types':
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0
       daisyui:
         specifier: 5.8.1
@@ -402,7 +402,7 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))
       webdriverio:
-        specifier: ^10.2.0
+        specifier: 10.2.0
         version: 10.2.0(bare-buffer@3.7.2)(supports-color@8.1.1)(yauzl@3.4.0)
 
   packages/landing:
