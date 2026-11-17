@@ -2,7 +2,7 @@ use mars::commands::run_cli;
 use mars_core::CellType;
 use mars_document::{Cell, Notebook, load, save_atomic};
 use serde_json::json;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 fn temp_dir(name: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!("mars-cli-cmd-{}-{}", std::process::id(), name));
@@ -15,7 +15,7 @@ fn args(list: &[&str]) -> Vec<String> {
     list.iter().map(|s| s.to_string()).collect()
 }
 
-fn write_notebook(path: &PathBuf, notebook: &Notebook) {
+fn write_notebook(path: &Path, notebook: &Notebook) {
     save_atomic(notebook, path).expect("save notebook");
 }
 

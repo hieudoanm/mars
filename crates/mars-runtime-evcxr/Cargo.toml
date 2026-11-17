@@ -19,3 +19,6 @@ regex = "=1.13.1"
 name = "evcxr_runtime"
 path = "tests/evcxr_runtime.rs"
 harness = false
+
+[lib]
+test = false

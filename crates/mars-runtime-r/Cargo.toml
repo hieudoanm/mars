@@ -10,3 +10,6 @@ mars-core = { path = "../mars-core" }
 mars-runtime = { path = "../mars-runtime" }
 serde_json.workspace = true
 uuid.workspace = true
+
+[lib]
+test = false

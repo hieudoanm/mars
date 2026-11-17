@@ -4,7 +4,7 @@
 
 use mars::commands::run_cli;
 use mars_lab::config::{Settings, set_settings};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Mutex, OnceLock};
 
 static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
@@ -35,7 +35,7 @@ fn args(list: &[&str]) -> Vec<String> {
     list.iter().map(|s| s.to_string()).collect()
 }
 
-fn write_csv(dir: &PathBuf, name: &str) -> PathBuf {
+fn write_csv(dir: &Path, name: &str) -> PathBuf {
     let path = dir.join(name);
     let mut csv = String::from("a,b,label\n");
     for i in 0..30 {

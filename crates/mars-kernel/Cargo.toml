@@ -21,3 +21,6 @@ thiserror.workspace = true
 [features]
 experimental-evcxr = ["dep:mars-runtime-evcxr"]
 
+
+[lib]
+test = false

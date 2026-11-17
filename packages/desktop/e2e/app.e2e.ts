@@ -11,6 +11,16 @@
 const button = (text: string) =>
   $(`//button[contains(normalize-space(.), "${text}") or @aria-label="${text}"]`);
 
+// Some labels exist in more than one place (e.g. "New notebook" appears in
+// both the welcome view and the file explorer); click the first match.
+const clickButton = async (text: string) => {
+  const buttons = await $$(
+    `//button[contains(normalize-space(.), "${text}") or @aria-label="${text}"]`,
+  );
+  await buttons[0].waitForDisplayed({ timeout: 30_000 });
+  await buttons[0].click();
+};
+
 const visible = async (selector: string) => {
   const el = $(selector);
   await el.waitForDisplayed({ timeout: 30_000 });
@@ -42,13 +52,13 @@ describe('Mars desktop (tauri-driver)', () => {
     // enters the notebook workspace, which shows its own WelcomeView.
     await button('Mars Notebook').click();
     await visible('[data-component="WelcomeView"]');
-    await button('New notebook').click();
+    await clickButton('New notebook');
     await visible('[data-component="NotebookSession"]');
     await lastEditor();
   });
 
   it('adds a code cell and marks the notebook dirty', async () => {
-    await button('Add Code').click();
+    await clickButton('Add Code');
     await browser.waitUntil(
       async () => {
         const bars = await $$('footer, [data-component="NotebookStatusBar"]');
@@ -72,7 +82,7 @@ describe('Mars desktop (tauri-driver)', () => {
     await editor.click();
     await editor.addValue('println!("mars-e2e-ok");');
 
-    await button('Run current cell').click();
+    await clickButton('Run current cell');
 
     await browser.waitUntil(
       async () => {

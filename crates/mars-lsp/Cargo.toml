@@ -12,3 +12,6 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 uuid = { workspace = true }
 mars-runtime = { path = "../mars-runtime" }
+
+[lib]
+test = false

@@ -4,10 +4,10 @@
 use mars::commands::run_cli;
 use mars_core::CellType;
 use mars_document::{Cell, Notebook, save_atomic};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
-fn git(dir: &PathBuf, args: &[&str]) {
+fn git(dir: &Path, args: &[&str]) {
     let status = Command::new("git")
         .args(args)
         .current_dir(dir)
@@ -209,7 +209,7 @@ fn diff_reports_added_and_removed_cells() {
     baseline
         .add_cell(Cell::new(CellType::Markdown, "# A"))
         .expect("a");
-    let removed = baseline
+    baseline
         .add_cell(Cell::new(CellType::Markdown, "# B"))
         .expect("b");
     save_atomic(&baseline, &path).expect("save baseline");
@@ -224,10 +224,7 @@ fn diff_reports_added_and_removed_cells() {
     current
         .add_cell(Cell::new(CellType::Code, "let added = true;"))
         .expect("c");
-    // Reuse the removed cell's id is impossible post-hoc; instead delete it
-    // from the loaded baseline shape by rebuilding without it — diff_cells
-    // matches on CellId, so removing the cell object is what matters.
-    let _ = removed;
+    // diff_cells matches on CellId, so removing the cell object is what matters.
     save_atomic(&current, &path).expect("save current");
 
     // Diff against the file form too (covers the .mars branch without git).

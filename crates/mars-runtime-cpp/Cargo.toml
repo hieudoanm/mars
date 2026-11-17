@@ -12,3 +12,6 @@ tempfile = "=3.27.0"
 which = "=8.0.6"
 uuid = { version = "=1.29.3", features = ["v4"] }
 thiserror = "=2.0.21"
+
+[lib]
+test = false

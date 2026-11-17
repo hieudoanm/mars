@@ -12,3 +12,6 @@ serde_json.workspace = true
 mars-core = { path = "../mars-core" }
 mars-document = { path = "../mars-document" }
 pulldown-cmark.workspace = true
+
+[lib]
+test = false
