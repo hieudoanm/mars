@@ -1,10 +1,10 @@
 ---
-title: "Observable: Reactive JavaScript Notebooks for Data Visualization"
+title: 'Observable: Reactive JavaScript Notebooks for Data Visualization'
 description: "Explore Observable's reactive programming model, JavaScript-first approach, and data visualization capabilities compared to traditional notebooks."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 11
-tags: ["notebooks", "observable", "javascript", "reactive", "visualization", "mars"]
+tags: ['notebooks', 'observable', 'javascript', 'reactive', 'visualization', 'mars']
 ---
 
 # Why Observable? Reactive JavaScript Notebooks
@@ -14,24 +14,28 @@ Observable is a unique notebook platform that combines reactive programming with
 ## What Observable Offers
 
 ### Reactive Programming Model
+
 - **Live cells**: Code cells re-execute automatically when dependencies change
 - **Reactive variables**: Variables update in real-time based on their dependencies
 - **Declarative style**: Write code that describes what you want, not how to compute it
 - **Instant feedback**: See results immediately as you type
 
 ### JavaScript-First Approach
+
 - **Native JavaScript**: Use standard JavaScript/TypeScript without transpilation
 - **Web standards**: Leverage browser APIs, DOM manipulation, and web technologies
 - **Modern syntax**: ES6+, async/await, destructuring, and other modern features
 - **npm packages**: Import any npm package directly in notebooks
 
 ### Data Visualization Excellence
+
 - **Observable Plot**: High-level API for creating publication-quality visualizations
 - **D3.js integration**: Seamless integration with D3 for custom visualizations
 - **Interactive charts**: Built-in interactivity for zooming, panning, and tooltips
 - **Responsive design**: Visualizations adapt to different screen sizes
 
 ### Documentation & Publishing
+
 - **Markdown support**: Mix code and documentation seamlessly
 - **Published notebooks**: Share notebooks as interactive web pages
 - **Embeddable**: Embed notebooks in websites and documentation
@@ -39,15 +43,15 @@ Observable is a unique notebook platform that combines reactive programming with
 
 ## Observable vs Traditional Notebooks
 
-| Feature | Observable | Jupyter | Project Mars |
-|---------|------------|---------|------|
-| Language | JavaScript/TypeScript | Python, R, Julia, etc. | Rust, Python, R, Julia, C++ |
-| Execution model | Reactive | Imperative | Imperative |
-| Live updates | Automatic | Manual | Manual |
-| Visualization | Excellent (D3, Plot) | Good (Matplotlib, etc.) | Good (plotters, etc.) |
-| Publishing | Web-native | Static export | Static export |
-| Collaboration | Real-time | Limited | Planned |
-| Offline use | Limited | Yes | Yes (desktop) |
+| Feature         | Observable            | Jupyter                 | Project Mars                |
+| --------------- | --------------------- | ----------------------- | --------------------------- |
+| Language        | JavaScript/TypeScript | Python, R, Julia, etc.  | Rust, Python, R, Julia, C++ |
+| Execution model | Reactive              | Imperative              | Imperative                  |
+| Live updates    | Automatic             | Manual                  | Manual                      |
+| Visualization   | Excellent (D3, Plot)  | Good (Matplotlib, etc.) | Good (plotters, etc.)       |
+| Publishing      | Web-native            | Static export           | Static export               |
+| Collaboration   | Real-time             | Limited                 | Planned                     |
+| Offline use     | Limited               | Yes                     | Yes (desktop)               |
 
 ## When to Choose Observable
 

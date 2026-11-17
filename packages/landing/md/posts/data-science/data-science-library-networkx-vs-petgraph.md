@@ -1,10 +1,10 @@
 ---
-title: "NetworkX vs petgraph: Graph Libraries in Python vs Rust"
+title: 'NetworkX vs petgraph: Graph Libraries in Python vs Rust'
 description: "Compare Python's NetworkX with Rust's petgraph for graph data structures and network algorithms in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 21
-tags: ["data-science", "networkx", "petgraph", "rust", "python", "graphs", "mars"]
+tags: ['data-science', 'networkx', 'petgraph', 'rust', 'python', 'graphs', 'mars']
 ---
 
 # NetworkX vs petgraph: Graph Data Structures Compared

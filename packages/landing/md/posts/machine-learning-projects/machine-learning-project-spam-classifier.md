@@ -1,10 +1,10 @@
 ---
-title: "Spam Message Classifier: NLP Project"
-description: "Classify SMS messages as spam or ham using TF-IDF vectorization and multinomial Naive Bayes in Rust."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Spam Message Classifier: NLP Project'
+description: 'Classify SMS messages as spam or ham using TF-IDF vectorization and multinomial Naive Bayes in Rust.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 38
-tags: ["machine-learning", "rust", "nlp", "text-classification", "naive-bayes"]
+tags: ['machine-learning', 'rust', 'nlp', 'text-classification', 'naive-bayes']
 ---
 
 # Machine Learning Project: Spam Message Classifier
@@ -30,7 +30,7 @@ Computers don't read text — you must convert each message into a vector.
 The classic pipeline:
 
 ```
-"FREE!!! Claim your prize NOW" 
+"FREE!!! Claim your prize NOW"
   → lowercase, strip punctuation
   → tokenize: ["free", "claim", "your", "prize", "now"]
   → count words → TF-IDF vector

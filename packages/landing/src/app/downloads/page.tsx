@@ -7,20 +7,23 @@ import { repositoryUrl, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Downloads',
-  description: 'Download Project Mars desktop app for macOS, Windows, and Linux. Install VS Code, Zed, and JetBrains extensions.',
+  description:
+    'Download Project Mars desktop app for macOS, Windows, and Linux. Install VS Code, Zed, and JetBrains extensions.',
   alternates: {
     canonical: `${siteUrl}/downloads`,
   },
   openGraph: {
     title: 'Download Project Mars',
-    description: 'Get the Project Mars desktop application and editor extensions for your platform.',
+    description:
+      'Get the Project Mars desktop application and editor extensions for your platform.',
     url: `${siteUrl}/downloads`,
     type: 'website',
   },
   twitter: {
     card: 'summary',
     title: 'Download Project Mars',
-    description: 'Get the Project Mars desktop application and editor extensions for your platform.',
+    description:
+      'Get the Project Mars desktop application and editor extensions for your platform.',
   },
 };
 
@@ -56,7 +59,10 @@ const extensionDownloads = [
     icon: FaCode,
     description: 'Full notebook editor with execution and rich output',
     links: [
-      { label: 'VS Code Marketplace', href: 'https://marketplace.visualstudio.com/items?itemName=mars.mars' },
+      {
+        label: 'VS Code Marketplace',
+        href: 'https://marketplace.visualstudio.com/items?itemName=mars.mars',
+      },
       { label: 'GitHub', href: `${repositoryUrl}/tree/main/extensions/vscode` },
     ],
   },
@@ -127,39 +133,46 @@ const DownloadsPage: FC & NextPage = () => {
           </div>
 
           <div className='mb-12'>
-            <h2 className='mb-6 text-xl font-semibold-plus tracking-tight-plus'>Desktop Application</h2>
+            <h2 className='font-semibold-plus tracking-tight-plus mb-6 text-xl'>
+              Desktop Application
+            </h2>
             <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
               {desktopDownloads.map((item) => (
-              <article
-                key={item.platform}
-                className='border-line-2 bg-feature-card rounded-xl border p-7'>
-                <div className='mb-6 text-3xl'><item.icon /></div>
-                <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
-                <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
-                <div className='flex flex-col gap-2'>
-                  {item.links.map((link) => (
-                    <a
-                      key={link.label}
-                      className='border-orange bg-orange text-sm-plus font-bold-plus text-ink-4 shadow-btn-orange inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
-                      href={link.href}>
-                      {link.label} <span aria-hidden='true'>↗</span>
-                    </a>
-                  ))}
-                </div>
-              </article>
-            ))}
+                <article
+                  key={item.platform}
+                  className='border-line-2 bg-feature-card rounded-xl border p-7'>
+                  <div className='mb-6 text-3xl'>
+                    <item.icon />
+                  </div>
+                  <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
+                  <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
+                  <div className='flex flex-col gap-2'>
+                    {item.links.map((link) => (
+                      <a
+                        key={link.label}
+                        className='border-orange bg-orange text-sm-plus font-bold-plus text-ink-4 shadow-btn-orange inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
+                        href={link.href}>
+                        {link.label} <span aria-hidden='true'>↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
 
           <div className='mb-12'>
-            <h2 className='mb-6 text-xl font-semibold-plus tracking-tight-plus'>Editor Extensions</h2>
+            <h2 className='font-semibold-plus tracking-tight-plus mb-6 text-xl'>
+              Editor Extensions
+            </h2>
             <div className='max-md-nav:grid-cols-1 grid grid-cols-3 gap-4'>
               {extensionDownloads.map((item) => (
                 <article
                   key={item.platform}
-                  className='border-line-2 bg-feature-card rounded-xl border p-7'
-                >
-                  <div className='mb-6 text-3xl'><item.icon /></div>
+                  className='border-line-2 bg-feature-card rounded-xl border p-7'>
+                  <div className='mb-6 text-3xl'>
+                    <item.icon />
+                  </div>
                   <h2 className='tracking-tight-plus mb-2 text-xl'>{item.platform}</h2>
                   <p className='text-sm-plus text-muted-2 mb-6'>{item.description}</p>
                   <div className='flex flex-col gap-2'>
@@ -167,8 +180,7 @@ const DownloadsPage: FC & NextPage = () => {
                       <a
                         key={link.label}
                         className='border-line-2 bg-bg-alt text-sm-plus font-bold-plus text-ink-2 inline-flex items-center gap-3.5 rounded-lg border px-4.5 py-3.5 transition-transform duration-200 hover:-translate-y-0.5'
-                        href={link.href}
-                      >
+                        href={link.href}>
                         {link.label} <span aria-hidden='true'>↗</span>
                       </a>
                     ))}

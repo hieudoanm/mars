@@ -29,19 +29,19 @@ const LabDatasetList: FC<LabDatasetListProps> = ({ datasets, onSelect }) => {
             type='button'
             onClick={() => onSelect?.(dataset)}
             className='w-full rounded-lg border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-left transition-colors hover:border-neutral-700 hover:bg-neutral-900'>
-          <div className='flex items-center gap-2'>
-            <span className='truncate text-sm text-neutral-200' title={dataset.originalFilename}>
-              {dataset.originalFilename}
-            </span>
-            <Badge tone='neutral'>{dataset.columns.length} cols</Badge>
-            <Badge tone='neutral'>{dataset.rowCount.toLocaleString()} rows</Badge>
-            <span className='ml-auto text-xs text-neutral-500'>
-              {formatBytes(dataset.byteSize)}
-            </span>
-          </div>
-          <p className='mt-1 truncate text-xs text-neutral-500'>
-            {dataset.columns.map((c) => c.name).join(', ')}
-          </p>
+            <div className='flex items-center gap-2'>
+              <span className='truncate text-sm text-neutral-200' title={dataset.originalFilename}>
+                {dataset.originalFilename}
+              </span>
+              <Badge tone='neutral'>{dataset.columns.length} cols</Badge>
+              <Badge tone='neutral'>{dataset.rowCount.toLocaleString()} rows</Badge>
+              <span className='ml-auto text-xs text-neutral-500'>
+                {formatBytes(dataset.byteSize)}
+              </span>
+            </div>
+            <p className='mt-1 truncate text-xs text-neutral-500'>
+              {dataset.columns.map((c) => c.name).join(', ')}
+            </p>
           </button>
         </li>
       ))}

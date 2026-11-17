@@ -560,9 +560,6 @@ export type TablePreview = {
   rows: (string | null)[][];
 };
 
-export const readTablePreview = async (
-  path: string,
-  limit = 50,
-): Promise<TablePreview> => {
+export const readTablePreview = async (path: string, limit = 50): Promise<TablePreview> => {
   return invoke<TablePreview>('read_table_preview', { path, limit });
 };

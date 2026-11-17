@@ -1,10 +1,10 @@
 ---
-title: "xarray vs ndarray: N-Dimensional Array Libraries"
+title: 'xarray vs ndarray: N-Dimensional Array Libraries'
 description: "Compare Python's xarray with Rust's ndarray for labeled multi-dimensional array workflows in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 22
-tags: ["data-science", "xarray", "ndarray", "rust", "python", "mars"]
+tags: ['data-science', 'xarray', 'ndarray', 'rust', 'python', 'mars']
 ---
 
 # xarray vs ndarray: Labeled Arrays Compared
@@ -39,14 +39,14 @@ The key difference: ndarray provides the core array primitive, while domain-spec
 
 ## Comparison
 
-| Feature               | xarray (Python)                           | ndarray (Rust)                              |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Array creation        | `xr.DataArray(data, dims=['x', 'y'])`   | `Array::from_shape((x, y))`                |
-| Labeled indexing     | `da.sel(x=1)`                           | Manual via domain crates                    |
-| Grouping              | `da.groupby('x').mean()`                | Manual implementation                       |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | NumPy-backed                              | Native compilation                         |
-| Metadata              | Built-in coordinates                     | Custom structs via domain crates            |
+| Feature          | xarray (Python)                       | ndarray (Rust)                   |
+| ---------------- | ------------------------------------- | -------------------------------- |
+| Array creation   | `xr.DataArray(data, dims=['x', 'y'])` | `Array::from_shape((x, y))`      |
+| Labeled indexing | `da.sel(x=1)`                         | Manual via domain crates         |
+| Grouping         | `da.groupby('x').mean()`              | Manual implementation            |
+| Type safety      | Runtime                               | Compile-time                     |
+| Performance      | NumPy-backed                          | Native compilation               |
+| Metadata         | Built-in coordinates                  | Custom structs via domain crates |
 
 ## Example: xarray
 

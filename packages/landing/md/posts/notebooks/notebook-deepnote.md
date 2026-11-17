@@ -1,10 +1,10 @@
 ---
-title: "Deepnote: Cloud-Native Collaborative Data Science"
+title: 'Deepnote: Cloud-Native Collaborative Data Science'
 description: "Explore Deepnote's collaborative features, real-time editing, and cloud-native data science workflow compared to traditional notebooks."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 10
-tags: ["notebooks", "deepnote", "collaboration", "data-science", "cloud", "mars"]
+tags: ['notebooks', 'deepnote', 'collaboration', 'data-science', 'cloud', 'mars']
 ---
 
 # Why Deepnote? Collaborative Data Science Notebooks
@@ -14,24 +14,28 @@ Deepnote is a cloud-native data science platform that emphasizes real-time colla
 ## What Deepnote Offers
 
 ### Real-Time Collaboration
+
 - **Live editing**: Multiple users can edit notebooks simultaneously
 - **Comments and mentions**: Built-in commenting and @mentions for team communication
 - **Version history**: Track changes and revert to previous versions
 - **Permissions**: Granular access control for team members
 
 ### Integrated Data Infrastructure
+
 - **Data integrations**: Native connections to databases, data warehouses, and cloud storage
 - **SQL support**: Write and execute SQL queries directly in notebooks
 - **Data catalog**: Centralized data discovery and documentation
 - **Scheduled runs**: Automate notebook execution on a schedule
 
 ### Cloud-Native Architecture
+
 - **No setup required**: Runs entirely in the cloud, no local installation
 - **Scalable compute**: Automatic resource scaling based on workload
 - **GPU support**: Access to GPU-accelerated computing
 - **Pre-installed libraries**: Common data science packages pre-installed
 
 ### Team Features
+
 - **Shared workspaces**: Organize notebooks by project or team
 - **Templates**: Reusable notebook templates for common workflows
 - **Integrations**: Connect with Git, Slack, Jira, and other tools
@@ -39,14 +43,14 @@ Deepnote is a cloud-native data science platform that emphasizes real-time colla
 
 ## Deepnote vs Traditional Notebooks
 
-| Feature | Deepnote | Jupyter | Project Mars |
-|---------|----------|---------|------|
-| Collaboration | Real-time, built-in | Limited (via JupyterLab) | Planned |
-| Cloud-native | Yes | No (local) | Desktop app |
-| Data integrations | Native | Manual setup | Via runtime |
-| Version control | Built-in | Git-based | Git-based |
-| Scheduling | Built-in | Manual | CLI automation |
-| Offline use | No | Yes | Yes (desktop) |
+| Feature           | Deepnote            | Jupyter                  | Project Mars   |
+| ----------------- | ------------------- | ------------------------ | -------------- |
+| Collaboration     | Real-time, built-in | Limited (via JupyterLab) | Planned        |
+| Cloud-native      | Yes                 | No (local)               | Desktop app    |
+| Data integrations | Native              | Manual setup             | Via runtime    |
+| Version control   | Built-in            | Git-based                | Git-based      |
+| Scheduling        | Built-in            | Manual                   | CLI automation |
+| Offline use       | No                  | Yes                      | Yes (desktop)  |
 
 ## When to Choose Deepnote
 

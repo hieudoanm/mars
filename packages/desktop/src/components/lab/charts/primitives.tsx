@@ -22,8 +22,8 @@ const scale = (values: number[], min?: number, max?: number) => {
   return (v: number) => PAD.top + (1 - (v - lo) / span) * (H - PAD.top - PAD.bottom);
 };
 
-const xScale = (n: number) =>
-  (i: number) => PAD.left + (n <= 1 ? 0 : (i / (n - 1)) * (W - PAD.left - PAD.right));
+const xScale = (n: number) => (i: number) =>
+  PAD.left + (n <= 1 ? 0 : (i / (n - 1)) * (W - PAD.left - PAD.right));
 
 const niceTicks = (min: number, max: number, count = 4): number[] => {
   const span = max - min || 1;
@@ -50,8 +50,15 @@ const Axes: FC<{ ymin: number; ymax: number; xLabels?: [string, string] }> = ({
       {ticks.map((t) => (
         <g key={t}>
           <line x1={PAD.left} x2={W - PAD.right} y1={y(t)} y2={y(t)} strokeDasharray='2 4' />
-          <text x={PAD.left - 6} y={y(t) + 3} textAnchor='end' className='fill-neutral-500' fontSize={9}>
-            {Math.abs(t) >= 1000 ? `${(t / 1000).toFixed(1)}k` : t.toFixed(Math.abs(t) < 10 ? 1 : 0)}
+          <text
+            x={PAD.left - 6}
+            y={y(t) + 3}
+            textAnchor='end'
+            className='fill-neutral-500'
+            fontSize={9}>
+            {Math.abs(t) >= 1000
+              ? `${(t / 1000).toFixed(1)}k`
+              : t.toFixed(Math.abs(t) < 10 ? 1 : 0)}
           </text>
         </g>
       ))}
@@ -60,7 +67,12 @@ const Axes: FC<{ ymin: number; ymax: number; xLabels?: [string, string] }> = ({
           <text x={PAD.left} y={H - 8} className='fill-neutral-500' fontSize={9}>
             {xLabels[0]}
           </text>
-          <text x={W - PAD.right} y={H - 8} textAnchor='end' className='fill-neutral-500' fontSize={9}>
+          <text
+            x={W - PAD.right}
+            y={H - 8}
+            textAnchor='end'
+            className='fill-neutral-500'
+            fontSize={9}>
             {xLabels[1]}
           </text>
         </>
@@ -83,7 +95,11 @@ export const LineChart: FC<{
   const ymin = Math.min(...y);
   const ymax = Math.max(...y);
   return (
-    <svg viewBox={`0 0 ${W} ${height}`} className='w-full' role='img' aria-label={yLabel ?? 'line chart'}>
+    <svg
+      viewBox={`0 0 ${W} ${height}`}
+      className='w-full'
+      role='img'
+      aria-label={yLabel ?? 'line chart'}>
       <Axes ymin={ymin} ymax={ymax} xLabels={[xLabel, xLabel]} />
       <polyline points={points} fill='none' stroke='#ea580c' strokeWidth={1.5} />
     </svg>
@@ -100,16 +116,36 @@ export const BarChart: FC<{
   if (horizontal) {
     const rowH = Math.min(28, (H - PAD.top - PAD.bottom) / values.length);
     return (
-      <svg viewBox={`0 0 ${W} ${Math.max(H, values.length * rowH + PAD.top + PAD.bottom)}`} className='w-full' role='img'>
+      <svg
+        viewBox={`0 0 ${W} ${Math.max(H, values.length * rowH + PAD.top + PAD.bottom)}`}
+        className='w-full'
+        role='img'>
         {values.map((v, i) => {
           const w = (Math.abs(v) / max) * (W - PAD.left - PAD.right - 90);
           return (
             <g key={labels[i] ?? i}>
-              <text x={PAD.left - 6} y={PAD.top + i * rowH + rowH / 2 + 3} textAnchor='end' className='fill-neutral-400' fontSize={10}>
+              <text
+                x={PAD.left - 6}
+                y={PAD.top + i * rowH + rowH / 2 + 3}
+                textAnchor='end'
+                className='fill-neutral-400'
+                fontSize={10}>
                 {(labels[i] ?? String(i)).slice(0, 18)}
               </text>
-              <rect x={PAD.left} y={PAD.top + i * rowH + 4} width={w} height={rowH - 8} rx={2} fill='#ea580c' opacity={0.85} />
-              <text x={PAD.left + w + 6} y={PAD.top + i * rowH + rowH / 2 + 3} className='fill-neutral-300' fontSize={10}>
+              <rect
+                x={PAD.left}
+                y={PAD.top + i * rowH + 4}
+                width={w}
+                height={rowH - 8}
+                rx={2}
+                fill='#ea580c'
+                opacity={0.85}
+              />
+              <text
+                x={PAD.left + w + 6}
+                y={PAD.top + i * rowH + rowH / 2 + 3}
+                className='fill-neutral-300'
+                fontSize={10}>
                 {v.toFixed(3)}
               </text>
             </g>
@@ -134,7 +170,12 @@ export const BarChart: FC<{
             fill='#ea580c'
             opacity={0.85}
           />
-          <text x={PAD.left + i * bw + bw / 2} y={H - 10} textAnchor='middle' className='fill-neutral-500' fontSize={8}>
+          <text
+            x={PAD.left + i * bw + bw / 2}
+            y={H - 10}
+            textAnchor='middle'
+            className='fill-neutral-500'
+            fontSize={8}>
             {(labels[i] ?? String(i)).slice(0, 10)}
           </text>
         </g>
@@ -155,13 +196,18 @@ export const ScatterPlot: FC<{
     ((v - Math.min(...x)) / (Math.max(...x) - Math.min(...x) || 1)) * (W - PAD.left - PAD.right);
   const yPix = (v: number) =>
     PAD.top +
-    (1 - (v - Math.min(...y)) / (Math.max(...y) - Math.min(...y) || 1)) * (H - PAD.top - PAD.bottom);
+    (1 - (v - Math.min(...y)) / (Math.max(...y) - Math.min(...y) || 1)) *
+      (H - PAD.top - PAD.bottom);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className='w-full' role='img' aria-label='scatter plot'>
       <Axes ymin={Math.min(...y)} ymax={Math.max(...y)} />
       {x.map((vx, i) => {
         const g = groups?.[i];
-        const color = highlight?.[i] ? '#f87171' : g !== undefined ? CHART_COLORS[g % CHART_COLORS.length] : '#38bdf8';
+        const color = highlight?.[i]
+          ? '#f87171'
+          : g !== undefined
+            ? CHART_COLORS[g % CHART_COLORS.length]
+            : '#38bdf8';
         return <circle key={i} cx={xPix(vx)} cy={yPix(y[i])} r={2.5} fill={color} opacity={0.7} />;
       })}
     </svg>

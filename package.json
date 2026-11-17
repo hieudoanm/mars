@@ -27,9 +27,11 @@
     "desktop:build": "turbo run build --filter=@mars/desktop",
     "desktop:e2e": "turbo run test:e2e --filter=@mars/desktop",
     "vscode:compile": "turbo run check --filter=mars-vscode",
-    "vscode:package": "turbo run package --filter=mars-vscode"
+    "vscode:package": "turbo run package --filter=mars-vscode",
+    "prepare": "husky || true"
   },
   "devDependencies": {
+    "husky": "9.1.7",
     "turbo": "2.11.11"
   }
 }

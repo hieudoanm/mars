@@ -1,10 +1,10 @@
 ---
-title: "pandas vs Polars: Modern DataFrame Libraries Compared"
+title: 'pandas vs Polars: Modern DataFrame Libraries Compared'
 description: "Compare Python's pandas with Rust's Polars for DataFrames, tabular data manipulation, and analytics in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 14
-tags: ["data-science", "pandas", "polars", "rust", "python", "mars"]
+tags: ['data-science', 'pandas', 'polars', 'rust', 'python', 'mars']
 ---
 
 # pandas vs Polars: Tabular Data Processing Compared
@@ -38,15 +38,15 @@ The key difference: Polars compiles DataFrame operations to optimized native cod
 
 ## Comparison
 
-| Feature               | pandas (Python)                          | Polars (Rust)                              |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| DataFrame creation    | `pd.DataFrame({'a': [1, 2, 3]})`         | `df! {"a" => [1, 2, 3]}`                  |
-| Filtering             | `df[df['a'] > 1]`                       | `df.filter(col("a").gt(1))`               |
-| Grouping              | `df.groupby('a').sum()`                  | `df.groupby(["a"]).sum()`                  |
-| Performance           | Single-threaded, C-backed               | Multi-threaded, Arrow-native               |
-| Lazy evaluation       | No                                       | Yes, with query optimization               |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Integration          | NumPy, SciPy, Matplotlib, etc.           | ndarray, plotters, serde, etc.            |
+| Feature            | pandas (Python)                  | Polars (Rust)                  |
+| ------------------ | -------------------------------- | ------------------------------ |
+| DataFrame creation | `pd.DataFrame({'a': [1, 2, 3]})` | `df! {"a" => [1, 2, 3]}`       |
+| Filtering          | `df[df['a'] > 1]`                | `df.filter(col("a").gt(1))`    |
+| Grouping           | `df.groupby('a').sum()`          | `df.groupby(["a"]).sum()`      |
+| Performance        | Single-threaded, C-backed        | Multi-threaded, Arrow-native   |
+| Lazy evaluation    | No                               | Yes, with query optimization   |
+| Type safety        | Runtime                          | Compile-time                   |
+| Integration        | NumPy, SciPy, Matplotlib, etc.   | ndarray, plotters, serde, etc. |
 
 ## Example: pandas
 

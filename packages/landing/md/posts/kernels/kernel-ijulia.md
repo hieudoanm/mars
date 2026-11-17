@@ -1,10 +1,10 @@
 ---
-title: "IJulia: Julia Kernel for Scientific Computing"
-description: "Explore IJulia, the Julia kernel for Jupyter, and how it enables interactive Julia development in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'IJulia: Julia Kernel for Scientific Computing'
+description: 'Explore IJulia, the Julia kernel for Jupyter, and how it enables interactive Julia development in notebook environments.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 47
-tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
+tags: ['kernels', 'ijulia', 'julia', 'jupyter', 'notebook', 'mars']
 ---
 
 # Why IJulia? Julia Kernel for Jupyter
@@ -14,18 +14,21 @@ tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
 ## What IJulia Offers
 
 ### Interactive Julia Execution
+
 - **Live Julia code**: Write and execute Julia code interactively
 - **Persistent state**: Variables persist across cells
 - **Package management**: Use Julia's package manager directly in notebooks
 - **REPL integration**: Similar to Julia's REPL but in notebook format
 
 ### Jupyter Integration
+
 - **Standard Jupyter protocol**: Works with JupyterLab, Jupyter Notebook, VS Code
 - **Rich outputs**: Display text, images, HTML, LaTeX, and other MIME types
 - **Code completion**: Integration with Julia's REPL for completions
 - **Debugging**: Support for Julia's debugging tools
 
 ### Julia-Specific Features
+
 - **Multiple dispatch**: Leverage Julia's unique multiple dispatch paradigm
 - **Performance**: Near-C performance with dynamic language ergonomics
 - **Scientific computing**: First-class support for numerical and scientific computing
@@ -33,16 +36,16 @@ tags: ["kernels", "ijulia", "julia", "jupyter", "notebook", "mars"]
 
 ## IJulia vs Project Mars Julia Runtime
 
-| Feature | IJulia | Project Mars Julia Runtime |
-|---------|--------|-------------------|
-| Platform | Jupyter kernel | Native Julia runtime |
-| Execution model | REPL-based | Subprocess driver |
-| Performance | Good | Good |
-| Package management | Julia packages | Julia packages |
-| Multi-language | Julia only | Rust, Python, R, Julia, C++ |
-| Document format | .ipynb | .mars (native format) |
-| Desktop app | No | Yes (Tauri-based) |
-| CLI | Limited | Full CLI with automation |
+| Feature            | IJulia         | Project Mars Julia Runtime  |
+| ------------------ | -------------- | --------------------------- |
+| Platform           | Jupyter kernel | Native Julia runtime        |
+| Execution model    | REPL-based     | Subprocess driver           |
+| Performance        | Good           | Good                        |
+| Package management | Julia packages | Julia packages              |
+| Multi-language     | Julia only     | Rust, Python, R, Julia, C++ |
+| Document format    | .ipynb         | .mars (native format)       |
+| Desktop app        | No             | Yes (Tauri-based)           |
+| CLI                | Limited        | Full CLI with automation    |
 
 ## When to Use IJulia
 

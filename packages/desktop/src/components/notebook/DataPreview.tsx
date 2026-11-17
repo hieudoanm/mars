@@ -19,9 +19,7 @@ export const DataPreview = ({ path }: DataPreviewProps) => {
     setLoading(true);
     readTablePreview(path)
       .then(setData)
-      .catch((err: unknown) =>
-        setError(err instanceof Error ? err.message : 'Preview failed'),
-      )
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Preview failed'))
       .finally(() => setLoading(false));
   }, [open, data, loading, path]);
 
@@ -29,7 +27,7 @@ export const DataPreview = ({ path }: DataPreviewProps) => {
     <details
       className='mt-2 rounded-md border border-neutral-800 bg-neutral-950/60'
       onToggle={(event) => setOpen((event.target as HTMLDetailsElement).open)}>
-      <summary className='cursor-pointer select-none px-3 py-1.5 text-xs text-neutral-400 hover:text-neutral-200'>
+      <summary className='cursor-pointer px-3 py-1.5 text-xs text-neutral-400 select-none hover:text-neutral-200'>
         Data preview{data ? ` (${data.rows.length} rows)` : ''}
       </summary>
       <div className='max-h-72 overflow-auto border-t border-neutral-800'>

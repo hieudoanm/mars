@@ -38,9 +38,16 @@ export async function runNotebook(): Promise<void> {
   const runArguments = config.get<string[]>('runArguments', []);
   const output = vscode.window.createOutputChannel('Project Mars');
   output.show(true);
-  output.appendLine(`$ ${cliPath} notebook run ${document.fileName} ${runArguments.join(' ')}`.trim());
+  output.appendLine(
+    `$ ${cliPath} notebook run ${document.fileName} ${runArguments.join(' ')}`.trim(),
+  );
   try {
-    const result = await execFileAsync(cliPath, ['notebook', 'run', document.fileName, ...runArguments]);
+    const result = await execFileAsync(cliPath, [
+      'notebook',
+      'run',
+      document.fileName,
+      ...runArguments,
+    ]);
     if (result.stdout) output.append(result.stdout);
     if (result.stderr) output.append(result.stderr);
     void vscode.window.showInformationMessage('Project Mars notebook completed.');
@@ -48,7 +55,9 @@ export async function runNotebook(): Promise<void> {
     const failure = error as { stdout?: string; stderr?: string; message?: string };
     if (failure.stdout) output.append(failure.stdout);
     if (failure.stderr) output.append(failure.stderr);
-    void vscode.window.showErrorMessage(failure.message ?? 'Project Mars notebook execution failed');
+    void vscode.window.showErrorMessage(
+      failure.message ?? 'Project Mars notebook execution failed',
+    );
   }
 }
 

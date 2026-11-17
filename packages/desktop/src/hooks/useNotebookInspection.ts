@@ -44,9 +44,7 @@ export const useNotebookInspection = ({
 
   const selectedCell = cells[selectedIndex];
   const selectedSource =
-    selectedCell && isRunnableCodeCell(selectedCell, kernelLanguage)
-    ? selectedCell.source
-    : null;
+    selectedCell && isRunnableCodeCell(selectedCell, kernelLanguage) ? selectedCell.source : null;
   const selectedLanguage = selectedCell ? cellLanguage(selectedCell, kernelLanguage) : 'rust';
   useEffect(() => {
     if (!selectedCell || selectedSource === null) {

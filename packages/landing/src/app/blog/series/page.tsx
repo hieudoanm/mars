@@ -5,14 +5,16 @@ import { siteName, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: `Series | ${siteName} Blog`,
-  description: 'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
+  description:
+    'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
   keywords: 'series, languages, notebooks, kernels, data science, machine learning, Project Mars',
   alternates: {
     canonical: `${siteUrl}/blog/series`,
   },
   openGraph: {
     title: `Series | ${siteName} Blog`,
-    description: 'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
+    description:
+      'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
     url: `${siteUrl}/blog/series`,
     siteName,
     images: [
@@ -28,7 +30,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: `Series | ${siteName} Blog`,
-    description: 'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
+    description:
+      'Explore curated series on programming languages, notebook platforms, Jupyter kernels, data science libraries, and machine learning.',
     images: [`${siteUrl}/og-image.png`],
   },
 };
@@ -37,25 +40,50 @@ const series = [
   {
     slug: 'languages',
     title: 'Programming Languages',
-    description: 'Explore why Rust, Python, R, Julia, and C++ are essential for modern data science and how Project Mars supports them all.',
-    posts: ['languages', 'language-rust', 'language-python', 'language-r', 'language-julia', 'language-cpp'],
+    description:
+      'Explore why Rust, Python, R, Julia, and C++ are essential for modern data science and how Project Mars supports them all.',
+    posts: [
+      'languages',
+      'language-rust',
+      'language-python',
+      'language-r',
+      'language-julia',
+      'language-cpp',
+    ],
   },
   {
     slug: 'notebooks',
     title: 'Notebook Platforms',
-    description: 'Compare Deepnote, Observable, Jupyter, and Project Mars to understand different approaches to interactive computing.',
-    posts: ['notebooks', 'notebook-mars', 'notebook-jupyter', 'notebook-deepnote', 'notebook-observable', 'notebook-hex'],
+    description:
+      'Compare Deepnote, Observable, Jupyter, and Project Mars to understand different approaches to interactive computing.',
+    posts: [
+      'notebooks',
+      'notebook-mars',
+      'notebook-jupyter',
+      'notebook-deepnote',
+      'notebook-observable',
+      'notebook-hex',
+    ],
   },
   {
     slug: 'kernels',
     title: 'Jupyter Kernels',
-    description: 'Explore language-specific Jupyter kernels and how they compare to Project Mars\'s native multi-language approach.',
-    posts: ['kernels', 'kernel-evcxr-jupyter', 'kernel-ijulia', 'kernel-xeus-cling', 'kernel-irkernel', 'kernel-matlab'],
+    description:
+      "Explore language-specific Jupyter kernels and how they compare to Project Mars's native multi-language approach.",
+    posts: [
+      'kernels',
+      'kernel-evcxr-jupyter',
+      'kernel-ijulia',
+      'kernel-xeus-cling',
+      'kernel-irkernel',
+      'kernel-matlab',
+    ],
   },
   {
     slug: 'data-science',
     title: 'Data Science Libraries',
-    description: 'Compare Python and Rust data science libraries side-by-side, from NumPy to pandas to Polars.',
+    description:
+      'Compare Python and Rust data science libraries side-by-side, from NumPy to pandas to Polars.',
     posts: [
       'data-science-libraries',
       'data-science-library-numpy-vs-ndarray',
@@ -73,7 +101,8 @@ const series = [
   {
     slug: 'machine-learning',
     title: 'Machine Learning Libraries',
-    description: 'Compare Python and Rust machine learning libraries from scikit-learn to PyTorch to XGBoost.',
+    description:
+      'Compare Python and Rust machine learning libraries from scikit-learn to PyTorch to XGBoost.',
     posts: [
       'machine-learning-libraries',
       'machine-learning-library-scikit-learn-vs-linfa',
@@ -146,7 +175,8 @@ export default function SeriesPage() {
       <div className='mb-10'>
         <h1 className='text-ink text-3xl font-bold tracking-tight'>Series</h1>
         <p className='text-muted mt-2'>
-          Curated collections of posts exploring languages, notebooks, kernels, and machine learning.
+          Curated collections of posts exploring languages, notebooks, kernels, and machine
+          learning.
         </p>
       </div>
 

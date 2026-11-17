@@ -22,10 +22,7 @@ export const getCellComments = (metadata: Record<string, unknown> | undefined): 
 export const addCellComment = (comments: CellComment[], text: string): CellComment[] => {
   const trimmed = text.trim();
   if (!trimmed) return comments;
-  return [
-    ...comments,
-    { text: trimmed, created_at: new Date().toISOString() },
-  ];
+  return [...comments, { text: trimmed, created_at: new Date().toISOString() }];
 };
 
 export const removeCellComment = (comments: CellComment[], index: number): CellComment[] =>

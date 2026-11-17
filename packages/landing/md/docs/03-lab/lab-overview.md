@@ -26,20 +26,21 @@ Mars Lab is the ML training component of Project Mars. It provides:
 
 Mars Lab supports six machine learning task types:
 
-| Task Type | Description | Label Required |
-|-----------|-------------|----------------|
-| `classification` | Predict discrete class labels | Yes |
-| `regression` | Predict continuous values | Yes |
-| `semi_supervised` | Learn from partially labelled data | Partial |
-| `clustering` | Group similar data points | No |
-| `anomaly_detection` | Identify unusual patterns | No |
-| `reinforcement_learning` | Learn from rewards and actions | No |
+| Task Type                | Description                        | Label Required |
+| ------------------------ | ---------------------------------- | -------------- |
+| `classification`         | Predict discrete class labels      | Yes            |
+| `regression`             | Predict continuous values          | Yes            |
+| `semi_supervised`        | Learn from partially labelled data | Partial        |
+| `clustering`             | Group similar data points          | No             |
+| `anomaly_detection`      | Identify unusual patterns          | No             |
+| `reinforcement_learning` | Learn from rewards and actions     | No             |
 
 ## Algorithm Catalogue
 
 Mars Lab includes 60+ algorithms organized by task type:
 
 ### Classification Algorithms
+
 - Logistic Regression, Random Forest, Gradient Boosting
 - Decision Trees, Extra Trees, k-Nearest Neighbours
 - Naive Bayes variants (Gaussian, Bernoulli, Multinomial, Complement, Categorical)
@@ -48,6 +49,7 @@ Mars Lab includes 60+ algorithms organized by task type:
 - And 20+ more algorithms
 
 ### Regression Algorithms
+
 - Linear Regression, Ridge, Lasso, Elastic Net
 - Random Forest, Gradient Boosting, Decision Trees
 - Support Vector Regression, Kernel Ridge
@@ -55,6 +57,7 @@ Mars Lab includes 60+ algorithms organized by task type:
 - And 20+ more algorithms
 
 ### Clustering Algorithms
+
 - K-Means, Mini-Batch K-Means
 - Gaussian Mixture Models
 - DBSCAN, HDBSCAN, OPTICS
@@ -62,17 +65,20 @@ Mars Lab includes 60+ algorithms organized by task type:
 - And more clustering algorithms
 
 ### Anomaly Detection Algorithms
+
 - Isolation Forest
 - One-Class SVM
 - Local Outlier Factor
 - Elliptic Envelope
 
 ### Semi-Supervised Algorithms
+
 - Self-Training Classifier
 - Label Propagation
 - Label Spreading
 
 ### Reinforcement Learning Algorithms
+
 - Q-Learning
 - SARSA
 - Deep Q-Networks (DQN)
@@ -82,6 +88,7 @@ Mars Lab includes 60+ algorithms organized by task type:
 ### Upload a Dataset
 
 In the desktop app, click "Upload CSV" to add a dataset. Mars Lab will:
+
 - Parse the CSV file
 - Infer column types
 - Detect missing values
@@ -101,6 +108,7 @@ In the desktop app, click "Upload CSV" to add a dataset. Mars Lab will:
 ### Monitor Training
 
 Mars Lab tracks job status through stages:
+
 - `queued` → `validating` → `training` → `evaluating` → `exporting` → `completed`
 
 View metrics, charts, and download ONNX artefacts when training completes.
@@ -108,6 +116,7 @@ View metrics, charts, and download ONNX artefacts when training completes.
 ### Export Models
 
 Trained models can be exported to:
+
 - **ONNX** — Industry-standard format for ML model deployment
 - **PKL** — Python pickle format
 - **Joblib** — Python joblib format
@@ -145,14 +154,14 @@ mars lab export --job-id <job-id> --output model.onnx --format onnx
 
 Mars Lab uses environment variables for configuration:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_URL` | `sqlite://.mars-lab-data/lab.db` | SQLite database path |
-| `MARS_LAB_DATA_DIR` | `.mars-lab-data` | Data directory for datasets and artefacts |
-| `MARS_LAB_MAX_UPLOAD_MB` | `10` | Maximum upload size in MB |
-| `MARS_LAB_MAX_CONCURRENT_JOBS` | `1` | Maximum concurrent training jobs |
-| `MARS_LAB_JOB_TIMEOUT_SECONDS` | `1800` | Job timeout in seconds |
-| `MARS_LAB_JOB_MAX_ATTEMPTS` | `2` | Maximum retry attempts per job |
+| Variable                       | Default                          | Description                               |
+| ------------------------------ | -------------------------------- | ----------------------------------------- |
+| `DATABASE_URL`                 | `sqlite://.mars-lab-data/lab.db` | SQLite database path                      |
+| `MARS_LAB_DATA_DIR`            | `.mars-lab-data`                 | Data directory for datasets and artefacts |
+| `MARS_LAB_MAX_UPLOAD_MB`       | `10`                             | Maximum upload size in MB                 |
+| `MARS_LAB_MAX_CONCURRENT_JOBS` | `1`                              | Maximum concurrent training jobs          |
+| `MARS_LAB_JOB_TIMEOUT_SECONDS` | `1800`                           | Job timeout in seconds                    |
+| `MARS_LAB_JOB_MAX_ATTEMPTS`    | `2`                              | Maximum retry attempts per job            |
 
 ## Architecture
 

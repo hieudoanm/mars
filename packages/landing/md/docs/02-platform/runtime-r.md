@@ -151,23 +151,23 @@ cat("<div>Hello</div>")
 
 R has a rich data science ecosystem that works well in Project Mars notebooks:
 
-| Domain | R Packages |
-| --- | --- |
-| Data manipulation | dplyr, tidyr, data.table |
-| Machine learning | caret, randomForest, xgboost |
-| Plotting | ggplot2, lattice, plotly |
-| Statistical modeling | stats, lme4, survival |
-| Web scraping | rvest, httr |
+| Domain               | R Packages                   |
+| -------------------- | ---------------------------- |
+| Data manipulation    | dplyr, tidyr, data.table     |
+| Machine learning     | caret, randomForest, xgboost |
+| Plotting             | ggplot2, lattice, plotly     |
+| Statistical modeling | stats, lme4, survival        |
+| Web scraping         | rvest, httr                  |
 
 ## Comparison with Python/Julia
 
-| Feature | R | Python | Julia |
-| --- | --- | --- | --- |
-| Execution model | Persistent driver | Persistent driver | Persistent driver |
-| Plot capture | graphics device | matplotlib | MIME bundles |
-| Interactive input | Not supported | `input()` | `readline()` |
-| Dependency pinning | Not supported | `%pip` | Not supported |
-| Timeout behavior | Kills interpreter | Kills interpreter | Kills driver |
+| Feature            | R                 | Python            | Julia             |
+| ------------------ | ----------------- | ----------------- | ----------------- |
+| Execution model    | Persistent driver | Persistent driver | Persistent driver |
+| Plot capture       | graphics device   | matplotlib        | MIME bundles      |
+| Interactive input  | Not supported     | `input()`         | `readline()`      |
+| Dependency pinning | Not supported     | `%pip`            | Not supported     |
+| Timeout behavior   | Kills interpreter | Kills interpreter | Kills driver      |
 
 ## Troubleshooting
 

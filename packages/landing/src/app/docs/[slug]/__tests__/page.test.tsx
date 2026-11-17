@@ -1,9 +1,11 @@
 import { render, act } from '@testing-library/react';
 import { vi } from 'vitest';
 
-const notFoundMock = vi.hoisted(() => vi.fn(() => {
-  throw new Error('NEXT_NOT_FOUND');
-}));
+const notFoundMock = vi.hoisted(() =>
+  vi.fn(() => {
+    throw new Error('NEXT_NOT_FOUND');
+  }),
+);
 
 vi.mock('next/navigation', () => ({
   notFound: notFoundMock,
@@ -57,7 +59,7 @@ describe('DocPage', () => {
     await expect(
       act(async () => {
         render(DocPage({ params: Promise.resolve({ slug: 'missing' }) }));
-      })
+      }),
     ).rejects.toThrow('NEXT_NOT_FOUND');
     expect(notFoundMock).toHaveBeenCalled();
   });

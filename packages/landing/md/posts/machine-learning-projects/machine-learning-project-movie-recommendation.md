@@ -1,17 +1,17 @@
 ---
-title: "Movie Recommendation System: Collaborative Filtering"
-description: "Build a recommender system with collaborative filtering and matrix factorization on the MovieLens dataset in Rust."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Movie Recommendation System: Collaborative Filtering'
+description: 'Build a recommender system with collaborative filtering and matrix factorization on the MovieLens dataset in Rust.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 39
-tags: ["machine-learning", "rust", "recommender-systems", "collaborative-filtering", "als"]
+tags: ['machine-learning', 'rust', 'recommender-systems', 'collaborative-filtering', 'als']
 ---
 
 # Machine Learning Project: Movie Recommendation System
 
 Recommender systems power Netflix, Spotify, and Amazon. The classic
 approach — **collaborative filtering** — needs no knowledge of what movies
-*are*; it only needs the pattern of who watched what and how they rated it.
+_are_; it only needs the pattern of who watched what and how they rated it.
 
 We'll use **MovieLens-100K**: 100,000 ratings from ~1,000 users on ~1,700
 movies, each rated 1–5 stars.
@@ -116,7 +116,7 @@ println!("top-10 popular movies: {:?}", &ranked[..10]);
 
 ## User-based collaborative filtering
 
-Find users *similar* to you (correlation or cosine similarity of rating
+Find users _similar_ to you (correlation or cosine similarity of rating
 vectors), then predict your rating for a movie as the weighted average of
 similar users' ratings for that movie.
 
@@ -208,14 +208,14 @@ fn als_step(
 
 For rating prediction, **RMSE** on held-out ratings:
 
-| Model | RMSE |
-| ----- | ---- |
-| Global mean | ~1.0 |
-| Popularity baseline | ~0.95 |
+| Model                       | RMSE  |
+| --------------------------- | ----- |
+| Global mean                 | ~1.0  |
+| Popularity baseline         | ~0.95 |
 | Matrix factorization (k=50) | ~0.90 |
-| SVD++ / biased MF | ~0.88 |
+| SVD++ / biased MF           | ~0.88 |
 
-For the *real* task — ranking — RMSE is a proxy. Production systems measure
+For the _real_ task — ranking — RMSE is a proxy. Production systems measure
 **precision@k** and **recall@k**: did the top-10 list contain movies the
 user actually rated highly?
 

@@ -1,10 +1,10 @@
 ---
-title: "Transformers vs rust-bert: NLP Model Libraries"
+title: 'Transformers vs rust-bert: NLP Model Libraries'
 description: "Compare Python's Transformers with Rust's rust-bert for pretrained transformer models for NLP tasks in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 32
-tags: ["machine-learning", "transformers", "rust-bert", "rust", "python", "nlp", "mars"]
+tags: ['machine-learning', 'transformers', 'rust-bert', 'rust', 'python', 'nlp', 'mars']
 ---
 
 # Transformers vs rust-bert: NLP Models Compared
@@ -39,14 +39,14 @@ The key difference: rust-bert allows you to use transformer models from Rust, co
 
 ## Comparison
 
-| Feature               | Transformers (Python)                     | rust-bert (Rust)                           |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Load model            | `AutoModel.from_pretrained('bert')`     | `BertModel::load('bert-base-uncased')`    |
-| Tokenization          | `AutoTokenizer.from_pretrained('bert')`  | Rust tokenizer implementation              |
-| Inference             | `model(input_ids)`                       | `model.forward(&input_ids)`               |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + backend                         | Native compilation                         |
-| Integration          | PyTorch, TensorFlow, etc.                | tch-rs, ndarray, etc.                     |
+| Feature      | Transformers (Python)                   | rust-bert (Rust)                       |
+| ------------ | --------------------------------------- | -------------------------------------- |
+| Load model   | `AutoModel.from_pretrained('bert')`     | `BertModel::load('bert-base-uncased')` |
+| Tokenization | `AutoTokenizer.from_pretrained('bert')` | Rust tokenizer implementation          |
+| Inference    | `model(input_ids)`                      | `model.forward(&input_ids)`            |
+| Type safety  | Runtime                                 | Compile-time                           |
+| Performance  | Python + backend                        | Native compilation                     |
+| Integration  | PyTorch, TensorFlow, etc.               | tch-rs, ndarray, etc.                  |
 
 ## Example: Transformers
 

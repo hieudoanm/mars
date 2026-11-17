@@ -83,7 +83,7 @@ const LabView: FC<LabViewProps> = ({ view, onNavigate, onHome }) => {
       </header>
 
       {lab.error && (
-        <p className='shrink-0 border-b border-error/30 bg-error/10 px-4 py-2 text-xs text-error'>
+        <p className='border-error/30 bg-error/10 text-error shrink-0 border-b px-4 py-2 text-xs'>
           {lab.error}
         </p>
       )}
@@ -137,13 +137,20 @@ const LabView: FC<LabViewProps> = ({ view, onNavigate, onHome }) => {
                       lab.applyJobFilters({ ...lab.jobFilters, status: e.target.value })
                     }>
                     <option value=''>All statuses</option>
-                    {['queued', 'validating', 'training', 'evaluating', 'exporting', 'completed', 'failed', 'cancelled'].map(
-                      (s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ),
-                    )}
+                    {[
+                      'queued',
+                      'validating',
+                      'training',
+                      'evaluating',
+                      'exporting',
+                      'completed',
+                      'failed',
+                      'cancelled',
+                    ].map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
                   </select>
                   <select
                     aria-label='Filter by task'
@@ -171,9 +178,7 @@ const LabView: FC<LabViewProps> = ({ view, onNavigate, onHome }) => {
                     placeholder='Search…'
                     className='h-7 w-28 rounded-md border border-neutral-700 bg-neutral-900 px-2 text-xs text-neutral-300'
                     value={lab.jobFilters.q}
-                    onChange={(e) =>
-                      lab.applyJobFilters({ ...lab.jobFilters, q: e.target.value })
-                    }
+                    onChange={(e) => lab.applyJobFilters({ ...lab.jobFilters, q: e.target.value })}
                   />
                   {compareMode && compareIds.size >= 2 && (
                     <Button

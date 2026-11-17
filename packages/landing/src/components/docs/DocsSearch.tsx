@@ -9,8 +9,7 @@ import { searchContent, toSearchableDocs } from '@/lib/search';
 const sidebarLink =
   'rounded-lg px-2.5 py-[7px] text-sm-plus leading-[1.4] text-muted hover:bg-panel-2 hover:text-ink';
 
-const chapterLabel = (chapter: string) =>
-  chapter.charAt(0).toUpperCase() + chapter.slice(1);
+const chapterLabel = (chapter: string) => chapter.charAt(0).toUpperCase() + chapter.slice(1);
 
 const DocsSearch: FC<Readonly<{ docs: Doc[] }>> = ({ docs }) => {
   const [query, setQuery] = useState('');
@@ -37,13 +36,13 @@ const DocsSearch: FC<Readonly<{ docs: Doc[] }>> = ({ docs }) => {
 
   return (
     <aside
-      className='border-line bg-panel/80 sticky top-7 flex flex-col gap-1 rounded-2xl border p-5 max-lg-nav:static max-lg-nav:flex-row max-lg-nav:flex-wrap'
+      className='border-line bg-panel/80 max-lg-nav:static max-lg-nav:flex-row max-lg-nav:flex-wrap sticky top-7 flex flex-col gap-1 rounded-2xl border p-5'
       aria-label='Documentation navigation'>
-      <p className='text-faint m-0 mb-2.5 text-2xs font-bold tracking-caps-lg uppercase max-lg-nav:w-full'>
+      <p className='text-faint text-2xs tracking-caps-lg max-lg-nav:w-full m-0 mb-2.5 font-bold uppercase'>
         Documentation
       </p>
       <div className='mb-3 flex flex-col gap-1'>
-        <label className='text-2xs font-bold text-muted uppercase' htmlFor='docs-search'>
+        <label className='text-2xs text-muted font-bold uppercase' htmlFor='docs-search'>
           Search
         </label>
         <input
@@ -62,7 +61,7 @@ const DocsSearch: FC<Readonly<{ docs: Doc[] }>> = ({ docs }) => {
         ? groupedDocs.map(([chapter, chapterDocs]) => (
             <div className='flex flex-col gap-1' key={chapter || 'ungrouped'}>
               {chapter ? (
-                <p className='text-faint mt-2 px-2.5 text-2xs font-bold tracking-caps-lg uppercase first:mt-0'>
+                <p className='text-faint text-2xs tracking-caps-lg mt-2 px-2.5 font-bold uppercase first:mt-0'>
                   {chapterLabel(chapter)}
                 </p>
               ) : null}

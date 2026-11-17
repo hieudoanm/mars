@@ -1,10 +1,10 @@
 ---
-title: "TensorFlow vs tensorflow: Production ML Frameworks"
+title: 'TensorFlow vs tensorflow: Production ML Frameworks'
 description: "Compare Python's TensorFlow with Rust's tensorflow for graph-based and production-oriented ML workflows in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 26
-tags: ["machine-learning", "tensorflow", "rust", "python", "production", "mars"]
+tags: ['machine-learning', 'tensorflow', 'rust', 'python', 'production', 'mars']
 ---
 
 # TensorFlow vs tensorflow: Production ML Compared
@@ -38,13 +38,13 @@ The key difference: tensorflow allows you to leverage TensorFlow's production ca
 
 ## Comparison
 
-| Feature               | TensorFlow (Python)                     | tensorflow (Rust)                          |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Tensor creation       | `tf.constant([1, 2, 3])`                | `Tensor::new(&[1, 2, 3])`                 |
-| Model loading         | `tf.keras.models.load_model(path)`      | `SavedModel::load(path)`                  |
-| Type safety           | Runtime                                  | Compile-time (mostly)                      |
-| Performance           | Python + C++ backend                      | Rust + C++ backend                         |
-| GPU support           | CUDA                                     | CUDA                                       |
+| Feature         | TensorFlow (Python)                | tensorflow (Rust)         |
+| --------------- | ---------------------------------- | ------------------------- |
+| Tensor creation | `tf.constant([1, 2, 3])`           | `Tensor::new(&[1, 2, 3])` |
+| Model loading   | `tf.keras.models.load_model(path)` | `SavedModel::load(path)`  |
+| Type safety     | Runtime                            | Compile-time (mostly)     |
+| Performance     | Python + C++ backend               | Rust + C++ backend        |
+| GPU support     | CUDA                               | CUDA                      |
 
 ## Example: TensorFlow
 

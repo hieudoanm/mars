@@ -6,14 +6,17 @@ import { siteName, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: `Blog | ${siteName}`,
-  description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars. Explore insights, tutorials, and best practices.',
-  keywords: 'Rust, notebooks, data science, machine learning, Project Mars, programming, tutorials, best practices',
+  description:
+    'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars. Explore insights, tutorials, and best practices.',
+  keywords:
+    'Rust, notebooks, data science, machine learning, Project Mars, programming, tutorials, best practices',
   alternates: {
     canonical: `${siteUrl}/blog`,
   },
   openGraph: {
     title: `Blog | ${siteName}`,
-    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
+    description:
+      'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
     url: `${siteUrl}/blog`,
     siteName,
     images: [
@@ -29,7 +32,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: `Blog | ${siteName}`,
-    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
+    description:
+      'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
     images: [`${siteUrl}/og-image.png`],
   },
 };
@@ -41,7 +45,8 @@ export default function BlogPage() {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: `${siteName} Blog`,
-    description: 'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
+    description:
+      'Essays on Rust, notebooks, data science, machine learning, and the case for Project Mars.',
     url: `${siteUrl}/blog`,
     publisher: {
       '@type': 'Organization',

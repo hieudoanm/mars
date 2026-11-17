@@ -133,6 +133,7 @@ fn jupyter_attachments(cell: &Cell) -> Option<Map<String, Value>> {
             continue;
         };
         let mime = mime.strip_prefix("data:").unwrap_or(mime);
+        let mime = mime.split(';').next().unwrap_or(mime);
         let mut entry = Map::new();
         entry.insert(mime.to_owned(), Value::String(payload.to_owned()));
         mapped.insert(name.clone(), Value::Object(entry));

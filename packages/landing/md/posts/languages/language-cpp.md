@@ -1,10 +1,10 @@
 ---
-title: "C++: High-Performance Computing for Scientific Applications"
-description: "C++ was born for systems programming. It is still the default when performance, control, and zero-cost abstractions matter. Here is why it endures."
-author: "Project Mars Team"
-date: "2026-11-07"
+title: 'C++: High-Performance Computing for Scientific Applications'
+description: 'C++ was born for systems programming. It is still the default when performance, control, and zero-cost abstractions matter. Here is why it endures.'
+author: 'Project Mars Team'
+date: '2026-11-07'
 order: 6
-tags: ["cpp", "performance", "systems", "history", "mars"]
+tags: ['cpp', 'performance', 'systems', 'history', 'mars']
 ---
 
 # Why C++?
@@ -53,7 +53,7 @@ The same properties that make C++ powerful create real structural costs:
 - **Complexity.** The language has accumulated features over four decades. Move semantics, constexpr, concepts, coroutines — each addition solves a real problem, but the surface area is enormous. A new developer faces a steep learning curve.
 - **Error handling.** Exceptions are the standard, but they impose runtime overhead and are often disabled in performance-critical code. Return codes and error enums are explicit but verbose. Resource leaks are still possible if an exception is thrown mid-construction.
 
-None of this made C++ a bad choice — it made it a *specific* choice, optimized for control and performance rather than approachability or rapid prototyping.
+None of this made C++ a bad choice — it made it a _specific_ choice, optimized for control and performance rather than approachability or rapid prototyping.
 
 ## The modern C++ renaissance
 

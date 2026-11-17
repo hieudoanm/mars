@@ -1,10 +1,10 @@
 ---
-title: "scikit-learn vs linfa: Classical ML in Python vs Rust"
+title: 'scikit-learn vs linfa: Classical ML in Python vs Rust'
 description: "Compare Python's scikit-learn with Rust's linfa for classical machine learning algorithms and pipelines in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 24
-tags: ["machine-learning", "scikit-learn", "linfa", "rust", "python", "mars"]
+tags: ['machine-learning', 'scikit-learn', 'linfa', 'rust', 'python', 'mars']
 ---
 
 # scikit-learn vs linfa: Classical ML Compared
@@ -39,14 +39,14 @@ The key difference: linfa provides a Rust-native approach to classical ML with c
 
 ## Comparison
 
-| Feature               | scikit-learn (Python)                    | linfa (Rust)                                |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Train model           | `model.fit(X, y)`                       | `model.fit(&dataset)`                      |
-| Predict               | `model.predict(X)`                      | `model.predict(&features)`                 |
-| K-means clustering   | `KMeans(n_clusters=3)`                   | `KMeans::new_with_params(3)`               |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | C-backed via NumPy/scipy                | Native compilation                         |
-| Integration          | NumPy, pandas, Matplotlib, etc.          | ndarray, plotters, serde, etc.             |
+| Feature            | scikit-learn (Python)           | linfa (Rust)                   |
+| ------------------ | ------------------------------- | ------------------------------ |
+| Train model        | `model.fit(X, y)`               | `model.fit(&dataset)`          |
+| Predict            | `model.predict(X)`              | `model.predict(&features)`     |
+| K-means clustering | `KMeans(n_clusters=3)`          | `KMeans::new_with_params(3)`   |
+| Type safety        | Runtime                         | Compile-time                   |
+| Performance        | C-backed via NumPy/scipy        | Native compilation             |
+| Integration        | NumPy, pandas, Matplotlib, etc. | ndarray, plotters, serde, etc. |
 
 ## Example: scikit-learn
 

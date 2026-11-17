@@ -58,8 +58,7 @@ export const selectMime = (data: MimeBundleData): SelectedMime | null => {
   }
 
   const javascript =
-    mimeValueToString(data['application/javascript']) ??
-    mimeValueToString(data['text/javascript']);
+    mimeValueToString(data['application/javascript']) ?? mimeValueToString(data['text/javascript']);
   if (javascript !== null) return { kind: 'javascript', value: javascript };
 
   const html = mimeValueToString(data['text/html']);

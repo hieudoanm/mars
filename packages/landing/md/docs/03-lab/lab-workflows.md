@@ -22,6 +22,7 @@ Mars Lab accepts CSV files with the following requirements:
 - **Missing values**: Empty cells, `NaN`, `null` are handled automatically
 
 **Example CSV:**
+
 ```csv
 age,income,education,purchased
 25,50000,Bachelor,yes
@@ -55,6 +56,7 @@ After upload, Mars Lab provides:
 **Goal**: Predict which customers will churn based on usage data.
 
 **Dataset**: `churn_data.csv`
+
 ```csv
 customer_id,age,tenure,monthly_charges,total_charges,support_calls,churned
 1,45,24,65.0,1500.0,2,no
@@ -65,11 +67,13 @@ customer_id,age,tenure,monthly_charges,total_charges,support_calls,churned
 **Steps**:
 
 1. **Upload dataset**
+
    ```bash
    mars lab dataset churn_data.csv
    ```
 
 2. **Train classifier**
+
    ```bash
    mars lab train --dataset-id <uuid> --task classification \
      --algorithm random_forest_classifier \
@@ -90,6 +94,7 @@ customer_id,age,tenure,monthly_charges,total_charges,support_calls,churned
    ```
 
 **Algorithm choices**:
+
 - `random_forest_classifier` — Good general purpose, handles non-linear relationships
 - `gradient_boosting_classifier` — Often best accuracy, slower training
 - `logistic_regression` — Fast, interpretable, good for linear relationships
@@ -102,6 +107,7 @@ customer_id,age,tenure,monthly_charges,total_charges,support_calls,churned
 **Goal**: Predict house prices based on features.
 
 **Dataset**: `housing.csv`
+
 ```csv
 sqft,beds,baths,age,location_score,price
 1500,3,2,10,8.5,350000
@@ -112,11 +118,13 @@ sqft,beds,baths,age,location_score,price
 **Steps**:
 
 1. **Upload dataset**
+
    ```bash
    mars lab dataset housing.csv
    ```
 
 2. **Train regressor**
+
    ```bash
    mars lab train --dataset-id <uuid> --task regression \
      --algorithm gradient_boosting_regressor \
@@ -137,6 +145,7 @@ sqft,beds,baths,age,location_score,price
    ```
 
 **Algorithm choices**:
+
 - `random_forest_regressor` — Robust, handles non-linear data well
 - `gradient_boosting_regressor` — Often best accuracy for tabular data
 - `linear_regression` — Fast, interpretable baseline
@@ -149,6 +158,7 @@ sqft,beds,baths,age,location_score,price
 **Goal**: Group customers into segments based on behavior.
 
 **Dataset**: `customers.csv`
+
 ```csv
 customer_id,age,income,spending_score,purchase_frequency
 1,25,45000,82,12
@@ -159,11 +169,13 @@ customer_id,age,income,spending_score,purchase_frequency
 **Steps**:
 
 1. **Upload dataset**
+
    ```bash
    mars lab dataset customers.csv
    ```
 
 2. **Train clustering model**
+
    ```bash
    mars lab train --dataset-id <uuid> --task clustering \
      --algorithm kmeans \
@@ -184,6 +196,7 @@ customer_id,age,income,spending_score,purchase_frequency
    ```
 
 **Algorithm choices**:
+
 - `kmeans` — Fast, works well with spherical clusters
 - `gaussian_mixture` — Soft clustering, probabilistic assignments
 - `dbscan` — Finds arbitrarily shaped clusters, handles noise
@@ -196,6 +209,7 @@ customer_id,age,income,spending_score,purchase_frequency
 **Goal**: Identify fraudulent transactions.
 
 **Dataset**: `transactions.csv`
+
 ```csv
 transaction_id,amount,merchant_category,time_of_day,location_risk,velocity_score
 1,150.50,grocery,afternoon,low,2
@@ -206,11 +220,13 @@ transaction_id,amount,merchant_category,time_of_day,location_risk,velocity_score
 **Steps**:
 
 1. **Upload dataset**
+
    ```bash
    mars lab dataset transactions.csv
    ```
 
 2. **Train anomaly detector**
+
    ```bash
    mars lab train --dataset-id <uuid> --task anomaly_detection \
      --algorithm isolation_forest \
@@ -229,6 +245,7 @@ transaction_id,amount,merchant_category,time_of_day,location_risk,velocity_score
    ```
 
 **Algorithm choices**:
+
 - `isolation_forest` — Fast, effective for high-dimensional data
 - `one_class_svm` — Good for novelty detection
 - `local_outlier_factor` — Density-based, good for local anomalies
@@ -241,6 +258,7 @@ transaction_id,amount,merchant_category,time_of_day,location_risk,velocity_score
 **Goal**: Classify text documents with few labelled examples.
 
 **Dataset**: `documents.csv`
+
 ```csv
 document_id,text,category
 1,"Great product, highly recommend",positive
@@ -252,11 +270,13 @@ document_id,text,category
 **Steps**:
 
 1. **Upload dataset**
+
    ```bash
    mars lab dataset documents.csv
    ```
 
 2. **Train semi-supervised model**
+
    ```bash
    mars lab train --dataset-id <uuid> --task semi_supervised \
      --algorithm self_training_classifier \
@@ -271,6 +291,7 @@ document_id,text,category
    - Iteration history
 
 **Algorithm choices**:
+
 - `self_training_classifier` — Iteratively adds confident predictions
 - `label_propagation` — Propagates labels through similarity graph
 - `label_spreading` — Similar to propagation but with regularization
@@ -282,6 +303,7 @@ document_id,text,category
 **Goal**: Train an agent to play a simple game.
 
 **Dataset**: `game_states.csv`
+
 ```csv
 state,action,reward,next_state,done
 0,1,1.0,1,false
@@ -292,11 +314,13 @@ state,action,reward,next_state,done
 **Steps**:
 
 1. **Upload dataset**
+
    ```bash
    mars lab dataset game_states.csv
    ```
 
 2. **Train RL agent**
+
    ```bash
    mars lab train --dataset-id <uuid> --task reinforcement_learning \
      --algorithm q_learning \
@@ -310,6 +334,7 @@ state,action,reward,next_state,done
    - Policy evaluation
 
 **Algorithm choices**:
+
 - `q_learning` — Tabular, good for small state spaces
 - `sarsa` — On-policy, more stable
 - `dqn` — Deep RL, good for large state spaces
@@ -345,21 +370,25 @@ mars lab job job-3
 ### Evaluation Metrics
 
 **Classification**:
+
 - Accuracy, Precision, Recall, F1-Score
 - ROC-AUC, PR-AUC
 - Confusion Matrix
 
 **Regression**:
+
 - RMSE, MAE, MAPE
 - R² Score
 - Residual Analysis
 
 **Clustering**:
+
 - Silhouette Score
 - Davies-Bouldin Index
 - Calinski-Harabasz Index
 
 **Anomaly Detection**:
+
 - Precision, Recall, F1-Score
 - ROC-AUC
 - Anomaly Score Distribution
@@ -416,6 +445,7 @@ mars lab export --job-id <uuid> --output model.onnx --format onnx
 ```
 
 ONNX models can be used with:
+
 - **ONNX Runtime** — Cross-platform inference engine
 - **TensorFlow Serving** — Production serving
 - **PyTorch** — Via ONNX import
@@ -455,17 +485,20 @@ mars lab job v2
 ### Common Issues
 
 **Dataset upload fails**:
+
 - Check file format (must be valid CSV)
 - Verify file size (under `MARS_LAB_MAX_UPLOAD_MB`)
 - Ensure UTF-8 encoding
 
 **Training fails**:
+
 - Check algorithm compatibility with task type
 - Verify feature columns exist in dataset
 - Ensure label column is specified for classification/regression
 - Check hyperparameter values are valid
 
 **Poor model performance**:
+
 - Try different algorithms
 - Tune hyperparameters
 - Check for data leakage
@@ -473,6 +506,7 @@ mars lab job v2
 - Consider feature engineering
 
 **Export fails**:
+
 - Verify job completed successfully
 - Check artefact format is supported
 - Ensure output directory exists

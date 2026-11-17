@@ -1,10 +1,10 @@
 ---
-title: "10 Essential Data Science Tools for Modern Workflows"
-description: "A side-by-side look at 10 essential data science tools in Python and their Rust equivalents, and how Project Mars supports both ecosystems fully."
-author: "Project Mars Team"
-date: "2026-11-06"
+title: '10 Essential Data Science Tools for Modern Workflows'
+description: 'A side-by-side look at 10 essential data science tools in Python and their Rust equivalents, and how Project Mars supports both ecosystems fully.'
+author: 'Project Mars Team'
+date: '2026-11-06'
 order: 12
-tags: ["data-science", "rust", "python", "tools", "mars"]
+tags: ['data-science', 'rust', 'python', 'tools', 'mars']
 ---
 
 # 10 Essential Data Science Tools
@@ -22,7 +22,7 @@ Data science workflows have long relied on a mature Python ecosystem. Rust now o
 | Matplotlib     | `plotters`      | 2D plotting and chart rendering                                     |
 | Seaborn        | `charming`      | High-level statistical visualizations                               |
 | Plotly         | `plotly`        | Interactive, publication-quality charts                             |
-| Jupyter        | Project Mars            | Multi-language notebook platform with Rust-first design             |
+| Jupyter        | Project Mars    | Multi-language notebook platform with Rust-first design             |
 | xarray         | `ndarray`       | Labeled multi-dimensional array workflows (via `ndarray` ecosystem) |
 | NetworkX       | `petgraph`      | Graph data structures and network algorithms                        |
 

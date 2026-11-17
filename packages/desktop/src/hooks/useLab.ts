@@ -81,23 +81,18 @@ export const useLab = () => {
     }
   }, []);
 
-  const applyJobFilters = useCallback(
-    (next: LabJobFilterState) => {
-      setJobFilters(next);
-      setLoading(true);
-      void labListJobsPage(toFilters(next), null, PAGE_SIZE)
-        .then((page) => {
-          setJobs(page.items);
-          setNextCursor(page.nextCursor);
-          setError(null);
-        })
-        .catch((cause) =>
-          setError(cause instanceof Error ? cause.message : 'Failed to load jobs'),
-        )
-        .finally(() => setLoading(false));
-    },
-    [],
-  );
+  const applyJobFilters = useCallback((next: LabJobFilterState) => {
+    setJobFilters(next);
+    setLoading(true);
+    void labListJobsPage(toFilters(next), null, PAGE_SIZE)
+      .then((page) => {
+        setJobs(page.items);
+        setNextCursor(page.nextCursor);
+        setError(null);
+      })
+      .catch((cause) => setError(cause instanceof Error ? cause.message : 'Failed to load jobs'))
+      .finally(() => setLoading(false));
+  }, []);
 
   const loadMoreJobs = useCallback(async () => {
     if (!nextCursor || loadingMore) return;
@@ -143,8 +138,8 @@ export const useLab = () => {
         insight !== null &&
         typeof insight === 'object' &&
         Array.isArray((insight as { warnings?: unknown }).warnings)
-          ? ((insight as { warnings: { code?: string; column?: string | null; message: string }[] })
-              .warnings)
+          ? (insight as { warnings: { code?: string; column?: string | null; message: string }[] })
+              .warnings
           : [];
       setDatasetPreview({ dataset, preview, warnings });
     } catch (cause) {

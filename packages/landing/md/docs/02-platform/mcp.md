@@ -53,28 +53,28 @@ requests use standard JSON-RPC error codes.
 
 ### Notebook and cell tools
 
-| Tool | Purpose |
-| --- | --- |
-| `mars_notebook_new` | Create a `.mars` file with a starter Markdown cell |
-| `mars_notebook_open` | Load a notebook and return a summary |
-| `mars_notebook_read` | Read metadata and cells (`cell_index`, `include_outputs`) |
-| `mars_notebook_save` | Persist session changes atomically |
-| `mars_notebook_inspect` | Format version, language, dependencies, cell counts |
-| `mars_cell_add` | Insert a `code`, `markdown`, or `raw` cell |
-| `mars_cell_update` | Update a cell's source and/or type |
-| `mars_cell_delete` | Delete a cell by index |
-| `mars_cell_move` | Move a cell to a new index |
-| `mars_cell_execute` | Execute one cell (`index`) or ad-hoc `source` |
-| `mars_notebook_execute` | Run all code cells, record outputs, and save |
-| `mars_cell_diagnose` | Compile-check source without committing it |
+| Tool                    | Purpose                                                   |
+| ----------------------- | --------------------------------------------------------- |
+| `mars_notebook_new`     | Create a `.mars` file with a starter Markdown cell        |
+| `mars_notebook_open`    | Load a notebook and return a summary                      |
+| `mars_notebook_read`    | Read metadata and cells (`cell_index`, `include_outputs`) |
+| `mars_notebook_save`    | Persist session changes atomically                        |
+| `mars_notebook_inspect` | Format version, language, dependencies, cell counts       |
+| `mars_cell_add`         | Insert a `code`, `markdown`, or `raw` cell                |
+| `mars_cell_update`      | Update a cell's source and/or type                        |
+| `mars_cell_delete`      | Delete a cell by index                                    |
+| `mars_cell_move`        | Move a cell to a new index                                |
+| `mars_cell_execute`     | Execute one cell (`index`) or ad-hoc `source`             |
+| `mars_notebook_execute` | Run all code cells, record outputs, and save              |
+| `mars_cell_diagnose`    | Compile-check source without committing it                |
 
 ### Kernel tools
 
-| Tool | Purpose |
-| --- | --- |
-| `mars_kernel_status` | Kernel execution status |
-| `mars_kernel_reset` | Reset the runtime session |
-| `mars_kernel_variables` | List live bindings |
+| Tool                    | Purpose                   |
+| ----------------------- | ------------------------- |
+| `mars_kernel_status`    | Kernel execution status   |
+| `mars_kernel_reset`     | Reset the runtime session |
+| `mars_kernel_variables` | List live bindings        |
 
 Kernel tools accept an optional `path`; omitting it uses a
 notebook-independent kernel keyed by `language`. Kernels are created lazily
@@ -87,16 +87,16 @@ sessions behave like `mars kernel serve`.
 The server also exposes Mars Lab — datasets, training jobs, and model
 artefacts backed by the same SQLite database as `mars lab`:
 
-| Tool | Purpose |
-| --- | --- |
-| `mars_lab_algorithms` | List the algorithm catalogue (`task` filter) |
-| `mars_lab_dataset_upload` | Upload a CSV file as a dataset (`path`) |
-| `mars_lab_datasets` | List stored datasets |
-| `mars_lab_dataset` | Dataset record, stored insight, and computed profile |
-| `mars_lab_train` | Train a model and export ONNX (`dataset_id`, `task`, `algorithm`, `features`, optional `label`, `hyperparameters`, `split_ratio`, `seed`) |
-| `mars_lab_jobs` | List training jobs (`limit`) |
-| `mars_lab_job` | Job record, metrics, and artefacts |
-| `mars_lab_export` | Copy an artefact (`onnx`/`pkl`/`joblib`) to `output` |
+| Tool                      | Purpose                                                                                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `mars_lab_algorithms`     | List the algorithm catalogue (`task` filter)                                                                                              |
+| `mars_lab_dataset_upload` | Upload a CSV file as a dataset (`path`)                                                                                                   |
+| `mars_lab_datasets`       | List stored datasets                                                                                                                      |
+| `mars_lab_dataset`        | Dataset record, stored insight, and computed profile                                                                                      |
+| `mars_lab_train`          | Train a model and export ONNX (`dataset_id`, `task`, `algorithm`, `features`, optional `label`, `hyperparameters`, `split_ratio`, `seed`) |
+| `mars_lab_jobs`           | List training jobs (`limit`)                                                                                                              |
+| `mars_lab_job`            | Job record, metrics, and artefacts                                                                                                        |
+| `mars_lab_export`         | Copy an artefact (`onnx`/`pkl`/`joblib`) to `output`                                                                                      |
 
 Lab tools share the `mars-lab` configuration (`DATABASE_URL`,
 `MARS_LAB_DATA_DIR`), so agents see the same data as the CLI and desktop

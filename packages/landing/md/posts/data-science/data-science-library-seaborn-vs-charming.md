@@ -1,10 +1,10 @@
 ---
-title: "Seaborn vs charming: Statistical Visualization Libraries"
+title: 'Seaborn vs charming: Statistical Visualization Libraries'
 description: "Compare Python's Seaborn with Rust's charming for high-level statistical visualizations in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 18
-tags: ["data-science", "seaborn", "charming", "rust", "python", "mars"]
+tags: ['data-science', 'seaborn', 'charming', 'rust', 'python', 'mars']
 ---
 
 # Seaborn vs charming: Statistical Visualization Compared
@@ -39,14 +39,14 @@ The key difference: charming provides a high-level abstraction over plotters, ma
 
 ## Comparison
 
-| Feature               | Seaborn (Python)                         | charming (Rust)                             |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Box plot              | `sns.boxplot(data=df)`                  | `Chart::new().boxplot(data)`               |
-| Theme                 | `sns.set_theme('darkgrid')`             | Theme-based styling                         |
-| Confidence interval   | Automatic                                 | Configurable, compile-time checked          |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Matplotlib backend                        | Native plotters rendering                  |
-| Integration          | pandas, Matplotlib, NumPy, etc.          | plotters, ndarray, polars, etc.           |
+| Feature             | Seaborn (Python)                | charming (Rust)                    |
+| ------------------- | ------------------------------- | ---------------------------------- |
+| Box plot            | `sns.boxplot(data=df)`          | `Chart::new().boxplot(data)`       |
+| Theme               | `sns.set_theme('darkgrid')`     | Theme-based styling                |
+| Confidence interval | Automatic                       | Configurable, compile-time checked |
+| Type safety         | Runtime                         | Compile-time                       |
+| Performance         | Matplotlib backend              | Native plotters rendering          |
+| Integration         | pandas, Matplotlib, NumPy, etc. | plotters, ndarray, polars, etc.    |
 
 ## Example: Seaborn
 

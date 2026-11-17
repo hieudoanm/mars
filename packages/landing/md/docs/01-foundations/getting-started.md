@@ -93,6 +93,7 @@ mars notebook new analysis.mars julia
 ```
 
 Each language runs in its own persistent session:
+
 - **Python**: Supports `await`, matplotlib figure capture, and `_repr_*` display methods
 - **R**: Supports plot capture and `.GlobalEnv` binding persistence
 - **Julia**: Supports MIME bundle output, interactive `readline()`, and Julia plotting libraries
@@ -156,17 +157,17 @@ pnpm --filter @mars/desktop dev
 
 The repository includes example notebooks demonstrating different aspects of Project Mars:
 
-| Example | Description |
-| --- | --- |
-| [01-getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/01-getting-started) | A 57-cell tour of basic Rust: variables, types, control flow, collections, structs, enums, traits, closures, and more |
-| [02-machine-learning](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/02-machine-learning) | Machine learning workflow using Rust libraries (polars, ndarray, linfa) |
-| [03-plotting](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) | Vector plotting with plotters, rendered as SVG image output |
-| [r-intro.mars](https://github.com/hieudoanm/mars/tree/main/examples/mars/r) | R language introduction with plot capture |
-| [julia-intro.mars](https://github.com/hieudoanm/mars/tree/main/examples/mars/julia) | Julia language introduction with MIME bundle output |
-| [python getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/python/01-getting-started) | Comprehensive Python tour: types, collections, functions, exceptions, classes, and stdlib tools |
-| [julia getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/julia/01-getting-started) | Comprehensive Julia tour: arrays, broadcasting, dispatch, structs, and stdlib tools |
-| [r getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/r/01-getting-started) | Comprehensive R tour: vectors, data frames, apply family, environments, and statistics |
-| [cpp getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/cpp/01-getting-started) | C++ curriculum documentation (not yet executable — no C++ backend) |
+| Example                                                                                                       | Description                                                                                                           |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| [01-getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/01-getting-started)       | A 57-cell tour of basic Rust: variables, types, control flow, collections, structs, enums, traits, closures, and more |
+| [02-machine-learning](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/02-machine-learning)     | Machine learning workflow using Rust libraries (polars, ndarray, linfa)                                               |
+| [03-plotting](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting)                     | Vector plotting with plotters, rendered as SVG image output                                                           |
+| [r-intro.mars](https://github.com/hieudoanm/mars/tree/main/examples/mars/r)                                   | R language introduction with plot capture                                                                             |
+| [julia-intro.mars](https://github.com/hieudoanm/mars/tree/main/examples/mars/julia)                           | Julia language introduction with MIME bundle output                                                                   |
+| [python getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/python/01-getting-started) | Comprehensive Python tour: types, collections, functions, exceptions, classes, and stdlib tools                       |
+| [julia getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/julia/01-getting-started)   | Comprehensive Julia tour: arrays, broadcasting, dispatch, structs, and stdlib tools                                   |
+| [r getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/r/01-getting-started)           | Comprehensive R tour: vectors, data frames, apply family, environments, and statistics                                |
+| [cpp getting-started](https://github.com/hieudoanm/mars/tree/main/examples/mars/cpp/01-getting-started)       | C++ curriculum documentation (not yet executable — no C++ backend)                                                    |
 
 Run all Project Mars examples from the examples directory:
 

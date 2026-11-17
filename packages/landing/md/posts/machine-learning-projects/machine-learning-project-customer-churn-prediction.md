@@ -1,10 +1,10 @@
 ---
-title: "Customer Churn Prediction: Classification Project"
-description: "Predict which customers will cancel their subscription using logistic regression with class weighting and threshold tuning in Rust."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Customer Churn Prediction: Classification Project'
+description: 'Predict which customers will cancel their subscription using logistic regression with class weighting and threshold tuning in Rust.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 40
-tags: ["machine-learning", "rust", "classification", "churn", "logistic-regression", "business"]
+tags: ['machine-learning', 'rust', 'classification', 'churn', 'logistic-regression', 'business']
 ---
 
 # Machine Learning Project: Customer Churn Prediction
@@ -95,7 +95,7 @@ let df = df.lazy()
 
 ## Why accuracy fails on imbalanced data
 
-With 26% churn, a model that predicts "no churn" for *everyone* gets
+With 26% churn, a model that predicts "no churn" for _everyone_ gets
 **74% accuracy** — and is useless. The metrics that matter:
 
 | Metric          | Meaning for churn                                                                     |
@@ -176,7 +176,7 @@ total_charges (per $1000)       →  odds_ratio ≈ 0.95
 ```
 
 This is why logistic regression remains the go-to for churn: the business
-can act on "push annual contracts" because the model *told them why*.
+can act on "push annual contracts" because the model _told them why_.
 
 ```rust
 // Inspect learned coefficients
@@ -199,7 +199,7 @@ for (name, coef) in model.params().feature_weights().iter()
 | Random forest               | ~0.87   | ~0.78  | ~0.42             |
 
 Logistic regression is within 3 points of boosting — and interpretable.
-For a churn use-case where the retention team needs to *understand* the
+For a churn use-case where the retention team needs to _understand_ the
 risk factors, that's the right trade-off.
 
 ## Key takeaways

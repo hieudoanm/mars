@@ -1,10 +1,10 @@
 ---
-title: "Notebook Platforms Compared: Jupyter, Deepnote, Observable, Hex, and Project Mars"
-description: "Explore the unique strengths and trade-offs of Deepnote, Observable, Hex, and other notebook platforms compared to Project Mars."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Notebook Platforms Compared: Jupyter, Deepnote, Observable, Hex, and Project Mars'
+description: 'Explore the unique strengths and trade-offs of Deepnote, Observable, Hex, and other notebook platforms compared to Project Mars.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 7
-tags: ["notebooks", "deepnote", "observable", "hex", "jupyter", "comparison", "mars"]
+tags: ['notebooks', 'deepnote', 'observable', 'hex', 'jupyter', 'comparison', 'mars']
 ---
 
 # These Notebook Platforms
@@ -135,6 +135,7 @@ Project Mars occupies a unique niche in the notebook ecosystem:
 - Open-source and self-hosted preferred
 
 ### Choose Jupyter if:
+
 - Maximum ecosystem compatibility needed
 - Wide language support required
 - Existing Jupyter workflows to maintain

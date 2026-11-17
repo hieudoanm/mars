@@ -1,10 +1,10 @@
 ---
-title: "10 Machine Learning Libraries Every Developer Should Know"
-description: "A practical map of 10 machine learning libraries in Python and their Rust equivalents, and how Project Mars supports both ML ecosystems fully."
-author: "Project Mars Team"
-date: "2026-11-06"
+title: '10 Machine Learning Libraries Every Developer Should Know'
+description: 'A practical map of 10 machine learning libraries in Python and their Rust equivalents, and how Project Mars supports both ML ecosystems fully.'
+author: 'Project Mars Team'
+date: '2026-11-06'
 order: 23
-tags: ["machine-learning", "rust", "python", "libraries", "mars"]
+tags: ['machine-learning', 'rust', 'python', 'libraries', 'mars']
 ---
 
 # 10 Machine Learning Libraries that Every Developers Should Know

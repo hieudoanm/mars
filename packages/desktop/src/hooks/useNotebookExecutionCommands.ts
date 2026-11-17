@@ -14,7 +14,8 @@ export const useNotebookExecutionCommands = ({
   selectedIndex,
   executeCells,
 }: ExecutionCommandsOptions) => {
-  const codeCells = (items: NotebookCell[]) => items.filter((cell) => isRunnableCodeCell(cell, notebookLanguage));
+  const codeCells = (items: NotebookCell[]) =>
+    items.filter((cell) => isRunnableCodeCell(cell, notebookLanguage));
   const executeAll = () => executeCells(codeCells(cells));
   const executeCurrent = () => {
     const cell = cells[selectedIndex];

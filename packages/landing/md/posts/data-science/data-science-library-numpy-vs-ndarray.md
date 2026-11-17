@@ -1,10 +1,10 @@
 ---
-title: "NumPy vs ndarray: Choosing the Right Array Library"
+title: 'NumPy vs ndarray: Choosing the Right Array Library'
 description: "Compare Python's NumPy with Rust's ndarray for n-dimensional arrays and numerical computing in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 13
-tags: ["data-science", "numpy", "ndarray", "rust", "python", "mars"]
+tags: ['data-science', 'numpy', 'ndarray', 'rust', 'python', 'mars']
 ---
 
 # NumPy vs ndarray: Numerical Computing Compared
@@ -38,15 +38,15 @@ The key difference: ndarray compiles array operations to native machine code, so
 
 ## Comparison
 
-| Feature               | NumPy (Python)                          | ndarray (Rust)                             |
-| --------------------- | ---------------------------------------- | ------------------------------------------ |
-| Array creation        | `np.array([1, 2, 3])`                   | `array![1, 2, 3]`                         |
-| Slicing               | `arr[1:5, ::2]`                         | `arr.slice(s![1..5, ..;2])`              |
-| Broadcasting          | Automatic                               | Explicit APIs, compile-time checked        |
-| Type safety           | Runtime                                 | Compile-time                              |
-| Performance           | C-backed via NumPy                       | Native compilation, no interpreter        |
-| Memory management     | Reference counting                        | RAII, no garbage collector                |
-| Integration          | Pandas, SciPy, Matplotlib, etc.          | Polars, faer, plotters, etc.             |
+| Feature           | NumPy (Python)                  | ndarray (Rust)                      |
+| ----------------- | ------------------------------- | ----------------------------------- |
+| Array creation    | `np.array([1, 2, 3])`           | `array![1, 2, 3]`                   |
+| Slicing           | `arr[1:5, ::2]`                 | `arr.slice(s![1..5, ..;2])`         |
+| Broadcasting      | Automatic                       | Explicit APIs, compile-time checked |
+| Type safety       | Runtime                         | Compile-time                        |
+| Performance       | C-backed via NumPy              | Native compilation, no interpreter  |
+| Memory management | Reference counting              | RAII, no garbage collector          |
+| Integration       | Pandas, SciPy, Matplotlib, etc. | Polars, faer, plotters, etc.        |
 
 ## Example: NumPy
 

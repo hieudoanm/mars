@@ -410,9 +410,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
                     ? (line, character) => lsp.definition(cell.id, line, character)
                     : undefined
                 }
-                onDefinitionResult={
-                  language?.lsp === true ? lsp?.onDefinitionResult : undefined
-                }
+                onDefinitionResult={language?.lsp === true ? lsp?.onDefinitionResult : undefined}
                 onImageAttachment={
                   cell.cell_type === 'markdown' && onAddAttachment ? onAddAttachment : undefined
                 }
@@ -491,10 +489,7 @@ const NotebookCellView: FC<NotebookCellViewProps> = ({
               ))
             : null}
           {onUpdateComments ? (
-            <CellComments
-              comments={getCellComments(cell.metadata)}
-              onChange={onUpdateComments}
-            />
+            <CellComments comments={getCellComments(cell.metadata)} onChange={onUpdateComments} />
           ) : null}
           {typeof cell.metadata?.preview === 'string' && cell.metadata.preview ? (
             <DataPreview path={cell.metadata.preview} />

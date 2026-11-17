@@ -1,10 +1,10 @@
 ---
-title: "SciPy vs faer: Scientific Computing Libraries Compared"
+title: 'SciPy vs faer: Scientific Computing Libraries Compared'
 description: "Compare Python's SciPy with Rust's faer for linear algebra and scientific computing primitives in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 15
-tags: ["data-science", "scipy", "faer", "rust", "python", "mars"]
+tags: ['data-science', 'scipy', 'faer', 'rust', 'python', 'mars']
 ---
 
 # SciPy vs faer: Scientific Computing Compared
@@ -39,14 +39,14 @@ The key difference: faer leverages Rust's type system and compile-time optimizat
 
 ## Comparison
 
-| Feature               | SciPy (Python)                          | faer (Rust)                                 |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Matrix multiplication  | `np.dot(A, B)`                          | `A * B`                                    |
-| Decomposition         | `scipy.linalg.cholesky(A)`              | `A.cholesky()`                             |
-| Performance           | C-backed via LAPACK                      | Native BLAS/LAPACK, compile-time optimized |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Memory layout         | Row-major or column-major                | Explicit control, column-major by default  |
-| Integration          | NumPy, pandas, Matplotlib, etc.          | ndarray, nalgebra, etc.                   |
+| Feature               | SciPy (Python)                  | faer (Rust)                                |
+| --------------------- | ------------------------------- | ------------------------------------------ |
+| Matrix multiplication | `np.dot(A, B)`                  | `A * B`                                    |
+| Decomposition         | `scipy.linalg.cholesky(A)`      | `A.cholesky()`                             |
+| Performance           | C-backed via LAPACK             | Native BLAS/LAPACK, compile-time optimized |
+| Type safety           | Runtime                         | Compile-time                               |
+| Memory layout         | Row-major or column-major       | Explicit control, column-major by default  |
+| Integration           | NumPy, pandas, Matplotlib, etc. | ndarray, nalgebra, etc.                    |
 
 ## Example: SciPy
 

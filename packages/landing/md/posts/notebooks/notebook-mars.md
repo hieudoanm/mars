@@ -1,10 +1,10 @@
 ---
-title: "Project Mars: The Multi-Language Notebook Platform"
-description: "Project Mars is a Rust-first interactive notebook. Here is how it compares to Jupyter, and why we built it."
-author: "Project Mars Team"
-date: "2026-11-06"
+title: 'Project Mars: The Multi-Language Notebook Platform'
+description: 'Project Mars is a Rust-first interactive notebook. Here is how it compares to Jupyter, and why we built it.'
+author: 'Project Mars Team'
+date: '2026-11-06'
 order: 8
-tags: ["mars", "notebooks", "jupyter", "rust", "product"]
+tags: ['mars', 'notebooks', 'jupyter', 'rust', 'product']
 ---
 
 # Why Project Mars?
@@ -33,7 +33,7 @@ Jupyter is built for interpreted, dynamic languages. That choice carries real co
 
 Project Mars keeps the notebook format but makes Rust the first-class language. Every cell you write is real Rust, compiled and executed in a persistent session, with variables shared across cells just like in Jupyter.
 
-|                  | Jupyter                   | Project Mars                                   |
+|                  | Jupyter                   | Project Mars                           |
 | ---------------- | ------------------------- | -------------------------------------- |
 | Primary language | Python (interpreted)      | Rust (compiled)                        |
 | Execution model  | Kernel process            | Persistent Rust session                |
@@ -45,7 +45,7 @@ Project Mars keeps the notebook format but makes Rust the first-class language. 
 | Interop          | —                         | Import/export `.ipynb`                 |
 | Outputs          | Rich (HTML, plots, LaTeX) | Rich (HTML, plots, LaTeX, SVG, images) |
 
-Project Mars is not a replacement for Python. It is a replacement for the *notebook runtime*. If you want to keep using Python, you can still import `.ipynb` files and export them. But if you want to write the notebook itself in a language that is fast, safe, and reproducible, Rust is the answer.
+Project Mars is not a replacement for Python. It is a replacement for the _notebook runtime_. If you want to keep using Python, you can still import `.ipynb` files and export them. But if you want to write the notebook itself in a language that is fast, safe, and reproducible, Rust is the answer.
 
 ## Why we built Project Mars
 

@@ -1,10 +1,10 @@
 ---
-title: "Julia: High-Performance Computing for Data Science"
-description: "Julia walks like Python, runs like C, and makes scientific computing feel fast. Here is why it matters for interactive programming."
-author: " Project Mars Team"
-date: "2026-11-07"
+title: 'Julia: High-Performance Computing for Data Science'
+description: 'Julia walks like Python, runs like C, and makes scientific computing feel fast. Here is why it matters for interactive programming.'
+author: ' Project Mars Team'
+date: '2026-11-07'
 order: 3
-tags: ["julia", "data-science", "performance", "multiple-dispatch", "mars"]
+tags: ['julia', 'data-science', 'performance', 'multiple-dispatch', 'mars']
 ---
 
 # Why Julia?
@@ -30,7 +30,7 @@ A Python user can read this and understand most of it immediately. The differenc
 
 ## Runs like C
 
-The same function runs at near-C speed because Julia compiles through LLVM. The hot loops become native machine code, not bytecode interpretation. A tight numerical loop in Julia does not need to delegate to a C extension — it *is* compiled to native code from the start.
+The same function runs at near-C speed because Julia compiles through LLVM. The hot loops become native machine code, not bytecode interpretation. A tight numerical loop in Julia does not need to delegate to a C extension — it _is_ compiled to native code from the start.
 
 This changes the tradeoffs:
 
@@ -78,7 +78,7 @@ The same design choices that make Julia fast create trade-offs:
 - **Smaller community.** The ecosystem is growing but still smaller than Python's; fewer libraries and less Stack Overflow knowledge.
 - **1-based indexing.** Coming from Python or R requires adjusting mental models for array and string indexing.
 
-None of this made Julia a bad choice — it made it a *different* choice, optimized for performance-first development without sacrificing the REPL experience.
+None of this made Julia a bad choice — it made it a _different_ choice, optimized for performance-first development without sacrificing the REPL experience.
 
 ## Where Project Mars fits
 

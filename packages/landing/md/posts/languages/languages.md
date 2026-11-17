@@ -1,10 +1,10 @@
 ---
-title: "Programming Languages for Data Science: A Comparative Guide"
-description: "Explore the unique strengths and trade-offs of Rust, Python, R, Julia, and C++ in the context of interactive notebooks and data science."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Programming Languages for Data Science: A Comparative Guide'
+description: 'Explore the unique strengths and trade-offs of Rust, Python, R, Julia, and C++ in the context of interactive notebooks and data science.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 1
-tags: ["languages", "rust", "python", "r", "julia", "cpp", "overview", "mars"]
+tags: ['languages', 'rust', 'python', 'r', 'julia', 'cpp', 'overview', 'mars']
 ---
 
 # Why These Programming Languages?
@@ -13,7 +13,7 @@ Project Mars supports multiple programming languages because different tasks ben
 
 ## Language Overview
 
-| Language | Primary Strengths                                    | Best For                                                     | Project Mars Integration                                            |
+| Language | Primary Strengths                                    | Best For                                                     | Project Mars Integration                                    |
 | -------- | ---------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
 | Rust     | Performance, safety, systems programming             | High-performance computing, systems, low-level work          | Replay-based execution, Cargo dependencies, LSP integration |
 | Python   | Ecosystem, readability, rapid prototyping            | Data science, ML, web development, scripting                 | Persistent sessions, matplotlib capture, top-level await    |

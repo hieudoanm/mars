@@ -9,7 +9,7 @@ type HamburgerButtonProps = Readonly<{
 const HamburgerButton: FC<HamburgerButtonProps> = ({ open, onClick }) => (
   <button
     type='button'
-    className='md-nav:hidden justify-self-start inline-flex items-center justify-center rounded-md p-2 text-muted hover:text-ink'
+    className='md-nav:hidden text-muted hover:text-ink inline-flex items-center justify-center justify-self-start rounded-md p-2'
     aria-label='Toggle navigation menu'
     aria-expanded={open}
     aria-controls='mobile-navigation'

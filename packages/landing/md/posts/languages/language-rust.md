@@ -1,15 +1,15 @@
 ---
-title: "Rust: The Systems Programming Language for Data Science"
-description: "Rust is fast, memory-safe, and predictable. Here is why that matters for data science, ML, and the tools we build on top of it."
-author: "Project Mars Team"
-date: "2026-11-06"
+title: 'Rust: The Systems Programming Language for Data Science'
+description: 'Rust is fast, memory-safe, and predictable. Here is why that matters for data science, ML, and the tools we build on top of it.'
+author: 'Project Mars Team'
+date: '2026-11-06'
 order: 2
-tags: ["rust", "performance", "safety", "ml", "systems"]
+tags: ['rust', 'performance', 'safety', 'ml', 'systems']
 ---
 
 # Why Rust?
 
-Rust is a systems programming language that compiles to native machine code, runs without a garbage collector, and prevents a whole class of bugs at compile time. It is not a new idea — its design borrows from ML, C++, and functional programming — but it packages those ideas into something that *just works*.
+Rust is a systems programming language that compiles to native machine code, runs without a garbage collector, and prevents a whole class of bugs at compile time. It is not a new idea — its design borrows from ML, C++, and functional programming — but it packages those ideas into something that _just works_.
 
 ## What makes Rust different
 
@@ -39,7 +39,7 @@ Rust flips the trade-off. You write safe, expressive code that compiles to a sin
 
 ## Why Rust should be used in ML more
 
-Machine learning workloads are *systems workloads in disguise*. Training a model means moving gigabytes of data through matrix kernels, managing GPU memory, and coordinating distributed workers. The bottlenecks are not algorithmic elegance — they are memory bandwidth, cache behavior, and parallelism.
+Machine learning workloads are _systems workloads in disguise_. Training a model means moving gigabytes of data through matrix kernels, managing GPU memory, and coordinating distributed workers. The bottlenecks are not algorithmic elegance — they are memory bandwidth, cache behavior, and parallelism.
 
 Rust is the only language that gives you:
 

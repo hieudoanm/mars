@@ -1,10 +1,10 @@
 ---
-title: "Keras vs burn: High-Level ML APIs Compared"
+title: 'Keras vs burn: High-Level ML APIs Compared'
 description: "Compare Python's Keras with Rust's burn for ergonomic model building and training abstractions in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 27
-tags: ["machine-learning", "keras", "burn", "rust", "python", "deep-learning", "mars"]
+tags: ['machine-learning', 'keras', 'burn', 'rust', 'python', 'deep-learning', 'mars']
 ---
 
 # Keras vs burn: High-Level ML Compared
@@ -39,13 +39,13 @@ The key difference: burn provides a Rust-native approach to deep learning with t
 
 ## Comparison
 
-| Feature               | Keras (Python)                           | burn (Rust)                                  |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Model building        | `model = Sequential([...])`              | `ModelConfig::new().build()`               |
-| Training              | `model.fit(X, y)`                       | `Trainer::fit(model, dataloader)`         |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + backend                         | Rust + backend                             |
-| Backend support       | TensorFlow, JAX, PyTorch                 | Multiple backends                          |
+| Feature         | Keras (Python)              | burn (Rust)                       |
+| --------------- | --------------------------- | --------------------------------- |
+| Model building  | `model = Sequential([...])` | `ModelConfig::new().build()`      |
+| Training        | `model.fit(X, y)`           | `Trainer::fit(model, dataloader)` |
+| Type safety     | Runtime                     | Compile-time                      |
+| Performance     | Python + backend            | Rust + backend                    |
+| Backend support | TensorFlow, JAX, PyTorch    | Multiple backends                 |
 
 ## Example: Keras
 

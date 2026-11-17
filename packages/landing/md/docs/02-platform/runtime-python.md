@@ -101,6 +101,7 @@ sum(x)  # Displays: 15
 ```
 
 Python's `_repr_*` methods are supported for rich output:
+
 - `_repr_html_` → HTML output
 - `_repr_png_` → PNG images
 - `_repr_jpeg_` → JPEG images
@@ -159,23 +160,23 @@ JSON({"key": "value"})
 
 Python has a rich data science ecosystem that works well in Project Mars notebooks:
 
-| Domain | Python Packages |
-| --- | --- |
-| Data manipulation | pandas, numpy, polars |
-| Machine learning | scikit-learn, PyTorch, TensorFlow |
-| Plotting | matplotlib, seaborn, plotly |
-| Scientific computing | scipy, numba |
-| Web scraping | requests, beautifulsoup4 |
+| Domain               | Python Packages                   |
+| -------------------- | --------------------------------- |
+| Data manipulation    | pandas, numpy, polars             |
+| Machine learning     | scikit-learn, PyTorch, TensorFlow |
+| Plotting             | matplotlib, seaborn, plotly       |
+| Scientific computing | scipy, numba                      |
+| Web scraping         | requests, beautifulsoup4          |
 
 ## Comparison with R/Julia
 
-| Feature | Python | R | Julia |
-| --- | --- | --- | --- |
-| Execution model | Persistent driver | Persistent driver | Persistent driver |
-| Plot capture | matplotlib | graphics device | MIME bundles |
-| Interactive input | `input()` | Not supported | `readline()` |
-| Dependency pinning | `%pip` | Not supported | Not supported |
-| Timeout behavior | Kills interpreter | Kills interpreter | Kills driver |
+| Feature            | Python            | R                 | Julia             |
+| ------------------ | ----------------- | ----------------- | ----------------- |
+| Execution model    | Persistent driver | Persistent driver | Persistent driver |
+| Plot capture       | matplotlib        | graphics device   | MIME bundles      |
+| Interactive input  | `input()`         | Not supported     | `readline()`      |
+| Dependency pinning | `%pip`            | Not supported     | Not supported     |
+| Timeout behavior   | Kills interpreter | Kills interpreter | Kills driver      |
 
 ## Troubleshooting
 

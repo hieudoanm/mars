@@ -4,12 +4,20 @@ import MobileDrawer from '../MobileDrawer';
 
 describe('MobileDrawer', () => {
   it('is hidden when closed', () => {
-    render(<MobileDrawer open={false} onClose={() => {}}>x</MobileDrawer>);
+    render(
+      <MobileDrawer open={false} onClose={() => {}}>
+        x
+      </MobileDrawer>,
+    );
     expect(screen.getByLabelText('Mobile navigation')).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('renders children when open', () => {
-    render(<MobileDrawer open={true} onClose={() => {}}>hello</MobileDrawer>);
+    render(
+      <MobileDrawer open={true} onClose={() => {}}>
+        hello
+      </MobileDrawer>,
+    );
     expect(screen.getByText('hello')).toBeInTheDocument();
   });
 });

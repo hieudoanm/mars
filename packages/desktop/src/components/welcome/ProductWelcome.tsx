@@ -39,8 +39,12 @@ const ProductWelcome: FC<ProductWelcomeProps> = ({ onSelect }) => {
       data-component='ProductWelcome'
       className='flex h-full flex-col items-center justify-center gap-10 bg-neutral-950 p-8'>
       <div className='text-center'>
-        <h1 className='text-3xl font-bold tracking-tight text-neutral-100'>Welcome to Project Mars</h1>
-        <p className='mt-2 text-sm text-neutral-500'>Explore ideas. Execute code. Discover possibilities.</p>
+        <h1 className='text-3xl font-bold tracking-tight text-neutral-100'>
+          Welcome to Project Mars
+        </h1>
+        <p className='mt-2 text-sm text-neutral-500'>
+          Explore ideas. Execute code. Discover possibilities.
+        </p>
       </div>
       <div className='flex flex-wrap items-stretch justify-center gap-6'>
         <ProductCard
@@ -54,7 +58,11 @@ const ProductWelcome: FC<ProductWelcomeProps> = ({ onSelect }) => {
           title='Mars Notebook'
           tagline='Interactive computing'
           description='A Jupyter-style notebook with a Rust-first runtime, multi-language cells, and rich outputs.'
-          points={['Rust, Python, R, Julia, C++', '.mars format + .ipynb interop', 'LSP, widgets, MIME outputs']}
+          points={[
+            'Rust, Python, R, Julia, C++',
+            '.mars format + .ipynb interop',
+            'LSP, widgets, MIME outputs',
+          ]}
           onClick={() => onSelect('notebook')}
         />
       </div>

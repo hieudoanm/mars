@@ -9,10 +9,7 @@ describe('NotFound', () => {
 
   it('renders back to docs link', () => {
     render(<NotFound />);
-    expect(screen.getByRole('link', { name: /back to docs/i })).toHaveAttribute(
-      'href',
-      '/docs',
-    );
+    expect(screen.getByRole('link', { name: /back to docs/i })).toHaveAttribute('href', '/docs');
   });
 
   it('renders Project Mars logo', () => {

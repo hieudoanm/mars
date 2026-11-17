@@ -1,10 +1,10 @@
 ---
-title: "R: Statistical Computing and Graphics"
-description: "R was built by statisticians, for statisticians. It still owns a huge share of academic research and data analysis — and it has real strengths worth respecting."
-author: "Project Mars Team"
-date: "2026-11-07"
+title: 'R: Statistical Computing and Graphics'
+description: 'R was built by statisticians, for statisticians. It still owns a huge share of academic research and data analysis — and it has real strengths worth respecting.'
+author: 'Project Mars Team'
+date: '2026-11-07'
 order: 5
-tags: ["r", "statistics", "data-science", "tidyverse", "mars"]
+tags: ['r', 'statistics', 'data-science', 'tidyverse', 'mars']
 ---
 
 # Why R?

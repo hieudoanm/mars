@@ -100,7 +100,9 @@ describe('MarsKernelService', () => {
     );
 
     commandExists.mockResolvedValueOnce(false);
-    await expect(new MarsKernelService('missing').start()).rejects.toThrow('Project Mars CLI not found at');
+    await expect(new MarsKernelService('missing').start()).rejects.toThrow(
+      'Project Mars CLI not found at',
+    );
   });
 
   it('sends execution and reset requests and maps output failures', async () => {

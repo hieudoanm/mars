@@ -1,10 +1,10 @@
 ---
-title: "xeus-cling: C++ Kernel for High-Performance Computing"
-description: "Explore xeus-cling, the C++ kernel for Jupyter, and how it enables interactive C++ development in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'xeus-cling: C++ Kernel for High-Performance Computing'
+description: 'Explore xeus-cling, the C++ kernel for Jupyter, and how it enables interactive C++ development in notebook environments.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 48
-tags: ["kernels", "xeus-cling", "cpp", "jupyter", "notebook", "mars"]
+tags: ['kernels', 'xeus-cling', 'cpp', 'jupyter', 'notebook', 'mars']
 ---
 
 # Why xeus-cling? C++ Kernel for Jupyter
@@ -14,18 +14,21 @@ tags: ["kernels", "xeus-cling", "cpp", "jupyter", "notebook", "mars"]
 ## What xeus-cling Offers
 
 ### Interactive C++ Execution
+
 - **Live C++ code**: Write and execute C++ code interactively
 - **Persistent state**: Variables persist across cells
 - **Cling integration**: Built on top of Cling, the C++ interpreter
 - **REPL-like experience**: Similar to C++ REPL but in notebook format
 
 ### Jupyter Integration
+
 - **Standard Jupyter protocol**: Works with JupyterLab, Jupyter Notebook, VS Code
 - **Rich outputs**: Display text, images, HTML, and other MIME types
 - **Code completion**: Integration with Cling for completions
 - **Debugging**: Support for C++ debugging tools
 
 ### C++-Specific Features
+
 - **Modern C++**: Support for C++11, C++14, C++17, C++20
 - **Template metaprogramming**: Leverage C++'s powerful template system
 - **STL integration**: Access to Standard Template Library

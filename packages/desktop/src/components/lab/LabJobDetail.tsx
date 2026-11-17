@@ -97,7 +97,7 @@ const LabJobDetail: FC<LabJobDetailProps> = ({ detail, onDownload }) => {
           </div>
         </dl>
         {job.errorMessage && (
-          <p className='mt-3 rounded-md bg-error/10 px-3 py-2 text-xs text-error'>
+          <p className='bg-error/10 text-error mt-3 rounded-md px-3 py-2 text-xs'>
             {job.errorMessage}
           </p>
         )}

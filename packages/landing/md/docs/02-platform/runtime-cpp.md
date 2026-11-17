@@ -192,23 +192,23 @@ Or let Project Mars auto-detect: it probes `clang++` first, then falls back to `
 
 C++ has a growing data science ecosystem that works well in Project Mars notebooks:
 
-| Domain | C++ Libraries |
-| --- | --- |
-| Data manipulation | pandas-cpp, xtensor |
-| Machine learning | mlpack, LightGBM, XGBoost |
-| Plotting | matplotlib-cpp, Plot-CPP |
-| Numerical computing | Eigen, Armadillo, Blaze |
-| Web scraping | cpp-httplib, cpr |
+| Domain              | C++ Libraries             |
+| ------------------- | ------------------------- |
+| Data manipulation   | pandas-cpp, xtensor       |
+| Machine learning    | mlpack, LightGBM, XGBoost |
+| Plotting            | matplotlib-cpp, Plot-CPP  |
+| Numerical computing | Eigen, Armadillo, Blaze   |
+| Web scraping        | cpp-httplib, cpr          |
 
 ## Comparison with Other Runtimes
 
-| Feature | C++ | Rust | Python |
-| --- | --- | --- | --- |
-| Execution model | Replay compilation | Replay compilation | Persistent driver |
-| Package manager | Conan/vcpkg | Cargo | pip |
-| Compilation speed | Slower | Moderate | None (interpreted) |
-| Memory safety | Manual | Guaranteed | Runtime |
-| Dependency pinning | conan.lock | Cargo.lock | requirements.txt |
+| Feature            | C++                | Rust               | Python             |
+| ------------------ | ------------------ | ------------------ | ------------------ |
+| Execution model    | Replay compilation | Replay compilation | Persistent driver  |
+| Package manager    | Conan/vcpkg        | Cargo              | pip                |
+| Compilation speed  | Slower             | Moderate           | None (interpreted) |
+| Memory safety      | Manual             | Guaranteed         | Runtime            |
+| Dependency pinning | conan.lock         | Cargo.lock         | requirements.txt   |
 
 ## Troubleshooting
 

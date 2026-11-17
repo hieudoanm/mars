@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   alternates: {
     languages: {
-      'en': 'https://hieudoanm.github.io/mars',
+      en: 'https://hieudoanm.github.io/mars',
       'x-default': 'https://hieudoanm.github.io/mars',
     },
   },
@@ -96,7 +96,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
     <html lang='en'>
       <body>
         <script
-          type="application/ld+json"
+          type='application/ld+json'
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
         {children}

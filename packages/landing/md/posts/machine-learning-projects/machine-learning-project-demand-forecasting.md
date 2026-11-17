@@ -9,8 +9,8 @@ tags: ["machine-learning", "rust", "time-series", "forecasting", "stats"]
 
 # Machine Learning Project: Sales & Demand Forecasting
 
-Demand forecasting answers: *how much of each product will we sell next
-week?* It's the ML problem behind inventory planning, staffing, and
+Demand forecasting answers: _how much of each product will we sell next
+week?_ It's the ML problem behind inventory planning, staffing, and
 pricing — and it looks deceptively simple until you meet real data with
 seasonality, trends, and promotions.
 
@@ -106,7 +106,7 @@ println!("weekly sales: {}", sparkline(&weekly, 60));
 
 ## Baseline 1 — moving average
 
-The simplest forecaster: predict tomorrow = mean of last *k* days.
+The simplest forecaster: predict tomorrow = mean of last _k_ days.
 
 - **SMA(7)**: smooths noise, lags on trends
 - **EMA(α)**: exponentially weighted — recent days count more
@@ -168,9 +168,9 @@ println!("seasonal-naive RMSE: {:.1}", rmse(&seasonal_preds, &actual));
 
 **ARIMA(p,d,q)** decomposes forecasting into three parts:
 
-- **AR(p)**: predict from *p* past values — `y_t = c + φ₁y_{t-1} + ...`
-- **I(d)**: integrate *d* times to remove trend — work on differences
-- **MA(q)**: model shocks from *q* past forecast errors
+- **AR(p)**: predict from _p_ past values — `y_t = c + φ₁y_{t-1} + ...`
+- **I(d)**: integrate _d_ times to remove trend — work on differences
+- **MA(q)**: model shocks from _q_ past forecast errors
 
 A full ARIMA fit is complex (requires MLE for coefficients). We'll use a
 simplified **AR(p) on differenced data** — good enough for weekly

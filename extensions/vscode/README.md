@@ -92,8 +92,8 @@ text focus, so letter keys would conflict with typing.
 
 ## Commands and shortcuts
 
-| Command                             | Purpose                                |
-| ----------------------------------- | -------------------------------------- |
+| Command                                     | Purpose                                |
+| ------------------------------------------- | -------------------------------------- |
 | `Project Mars: Create New Notebook`         | Create a notebook from a template      |
 | `Project Mars: Run Notebook`                | Execute all executable cells           |
 | `Project Mars: Restart Kernel`              | Reset persistent execution state       |

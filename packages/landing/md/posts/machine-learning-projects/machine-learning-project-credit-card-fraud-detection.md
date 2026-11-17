@@ -1,10 +1,10 @@
 ---
-title: "Credit Card Fraud Detection: Anomaly Detection"
-description: "Detect fraudulent credit card transactions using autoencoders, isolation forests, and threshold tuning under extreme class imbalance in Rust."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Credit Card Fraud Detection: Anomaly Detection'
+description: 'Detect fraudulent credit card transactions using autoencoders, isolation forests, and threshold tuning under extreme class imbalance in Rust.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 43
-tags: ["machine-learning", "rust", "fraud-detection", "anomaly-detection", "imbalanced-data"]
+tags: ['machine-learning', 'rust', 'fraud-detection', 'anomaly-detection', 'imbalanced-data']
 ---
 
 # Machine Learning Project: Credit Card Fraud Detection
@@ -30,13 +30,13 @@ In this project you will:
 
 ## Why fraud detection breaks standard ML
 
-| Problem | Why it matters |
-| ------- | -------------- |
-| **Extreme imbalance** | 99.83% legitimate — accuracy is useless |
-| **Concept drift** | Fraud patterns evolve; yesterday's model fails today |
-| **Adversarial** | Fraudsters adapt to evade detection |
-| **Cost asymmetry** | False positive = angry customer; false negative = fraud loss |
-| **Anonymized features** | V1–V28 are PCA components — no interpretable fields |
+| Problem                 | Why it matters                                               |
+| ----------------------- | ------------------------------------------------------------ |
+| **Extreme imbalance**   | 99.83% legitimate — accuracy is useless                      |
+| **Concept drift**       | Fraud patterns evolve; yesterday's model fails today         |
+| **Adversarial**         | Fraudsters adapt to evade detection                          |
+| **Cost asymmetry**      | False positive = angry customer; false negative = fraud loss |
+| **Anonymized features** | V1–V28 are PCA components — no interpretable fields          |
 
 This is why production fraud systems use **anomaly detection** (learn
 what "normal" looks like) rather than supervised classification.
@@ -184,11 +184,11 @@ println!("fraud error: mean {:.4}", mean(&errors_fraud));
 
 The threshold determines the operating point:
 
-| Threshold | Precision | Recall | Business meaning |
-| --------- | --------- | ------ | ---------------- |
-| Low | low | high | Catch most fraud, but many false alarms → angry customers |
-| Medium | balanced | balanced | Typical operating point |
-| High | high | low | Only flag obvious fraud → miss sophisticated attacks |
+| Threshold | Precision | Recall   | Business meaning                                          |
+| --------- | --------- | -------- | --------------------------------------------------------- |
+| Low       | low       | high     | Catch most fraud, but many false alarms → angry customers |
+| Medium    | balanced  | balanced | Typical operating point                                   |
+| High      | high      | low      | Only flag obvious fraud → miss sophisticated attacks      |
 
 Real fraud teams start with **high precision** (don't annoy customers)
 and lower the threshold as they gather feedback.
@@ -219,15 +219,15 @@ println!("threshold for 80% precision: {:.4}", threshold);
 
 ## Evaluation under extreme imbalance
 
-| Model | ROC-AUC | PR-AUC | Precision@80%recall |
-| ----- | ------- | ------ | ------------------- |
-| Isolation Forest | ~0.90 | ~0.55 | ~0.30 |
-| Autoencoder | ~0.92 | ~0.60 | ~0.35 |
-| Supervised (XGBoost) | ~0.95 | ~0.70 | ~0.45 |
-| Ensemble + rules | ~0.97 | ~0.80 | ~0.60 |
+| Model                | ROC-AUC | PR-AUC | Precision@80%recall |
+| -------------------- | ------- | ------ | ------------------- |
+| Isolation Forest     | ~0.90   | ~0.55  | ~0.30               |
+| Autoencoder          | ~0.92   | ~0.60  | ~0.35               |
+| Supervised (XGBoost) | ~0.95   | ~0.70  | ~0.45               |
+| Ensemble + rules     | ~0.97   | ~0.80  | ~0.60               |
 
-**Key insight**: supervised models outperform anomaly detection *when you
-have labeled fraud data*. The Kaggle dataset has labels — production
+**Key insight**: supervised models outperform anomaly detection _when you
+have labeled fraud data_. The Kaggle dataset has labels — production
 systems collect them over time. Start with anomaly detection for cold
 start, then switch to supervised once you have enough fraud examples.
 

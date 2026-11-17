@@ -81,18 +81,18 @@ mars notebook run analysis.mars  # Runs all cells with their respective language
 
 ### Execution options
 
-|| Option             | Meaning                                                        |
+|| Option | Meaning |
 || ------------------ | -------------------------------------------------------------- |
-|| `--timeout-ms <n>` | Bound compilation and execution for each cell                  |
-|| `--locked`         | Require the embedded Cargo lockfile for dependency-backed runs |
-|| `--offline`        | Prevent Cargo registry and network access                      |
-|| `--deterministic`  | Require a lockfile and apply locked execution policy           |
-|| `--no-save`        | Do not write outputs or counts back to the notebook            |
-|| `--report`         | Print a final execution summary                                |
-|| `--changed-only`   | Skip cells before the first code cell changed vs the git baseline |
-|| `--since <ref>`    | Diff base for `--changed-only` (implies it); default `HEAD`    |
-|| `--watch`         | Re-run the notebook whenever the file changes                 |
-|| `--watch-ms <n>`  | Watch poll interval in milliseconds (default `1000`)          |
+|| `--timeout-ms <n>` | Bound compilation and execution for each cell |
+|| `--locked` | Require the embedded Cargo lockfile for dependency-backed runs |
+|| `--offline` | Prevent Cargo registry and network access |
+|| `--deterministic` | Require a lockfile and apply locked execution policy |
+|| `--no-save` | Do not write outputs or counts back to the notebook |
+|| `--report` | Print a final execution summary |
+|| `--changed-only` | Skip cells before the first code cell changed vs the git baseline |
+|| `--since <ref>` | Diff base for `--changed-only` (implies it); default `HEAD` |
+|| `--watch` | Re-run the notebook whenever the file changes |
+|| `--watch-ms <n>` | Watch poll interval in milliseconds (default `1000`) |
 
 `--deterministic` implies `--locked` and rejects dependency-backed notebooks
 without `metadata.cargo_lock`. `--report` adds a final human-readable summary
@@ -129,6 +129,7 @@ blocks, and converts outputs into portable Markdown:
 Project Mars derives one from the input file name.
 
 Jupyter import maps language kernelspecs to Project Mars language metadata:
+
 - `ir` → `r`
 - `python3` → `python`
 - `rust` → `rust`

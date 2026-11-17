@@ -3,8 +3,7 @@
 import type { FC } from 'react';
 import { Reveal } from '@/components/shared/Reveal';
 
-const sectionShell =
-  'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
+const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 const eyebrow =
   'flex items-center gap-2.5 text-xs-plus font-bold uppercase tracking-caps-xl text-orange-2';
 const heading =
@@ -19,9 +18,9 @@ const workflow = [
 
 const Workflow: FC = () => {
   return (
-    <section className='border-y border-line-2 bg-panel-5' id='workflow'>
-      <div className={`${sectionShell} py-31 pb-34 max-sm-nav:py-22`}>
-        <Reveal className='mx-auto max-w-prose-sm text-center'>
+    <section className='border-line-2 bg-panel-5 border-y' id='workflow'>
+      <div className={`${sectionShell} max-sm-nav:py-22 py-31 pb-34`}>
+        <Reveal className='max-w-prose-sm mx-auto text-center'>
           <div className={`${eyebrow} justify-center`}>One document. Many ways forward.</div>
           <h2 className={heading}>
             A workflow that follows
@@ -29,7 +28,7 @@ const Workflow: FC = () => {
             <em className='text-orange-2 font-serif font-normal'>your curiosity.</em>
           </h2>
         </Reveal>
-        <div className='mt-18 flex items-stretch max-md-nav:grid max-md-nav:grid-cols-2 max-md-nav:gap-5 max-sm-nav:grid-cols-1'>
+        <div className='max-md-nav:grid max-md-nav:grid-cols-2 max-md-nav:gap-5 max-sm-nav:grid-cols-1 mt-18 flex items-stretch'>
           {workflow.map(([number, title, body], index) => (
             <div className='contents' key={title}>
               <Reveal className='flex-1' delay={0.06 + index * 0.08}>
@@ -41,7 +40,7 @@ const Workflow: FC = () => {
                 </div>
               </Reveal>
               {index < workflow.length - 1 && (
-                <div className='mt-0 w-4.5 border-t border-dashed border-line-6 max-md-nav:hidden' />
+                <div className='border-line-6 max-md-nav:hidden mt-0 w-4.5 border-t border-dashed' />
               )}
             </div>
           ))}

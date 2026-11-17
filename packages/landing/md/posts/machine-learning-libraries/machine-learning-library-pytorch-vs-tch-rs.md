@@ -1,10 +1,10 @@
 ---
-title: "PyTorch vs tch-rs: Deep Learning Frameworks Compared"
+title: 'PyTorch vs tch-rs: Deep Learning Frameworks Compared'
 description: "Compare Python's PyTorch with Rust's tch-rs for deep learning with tensor operations and training loops in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 25
-tags: ["machine-learning", "pytorch", "tch-rs", "rust", "python", "deep-learning", "mars"]
+tags: ['machine-learning', 'pytorch', 'tch-rs', 'rust', 'python', 'deep-learning', 'mars']
 ---
 
 # PyTorch vs tch-rs: Deep Learning Compared
@@ -39,14 +39,14 @@ The key difference: tch-rs allows you to use PyTorch's capabilities from Rust, c
 
 ## Comparison
 
-| Feature               | PyTorch (Python)                         | tch-rs (Rust)                               |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Tensor creation       | `torch.tensor([1, 2, 3])`                | `Tensor::of_slice(&[1, 2, 3])`            |
-| Neural network        | `nn.Linear(in, out)`                    | `nn::linear(in, out)`                      |
-| Training loop         | Python for loops                         | Rust iterators                             |
-| Type safety           | Runtime                                  | Compile-time (mostly)                      |
-| Performance           | Python + C++ backend                      | Rust + C++ backend                         |
-| GPU support           | CUDA                                     | CUDA                                       |
+| Feature         | PyTorch (Python)          | tch-rs (Rust)                  |
+| --------------- | ------------------------- | ------------------------------ |
+| Tensor creation | `torch.tensor([1, 2, 3])` | `Tensor::of_slice(&[1, 2, 3])` |
+| Neural network  | `nn.Linear(in, out)`      | `nn::linear(in, out)`          |
+| Training loop   | Python for loops          | Rust iterators                 |
+| Type safety     | Runtime                   | Compile-time (mostly)          |
+| Performance     | Python + C++ backend      | Rust + C++ backend             |
+| GPU support     | CUDA                      | CUDA                           |
 
 ## Example: PyTorch
 

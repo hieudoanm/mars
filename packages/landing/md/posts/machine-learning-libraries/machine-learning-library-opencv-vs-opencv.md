@@ -1,10 +1,10 @@
 ---
-title: "OpenCV vs opencv: Computer Vision Libraries"
+title: 'OpenCV vs opencv: Computer Vision Libraries'
 description: "Compare Python's OpenCV with Rust's opencv for computer vision, image processing, and video I/O in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 33
-tags: ["machine-learning", "opencv", "rust", "python", "computer-vision", "mars"]
+tags: ['machine-learning', 'opencv', 'rust', 'python', 'computer-vision', 'mars']
 ---
 
 # OpenCV vs opencv: Computer Vision Compared
@@ -39,14 +39,14 @@ The key difference: opencv allows you to use OpenCV's proven computer vision cap
 
 ## Comparison
 
-| Feature               | OpenCV (Python)                          | opencv (Rust)                               |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Load image            | `cv2.imread('image.jpg')`               | `imread('image.jpg')?`                     |
-| Edge detection        | `cv2.Canny(image, ...)`                  | `canny(&image, ...)`                       |
-| Feature detection    | `orb.detectAndCompute(...)`              | `ORB::detect_and_compute(...)`             |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + C++ backend                      | Rust + C++ backend                         |
-| Integration          | NumPy, PyTorch, TensorFlow, etc.         | ndarray, image crates, etc.               |
+| Feature           | OpenCV (Python)                  | opencv (Rust)                  |
+| ----------------- | -------------------------------- | ------------------------------ |
+| Load image        | `cv2.imread('image.jpg')`        | `imread('image.jpg')?`         |
+| Edge detection    | `cv2.Canny(image, ...)`          | `canny(&image, ...)`           |
+| Feature detection | `orb.detectAndCompute(...)`      | `ORB::detect_and_compute(...)` |
+| Type safety       | Runtime                          | Compile-time                   |
+| Performance       | Python + C++ backend             | Rust + C++ backend             |
+| Integration       | NumPy, PyTorch, TensorFlow, etc. | ndarray, image crates, etc.    |
 
 ## Example: OpenCV
 

@@ -186,13 +186,13 @@ Known limitations:
 
 Jupyter kernelspecs map to Project Mars languages:
 
-| Jupyter kernelspec | Project Mars language         |
+| Jupyter kernelspec | Project Mars language |
 | ------------------ | --------------------- |
 | `ir`               | `r`                   |
 | `python3`          | `python`              |
 | `rust`             | `rust`                |
 | `ijulia`           | `julia`               |
-| *other*            | Preserved in metadata |
+| _other_            | Preserved in metadata |
 
 ## Optional metadata conventions
 

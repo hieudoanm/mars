@@ -95,6 +95,7 @@ sum(x)  # Displays: 15
 ```
 
 Julia's `_repr_*` methods are supported for rich output:
+
 - `_repr_html_` → HTML output
 - `_repr_png_` → PNG images
 - `_repr_svg_` → SVG graphics
@@ -153,24 +154,24 @@ plot(rand(10))  # Displays as image/png or image/svg+xml
 
 Julia has a rich data science ecosystem that works well in Project Mars notebooks:
 
-| Domain | Julia Packages |
-| --- | --- |
-| Data manipulation | DataFrames.jl, CSV.jl, JSON.jl |
-| Numerical computing | LinearAlgebra, FFTW, Optim |
-| Machine learning | Flux.jl, MLJ.jl, ScikitLearn.jl |
-| Plotting | Plots.jl, Gadfly.jl, Makie.jl |
-| Statistics | Statistics.jl, Distributions.jl |
-| Scientific computing | SciML.jl ecosystem |
+| Domain               | Julia Packages                  |
+| -------------------- | ------------------------------- |
+| Data manipulation    | DataFrames.jl, CSV.jl, JSON.jl  |
+| Numerical computing  | LinearAlgebra, FFTW, Optim      |
+| Machine learning     | Flux.jl, MLJ.jl, ScikitLearn.jl |
+| Plotting             | Plots.jl, Gadfly.jl, Makie.jl   |
+| Statistics           | Statistics.jl, Distributions.jl |
+| Scientific computing | SciML.jl ecosystem              |
 
 ## Comparison with Python/R
 
-| Feature | Julia | Python | R |
-| --- | --- | --- | --- |
-| Execution model | Persistent driver | Persistent driver | Persistent driver |
-| Plot capture | MIME bundles | matplotlib | graphics device |
-| Interactive input | `readline()` | `input()` | Not supported |
-| Dependency pinning | Not supported | `%pip` | Not supported |
-| Timeout behavior | Kills driver | Kills interpreter | Kills interpreter |
+| Feature            | Julia             | Python            | R                 |
+| ------------------ | ----------------- | ----------------- | ----------------- |
+| Execution model    | Persistent driver | Persistent driver | Persistent driver |
+| Plot capture       | MIME bundles      | matplotlib        | graphics device   |
+| Interactive input  | `readline()`      | `input()`         | Not supported     |
+| Dependency pinning | Not supported     | `%pip`            | Not supported     |
+| Timeout behavior   | Kills driver      | Kills interpreter | Kills interpreter |
 
 ## Troubleshooting
 

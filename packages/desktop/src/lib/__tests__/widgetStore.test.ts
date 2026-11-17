@@ -1,11 +1,9 @@
-import {
-  applyCommMessages,
-  getWidget,
-  subscribeWidgets,
-} from '../widgetStore';
+import { applyCommMessages, getWidget, subscribeWidgets } from '../widgetStore';
 import type { CommMessage } from '../../types/types';
 
-const comm = (partial: Partial<CommMessage> & Pick<CommMessage, 'comm_id' | 'comm_type'>): CommMessage => ({
+const comm = (
+  partial: Partial<CommMessage> & Pick<CommMessage, 'comm_id' | 'comm_type'>,
+): CommMessage => ({
   data: {},
   ...partial,
 });

@@ -67,7 +67,9 @@ describe('VS Code commands', () => {
     expect(output.appendLine).toHaveBeenCalledWith('$ mars notebook run /work/book.mars');
     expect(output.append).toHaveBeenCalledWith('complete');
     expect(output.append).toHaveBeenCalledWith('warning');
-    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith('Project Mars notebook completed.');
+    expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
+      'Project Mars notebook completed.',
+    );
   });
 
   it('exports HTML or Markdown and handles CLI failures', async () => {

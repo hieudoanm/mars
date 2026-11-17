@@ -43,7 +43,9 @@ describe('OutputView', () => {
       'data:image/png;base64,aGVsbG8=',
     );
     rerender(
-      <OutputView output={{ type: 'table', columns: ['Name', 'Value'], rows: [['Project Mars', '42']] }} />,
+      <OutputView
+        output={{ type: 'table', columns: ['Name', 'Value'], rows: [['Project Mars', '42']] }}
+      />,
     );
     expect(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: '42' })).toBeInTheDocument();

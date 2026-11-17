@@ -37,7 +37,10 @@ const LabColumnMapping: FC<LabColumnMappingProps> = ({
   const rlSelect = (value: string, onChange: (name: string) => void, label: string) => (
     <label className='flex items-center gap-2 text-sm text-neutral-400'>
       {label}
-      <select className={`${selectClass} max-w-56`} value={value} onChange={(e) => onChange(e.target.value)}>
+      <select
+        className={`${selectClass} max-w-56`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}>
         <option value=''>Select…</option>
         {columnNames.map((n) => (
           <option key={n} value={n}>

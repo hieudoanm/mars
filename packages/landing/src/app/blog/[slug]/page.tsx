@@ -21,7 +21,9 @@ export const generateMetadata = async ({
   if (!post) return {};
 
   const title = `${post.title} | ${siteName} Blog`;
-  const description = post.description || `Read ${post.title} on the ${siteName} blog. Explore insights on Rust, notebooks, data science, and machine learning.`;
+  const description =
+    post.description ||
+    `Read ${post.title} on the ${siteName} blog. Explore insights on Rust, notebooks, data science, and machine learning.`;
   const url = `${siteUrl}/blog/${post.slug}`;
   const imageUrl = `${siteUrl}/og-image.png`;
 

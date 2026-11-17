@@ -1,10 +1,10 @@
 ---
-title: "evcxr_jupyter: Rust Kernel for Interactive Computing"
-description: "Explore evcxr_jupyter, the Rust kernel for Jupyter, and how it enables interactive Rust development in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'evcxr_jupyter: Rust Kernel for Interactive Computing'
+description: 'Explore evcxr_jupyter, the Rust kernel for Jupyter, and how it enables interactive Rust development in notebook environments.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 46
-tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
+tags: ['kernels', 'evcxr', 'rust', 'jupyter', 'notebook', 'mars']
 ---
 
 # Why evcxr_jupyter? Rust Kernel for Jupyter
@@ -14,18 +14,21 @@ tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
 ## What evcxr_jupyter Offers
 
 ### Interactive Rust Execution
+
 - **Live Rust code**: Write and execute Rust code interactively
 - **Persistent state**: Variables persist across cells
 - **Cargo integration**: Manage dependencies with Cargo.toml
 - **REPL-like experience**: Similar to Rust's REPL but in notebook format
 
 ### Jupyter Integration
+
 - **Standard Jupyter protocol**: Works with JupyterLab, Jupyter Notebook, VS Code
 - **Rich outputs**: Display text, images, HTML, and other MIME types
 - **Code completion**: Integration with rust-analyzer for completions
 - **Debugging**: Support for debugging Rust code
 
 ### Development Features
+
 - **Syntax highlighting**: Rust syntax highlighting in notebooks
 - **Error messages**: Detailed Rust compiler error messages
 - **Documentation**: Access to Rust documentation and examples
@@ -33,16 +36,16 @@ tags: ["kernels", "evcxr", "rust", "jupyter", "notebook", "mars"]
 
 ## evcxr_jupyter vs Project Mars Rust Runtime
 
-| Feature | evcxr_jupyter | Project Mars Rust Runtime |
-|---------|---------------|-------------------|
-| Platform | Jupyter kernel | Native Rust runtime |
-| Execution model | REPL-based | Replay-based compilation |
-| Performance | Good | Excellent (native compilation) |
-| Dependencies | Cargo.toml | Cargo.toml + workspace |
-| Multi-language | Rust only | Rust, Python, R, Julia, C++ |
-| Document format | .ipynb | .mars (native format) |
-| Desktop app | No | Yes (Tauri-based) |
-| CLI | Limited | Full CLI with automation |
+| Feature         | evcxr_jupyter  | Project Mars Rust Runtime      |
+| --------------- | -------------- | ------------------------------ |
+| Platform        | Jupyter kernel | Native Rust runtime            |
+| Execution model | REPL-based     | Replay-based compilation       |
+| Performance     | Good           | Excellent (native compilation) |
+| Dependencies    | Cargo.toml     | Cargo.toml + workspace         |
+| Multi-language  | Rust only      | Rust, Python, R, Julia, C++    |
+| Document format | .ipynb         | .mars (native format)          |
+| Desktop app     | No             | Yes (Tauri-based)              |
+| CLI             | Limited        | Full CLI with automation       |
 
 ## When to Use evcxr_jupyter
 

@@ -102,7 +102,7 @@ const readPost = (filePath: string): Post => {
 const getPostFiles = (dir: string): string[] => {
   const files: string[] = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
@@ -111,7 +111,7 @@ const getPostFiles = (dir: string): string[] => {
       files.push(fullPath);
     }
   }
-  
+
   return files;
 };
 

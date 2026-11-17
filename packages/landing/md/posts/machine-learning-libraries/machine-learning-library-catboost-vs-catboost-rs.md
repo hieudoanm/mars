@@ -1,10 +1,10 @@
 ---
-title: "CatBoost vs catboost-rs: Categorical Gradient Boosting"
+title: 'CatBoost vs catboost-rs: Categorical Gradient Boosting'
 description: "Compare Python's CatBoost with Rust's catboost-rs for gradient boosting with strong categorical handling in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 30
-tags: ["machine-learning", "catboost", "rust", "python", "gradient-boosting", "mars"]
+tags: ['machine-learning', 'catboost', 'rust', 'python', 'gradient-boosting', 'mars']
 ---
 
 # CatBoost vs catboost-rs: Categorical Gradient Boosting Compared
@@ -39,14 +39,14 @@ The key difference: catboost-rs allows you to use CatBoost's categorical handlin
 
 ## Comparison
 
-| Feature               | CatBoost (Python)                        | catboost-rs (Rust)                         |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Train model           | `model.fit(X, y, cat_features)`        | `train(pool, params)`                      |
-| Predict               | `model.predict(X)`                       | `predict(&model, &pool)`                  |
-| Categorical features  | Automatic detection                     | Specified via pool                       |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + C++ backend                      | Rust + C++ backend                         |
-| GPU support           | CUDA                                     | CUDA                                       |
+| Feature              | CatBoost (Python)               | catboost-rs (Rust)       |
+| -------------------- | ------------------------------- | ------------------------ |
+| Train model          | `model.fit(X, y, cat_features)` | `train(pool, params)`    |
+| Predict              | `model.predict(X)`              | `predict(&model, &pool)` |
+| Categorical features | Automatic detection             | Specified via pool       |
+| Type safety          | Runtime                         | Compile-time             |
+| Performance          | Python + C++ backend            | Rust + C++ backend       |
+| GPU support          | CUDA                            | CUDA                     |
 
 ## Example: CatBoost
 

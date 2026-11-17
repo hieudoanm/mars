@@ -1,10 +1,10 @@
 ---
-title: "Matplotlib vs plotters: Python vs Rust Plotting Libraries"
+title: 'Matplotlib vs plotters: Python vs Rust Plotting Libraries'
 description: "Compare Python's Matplotlib with Rust's plotters for 2D plotting and chart rendering in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 17
-tags: ["data-science", "matplotlib", "plotters", "rust", "python", "mars"]
+tags: ['data-science', 'matplotlib', 'plotters', 'rust', 'python', 'mars']
 ---
 
 # Matplotlib vs plotters: 2D Plotting Compared
@@ -39,14 +39,14 @@ The key difference: plotters compiles chart rendering to native code and outputs
 
 ## Comparison
 
-| Feature               | Matplotlib (Python)                      | plotters (Rust)                             |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Line plot             | `plt.plot(x, y)`                        | `Chart::new((100, 50)).draw(&line)`       |
-| Styling               | `plt.style.use('seaborn')`              | Theme-based styling                         |
-| Backends              | Agg, SVG, PDF, interactive              | Bitmap, SVG, PDF                           |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | C-backed                                 | Native compilation                         |
-| Integration          | NumPy, pandas, Jupyter, etc.            | ndarray, polars, etc.                     |
+| Feature     | Matplotlib (Python)          | plotters (Rust)                     |
+| ----------- | ---------------------------- | ----------------------------------- |
+| Line plot   | `plt.plot(x, y)`             | `Chart::new((100, 50)).draw(&line)` |
+| Styling     | `plt.style.use('seaborn')`   | Theme-based styling                 |
+| Backends    | Agg, SVG, PDF, interactive   | Bitmap, SVG, PDF                    |
+| Type safety | Runtime                      | Compile-time                        |
+| Performance | C-backed                     | Native compilation                  |
+| Integration | NumPy, pandas, Jupyter, etc. | ndarray, polars, etc.               |
 
 ## Example: Matplotlib
 

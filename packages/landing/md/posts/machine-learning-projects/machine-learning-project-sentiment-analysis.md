@@ -1,10 +1,10 @@
 ---
-title: "Sentiment Analysis: NLP Classification Project"
-description: "Classify movie review sentiment as positive or negative using TF-IDF features and logistic regression in Rust."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Sentiment Analysis: NLP Classification Project'
+description: 'Classify movie review sentiment as positive or negative using TF-IDF features and logistic regression in Rust.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 42
-tags: ["machine-learning", "rust", "nlp", "sentiment-analysis", "text-classification"]
+tags: ['machine-learning', 'rust', 'nlp', 'sentiment-analysis', 'text-classification']
 ---
 
 # Machine Learning Project: Sentiment Analysis
@@ -27,7 +27,7 @@ In this project you will:
 
 ## Why sentiment analysis is different from spam
 
-Spam detection looks for *known bad patterns* — specific words, phrases,
+Spam detection looks for _known bad patterns_ — specific words, phrases,
 urgency markers. Sentiment is subtler:
 
 - **Negation**: "not bad" is positive, "not good" is negative
@@ -36,7 +36,7 @@ urgency markers. Sentiment is subtler:
 - **Domain words**: "unputdownable" is positive for books, meaningless
   for products
 
-Bag-of-words captures *which* words appear but not *how* they combine —
+Bag-of-words captures _which_ words appear but not _how_ they combine —
 that's the limitation transformers solve.
 
 ```rust
@@ -115,13 +115,13 @@ let model = LogisticRegression::default()
 
 ## Evaluation
 
-| Model | Accuracy | Notes |
-| ----- | -------- | ----- |
-| Majority class | ~50% | useless baseline |
-| Logistic regression (TF-IDF) | ~88% | fast, interpretable |
-| Linear SVM (TF-IDF) | ~89% | slightly better, less interpretable |
-| BERT-base fine-tuned | ~93% | state-of-the-art for this dataset |
-| DistilBERT | ~92% | 40% smaller, ~97% of BERT's accuracy |
+| Model                        | Accuracy | Notes                                |
+| ---------------------------- | -------- | ------------------------------------ |
+| Majority class               | ~50%     | useless baseline                     |
+| Logistic regression (TF-IDF) | ~88%     | fast, interpretable                  |
+| Linear SVM (TF-IDF)          | ~89%     | slightly better, less interpretable  |
+| BERT-base fine-tuned         | ~93%     | state-of-the-art for this dataset    |
+| DistilBERT                   | ~92%     | 40% smaller, ~97% of BERT's accuracy |
 
 The 5-point gap between classical and transformer models is real but
 modest — for many production use-cases, logistic regression on TF-IDF
@@ -148,12 +148,14 @@ for (i, c) in coef_sorted.iter().rev().take(10) {
 ## When to use transformers
 
 **Use classical ML (TF-IDF + logistic) when:**
+
 - Dataset is < 100k examples
 - Latency/cost matters (no GPU, edge deployment)
 - You need interpretability (which words drove the decision)
 - Text is short and formulaic (reviews, support tickets)
 
 **Use transformers (BERT, DistilBERT) when:**
+
 - Dataset is large (> 500k examples)
 - Text is long and complex (documents, conversations)
 - Nuance matters (sarcasm, context, domain-specific language)
@@ -183,7 +185,7 @@ give up interpretability and pay inference costs per request.
    win that bag-of-words otherwise misses.
 3. **Transformers buy ~5% accuracy** at the cost of GPU inference —
    worth it for high-stakes or high-volume applications.
-4. **Interpretability matters in production** — knowing *why* a review
+4. **Interpretability matters in production** — knowing _why_ a review
    was flagged helps debug and build trust.
 
 **Next project:** credit card fraud detection — extreme class imbalance

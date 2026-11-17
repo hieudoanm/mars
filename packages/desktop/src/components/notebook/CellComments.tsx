@@ -30,7 +30,7 @@ export const CellComments = ({ comments, onChange }: CellCommentsProps) => {
       className='mt-2 rounded-md border border-neutral-800 bg-neutral-950/60'
       open={open}
       onToggle={(event) => setOpen((event.target as HTMLDetailsElement).open)}>
-      <summary className='cursor-pointer select-none px-3 py-1.5 text-xs text-neutral-400 hover:text-neutral-200'>
+      <summary className='cursor-pointer px-3 py-1.5 text-xs text-neutral-400 select-none hover:text-neutral-200'>
         Comments{comments.length > 0 ? ` (${comments.length})` : ''}
       </summary>
       <div className='border-t border-neutral-800 px-3 py-2'>

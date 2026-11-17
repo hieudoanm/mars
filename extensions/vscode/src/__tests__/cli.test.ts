@@ -4,7 +4,9 @@ describe('CLI discovery helpers', () => {
   it('runs a platform-aware command lookup', async () => {
     const runCommand = vi.fn().mockResolvedValue(undefined);
     await expect(commandExists('mars', runCommand)).resolves.toBe(true);
-    expect(runCommand).toHaveBeenCalledWith(process.platform === 'win32' ? 'where' : 'which', ['mars']);
+    expect(runCommand).toHaveBeenCalledWith(process.platform === 'win32' ? 'where' : 'which', [
+      'mars',
+    ]);
   });
 
   it('returns false when the command cannot be resolved', async () => {

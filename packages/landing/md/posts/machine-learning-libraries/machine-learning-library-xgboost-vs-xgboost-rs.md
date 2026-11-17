@@ -1,10 +1,10 @@
 ---
-title: "XGBoost vs xgboost-rs: Gradient Boosting Libraries"
+title: 'XGBoost vs xgboost-rs: Gradient Boosting Libraries'
 description: "Compare Python's XGBoost with Rust's xgboost-rs for gradient-boosted decision trees in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 28
-tags: ["machine-learning", "xgboost", "rust", "python", "gradient-boosting", "mars"]
+tags: ['machine-learning', 'xgboost', 'rust', 'python', 'gradient-boosting', 'mars']
 ---
 
 # XGBoost vs xgboost-rs: Gradient Boosting Compared
@@ -39,14 +39,14 @@ The key difference: xgboost-rs allows you to use XGBoost's proven gradient boost
 
 ## Comparison
 
-| Feature               | XGBoost (Python)                         | xgboost-rs (Rust)                          |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Train model           | `model.fit(X, y)`                       | `booster.train(&dtrain)`                  |
-| Predict               | `model.predict(X)`                      | `booster.predict(&dmatrix)`               |
-| Cross-validation      | `xgb.cv(dtrain, params)`                | Native support                            |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + C++ backend                      | Rust + C++ backend                         |
-| GPU support           | CUDA                                     | CUDA                                       |
+| Feature          | XGBoost (Python)         | xgboost-rs (Rust)           |
+| ---------------- | ------------------------ | --------------------------- |
+| Train model      | `model.fit(X, y)`        | `booster.train(&dtrain)`    |
+| Predict          | `model.predict(X)`       | `booster.predict(&dmatrix)` |
+| Cross-validation | `xgb.cv(dtrain, params)` | Native support              |
+| Type safety      | Runtime                  | Compile-time                |
+| Performance      | Python + C++ backend     | Rust + C++ backend          |
+| GPU support      | CUDA                     | CUDA                        |
 
 ## Example: XGBoost
 

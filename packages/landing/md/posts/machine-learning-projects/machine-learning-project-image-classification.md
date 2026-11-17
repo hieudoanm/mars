@@ -1,10 +1,11 @@
 ---
-title: "Image Classification: Transfer Learning Project"
-description: "Classify cats vs dogs using a pretrained ResNet via transfer learning with tch-rs in Rust — the modern approach to vision ML."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Image Classification: Transfer Learning Project'
+description: 'Classify cats vs dogs using a pretrained ResNet via transfer learning with tch-rs in Rust — the modern approach to vision ML.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 44
-tags: ["machine-learning", "rust", "deep-learning", "computer-vision", "transfer-learning", "pytorch"]
+tags:
+  ['machine-learning', 'rust', 'deep-learning', 'computer-vision', 'transfer-learning', 'pytorch']
 ---
 
 # Machine Learning Project: Image Classification with Transfer Learning
@@ -37,7 +38,7 @@ layers:
 - Layer 3: object parts (ears, eyes, fur patterns)
 - Layer 4+: object concepts (animal faces, bodies)
 
-These features transfer to *any* vision task. You only need to retrain
+These features transfer to _any_ vision task. You only need to retrain
 the final classification layer — which has just 2 outputs (cat/dog)
 instead of 1000.
 
@@ -209,12 +210,12 @@ for epoch in 1..=epochs {
 
 ## Evaluation
 
-| Approach | Accuracy | Training time | Data needed |
-| -------- | -------- | ------------- | ----------- |
-| From scratch CNN | ~85% | hours (GPU) | 100k+ images |
-| Transfer learning (head only) | ~95% | minutes | 1k+ images |
-| Fine-tuned ResNet | ~97% | ~30 min | 10k+ images |
-| Pretrained + linear probe | ~96% | seconds | 100+ images |
+| Approach                      | Accuracy | Training time | Data needed  |
+| ----------------------------- | -------- | ------------- | ------------ |
+| From scratch CNN              | ~85%     | hours (GPU)   | 100k+ images |
+| Transfer learning (head only) | ~95%     | minutes       | 1k+ images   |
+| Fine-tuned ResNet             | ~97%     | ~30 min       | 10k+ images  |
+| Pretrained + linear probe     | ~96%     | seconds       | 100+ images  |
 
 The last row is the modern extreme: **frozen features + logistic
 regression on top** — sometimes called "linear probing" — matches

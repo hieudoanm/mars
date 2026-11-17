@@ -1,10 +1,10 @@
 ---
-title: "10 Machine Learning Projects Every Beginner Should Know"
-description: "A curated list of 10 essential machine learning projects that cover fundamental concepts and build practical skills."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: '10 Machine Learning Projects Every Beginner Should Know'
+description: 'A curated list of 10 essential machine learning projects that cover fundamental concepts and build practical skills.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 34
-tags: ["machine-learning", "projects", "beginner", "tutorial", "mars"]
+tags: ['machine-learning', 'projects', 'beginner', 'tutorial', 'mars']
 ---
 
 # 10 Machine Learning Projects Every Beginner Should Know
@@ -111,12 +111,14 @@ See [Demand Forecasting](/blog/machine-learning-project-demand-forecasting) for 
 These projects are organized by difficulty level:
 
 **Beginner (Projects 1-3, 5):**
+
 - Iris Classification
 - MNIST Digit Recognition
 - Spam Classifier
 - House Price Prediction
 
 **Intermediate (Projects 4, 6-9):**
+
 - Sentiment Analysis
 - Customer Churn Prediction
 - Credit Card Fraud Detection
@@ -124,6 +126,7 @@ These projects are organized by difficulty level:
 - Image Classification
 
 **Advanced (Project 10):**
+
 - Demand Forecasting
 
 ## How to Use These Projects

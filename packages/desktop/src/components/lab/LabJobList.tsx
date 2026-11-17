@@ -44,7 +44,9 @@ const LabJobList: FC<LabJobListProps> = ({ jobs, onSelect, compareIds, onToggleC
               type='button'
               onClick={() => onSelect(job.id)}
               className={`w-full rounded-lg border px-3 py-2 text-left transition-colors hover:border-neutral-700 hover:bg-neutral-900 ${
-                selected ? 'border-orange-700 bg-orange-950/30' : 'border-neutral-800 bg-neutral-900/60'
+                selected
+                  ? 'border-orange-700 bg-orange-950/30'
+                  : 'border-neutral-800 bg-neutral-900/60'
               }`}>
               <div className='flex items-center gap-2'>
                 <span className='truncate text-sm text-neutral-200'>
@@ -59,7 +61,7 @@ const LabJobList: FC<LabJobListProps> = ({ jobs, onSelect, compareIds, onToggleC
                 {new Date(job.createdAt).toLocaleString()}
               </p>
               {job.errorMessage && (
-                <p className='mt-1 truncate text-xs text-error'>{job.errorMessage}</p>
+                <p className='text-error mt-1 truncate text-xs'>{job.errorMessage}</p>
               )}
             </button>
           </li>

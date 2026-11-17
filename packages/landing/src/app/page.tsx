@@ -17,10 +17,9 @@ const organizationSchema = {
   name: 'Project Mars',
   url: 'https://hieudoanm.github.io/mars',
   logo: 'https://hieudoanm.github.io/mars/icons/mars-logo.png',
-  description: 'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
-  sameAs: [
-    'https://github.com/hieudoanm/mars',
-  ],
+  description:
+    'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
+  sameAs: ['https://github.com/hieudoanm/mars'],
 };
 
 const websiteSchema = {
@@ -28,7 +27,8 @@ const websiteSchema = {
   '@type': 'WebSite',
   name: 'Project Mars',
   url: 'https://hieudoanm.github.io/mars',
-  description: 'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
+  description:
+    'Project Mars is a Rust-powered interactive notebook platform for exploring ideas, executing code, and discovering possibilities.',
   publisher: {
     '@type': 'Organization',
     name: 'Project Mars',
@@ -42,7 +42,8 @@ const softwareSchema = {
   name: 'Project Mars',
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'macOS, Windows, Linux',
-  description: 'A Rust-first interactive notebook platform with multi-language support, rich output rendering, and CLI automation.',
+  description:
+    'A Rust-first interactive notebook platform with multi-language support, rich output rendering, and CLI automation.',
   url: 'https://hieudoanm.github.io/mars',
   downloadUrl: 'https://hieudoanm.github.io/mars/downloads/',
   offers: {
@@ -142,8 +143,8 @@ const Page: FC & NextPage = () => {
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className='animate-drift pointer-events-none absolute top-20 right-1/12 h-130 w-130 rounded-full bg-hero-glow-1 blur-xs' />
-      <div className='animate-drift-reverse pointer-events-none absolute top-150 -left-62 h-138 w-138 rounded-full bg-hero-glow-2 blur-xs' />
+      <div className='animate-drift bg-hero-glow-1 pointer-events-none absolute top-20 right-1/12 h-130 w-130 rounded-full blur-xs' />
+      <div className='animate-drift-reverse bg-hero-glow-2 pointer-events-none absolute top-150 -left-62 h-138 w-138 rounded-full blur-xs' />
       <Navbar />
       <main>
         <Hero />

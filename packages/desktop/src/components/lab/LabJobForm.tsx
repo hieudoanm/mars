@@ -219,7 +219,7 @@ const LabJobForm: FC<LabJobFormProps> = ({
             </label>
           </section>
 
-          {formError && <p className='text-sm text-error'>{formError}</p>}
+          {formError && <p className='text-error text-sm'>{formError}</p>}
           <Button
             variant='primary'
             loading={training}

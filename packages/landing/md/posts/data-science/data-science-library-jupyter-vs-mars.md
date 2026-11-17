@@ -1,10 +1,10 @@
 ---
-title: "Jupyter vs Project Mars: Notebook Platforms Compared"
+title: 'Jupyter vs Project Mars: Notebook Platforms Compared'
 description: "Compare Python's Jupyter with Project Mars for interactive notebook environments, multi-language support, and data science workflows."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 20
-tags: ["data-science", "jupyter", "mars", "rust", "python", "notebook", "multi-language"]
+tags: ['data-science', 'jupyter', 'mars', 'rust', 'python', 'notebook', 'multi-language']
 ---
 
 # Jupyter vs Project Mars: Interactive Notebooks Compared
@@ -40,18 +40,18 @@ The key difference: Project Mars is designed as an independent notebook platform
 
 ## Comparison
 
-| Feature               | Jupyter (Python)                          | Project Mars                                        |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Code execution       | Python kernel                             | Rust, Python, R, Julia, C++ kernels        |
-| Cell structure        | Code, Markdown, raw                      | Code, Markdown, raw                         |
-| Rich outputs          | HTML, images, LaTeX, widgets             | HTML, images, LaTeX, tables, charts         |
-| Variable persistence  | Across cells (Python)                    | Across cells (per language)                |
-| Document format       | `.ipynb` (JSON)                          | `.mars` (JSON, versioned)                  |
-| Type safety           | Runtime                                  | Compile-time (Rust)                         |
-| Dependencies          | pip, conda                                | Cargo (Rust), pip (Python), etc.           |
-| Multi-language        | Via multiple kernels                    | Native multi-language support             |
-| Desktop editor        | Web-based (JupyterLab)                   | Native Tauri application with LSP          |
-| CLI                   | Limited                                  | Full CLI for automation                    |
+| Feature              | Jupyter (Python)             | Project Mars                        |
+| -------------------- | ---------------------------- | ----------------------------------- |
+| Code execution       | Python kernel                | Rust, Python, R, Julia, C++ kernels |
+| Cell structure       | Code, Markdown, raw          | Code, Markdown, raw                 |
+| Rich outputs         | HTML, images, LaTeX, widgets | HTML, images, LaTeX, tables, charts |
+| Variable persistence | Across cells (Python)        | Across cells (per language)         |
+| Document format      | `.ipynb` (JSON)              | `.mars` (JSON, versioned)           |
+| Type safety          | Runtime                      | Compile-time (Rust)                 |
+| Dependencies         | pip, conda                   | Cargo (Rust), pip (Python), etc.    |
+| Multi-language       | Via multiple kernels         | Native multi-language support       |
+| Desktop editor       | Web-based (JupyterLab)       | Native Tauri application with LSP   |
+| CLI                  | Limited                      | Full CLI for automation             |
 
 ## Example: Jupyter
 

@@ -1,10 +1,10 @@
 ---
-title: "Plotly vs plotly: Interactive Visualization Libraries"
+title: 'Plotly vs plotly: Interactive Visualization Libraries'
 description: "Compare Python's Plotly with Rust's plotly for interactive, publication-quality charts in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 19
-tags: ["data-science", "plotly", "rust", "python", "interactive", "mars"]
+tags: ['data-science', 'plotly', 'rust', 'python', 'interactive', 'mars']
 ---
 
 # Plotly vs plotly: Interactive Charts Compared
@@ -39,14 +39,14 @@ The key difference: plotly generates interactive charts from Rust code and rende
 
 ## Comparison
 
-| Feature               | Plotly (Python)                          | plotly (Rust)                               |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Line plot             | `fig = px.line(df, x='x', y='y')`       | `Plot::new().line(x, y)`                   |
-| Interactivity         | Zoom, pan, hover tooltips                | Zoom, pan, hover tooltips                   |
-| Rendering             | HTML/JavaScript                          | HTML/JavaScript                            |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + JavaScript                        | Rust + JavaScript                          |
-| Integration          | pandas, NumPy, Dash, etc.                | ndarray, polars, etc.                      |
+| Feature       | Plotly (Python)                   | plotly (Rust)             |
+| ------------- | --------------------------------- | ------------------------- |
+| Line plot     | `fig = px.line(df, x='x', y='y')` | `Plot::new().line(x, y)`  |
+| Interactivity | Zoom, pan, hover tooltips         | Zoom, pan, hover tooltips |
+| Rendering     | HTML/JavaScript                   | HTML/JavaScript           |
+| Type safety   | Runtime                           | Compile-time              |
+| Performance   | Python + JavaScript               | Rust + JavaScript         |
+| Integration   | pandas, NumPy, Dash, etc.         | ndarray, polars, etc.     |
 
 ## Example: Plotly
 

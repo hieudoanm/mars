@@ -20,10 +20,7 @@ const flatten = (value: unknown, prefix: string, out: Map<string, string>) => {
     out.set(prefix, `[${value.length} items]`);
     return;
   }
-  out.set(
-    prefix,
-    typeof value === 'number' ? value.toPrecision(6) : String(value ?? '—'),
-  );
+  out.set(prefix, typeof value === 'number' ? value.toPrecision(6) : String(value ?? '—'));
 };
 
 const LabCompare: FC<LabCompareProps> = ({ details }) => {

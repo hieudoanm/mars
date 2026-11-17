@@ -60,11 +60,7 @@ const applyComm = (message: CommMessage, session: string, language: string) => {
   if (changed) notify();
 };
 
-export const applyCommMessages = (
-  comms: CommMessage[],
-  session: string,
-  language: string,
-) => {
+export const applyCommMessages = (comms: CommMessage[], session: string, language: string) => {
   for (const comm of comms) applyComm(comm, session, language);
 };
 
@@ -97,12 +93,6 @@ export const sendWidgetComm = async (
   ensureWidgetBridge();
   const entry = widgets.get(commId);
   if (!entry) return;
-  const comms = await sendKernelComm(
-    entry.session,
-    commId,
-    commType,
-    data,
-    entry.language,
-  );
+  const comms = await sendKernelComm(entry.session, commId, commType, data, entry.language);
   applyCommMessages(comms, entry.session, entry.language);
 };

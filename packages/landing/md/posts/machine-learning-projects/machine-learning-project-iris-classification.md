@@ -1,17 +1,17 @@
 ---
-title: "Iris Flower Classification: Your First ML Project"
-description: "Classify iris flowers into three species from sepal and petal measurements using k-nearest neighbors and logistic regression in Rust."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Iris Flower Classification: Your First ML Project'
+description: 'Classify iris flowers into three species from sepal and petal measurements using k-nearest neighbors and logistic regression in Rust.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 35
-tags: ["machine-learning", "rust", "classification", "scikit-learn", "linfa"]
+tags: ['machine-learning', 'rust', 'classification', 'scikit-learn', 'linfa']
 ---
 
 # Machine Learning Project: Iris Flower Classification
 
 The **Iris dataset** is the "hello world" of supervised learning: 150 flowers
 measured across four features — sepal length/width and petal length/width —
-labelled into three species (*setosa*, *versicolor*, *virginica*).
+labelled into three species (_setosa_, _versicolor_, _virginica_).
 
 In this project you will:
 
@@ -26,15 +26,15 @@ In this project you will:
 
 ## The dataset
 
-| Feature | Type | Typical range |
-| ------- | ---- | ------------- |
-| sepal_length | cm | 4.3 – 7.9 |
-| sepal_width  | cm | 2.0 – 4.4 |
-| petal_length | cm | 1.0 – 6.9 |
-| petal_width  | cm | 0.1 – 2.5 |
+| Feature      | Type | Typical range |
+| ------------ | ---- | ------------- |
+| sepal_length | cm   | 4.3 – 7.9     |
+| sepal_width  | cm   | 2.0 – 4.4     |
+| petal_length | cm   | 1.0 – 6.9     |
+| petal_width  | cm   | 0.1 – 2.5     |
 
-The three classes are linearly separable only partially — *setosa* is easy,
-but *versicolor* and *virginica* overlap, which is what makes this a useful
+The three classes are linearly separable only partially — _setosa_ is easy,
+but _versicolor_ and _virginica_ overlap, which is what makes this a useful
 first benchmark.
 
 ```rust
@@ -103,7 +103,7 @@ fn standardize(train: &Array2<f64>, test: &Array2<f64>)
 ## Model 1 — k-nearest neighbors
 
 k-NN is the simplest possible classifier: a point takes the majority label of
-its *k* closest training samples. No training step, no assumptions — which is
+its _k_ closest training samples. No training step, no assumptions — which is
 why it is the perfect baseline.
 
 ```rust
@@ -153,7 +153,7 @@ println!("first sample probabilities: {:?}", probabilities.row(0));
 
 ## Confusion matrix
 
-Accuracy hides *which* mistakes the model makes. A confusion matrix counts,
+Accuracy hides _which_ mistakes the model makes. A confusion matrix counts,
 for each true class, how many predictions landed in each predicted class.
 For iris, the interesting cell is `versicolor → virginica`.
 
@@ -175,10 +175,10 @@ for row in &confusion {
 
 Typical outcomes on a 75/25 split:
 
-| Model | Accuracy | Notes |
-| ----- | -------- | ----- |
-| k-NN (k=5) | ~0.95 | No training; sensitive to feature scaling |
-| Logistic regression | ~0.97 | Probabilistic; versicolor/virginica overlap remains |
+| Model               | Accuracy | Notes                                               |
+| ------------------- | -------- | --------------------------------------------------- |
+| k-NN (k=5)          | ~0.95    | No training; sensitive to feature scaling           |
+| Logistic regression | ~0.97    | Probabilistic; versicolor/virginica overlap remains |
 
 Both models struggle on the same pair of classes — a reminder that ~97% is
 close to the ceiling for this dataset, not a sign of a weak model.

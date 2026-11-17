@@ -1,10 +1,10 @@
 ---
-title: "JAX vs dfdx: Composable ML and Autodiff"
+title: 'JAX vs dfdx: Composable ML and Autodiff'
 description: "Compare Python's JAX with Rust's dfdx for composable array/tensor transformations and autodiff-style workflows in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 31
-tags: ["machine-learning", "jax", "dfdx", "rust", "python", "autodiff", "mars"]
+tags: ['machine-learning', 'jax', 'dfdx', 'rust', 'python', 'autodiff', 'mars']
 ---
 
 # JAX vs dfdx: Composable ML Compared
@@ -39,14 +39,14 @@ The key difference: dfdx provides a Rust-native approach to differentiable progr
 
 ## Comparison
 
-| Feature               | JAX (Python)                             | dfdx (Rust)                                  |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Tensor creation       | `jnp.array([1, 2, 3])`                  | `Tensor::from_array([1, 2, 3])`            |
-| Gradient computation  | `grad(f)(x)`                            | `backward(&f, &x)`                        |
-| Vectorization         | `vmap(f)`                               | Manual implementation                       |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | JIT via XLA                              | Native compilation                         |
-| Integration          | NumPy, flax, optax, etc.                | ndarray, burn, etc.                       |
+| Feature              | JAX (Python)             | dfdx (Rust)                     |
+| -------------------- | ------------------------ | ------------------------------- |
+| Tensor creation      | `jnp.array([1, 2, 3])`   | `Tensor::from_array([1, 2, 3])` |
+| Gradient computation | `grad(f)(x)`             | `backward(&f, &x)`              |
+| Vectorization        | `vmap(f)`                | Manual implementation           |
+| Type safety          | Runtime                  | Compile-time                    |
+| Performance          | JIT via XLA              | Native compilation              |
+| Integration          | NumPy, flax, optax, etc. | ndarray, burn, etc.             |
 
 ## Example: JAX
 

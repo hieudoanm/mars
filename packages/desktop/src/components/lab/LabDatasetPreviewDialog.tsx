@@ -43,7 +43,7 @@ const LabDatasetPreviewDialog: FC<LabDatasetPreviewDialogProps> = ({
             {warnings.map((warning, i) => (
               <li
                 key={i}
-                className='rounded-md border border-warning/30 bg-warning/10 px-3 py-1.5 text-xs text-warning'>
+                className='border-warning/30 bg-warning/10 text-warning rounded-md border px-3 py-1.5 text-xs'>
                 {warning.column ? `${warning.column}: ` : ''}
                 {warning.message}
               </li>
@@ -57,7 +57,9 @@ const LabDatasetPreviewDialog: FC<LabDatasetPreviewDialogProps> = ({
                 <thead className='sticky top-0 bg-neutral-900'>
                   <tr>
                     {preview.columns.map((column) => (
-                      <th key={column} className='px-2 py-1.5 text-left font-medium text-neutral-400'>
+                      <th
+                        key={column}
+                        className='px-2 py-1.5 text-left font-medium text-neutral-400'>
                         {column}
                       </th>
                     ))}
@@ -76,7 +78,9 @@ const LabDatasetPreviewDialog: FC<LabDatasetPreviewDialogProps> = ({
                 </tbody>
               </table>
             </div>
-            <p className='mt-2 text-xs text-neutral-500'>Showing first {preview.rows.length} rows</p>
+            <p className='mt-2 text-xs text-neutral-500'>
+              Showing first {preview.rows.length} rows
+            </p>
           </>
         ) : (
           <p className='mt-3 text-sm text-neutral-500'>Loading preview…</p>

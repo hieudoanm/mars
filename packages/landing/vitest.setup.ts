@@ -60,4 +60,3 @@ if (!globalThis.ResizeObserver) {
     disconnect() {}
   } as unknown as typeof ResizeObserver;
 }
-

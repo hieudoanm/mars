@@ -165,11 +165,7 @@ const WidgetControl: FC<{ commId: string; state: Record<string, unknown> }> = ({
     const current = asNumber(value, 0);
     return (
       <div className='flex items-center gap-2'>
-        <progress
-          className='h-2 min-w-0 flex-1 accent-sky-500'
-          max={max}
-          value={current}
-        />
+        <progress className='h-2 min-w-0 flex-1 accent-sky-500' max={max} value={current} />
         <span className='text-xs text-neutral-400'>
           {current}/{max}
         </span>

@@ -1,10 +1,10 @@
 ---
-title: "Jupyter: The Original Interactive Computing Platform"
-description: "Jupyter turned code into documents and documents into code. Here is why the notebook format won, and what it taught the tools that came after it."
-author: "Project Mars Team"
-date: "2026-11-07"
+title: 'Jupyter: The Original Interactive Computing Platform'
+description: 'Jupyter turned code into documents and documents into code. Here is why the notebook format won, and what it taught the tools that came after it.'
+author: 'Project Mars Team'
+date: '2026-11-07'
 order: 9
-tags: ["jupyter", "notebooks", "literate-programming", "history", "mars"]
+tags: ['jupyter', 'notebooks', 'literate-programming', 'history', 'mars']
 ---
 
 # Why Jupyter?
@@ -13,7 +13,7 @@ Before Jupyter, code and explanation lived in different places. You wrote a scri
 
 ## The idea behind it
 
-The notebook descends from Donald Knuth's *literate programming* — the idea that a program should be written for humans first and machines second. Jupyter made that practical: a cell could be Markdown explaining *why* you are doing something, followed by code that does it, followed by the output that proves it worked.
+The notebook descends from Donald Knuth's _literate programming_ — the idea that a program should be written for humans first and machines second. Jupyter made that practical: a cell could be Markdown explaining _why_ you are doing something, followed by code that does it, followed by the output that proves it worked.
 
 That format happens to fit how people actually think about data:
 
@@ -28,7 +28,7 @@ A notebook is the lab notebook for that loop — except the experiments are code
 
 Jupyter's success was not just the document format. Three design decisions made it stick:
 
-- **The kernel protocol.** Jupyter separated the *interface* from the *runtime*. A kernel is just a process that accepts code and returns results, so the same frontend could drive Python, R, Julia, or anything else that spoke the protocol. The ecosystem of kernels became a marketplace of languages.
+- **The kernel protocol.** Jupyter separated the _interface_ from the _runtime_. A kernel is just a process that accepts code and returns results, so the same frontend could drive Python, R, Julia, or anything else that spoke the protocol. The ecosystem of kernels became a marketplace of languages.
 - **Rich outputs.** A cell could return more than text: images, HTML, LaTeX equations, interactive widgets. Outputs became first-class content, not just console logs.
 - **`.ipynb` as a file.** A notebook is a single JSON file. It diffs, it versions, it attaches to an email. No server required to read it — just open it anywhere.
 
@@ -50,6 +50,6 @@ Project Mars is a notebook platform, and Jupyter is the reason notebooks exist a
 - **Rich outputs.** Text, errors, HTML, images, LaTeX, tables, and charts are all first-class output types.
 - **Interop.** Project Mars imports and exports `.ipynb` notebooks, so existing Jupyter work is not stranded.
 
-What Project Mars changes is the center of gravity: Rust is the primary language, not an afterthought. Where Jupyter made *any* language possible but *Python* inevitable, Project Mars makes *compiled, memory-safe, reproducible* the default. See [Why Project Mars?](/blog/why-mars) for the full comparison.
+What Project Mars changes is the center of gravity: Rust is the primary language, not an afterthought. Where Jupyter made _any_ language possible but _Python_ inevitable, Project Mars makes _compiled, memory-safe, reproducible_ the default. See [Why Project Mars?](/blog/why-mars) for the full comparison.
 
 The notebook format Jupyter invented was one of the best ideas in developer tooling. Project Mars exists because we think it deserves a runtime built for the workloads people actually run inside it.

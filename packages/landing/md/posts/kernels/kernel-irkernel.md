@@ -1,10 +1,10 @@
 ---
-title: "IRkernel: R Kernel for Statistical Computing"
-description: "Explore IRkernel, the R kernel for Jupyter, and how it enables interactive R development in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'IRkernel: R Kernel for Statistical Computing'
+description: 'Explore IRkernel, the R kernel for Jupyter, and how it enables interactive R development in notebook environments.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 49
-tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
+tags: ['kernels', 'irkernel', 'r', 'jupyter', 'notebook', 'mars']
 ---
 
 # Why IRkernel? R Kernel for Jupyter
@@ -14,18 +14,21 @@ tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
 ## What IRkernel Offers
 
 ### Interactive R Execution
+
 - **Live R code**: Write and execute R code interactively
 - **Persistent state**: Variables persist across cells in `.GlobalEnv`
 - **Package management**: Use R's package manager directly in notebooks
 - **REPL-like experience**: Similar to R's REPL but in notebook format
 
 ### Jupyter Integration
+
 - **Standard Jupyter protocol**: Works with JupyterLab, Jupyter Notebook, VS Code
 - **Rich outputs**: Display text, images, HTML, LaTeX, and other MIME types
 - **Code completion**: Integration with R's completion system
 - **Debugging**: Support for R's debugging tools
 
 ### R-Specific Features
+
 - **Statistical computing**: First-class support for statistical analysis
 - **Data visualization**: Integration with ggplot2 and other plotting libraries
 - **Tidyverse**: Modern data manipulation and visualization ecosystem
@@ -33,16 +36,16 @@ tags: ["kernels", "irkernel", "r", "jupyter", "notebook", "mars"]
 
 ## IRkernel vs Project Mars R Runtime
 
-| Feature | IRkernel | Project Mars R Runtime |
-|---------|----------|----------------|
-| Platform | Jupyter kernel | Native R runtime |
-| Execution model | REPL-based | Subprocess driver |
-| Performance | Good | Good |
-| Package management | R packages | R packages |
-| Multi-language | R only | Rust, Python, R, Julia, C++ |
-| Document format | .ipynb | .mars (native format) |
-| Desktop app | No | Yes (Tauri-based) |
-| CLI | Limited | Full CLI with automation |
+| Feature            | IRkernel       | Project Mars R Runtime      |
+| ------------------ | -------------- | --------------------------- |
+| Platform           | Jupyter kernel | Native R runtime            |
+| Execution model    | REPL-based     | Subprocess driver           |
+| Performance        | Good           | Good                        |
+| Package management | R packages     | R packages                  |
+| Multi-language     | R only         | Rust, Python, R, Julia, C++ |
+| Document format    | .ipynb         | .mars (native format)       |
+| Desktop app        | No             | Yes (Tauri-based)           |
+| CLI                | Limited        | Full CLI with automation    |
 
 ## When to Use IRkernel
 

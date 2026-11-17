@@ -1,10 +1,10 @@
 ---
-title: "matlab_kernel: MATLAB Kernel for Engineering Applications"
-description: "Explore matlab_kernel, the MATLAB kernel for Jupyter, and how it enables interactive MATLAB development in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'matlab_kernel: MATLAB Kernel for Engineering Applications'
+description: 'Explore matlab_kernel, the MATLAB kernel for Jupyter, and how it enables interactive MATLAB development in notebook environments.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 50
-tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
+tags: ['kernels', 'matlab_kernel', 'matlab', 'jupyter', 'notebook', 'mars']
 ---
 
 # matlab_kernel: MATLAB Kernel for Jupyter
@@ -14,18 +14,21 @@ tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
 ## What matlab_kernel Offers
 
 ### Interactive MATLAB Execution
+
 - **Live MATLAB code**: Write and execute MATLAB code interactively
 - **Persistent state**: Variables persist across cells
 - **Toolbox support**: Access to MATLAB toolboxes and functions
 - **REPL-like experience**: Similar to MATLAB's command window but in notebook format
 
 ### Jupyter Integration
+
 - **Standard Jupyter protocol**: Works with JupyterLab, Jupyter Notebook, VS Code
 - **Rich outputs**: Display text, images, plots, and other MIME types
 - **Code completion**: Integration with MATLAB's completion system
 - **Debugging**: Support for MATLAB debugging tools
 
 ### MATLAB-Specific Features
+
 - **Matrix operations**: First-class support for matrix computations
 - **Plotting**: Integration with MATLAB's plotting capabilities
 - **Toolboxes**: Access to specialized toolboxes (Signal Processing, Image Processing, etc.)
@@ -33,16 +36,16 @@ tags: ["kernels", "matlab_kernel", "matlab", "jupyter", "notebook", "mars"]
 
 ## matlab_kernel vs Project Mars MATLAB Runtime
 
-| Feature | matlab_kernel | Project Mars MATLAB Runtime |
-|---------|---------------|---------------------|
-| Platform | Jupyter kernel | Native MATLAB runtime |
-| Execution model | REPL-based | Subprocess driver |
-| Performance | Good | Excellent (native MATLAB) |
-| Toolbox support | Full MATLAB toolboxes | Full MATLAB toolboxes |
-| Multi-language | MATLAB only | Rust, Python, R, Julia, C++ |
-| Document format | .ipynb | .mars (native format) |
-| Desktop app | No | Yes (Tauri-based) |
-| CLI | Limited | Full CLI with automation |
+| Feature         | matlab_kernel         | Project Mars MATLAB Runtime |
+| --------------- | --------------------- | --------------------------- |
+| Platform        | Jupyter kernel        | Native MATLAB runtime       |
+| Execution model | REPL-based            | Subprocess driver           |
+| Performance     | Good                  | Excellent (native MATLAB)   |
+| Toolbox support | Full MATLAB toolboxes | Full MATLAB toolboxes       |
+| Multi-language  | MATLAB only           | Rust, Python, R, Julia, C++ |
+| Document format | .ipynb                | .mars (native format)       |
+| Desktop app     | No                    | Yes (Tauri-based)           |
+| CLI             | Limited               | Full CLI with automation    |
 
 ## When to Use matlab_kernel
 

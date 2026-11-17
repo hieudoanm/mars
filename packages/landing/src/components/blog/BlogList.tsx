@@ -59,7 +59,7 @@ export default function BlogList({ posts }: BlogListProps) {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className='border-line bg-panel hover:border-orange/60 hover:bg-panel-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg border px-4 py-2 text-sm transition'>
+            className='border-line bg-panel hover:border-orange/60 hover:bg-panel-2 rounded-lg border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50'>
             ← Previous
           </button>
           <span className='text-muted mx-4 text-sm'>
@@ -68,7 +68,7 @@ export default function BlogList({ posts }: BlogListProps) {
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className='border-line bg-panel hover:border-orange/60 hover:bg-panel-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg border px-4 py-2 text-sm transition'>
+            className='border-line bg-panel hover:border-orange/60 hover:bg-panel-2 rounded-lg border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50'>
             Next →
           </button>
         </div>

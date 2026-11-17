@@ -1,10 +1,10 @@
 ---
-title: "Hex: Modern Data Science Notebooks with SQL Integration"
-description: "Explore Hex, the modern data science platform that combines notebooks with SQL, Python, and collaborative workflows."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'Hex: Modern Data Science Notebooks with SQL Integration'
+description: 'Explore Hex, the modern data science platform that combines notebooks with SQL, Python, and collaborative workflows.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 12
-tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "mars"]
+tags: ['notebooks', 'hex', 'data-science', 'collaboration', 'sql', 'python', 'mars']
 ---
 
 # Hex: Modern Data Science Notebooks
@@ -14,24 +14,28 @@ tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "ma
 ## What Hex Offers
 
 ### Unified Data Environment
+
 - **Multi-language support**: SQL, Python, R, and more in a single notebook
 - **Data connections**: Native integrations with databases, data warehouses, and cloud storage
 - **SQL-first approach**: Write SQL queries directly in notebooks with syntax highlighting
 - **Python integration**: Seamless Python execution with popular libraries
 
 ### Collaborative Features
+
 - **Real-time collaboration**: Multiple users can edit notebooks simultaneously
 - **Comments and mentions**: Built-in commenting and @mentions for team communication
 - **Version history**: Track changes and revert to previous versions
 - **Sharing**: Share notebooks with team members or make them public
 
 ### Modern Interface
+
 - **Clean design**: Intuitive, modern interface designed for productivity
 - **Responsive layout**: Works on desktop, tablet, and mobile devices
 - **Dark mode**: Eye-friendly dark theme option
 - **Keyboard shortcuts**: Efficient keyboard-driven workflows
 
 ### Data Storytelling
+
 - **Rich visualizations**: Built-in charting and visualization capabilities
 - **Interactive dashboards**: Create interactive dashboards from notebook cells
 - **Embedded apps**: Turn notebooks into standalone web applications
@@ -39,15 +43,15 @@ tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "ma
 
 ## Hex vs Traditional Notebooks
 
-| Feature | Hex | Jupyter | Project Mars |
-|---------|-----|---------|------|
-| Language support | SQL, Python, R, more | Python, R, Julia, etc. | Rust, Python, R, Julia, C++ |
-| Collaboration | Real-time, built-in | Limited (via extensions) | Planned |
-| Data connections | Native integrations | Manual setup | Via runtime |
-| Interface | Modern, web-based | Traditional notebook | Desktop application |
-| Offline use | No | Yes | Yes (desktop) |
-| SQL support | First-class | Via extensions | Via runtime |
-| Publishing | Web-native | Static export | Static export |
+| Feature          | Hex                  | Jupyter                  | Project Mars                |
+| ---------------- | -------------------- | ------------------------ | --------------------------- |
+| Language support | SQL, Python, R, more | Python, R, Julia, etc.   | Rust, Python, R, Julia, C++ |
+| Collaboration    | Real-time, built-in  | Limited (via extensions) | Planned                     |
+| Data connections | Native integrations  | Manual setup             | Via runtime                 |
+| Interface        | Modern, web-based    | Traditional notebook     | Desktop application         |
+| Offline use      | No                   | Yes                      | Yes (desktop)               |
+| SQL support      | First-class          | Via extensions           | Via runtime                 |
+| Publishing       | Web-native           | Static export            | Static export               |
 
 ## When to Choose Hex
 
@@ -72,18 +76,21 @@ tags: ["notebooks", "hex", "data-science", "collaboration", "sql", "python", "ma
 Hex takes a different approach to notebooks:
 
 ### SQL-First Design
+
 - **SQL as first-class citizen**: SQL queries are as important as Python code
 - **Seamless transitions**: Move between SQL and Python effortlessly
 - **Query optimization**: Built-in query optimization and caching
 - **Data exploration**: Interactive data exploration with SQL
 
 ### Collaboration-First
+
 - **Real-time editing**: Multiple users can work together simultaneously
 - **Comments and reviews**: Built-in code review and commenting
 - **Version control**: Integrated version history and branching
 - **Team workspaces**: Organize notebooks by project or team
 
 ### Cloud-Native
+
 - **No setup required**: Runs entirely in the cloud
 - **Scalable compute**: Automatic resource scaling
 - **Data integrations**: Native connections to popular data sources

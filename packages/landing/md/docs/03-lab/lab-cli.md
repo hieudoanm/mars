@@ -41,6 +41,7 @@ mars lab dataset data.csv
 ```
 
 Uploads a CSV file to Mars Lab. The command will:
+
 - Parse the CSV and infer column types
 - Detect missing values
 - Generate dataset insights
@@ -48,6 +49,7 @@ Uploads a CSV file to Mars Lab. The command will:
 - Return a dataset ID for use in training
 
 **Output:**
+
 ```text
 Dataset uploaded:
   id: <uuid>
@@ -87,6 +89,7 @@ Optional parameters:
 - `--seed` — Random seed for reproducibility (default: 42)
 
 **Example:**
+
 ```bash
 mars lab train --dataset-id abc123 --task classification \
   --algorithm random_forest_classifier \
@@ -98,6 +101,7 @@ mars lab train --dataset-id abc123 --task classification \
 ```
 
 **Output:**
+
 ```text
 Training job <uuid>...
   Task: classification
@@ -130,6 +134,7 @@ mars lab job <job-id>
 Shows detailed information about a training job, including status, metrics, and artefacts.
 
 **Output:**
+
 ```text
 Job: <uuid>
   Status: completed
@@ -161,6 +166,7 @@ mars lab jobs
 Lists all training jobs with their status, task type, and algorithm.
 
 **Output:**
+
 ```text
 Jobs:
   <uuid> - completed - classification - random_forest_classifier
@@ -179,6 +185,7 @@ mars lab export --job-id <uuid> --output model.joblib --format joblib
 Exports a trained model artefact to a specified file path.
 
 **Formats:**
+
 - `onnx` — ONNX model format (default)
 - `pkl` — Python pickle format
 - `joblib` — Python joblib format
@@ -187,16 +194,16 @@ Exports a trained model artefact to a specified file path.
 
 Jobs progress through these statuses:
 
-| Status | Description |
-|--------|-------------|
-| `queued` | Job created, waiting to start |
+| Status       | Description                       |
+| ------------ | --------------------------------- |
+| `queued`     | Job created, waiting to start     |
 | `validating` | Validating dataset and parameters |
-| `training` | Model training in progress |
-| `evaluating` | Computing metrics and charts |
-| `exporting` | Exporting artefacts |
-| `completed` | Job finished successfully |
-| `failed` | Job failed with error |
-| `retrying` | Job will be retried after failure |
+| `training`   | Model training in progress        |
+| `evaluating` | Computing metrics and charts      |
+| `exporting`  | Exporting artefacts               |
+| `completed`  | Job finished successfully         |
+| `failed`     | Job failed with error             |
+| `retrying`   | Job will be retried after failure |
 
 ## Examples
 
@@ -269,6 +276,7 @@ CLI commands return nonzero exit codes on errors:
 - `1` — General error (invalid input, training failure, etc.)
 
 Error messages are printed to stderr with the format:
+
 ```text
 mars: <error message>
 ```

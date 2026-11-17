@@ -34,7 +34,12 @@ describe('LabJobList', () => {
       <LabJobList
         jobs={[
           job(),
-          job({ id: 'job-2', status: 'failed', algorithmId: 'random_forest', errorMessage: 'boom' }),
+          job({
+            id: 'job-2',
+            status: 'failed',
+            algorithmId: 'random_forest',
+            errorMessage: 'boom',
+          }),
         ]}
         onSelect={() => {}}
       />,

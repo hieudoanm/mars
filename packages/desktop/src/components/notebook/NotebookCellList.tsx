@@ -220,9 +220,7 @@ const NotebookCellList: FC<NotebookCellListProps> = ({
             editor.insertCell(cells.findIndex((entry) => entry.id === cell.id) + 1, cell.cell_type)
           }
           onRunAll={onRunAllCells}
-          onRunFromHere={
-            onRunFromCell ? () => onRunFromCell(cellIndex) : undefined
-          }
+          onRunFromHere={onRunFromCell ? () => onRunFromCell(cellIndex) : undefined}
           onStatus={setStatus}
         />
       ))}

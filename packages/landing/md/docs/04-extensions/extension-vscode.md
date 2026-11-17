@@ -121,13 +121,13 @@ Manage Workspace Trust** to trust the folder if figures show as text.
 
 ### Settings
 
-| Setting                   | Default    | Description                               |
-| ------------------------- | ---------- | ----------------------------------------- |
-| `mars.cliPath`            | `"mars"`   | Path to the Project Mars CLI executable           |
+| Setting                   | Default    | Description                                        |
+| ------------------------- | ---------- | -------------------------------------------------- |
+| `mars.cliPath`            | `"mars"`   | Path to the Project Mars CLI executable            |
 | `mars.runArguments`       | `[]`       | Additional arguments passed to `mars notebook run` |
-| `mars.previewAfterExport` | `true`     | Automatically open the exported file      |
-| `mars.executionTimeout`   | `30000`    | Execution timeout in milliseconds         |
-| `mars.runtime`            | `"replay"` | Runtime backend: `"replay"` or `"evcxr"`  |
+| `mars.previewAfterExport` | `true`     | Automatically open the exported file               |
+| `mars.executionTimeout`   | `30000`    | Execution timeout in milliseconds                  |
+| `mars.runtime`            | `"replay"` | Runtime backend: `"replay"` or `"evcxr"`           |
 
 ## Troubleshooting
 

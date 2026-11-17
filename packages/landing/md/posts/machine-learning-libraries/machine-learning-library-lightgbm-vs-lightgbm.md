@@ -1,10 +1,10 @@
 ---
-title: "LightGBM vs lightgbm: Fast Gradient Boosting Libraries"
+title: 'LightGBM vs lightgbm: Fast Gradient Boosting Libraries'
 description: "Compare Python's LightGBM with Rust's lightgbm for fast gradient boosting on large tabular datasets in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 29
-tags: ["machine-learning", "lightgbm", "rust", "python", "gradient-boosting", "mars"]
+tags: ['machine-learning', 'lightgbm', 'rust', 'python', 'gradient-boosting', 'mars']
 ---
 
 # LightGBM vs lightgbm: Fast Gradient Boosting Compared
@@ -39,14 +39,14 @@ The key difference: lightgbm allows you to use LightGBM's efficient gradient boo
 
 ## Comparison
 
-| Feature               | LightGBM (Python)                        | lightgbm (Rust)                            |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Train model           | `lgb.train(params, dtrain)`              | `train(params, dataset)`                   |
-| Predict               | `model.predict(X)`                      | `predict(&model, &data)`                 |
-| Dataset               | `lgb.Dataset(X, y)`                     | Rust data structures                      |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | Python + C++ backend                      | Rust + C++ backend                         |
-| GPU support           | CUDA                                     | CUDA                                       |
+| Feature     | LightGBM (Python)           | lightgbm (Rust)          |
+| ----------- | --------------------------- | ------------------------ |
+| Train model | `lgb.train(params, dtrain)` | `train(params, dataset)` |
+| Predict     | `model.predict(X)`          | `predict(&model, &data)` |
+| Dataset     | `lgb.Dataset(X, y)`         | Rust data structures     |
+| Type safety | Runtime                     | Compile-time             |
+| Performance | Python + C++ backend        | Rust + C++ backend       |
+| GPU support | CUDA                        | CUDA                     |
 
 ## Example: LightGBM
 

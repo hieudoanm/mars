@@ -5,8 +5,7 @@ import { Reveal } from '@/components/shared/Reveal';
 import { repositoryUrl } from '../../lib/site';
 import marsLogoFile from '@/assets/svg/mars-logo-file.svg';
 
-const sectionShell =
-  'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
+const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 const eyebrow =
   'flex items-center gap-2.5 text-xs-plus font-bold uppercase tracking-caps-xl text-orange-2';
 const heading =
@@ -19,14 +18,14 @@ const buttonQuiet = `${buttonBase} border-line bg-surface-1 text-[#c8d0db]`;
 const GetStarted: FC = () => {
   return (
     <section
-      className='relative overflow-hidden border-t border-line-3 bg-surface-1'
+      className='border-line-3 bg-surface-1 relative overflow-hidden border-t'
       id='get-started'>
-      <div className='animate-drift-reverse absolute right-1/8 -bottom-58 h-120 w-120 rounded-full bg-cta-glow' />
+      <div className='animate-drift-reverse bg-cta-glow absolute right-1/8 -bottom-58 h-120 w-120 rounded-full' />
       <Reveal
-        className={`${sectionShell} relative grid grid-cols-1 items-center gap-7.5 py-26 max-sm-nav:gap-5 max-sm-nav:py-19 md-nav:grid-cols-12`}
+        className={`${sectionShell} max-sm-nav:gap-5 max-sm-nav:py-19 md-nav:grid-cols-12 relative grid grid-cols-1 items-center gap-7.5 py-26`}
         y={20}>
         <img
-          className='animate-float h-23 w-23 drop-shadow-float max-sm-nav:h-18 max-sm-nav:w-18 md-nav:col-span-2'
+          className='animate-float drop-shadow-float max-sm-nav:h-18 max-sm-nav:w-18 md-nav:col-span-2 h-23 w-23'
           src={marsLogoFile.src}
           alt=''
         />
@@ -37,14 +36,12 @@ const GetStarted: FC = () => {
             <br />
             <em className='text-orange-2 font-serif font-normal'>room to move.</em>
           </h2>
-          <p className='m-0 text-sm-plus'>
+          <p className='text-sm-plus m-0'>
             Open source. Rust-powered. Built for the moment before the answer.
           </p>
         </div>
-        <div className='flex flex-col items-stretch gap-2.5 md-nav:col-span-3'>
-          <a
-            className={`${buttonPrimary} justify-center whitespace-nowrap`}
-            href={repositoryUrl}>
+        <div className='md-nav:col-span-3 flex flex-col items-stretch gap-2.5'>
+          <a className={`${buttonPrimary} justify-center whitespace-nowrap`} href={repositoryUrl}>
             View the repository <span>↗</span>
           </a>
           <a className={`${buttonQuiet} justify-center whitespace-nowrap`} href='/docs'>

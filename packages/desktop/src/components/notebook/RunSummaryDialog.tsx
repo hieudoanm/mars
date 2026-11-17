@@ -50,7 +50,10 @@ const RunSummaryDialog: FC<RunSummaryDialogProps> = ({
       acc[entry.status] += 1;
       return acc;
     },
-    { success: 0, error: 0, interrupted: 0 } as Record<RunSummary['entries'][number]['status'], number>,
+    { success: 0, error: 0, interrupted: 0 } as Record<
+      RunSummary['entries'][number]['status'],
+      number
+    >,
   );
   const slowest = entries[0];
 

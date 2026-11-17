@@ -16,18 +16,18 @@ const ErrorBoundary: FC<ErrorProps> = ({ error, reset }) => {
         <div className='bg-orange/10 text-orange-2 mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full'>
           <HiExclamationCircle className='h-8 w-8' />
         </div>
-        <h1 className='mb-2 text-page leading-tight font-bold-plus tracking-tightest'>
+        <h1 className='text-page font-bold-plus tracking-tightest mb-2 leading-tight'>
           Something went wrong
         </h1>
         <p className='text-muted mx-auto mb-8 max-w-80'>{error.message}</p>
         <div className='flex flex-col items-center gap-3 sm:flex-row'>
           <button
-            className='border-orange bg-orange inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs font-bold-plus text-ink-4 transition-transform duration-200 hover:-translate-y-0.5'
+            className='border-orange bg-orange font-bold-plus text-ink-4 inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs transition-transform duration-200 hover:-translate-y-0.5'
             onClick={() => reset()}>
             <HiRefresh className='h-4 w-4' /> Try again
           </button>
           <Link
-            className='border-line-2 text-ink inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs font-bold-plus transition-transform duration-200 hover:-translate-y-0.5'
+            className='border-line-2 text-ink font-bold-plus inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs transition-transform duration-200 hover:-translate-y-0.5'
             href='/'>
             Back home
           </Link>

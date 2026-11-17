@@ -1,10 +1,10 @@
 ---
-title: "House Price Prediction: Regression ML Project"
-description: "Predict house sale prices from tabular features using linear regression and gradient boosting in Rust — the classic Kaggle regression project."
-author: "Project Mars Team"
-date: "2026-11-14"
+title: 'House Price Prediction: Regression ML Project'
+description: 'Predict house sale prices from tabular features using linear regression and gradient boosting in Rust — the classic Kaggle regression project.'
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 36
-tags: ["machine-learning", "rust", "regression", "kaggle", "xgboost"]
+tags: ['machine-learning', 'rust', 'regression', 'kaggle', 'xgboost']
 ---
 
 # Machine Learning Project: House Price Prediction
@@ -230,11 +230,11 @@ benchmarks because it:
 Kaggle scores this competition on **RMSE of log-price**. We report both
 scales because exp-space RMSE is what dollars actually cost you.
 
-| Model | Log-RMSE | Approx. $ RMSE |
-| ----- | -------- | -------------- |
-| Mean predictor (baseline) | ~0.40 | ~$55k |
-| Ridge regression | ~0.13 | ~$18k |
-| Tuned XGBoost | ~0.11 | ~$15k |
+| Model                     | Log-RMSE | Approx. $ RMSE |
+| ------------------------- | -------- | -------------- |
+| Mean predictor (baseline) | ~0.40    | ~$55k          |
+| Ridge regression          | ~0.13    | ~$18k          |
+| Tuned XGBoost             | ~0.11    | ~$15k          |
 
 A good sanity check: your model should beat the mean baseline by 3x or more.
 If it doesn't, suspect a data-leakage bug or an encoding mistake — not the

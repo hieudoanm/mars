@@ -1,10 +1,10 @@
 ---
-title: "Statsmodels vs statrs: Statistical Modeling in Python vs Rust"
+title: 'Statsmodels vs statrs: Statistical Modeling in Python vs Rust'
 description: "Compare Python's Statsmodels with Rust's statrs for statistical distributions, tests, and models in notebook environments."
-author: "Project Mars Team"
-date: "2026-11-14"
+author: 'Project Mars Team'
+date: '2026-11-14'
 order: 16
-tags: ["data-science", "statsmodels", "statrs", "rust", "python", "mars"]
+tags: ['data-science', 'statsmodels', 'statrs', 'rust', 'python', 'mars']
 ---
 
 # Statsmodels vs statrs: Statistical Modeling Compared
@@ -39,14 +39,14 @@ The key difference: statrs provides statistical primitives in a type-safe, compi
 
 ## Comparison
 
-| Feature               | Statsmodels (Python)                      | statrs (Rust)                              |
-| --------------------- | ---------------------------------------- | ------------------------------------------- |
-| Distribution         | `stats.norm.cdf(x)`                     | `Normal::new(0.0, 1.0).unwrap().cdf(x)`   |
-| Random sampling      | `np.random.normal()`                    | `Normal::sample(&mut rng)`                |
-| Hypothesis test      | `stats.ttest_ind(a, b)`                | `test::t_test_independent(a, b)`          |
-| Type safety           | Runtime                                  | Compile-time                               |
-| Performance           | C-backed via NumPy                       | Native compilation                         |
-| Integration          | NumPy, pandas, Matplotlib, etc.          | ndarray, rand, etc.                       |
+| Feature         | Statsmodels (Python)            | statrs (Rust)                           |
+| --------------- | ------------------------------- | --------------------------------------- |
+| Distribution    | `stats.norm.cdf(x)`             | `Normal::new(0.0, 1.0).unwrap().cdf(x)` |
+| Random sampling | `np.random.normal()`            | `Normal::sample(&mut rng)`              |
+| Hypothesis test | `stats.ttest_ind(a, b)`         | `test::t_test_independent(a, b)`        |
+| Type safety     | Runtime                         | Compile-time                            |
+| Performance     | C-backed via NumPy              | Native compilation                      |
+| Integration     | NumPy, pandas, Matplotlib, etc. | ndarray, rand, etc.                     |
 
 ## Example: Statsmodels
 
