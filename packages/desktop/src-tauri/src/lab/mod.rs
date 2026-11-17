@@ -12,7 +12,7 @@ pub use datasets::{
     read_table_preview,
 };
 pub use jobs::{lab_get_job, lab_list_jobs, lab_list_jobs_page};
-pub use train::lab_train;
+pub use train::{lab_train, lab_train_inner};
 
 use mars_lab::catalogue;
 use mars_lab::config::get_settings;

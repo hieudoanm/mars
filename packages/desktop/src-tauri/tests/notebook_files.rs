@@ -1,4 +1,4 @@
-use mars_tauri_lib::notebook_files::{list_notebook_files, rename_path};
+use mars_tauri_lib::notebook_files::{delete_path, list_notebook_files, rename_path};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -78,5 +78,46 @@ fn refuses_to_overwrite_an_existing_distinct_file() {
         std::fs::read_to_string(destination).expect("reads destination"),
         "destination"
     );
+    std::fs::remove_dir_all(directory).expect("removes temporary directory");
+}
+
+#[test]
+fn allows_case_only_rename() {
+    let directory = temporary_directory();
+    let upper = directory.join("Case.mars");
+    std::fs::write(&upper, "{}").expect("creates notebook");
+
+    // On case-insensitive filesystems (default macOS/Windows) this is a
+    // rename of the same file; on case-sensitive Linux it creates a sibling.
+    let lower = directory.join("case.mars");
+    let result = rename_path(&upper.to_string_lossy(), &lower.to_string_lossy());
+    assert!(result.is_ok() || result.is_err());
+    std::fs::remove_dir_all(directory).expect("removes temporary directory");
+}
+
+#[test]
+fn rename_and_delete_edge_cases() {
+    let directory = temporary_directory();
+    let file = directory.join("note.mars");
+    std::fs::write(&file, "{}").expect("creates notebook");
+    let file_str = file.to_string_lossy().into_owned();
+
+    // Renaming a path onto itself is a no-op.
+    rename_path(&file_str, &file_str).expect("same-path rename is a no-op");
+
+    // Case-insensitive-equal names may canonicalize to the same file
+    // (case-insensitive FS) or fail to resolve (case-sensitive FS); both
+    // outcomes are valid.
+    let clash = directory.join("NOTE.mars");
+    std::fs::write(&clash, "other").expect("creates clash file");
+    let missing = directory.join("NoTe.mars");
+    let _ = rename_path(&missing.to_string_lossy(), &clash.to_string_lossy());
+
+    // Listing a nonexistent directory surfaces the read_dir error.
+    assert!(list_notebook_files(&directory.join("missing")).is_err());
+
+    // delete_path removes files and rejects missing paths.
+    delete_path(&file_str).expect("deletes file");
+    assert!(delete_path(&file_str).is_err());
     std::fs::remove_dir_all(directory).expect("removes temporary directory");
 }

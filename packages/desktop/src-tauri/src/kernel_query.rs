@@ -2,7 +2,7 @@ use crate::AppState;
 use crate::kernel::{kernel_for, kernel_key, kernels_lock};
 
 #[tauri::command]
-pub(crate) fn inspect_variables(
+pub fn inspect_variables(
     state: tauri::State<'_, AppState>,
     session: String,
     language: String,
@@ -15,7 +15,7 @@ pub(crate) fn inspect_variables(
 }
 
 #[tauri::command]
-pub(crate) fn diagnose_cell(
+pub fn diagnose_cell(
     state: tauri::State<'_, AppState>,
     session: String,
     source: String,
@@ -27,7 +27,7 @@ pub(crate) fn diagnose_cell(
 }
 
 #[tauri::command]
-pub(crate) fn send_kernel_input(
+pub fn send_kernel_input(
     state: tauri::State<'_, AppState>,
     session: String,
     text: String,
@@ -52,7 +52,7 @@ pub(crate) fn send_kernel_input(
 }
 
 #[tauri::command]
-pub(crate) fn send_kernel_comm(
+pub fn send_kernel_comm(
     state: tauri::State<'_, AppState>,
     session: String,
     comm_id: String,

@@ -30,6 +30,9 @@ tauri = { version = "=2.12.6", features = [] }
 tauri-plugin-dialog = "=2.8.4"
 thiserror.workspace = true
 
+[dev-dependencies]
+tauri = { version = "=2.12.6", features = ["test"] }
+
 [features]
 custom-protocol = ["tauri/custom-protocol"]
 experimental-evcxr = ["mars-kernel/experimental-evcxr"]

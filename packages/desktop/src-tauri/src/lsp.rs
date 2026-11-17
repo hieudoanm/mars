@@ -9,6 +9,12 @@ pub struct LspSessions {
     base_dir: PathBuf,
 }
 
+impl Default for LspSessions {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LspSessions {
     pub fn new() -> Self {
         let base_dir = std::env::temp_dir().join("mars-lsp");

@@ -9,24 +9,19 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 #[tauri::command]
-pub(crate) fn execute_cell(
+pub fn execute_cell(
     app: tauri::AppHandle,
     state: tauri::State<'_, AppState>,
     session: String,
     source: String,
     language: String,
 ) -> Result<KernelResponse, String> {
-    let mut kernels = kernels_lock(&state)?;
-    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
-    register_input_writer(&state, &session, &language, kernel);
-    let cancellation = cancellation_for(&state, &session);
-    cancellation.store(false, Ordering::Relaxed);
     let mut sink = stream_sink(&app, &session, &language);
-    Ok(kernel.execute_with_events(&source, None, cancellation, &mut sink))
+    execute_cell_inner(&state, &session, &source, &language, None, &mut sink)
 }
 
 #[tauri::command]
-pub(crate) fn execute_cell_with_timeout(
+pub fn execute_cell_with_timeout(
     app: tauri::AppHandle,
     state: tauri::State<'_, AppState>,
     session: String,
@@ -37,31 +32,43 @@ pub(crate) fn execute_cell_with_timeout(
     if timeout_millis == 0 {
         return Err("timeout_millis must be greater than zero".to_owned());
     }
-    let mut kernels = kernels_lock(&state)?;
-    let kernel = kernel_for(&state, &mut kernels, &session, &language, state.backend)?;
-    register_input_writer(&state, &session, &language, kernel);
-    let cancellation = cancellation_for(&state, &session);
-    cancellation.store(false, Ordering::Relaxed);
     let mut sink = stream_sink(&app, &session, &language);
-    Ok(kernel.execute_with_events(
+    execute_cell_inner(
+        &state,
+        &session,
         &source,
+        &language,
         Some(Duration::from_millis(timeout_millis)),
-        cancellation,
         &mut sink,
-    ))
+    )
+}
+
+/// Shared execution path with the stream sink injected, so tests can drive it
+/// without a Tauri `AppHandle`.
+pub fn execute_cell_inner(
+    state: &AppState,
+    session: &str,
+    source: &str,
+    language: &str,
+    timeout: Option<Duration>,
+    sink: &mut dyn FnMut(mars_runtime::StreamEvent),
+) -> Result<KernelResponse, String> {
+    let mut kernels = kernels_lock(state)?;
+    let kernel = kernel_for(state, &mut kernels, session, language, state.backend)?;
+    register_input_writer(state, session, language, kernel);
+    let cancellation = cancellation_for(state, session);
+    cancellation.store(false, Ordering::Relaxed);
+    Ok(kernel.execute_with_events(source, timeout, cancellation, sink))
 }
 
 #[tauri::command]
-pub(crate) fn cancel_execution(
-    state: tauri::State<'_, AppState>,
-    session: String,
-) -> Result<(), String> {
+pub fn cancel_execution(state: tauri::State<'_, AppState>, session: String) -> Result<(), String> {
     cancellation_for(&state, &session).store(true, Ordering::Relaxed);
     Ok(())
 }
 
 #[tauri::command]
-pub(crate) fn reset_kernel(
+pub fn reset_kernel(
     state: tauri::State<'_, AppState>,
     session: String,
     language: String,
@@ -74,7 +81,7 @@ pub(crate) fn reset_kernel(
 }
 
 #[tauri::command]
-pub(crate) fn kernel_status(
+pub fn kernel_status(
     state: tauri::State<'_, AppState>,
     session: String,
     language: String,
@@ -87,7 +94,7 @@ pub(crate) fn kernel_status(
 }
 
 #[tauri::command]
-pub(crate) fn configure_kernel(
+pub fn configure_kernel(
     state: tauri::State<'_, AppState>,
     session: String,
     content: String,

@@ -1,13 +1,13 @@
-mod checkpoints;
-mod kernel;
-mod kernel_exec;
-mod kernel_query;
-mod lab;
-mod lsp;
-mod lsp_cmds;
-mod notebook_cmds;
+pub mod checkpoints;
+pub mod kernel;
+pub mod kernel_exec;
+pub mod kernel_query;
+pub mod lab;
+pub mod lsp;
+pub mod lsp_cmds;
+pub mod notebook_cmds;
 pub mod notebook_files;
-mod open;
+pub mod open;
 
 use lab::{
     lab_algorithms, lab_dataset_insights, lab_dataset_preview, lab_export_artefact, lab_get_job,
@@ -19,14 +19,28 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, atomic::AtomicBool};
 use tauri::Manager;
 
-pub(crate) struct AppState {
-    pub(crate) kernels: Mutex<HashMap<(String, String), Kernel>>,
-    pub(crate) input_writers: Mutex<HashMap<(String, String), mars_runtime::StdinWriter>>,
-    pub(crate) python_options: Mutex<HashMap<String, mars_kernel::PythonOptions>>,
-    pub(crate) sql_sources: Mutex<HashMap<String, Vec<mars_runtime::SqlSource>>>,
-    pub(crate) cancellations: Mutex<HashMap<String, Arc<AtomicBool>>>,
-    pub(crate) lsp: lsp::LspSessions,
-    pub(crate) backend: RuntimeBackendKind,
+pub struct AppState {
+    kernels: Mutex<HashMap<(String, String), Kernel>>,
+    input_writers: Mutex<HashMap<(String, String), mars_runtime::StdinWriter>>,
+    python_options: Mutex<HashMap<String, mars_kernel::PythonOptions>>,
+    sql_sources: Mutex<HashMap<String, Vec<mars_runtime::SqlSource>>>,
+    cancellations: Mutex<HashMap<String, Arc<AtomicBool>>>,
+    lsp: lsp::LspSessions,
+    backend: RuntimeBackendKind,
+}
+
+impl AppState {
+    pub fn new(backend: RuntimeBackendKind) -> Self {
+        Self {
+            kernels: Mutex::new(HashMap::new()),
+            input_writers: Mutex::new(HashMap::new()),
+            python_options: Mutex::new(HashMap::new()),
+            sql_sources: Mutex::new(HashMap::new()),
+            cancellations: Mutex::new(HashMap::new()),
+            lsp: lsp::LspSessions::new(),
+            backend,
+        }
+    }
 }
 
 #[tauri::command]
@@ -42,15 +56,7 @@ fn eval_output_script(app: tauri::AppHandle, script: String) -> Result<(), Strin
 pub fn run() -> tauri::Result<()> {
     let backend = RuntimeBackendKind::from_environment();
     tauri::Builder::default()
-        .manage(AppState {
-            kernels: Mutex::new(HashMap::new()),
-            input_writers: Mutex::new(HashMap::new()),
-            python_options: Mutex::new(HashMap::new()),
-            sql_sources: Mutex::new(HashMap::new()),
-            cancellations: Mutex::new(HashMap::new()),
-            lsp: lsp::LspSessions::new(),
-            backend,
-        })
+        .manage(AppState::new(backend))
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             kernel_exec::execute_cell,

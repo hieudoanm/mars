@@ -81,7 +81,8 @@ src-tauri/
 ├── icons/              # bundle icons
 ├── src/                # Rust host (see Responsibilities); no inline tests
 └── tests/              # integration tests against mars_tauri_lib
-│                       #   (notebook_files.rs: explorer + rename coverage)
+│                       #   (notebook_files, notebook_cmds, kernel, lsp,
+│                       #    lab, checkpoints, open)
 ```
 
 Package name is `mars-tauri`; lib name `mars_tauri_lib` (mobile builds consume

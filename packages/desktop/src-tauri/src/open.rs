@@ -2,7 +2,7 @@ use std::path::Path;
 
 /// Open the containing directory of `path` in the platform's terminal
 /// emulator. Best-effort: returns an error only when no candidate exists.
-pub(crate) fn open_in_terminal(path: &str) -> Result<(), String> {
+pub fn open_in_terminal(path: &str) -> Result<(), String> {
     let target = std::path::Path::new(path)
         .parent()
         .map(|p| p.to_path_buf())
@@ -53,7 +53,7 @@ fn open_directory_in_terminal(dir: &std::path::Path) -> Result<(), String> {
     Err("No terminal emulator found".to_owned())
 }
 
-pub(crate) fn open_path_external(path: &str) -> Result<(), String> {
+pub fn open_path_external(path: &str) -> Result<(), String> {
     let target = Path::new(path);
     if !target.exists() {
         return Err("File does not exist".to_owned());

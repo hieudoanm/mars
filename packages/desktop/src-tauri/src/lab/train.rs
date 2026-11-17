@@ -24,6 +24,15 @@ pub async fn lab_train(
     app: tauri::AppHandle,
     request: LabTrainRequest,
 ) -> Result<LabJobDetail, String> {
+    lab_train_inner(request, |job_id, stage| emit_progress(&app, job_id, stage)).await
+}
+
+/// Core of `lab_train` with progress reporting injected, so tests can drive
+/// it without a Tauri `AppHandle`.
+pub async fn lab_train_inner(
+    request: LabTrainRequest,
+    mut progress: impl FnMut(Uuid, &str),
+) -> Result<LabJobDetail, String> {
     let dataset_id =
         Uuid::parse_str(&request.dataset_id).map_err(|e| format!("invalid dataset ID: {e}"))?;
     let task = request
@@ -86,12 +95,12 @@ pub async fn lab_train(
     jobs::set_status(db.pool(), job.id, JobStatus::Training.as_str())
         .await
         .map_err(err)?;
-    emit_progress(&app, job.id, "training");
+    progress(job.id, "training");
 
-    match train_job(&app, db, &job, &df).await {
+    match train_job(&mut progress, db, &job, &df).await {
         Ok(()) => {}
         Err(message) => {
-            emit_progress(&app, job.id, "failed");
+            progress(job.id, "failed");
             let _ = jobs::record_failure(
                 db.pool(),
                 job.id,
@@ -103,14 +112,14 @@ pub async fn lab_train(
         }
     }
 
-    emit_progress(&app, job.id, "completed");
+    progress(job.id, "completed");
     job_detail(db, job.id)
         .await?
         .ok_or_else(|| "job disappeared after training".to_owned())
 }
 
 async fn train_job(
-    app: &tauri::AppHandle,
+    progress: &mut impl FnMut(Uuid, &str),
     db: &Database,
     job: &Job,
     df: &DataFrame,
@@ -120,7 +129,7 @@ async fn train_job(
     jobs::set_status(db.pool(), job.id, JobStatus::Exporting.as_str())
         .await
         .map_err(err)?;
-    emit_progress(app, job.id, "exporting");
+    progress(job.id, "exporting");
 
     let onnx_bytes =
         export::onnx::export_onnx(&output.model).map_err(|e| format!("ONNX export failed: {e}"))?;

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-pub(crate) fn checkpoints_directory(notebook_path: &str) -> Result<String, String> {
+pub fn checkpoints_directory(notebook_path: &str) -> Result<String, String> {
     let notebook = Path::new(notebook_path);
     let file_name = notebook
         .file_name()
@@ -13,7 +13,7 @@ pub(crate) fn checkpoints_directory(notebook_path: &str) -> Result<String, Strin
         .into_owned())
 }
 
-pub(crate) fn create_checkpoint(notebook_path: &str) -> Result<String, String> {
+pub fn create_checkpoint(notebook_path: &str) -> Result<String, String> {
     let source = Path::new(notebook_path);
     if !source.is_file() {
         return Err("Notebook file does not exist".to_owned());
@@ -38,7 +38,7 @@ pub(crate) fn create_checkpoint(notebook_path: &str) -> Result<String, String> {
     Ok(checkpoint.to_string_lossy().into_owned())
 }
 
-pub(crate) fn list_checkpoints(notebook_path: &str) -> Result<Vec<String>, String> {
+pub fn list_checkpoints(notebook_path: &str) -> Result<Vec<String>, String> {
     let directory_path = checkpoints_directory(notebook_path)?;
     let directory = Path::new(&directory_path);
     if !directory.is_dir() {
@@ -54,7 +54,7 @@ pub(crate) fn list_checkpoints(notebook_path: &str) -> Result<Vec<String>, Strin
     Ok(checkpoints)
 }
 
-pub(crate) fn read_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<String, String> {
+pub fn read_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<String, String> {
     let allowed = checkpoints_directory(notebook_path)?;
     let checkpoint_path = Path::new(checkpoint);
     if !checkpoint_path.starts_with(Path::new(&allowed)) || !checkpoint_path.is_file() {
@@ -63,7 +63,7 @@ pub(crate) fn read_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<S
     std::fs::read_to_string(checkpoint_path).map_err(|error| error.to_string())
 }
 
-pub(crate) fn restore_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<(), String> {
+pub fn restore_checkpoint(notebook_path: &str, checkpoint: &str) -> Result<(), String> {
     let allowed = checkpoints_directory(notebook_path)?;
     let checkpoint_path = Path::new(checkpoint);
     if !checkpoint_path.starts_with(Path::new(&allowed)) || !checkpoint_path.is_file() {

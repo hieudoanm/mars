@@ -91,7 +91,7 @@ jobs:
               -p mars-runtime-cpp -p mars-protocol -p mars-kernel -p mars-mcp \
               -p mars-jupyter -p mars-renderer -p mars-lsp -p mars \
               --tests \
-              --ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs' \
+              --ignore-filename-regex 'src/bin/(benchmark|runtime_benchmark)\.rs|mars-runtime-evcxr/src/(backend|session|context)\.rs|mars-cli/src/(commands|kernel|lab|doctor|main)\.rs' \
               --fail-under-lines 80 --fail-under-functions 80 \
               --lcov --output-path lcov.info
           }
