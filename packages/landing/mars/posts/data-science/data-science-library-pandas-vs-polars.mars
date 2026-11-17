@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "pandas vs Polars: Tabular Data Processing Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# pandas vs Polars: Tabular Data Processing Compared\n\npandas made DataFrames the default interface for tabular data in Python. Rust's **`polars`** brings a modern DataFrame engine with a focus on performance, parallel execution, and a clear expression API.\n\n## What pandas does\n\npandas revolutionized data analysis in Python by introducing:\n\n- **DataFrame** as a core data structure for tabular data\n- **I/O** for CSV, JSON, Excel, SQL, and other formats\n- **Data manipulation** via filtering, grouping, joining, and aggregating\n- **Time series** support with datetime indexing\n- **Integration** with NumPy, Matplotlib, and the broader ecosystem\n\nIt became the de facto standard for data wrangling and exploratory analysis.\n\n## What Polars brings to Rust\n\n**`polars`** is a modern DataFrame library designed for speed and ergonomics:\n\n- **Apache Arrow-based** columnar memory format for efficient operations\n- **Lazy evaluation** for query optimization\n- **Parallel execution** by default\n- **Expression API** for building complex queries in a readable way\n- **Multi-threaded** I/O for large datasets\n- **Zero-copy** operations where possible\n\nThe key difference: Polars compiles DataFrame operations to optimized native code and executes them in parallel, making it significantly faster for large-scale data processing.\n\n## Comparison\n\n| Feature            | pandas (Python)                  | Polars (Rust)                  |\n| ------------------ | -------------------------------- | ------------------------------ |\n| DataFrame creation | `pd.DataFrame({'a': [1, 2, 3]})` | `df! {\"a\" => [1, 2, 3]}`       |\n| Filtering          | `df[df['a'] > 1]`                | `df.filter(col(\"a\").gt(1))`    |\n| Grouping           | `df.groupby('a').sum()`          | `df.groupby([\"a\"]).sum()`      |\n| Performance        | Single-threaded, C-backed        | Multi-threaded, Arrow-native   |\n| Lazy evaluation    | No                               | Yes, with query optimization   |\n| Type safety        | Runtime                          | Compile-time                   |\n| Integration        | NumPy, SciPy, Matplotlib, etc.   | ndarray, plotters, serde, etc. |\n\n## Example: pandas",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import pandas as pd\n\ndf = pd.DataFrame({'a': [1, 2, 3], 'b': [4, 5, 6]})\nresult = df[df['a'] > 1].groupby('a').sum()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: Polars",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use polars::prelude::*;\n\nlet df = df! {\n    \"a\" => &[1, 2, 3],\n    \"b\" => &[4, 5, 6]\n};\nlet result = df.filter(col(\"a\").gt(1)).groupby([\"a\"]).sum();\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **pandas** in Python when you need the vast ecosystem, familiar syntax, or compatibility with existing Python workflows.\n- **polars** in Rust when you need performance for large datasets, parallel execution, or want to avoid the Python interpreter overhead.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nGroup-by aggregation — pandas' split-apply-combine, once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# pandas side.\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"group\": [\"a\", \"a\", \"b\", \"b\"],\n    \"value\": [1.0, 3.0, 2.0, 4.0],\n})\ndf.groupby(\"group\")[\"value\"].agg([\"mean\", \"sum\"])\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// polars does this lazily; eager equivalent with ndarray:\n// group rows by key and accumulate sums.\nlet keys = array![\"a\", \"a\", \"b\", \"b\"];\nlet values = array![1.0, 3.0, 2.0, 4.0];\nlet mut sums: std::collections::HashMap<&str, f64> = Default::default();\nfor (k, v) in keys.iter().zip(values.iter()) {\n    *sums.entry(*k).or_insert(0.0) += *v;\n}\nprintln!(\"group sums: {sums:?}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both pandas and Polars in their respective language runtimes:\n\n- **Python cells** can use pandas with standard library imports\n- **Rust cells** can use Polars via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- DataFrames persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore pandas and Polars in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

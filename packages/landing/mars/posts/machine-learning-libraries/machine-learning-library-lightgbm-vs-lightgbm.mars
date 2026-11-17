@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "LightGBM vs lightgbm: Fast Gradient Boosting Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# LightGBM vs lightgbm: Fast Gradient Boosting Compared\n\nLightGBM is valued for speed and efficiency on large tabular datasets. The **`lightgbm`** Rust bindings enable Rust developers to use this proven boosting approach in data pipelines and notebook experiments without leaving the Rust ecosystem.\n\n## What LightGBM does\n\nLightGBM provides an efficient gradient boosting framework:\n\n- **Leaf-wise** tree growth for better accuracy\n- **Histogram-based** algorithms for speed\n- **GPU acceleration** for training\n- **Handling large datasets** with memory efficiency\n- **Categorical feature** support\n- **Cross-validation** and early stopping\n\nIt became the preferred library for large-scale tabular ML where training speed matters.\n\n## What lightgbm brings to Rust\n\n**`lightgbm`** provides Rust bindings to LightGBM:\n\n- **Gradient boosting** via LightGBM C API\n- **Training and prediction** APIs\n- **Dataset handling** with Rust data structures\n- **GPU support** via CUDA\n- **Type-safe** data interfaces\n- **Performance** with native Rust data structures\n\nThe key difference: lightgbm allows you to use LightGBM's efficient gradient boosting from Rust, combining LightGBM's speed with Rust's type safety and memory efficiency.\n\n## Comparison\n\n| Feature     | LightGBM (Python)           | lightgbm (Rust)          |\n| ----------- | --------------------------- | ------------------------ |\n| Train model | `lgb.train(params, dtrain)` | `train(params, dataset)` |\n| Predict     | `model.predict(X)`          | `predict(&model, &data)` |\n| Dataset     | `lgb.Dataset(X, y)`         | Rust data structures     |\n| Type safety | Runtime                     | Compile-time             |\n| Performance | Python + C++ backend        | Rust + C++ backend       |\n| GPU support | CUDA                        | CUDA                     |\n\n## Example: LightGBM",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import lightgbm as lgb\n\ndtrain = lgb.Dataset(X, label=y)\nparams = {'num_leaves': 31, 'learning_rate': 0.05}\nmodel = lgb.train(params, dtrain)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: lightgbm",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use lightgbm::{Dataset, TrainParams};\n\nlet dataset = Dataset::from_dense(&features, &labels)?;\nlet model = train(&params, &dataset)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **LightGBM** in Python when you need fast gradient boosting, large dataset support, or integration with pandas and scikit-learn.\n- **lightgbm** in Rust when you want to use LightGBM from Rust, combine it with Rust's type system, or deploy models in Rust applications.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nLightGBM's speed comes from histogram binning — the idea, once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# LightGBM side: the sklearn-style API on a small frame.\nimport numpy as np\nfrom lightgbm import LGBMClassifier\n\nrng = np.random.default_rng(0)\nX = rng.normal(size=(200, 5))\ny = (X[:, 0] + X[:, 1] > 0).astype(int)\n\nmodel = LGBMClassifier(n_estimators=20, verbose=-1).fit(X, y)\nmodel.score(X, y)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// Histogram binning by hand: sort a feature and count per bucket —\n// the preprocessing step behind LightGBM's speed.\nlet mut values: Vec<f64> = (0..100).map(|i| (i % 17) as f64).collect();\nvalues.sort_by(|a, b| a.partial_cmp(b).unwrap());\nlet bins = 4;\nlet per_bin = values.len() / bins;\nfor b in 0..bins {\n    let lo = b * per_bin;\n    let hi = if b == bins - 1 { values.len() } else { lo + per_bin };\n    println!(\"bin {b}: {} samples\", hi - lo);\n}\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both LightGBM versions in their respective language runtimes:\n\n- **Python cells** can use LightGBM with standard library imports\n- **Rust cells** can use lightgbm via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and datasets persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore LightGBM in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

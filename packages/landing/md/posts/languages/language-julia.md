@@ -80,6 +80,23 @@ The same design choices that make Julia fast create trade-offs:
 
 None of this made Julia a bad choice — it made it a _different_ choice, optimized for performance-first development without sacrificing the REPL experience.
 
+## Try it in Project Mars
+
+Julia cells evaluate inside the `MarsKernel` module in a persistent session. The last expression of a cell is displayed via its MIME representations, `display()` publishes rich mime bundles, and `readline()` asks the kernel for input.
+
+```julia
+# Cells share the MarsKernel module; the last expression displays automatically.
+sepal_lengths = [5.1, 4.9, 4.7, 4.6, 5.0]
+
+sum(sepal_lengths) / length(sepal_lengths)   # -> 4.86
+```
+
+```julia
+# display() publishes MIME bundles; `ans` holds the last displayed value.
+display("MarsKernel: hello from Julia")
+ans
+```
+
 ## Where Project Mars fits
 
 Project Mars does not ask you to choose Julia over Python. It supports both in the same notebook environment, so you can use the right tool for each cell. What Project Mars offers with Julia is:

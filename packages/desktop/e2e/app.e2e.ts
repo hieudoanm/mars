@@ -82,9 +82,9 @@ describe('Mars desktop (tauri-driver)', () => {
   });
 
   it('executes Rust cells through the real kernel', async () => {
-    // "New notebook" seeds the getting-started tour, whose Rust cells print
-    // known markers. Typing into CodeMirror's contenteditable is unreliable
-    // under WebKitWebDriver, so run all cells and wait for a real output.
+    // "New notebook" seeds the getting-started tour (26 Rust cells). Typing
+    // into CodeMirror's contenteditable is unreliable under WebKitWebDriver,
+    // so run all cells and wait for a marker the tour actually prints.
     await clickButton('Run all (F6)');
 
     await browser.waitUntil(
@@ -92,7 +92,7 @@ describe('Mars desktop (tauri-driver)', () => {
         const outputs = await $$('[data-component="OutputView"]');
         for (const output of outputs) {
           try {
-            if ((await output.getText()).includes('Hello from Project Mars')) return true;
+            if ((await output.getText()).includes('language = Rust')) return true;
           } catch {
             // element detached mid-render; keep polling
           }

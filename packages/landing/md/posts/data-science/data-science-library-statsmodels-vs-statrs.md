@@ -74,6 +74,35 @@ let result = normal.cdf(x);
 - **Statsmodels** in Python when you need a comprehensive statistical modeling suite, time series analysis, or integration with pandas and NumPy.
 - **statrs** in Rust when you need type-safe statistical primitives, performance for simulations, or want to avoid the Python interpreter overhead.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+Descriptive statistics — the numbers behind every OLS summary — once per language:
+
+```python
+# statsmodels side: the full regression summary.
+import numpy as np
+import statsmodels.api as sm
+
+x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+y = 2.0 * x + 1.0 + np.array([0.1, -0.2, 0.0, 0.1, -0.1])
+X = sm.add_constant(x)
+sm.OLS(y, X).fit().summary()
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// statrs provides the same moments; ndarray computes them eagerly.
+let y = array![3.1, 5.8, 7.0, 9.1, 10.9];
+let mean = y.mean().unwrap();
+let var = y.var(0.0).unwrap();
+println!("mean={mean:.3} var={var:.3} n={}", y.len());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both Statsmodels and statrs in their respective language runtimes:

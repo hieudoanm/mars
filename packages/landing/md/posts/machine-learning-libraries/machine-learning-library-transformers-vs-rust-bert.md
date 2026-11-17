@@ -74,6 +74,31 @@ let outputs = model.forward(&inputs)?;
 - **Transformers** in Python when you need the full Hugging Face ecosystem, access to thousands of models, or integration with PyTorch and TensorFlow.
 - **rust-bert** in Rust when you want to use transformer models from Rust, combine them with Rust's type system, or deploy NLP models in Rust applications.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+NLP in a notebook — a pretrained pipeline call in Python, and the token-counting step rust-bert wraps, in Rust:
+
+```python
+# Transformers side: a pretrained pipeline (downloads weights once).
+from transformers import pipeline
+
+classifier = pipeline("sentiment-analysis")
+classifier("Project Mars makes notebooks reproducible.")
+```
+
+```rust
+// rust-bert handles tokenization + the transformer itself;
+// the input side is just text → token ids. Word counts first:
+let text = "mars notebooks are reproducible";
+let mut counts = std::collections::HashMap::new();
+for word in text.split_whitespace() {
+    *counts.entry(word).or_insert(0usize) += 1;
+}
+println!("token histogram: {counts:?}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both Transformers and rust-bert in their respective language runtimes:

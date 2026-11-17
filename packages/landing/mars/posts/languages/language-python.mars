@@ -1,0 +1,65 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Why Python?",
+    "language": "python"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Why Python?\n\nPython was not designed for data science. It was designed in the late 1980s as a general-purpose scripting language — readable, batteries-included, friendly to beginners. It became the default language for scientific computing anyway, and the reasons say a lot about what people actually need from a tool.\n\n## Readability as a feature\n\nPython's most famous design choice is that it uses whitespace for structure. There are no curly braces, no `end` keywords, no semicolons. A function looks like what it does:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "def moving_average(values, window):\n    totals = []\n    for i in range(len(values)):\n        chunk = values[max(0, i - window + 1) : i + 1]\n        totals.append(sum(chunk) / len(chunk))\n    return totals\n",
+      "metadata": {},
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "For a language people read as much as they write — in notebooks, in tutorials, in code review — that matters more than it looks. Python lowered the barrier to entry so far that \"I can read this\" became \"I can write this.\"\n\n## The ecosystem did the rest\n\nA language is only as useful as its libraries, and Python's ecosystem compounded over three decades:\n\n- **NumPy** made array math fast by pushing the hot loops into C.\n- **pandas** made tabular data feel like a first-class object.\n- **scikit-learn, PyTorch, TensorFlow** made machine learning accessible to people who are not compiler engineers.\n- **Jupyter** gave all of it an interactive home.\n\nEach layer made the next one easier to adopt. By the time a serious alternative appeared, Python had a decade of tutorials, Stack Overflow answers, and institutional knowledge behind it.\n\n## What Python costs\n\nThe same properties that made Python approachable create real structural costs:\n\n- **The interpreter.** Python executes bytecode through a virtual machine. A tight loop in pure Python is slow — so slow that numerical code quietly delegates to C extensions. The \"Python\" in a data science stack is often a thin orchestration layer over native code.\n- **The GIL.** The Global Interpreter Lock means only one thread executes Python bytecode at a time. Parallelism requires multiprocessing (with its own memory and serialization costs) or a different runtime entirely.\n- **Dynamic typing.** Types are checked at runtime, so a wrong assumption surfaces as an exception mid-analysis — often after expensive computation has already run.\n- **Dependency weight.** A \"simple\" Python environment is rarely simple. Versions conflict, binaries need compiling, and reproducing someone else's analysis means reproducing their entire environment.\n\nNone of this made Python a bad choice — it made it a _specific_ choice, optimized for approachability and ecosystem breadth rather than raw performance or deployment simplicity.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nPython cells in Mars run in a **persistent interpreter session**: bindings survive across cells, the last expression of each cell is displayed automatically, and `display()` publishes MIME bundles for rich output. `%pip install …` adds packages, `!command` escapes to the shell, and `input()` asks the kernel for a line.\n\nThis notebook keeps state between cells — `sepal_lengths` defined here is still available in the next cell:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "# One shared session: this binding is visible to every later cell.\nsepal_lengths = [5.1, 4.9, 4.7, 4.6, 5.0]\nspecies = [\"setosa\"] * len(sepal_lengths)\n\nmean_sepal = sum(sepal_lengths) / len(sepal_lengths)\nmean_sepal\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "code",
+      "source": "# Later cell — the earlier bindings are still here.\nf\"{species[0]}: mean sepal length = {mean_sepal:.2f} cm over {len(sepal_lengths)} flowers\"\n",
+      "metadata": {},
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# display() publishes MIME bundles; rich objects can define _repr_html_.\ndisplay({\n    \"text/plain\": \"mean sepal length = 4.86 cm\",\n    \"text/html\": \"<b>mean sepal length = 4.86 cm</b>\",\n}, raw=True)\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "markdown",
+      "source": "## Where Project Mars fits\n\nProject Mars does not ask you to leave Python behind. It imports and exports `.ipynb` notebooks, so existing Python work keeps working. What Project Mars offers is a notebook where the _code itself_ is compiled Rust — for the cells where you want native speed, memory safety, and a single reproducible binary.\n\nPython earned its place as the glue of data science. Project Mars is for the parts that deserve a sharper tool.",
+      "metadata": {}
+    }
+  ]
+}

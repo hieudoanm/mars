@@ -72,6 +72,49 @@ let labels = kmeans.predict(&dataset);
 - **scikit-learn** in Python when you need the broadest algorithm set, mature ecosystem, or integration with pandas and NumPy.
 - **linfa** in Rust when you need type-safe ML operations, performance for large datasets, or want to avoid the Python interpreter overhead.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+The canonical ML workflow — load data, split, fit, score — in both ecosystems:
+
+```python
+# scikit-learn side.
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+
+clf = LogisticRegression(max_iter=200).fit(X_train, y_train)
+clf.score(X_test, y_test)
+```
+
+```rust
+// :dep ndarray = "0.16"
+// :dep rand = "0.8"
+
+use ndarray::Array2;
+use rand::Rng;
+
+// linfa-style split + baseline on synthetic data — the shape a
+// linfa LogisticRegression::fit call takes.
+let mut rng = rand::thread_rng();
+let n = 300;
+let mut xs = Array2::zeros((n, 2));
+let mut ys = Vec::with_capacity(n);
+for i in 0..n {
+    let a = rng.gen_range(-1.0..1.0);
+    let b = rng.gen_range(-1.0..1.0);
+    xs[[i, 0]] = a;
+    xs[[i, 1]] = b;
+    ys.push(if a - b > 0.0 { 1 } else { 0 });
+}
+let split = n * 4 / 5;
+println!("train rows: {}, test rows: {}", split, n - split);
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both scikit-learn and linfa in their respective language runtimes:

@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Matplotlib vs plotters: 2D Plotting Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Matplotlib vs plotters: 2D Plotting Compared\n\nMatplotlib is the workhorse plotting library for Python. Rust's **`plotters`** is a flexible drawing and charting library that can render line charts, bar charts, scatter plots, and more with native performance.\n\n## What Matplotlib does\n\nMatplotlib provides a comprehensive plotting ecosystem:\n\n- **Line plots**, scatter plots, bar charts, histograms\n- **Customizable axes**, labels, legends, and styling\n- **Multiple backends** (PNG, SVG, PDF, interactive)\n- **Integration** with NumPy and pandas\n- **Subplots** and complex figure layouts\n- **Publication-quality** graphics\n\nIt became the default plotting library for Python, used across scientific computing, data science, and engineering.\n\n## What plotters brings to Rust\n\n**`plotters`** is a Rust library for creating 2D charts:\n\n- **Chart types**: line, bar, scatter, histogram, pie, box plot\n- **Customizable styling** with fonts, colors, and themes\n- **Multiple backends**: bitmap (PNG, BMP), vector (SVG, PDF)\n- **Composable** chart building with a fluent API\n- **Performance** via native rendering\n- **Type-safe** API that catches errors at compile time\n\nThe key difference: plotters compiles chart rendering to native code and outputs directly to image files or SVG without the Python interpreter overhead.\n\n## Comparison\n\n| Feature     | Matplotlib (Python)          | plotters (Rust)                     |\n| ----------- | ---------------------------- | ----------------------------------- |\n| Line plot   | `plt.plot(x, y)`             | `Chart::new((100, 50)).draw(&line)` |\n| Styling     | `plt.style.use('seaborn')`   | Theme-based styling                 |\n| Backends    | Agg, SVG, PDF, interactive   | Bitmap, SVG, PDF                    |\n| Type safety | Runtime                      | Compile-time                        |\n| Performance | C-backed                     | Native compilation                  |\n| Integration | NumPy, pandas, Jupyter, etc. | ndarray, polars, etc.               |\n\n## Example: Matplotlib",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import matplotlib.pyplot as plt\n\nx = [1, 2, 3, 4, 5]\ny = [1, 4, 9, 16, 25]\nplt.plot(x, y)\nplt.savefig('plot.png')\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: plotters",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use plotters::prelude::*;\n\nlet root = BitMapBackend::new(\"plot.png\", (640, 480)).into_drawing_area();\nlet mut chart = ChartBuilder::on(&root)\n    .caption(\"Line Plot\", (\"sans-serif\", 20))\n    .build()\n    .unwrap();\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Matplotlib** in Python when you need the vast ecosystem, familiar API, or integration with NumPy and pandas.\n- **plotters** in Rust when you need native performance, type safety, or want to avoid the Python interpreter overhead for chart rendering.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nA line chart's data pipeline — compute the series, then hand it to the renderer — once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Matplotlib side: plot is captured as cell output.\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 2 * np.pi, 50)\nplt.plot(x, np.sin(x))\nplt.title(\"sin(x)\")\nplt.show()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::Array2;\n\n// plotters renders charts to SVG/PNG; the data side is ndarray.\nlet x = Array2::from_shape_fn((50, 1), |(i, _)| {\n    (i as f64) * 2.0 * std::f64::consts::PI / 49.0\n});\nlet y: Vec<f64> = x.column(0).iter().map(|v| v.sin()).collect();\nprintln!(\"series ready: {} points, first={:.3}\", y.len(), y[0]);\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both Matplotlib and plotters in their respective language runtimes:\n\n- **Python cells** can use Matplotlib with automatic figure capture to PNG\n- **Rust cells** can use plotters via Cargo dependencies with SVG/PNG output\n- Both can coexist in the same `.mars` notebook\n- Chart outputs render as rich MIME bundles in the notebook\n\nStart with the [getting started guide](/docs/getting-started) and the [plotting example](https://github.com/hieudoanm/mars/tree/main/examples/mars/rust/03-plotting) to explore Matplotlib and plotters in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

@@ -48,6 +48,34 @@ The same properties that made Python approachable create real structural costs:
 
 None of this made Python a bad choice — it made it a _specific_ choice, optimized for approachability and ecosystem breadth rather than raw performance or deployment simplicity.
 
+## Try it in Project Mars
+
+Python cells in Mars run in a **persistent interpreter session**: bindings survive across cells, the last expression of each cell is displayed automatically, and `display()` publishes MIME bundles for rich output. `%pip install …` adds packages, `!command` escapes to the shell, and `input()` asks the kernel for a line.
+
+This notebook keeps state between cells — `sepal_lengths` defined here is still available in the next cell:
+
+```python
+# One shared session: this binding is visible to every later cell.
+sepal_lengths = [5.1, 4.9, 4.7, 4.6, 5.0]
+species = ["setosa"] * len(sepal_lengths)
+
+mean_sepal = sum(sepal_lengths) / len(sepal_lengths)
+mean_sepal
+```
+
+```python
+# Later cell — the earlier bindings are still here.
+f"{species[0]}: mean sepal length = {mean_sepal:.2f} cm over {len(sepal_lengths)} flowers"
+```
+
+```python
+# display() publishes MIME bundles; rich objects can define _repr_html_.
+display({
+    "text/plain": "mean sepal length = 4.86 cm",
+    "text/html": "<b>mean sepal length = 4.86 cm</b>",
+}, raw=True)
+```
+
 ## Where Project Mars fits
 
 Project Mars does not ask you to leave Python behind. It imports and exports `.ipynb` notebooks, so existing Python work keeps working. What Project Mars offers is a notebook where the _code itself_ is compiled Rust — for the cells where you want native speed, memory safety, and a single reproducible binary.

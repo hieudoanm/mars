@@ -71,6 +71,36 @@ let edges = canny(&image, 100.0, 200.0, None, None)?;
 - **OpenCV** in Python when you need the full OpenCV ecosystem, rapid prototyping, or integration with NumPy and deep learning frameworks.
 - **opencv** in Rust when you want to use OpenCV from Rust, combine it with Rust's type system, or deploy computer vision applications in Rust.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+A classic vision op — RGB to grayscale — once per language:
+
+```python
+# OpenCV side: cvtColor on a small RGB array.
+import numpy as np
+import cv2
+
+img = np.array([[[255, 0, 0], [0, 255, 0]],
+                [[0, 0, 255], [255, 255, 255]]], dtype=np.uint8)
+
+gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+gray.tolist()
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// Same op with ndarray: luminance = 0.299R + 0.587G + 0.114B.
+let img = array![[[255.0, 0.0, 0.0], [0.0, 255.0, 0.0]],
+                 [[0.0, 0.0, 255.0], [255.0, 255.0, 255.0]]];
+let gray = &img * array![[[0.299, 0.587, 0.114]]];
+println!("grayscale sum: {:.1}", gray.sum());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both OpenCV versions in their respective language runtimes:

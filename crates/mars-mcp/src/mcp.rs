@@ -4,7 +4,7 @@
 //! `tools/list`, and `tools/call` over newline-delimited JSON-RPC.
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{json, Value};
 
 pub const PROTOCOL_VERSION: &str = "2025-11-25";
 pub const SERVER_NAME: &str = "mars";
@@ -31,6 +31,10 @@ pub struct Tool {
     pub description: Option<String>,
     #[serde(rename = "inputSchema")]
     pub input_schema: Value,
+    /// JSON Schema for `structuredContent`; `{"type":"object"}` for all tools
+    /// since handlers return JSON objects (non-object payloads are wrapped).
+    #[serde(rename = "outputSchema", skip_serializing_if = "Option::is_none")]
+    pub output_schema: Option<Value>,
     /// Always serialized; defaults when parsing tools from servers that omit
     /// annotations (the field is optional in the MCP spec).
     #[serde(default)]
@@ -47,6 +51,13 @@ pub struct TextContent {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CallToolResult {
     pub content: Vec<TextContent>,
+    /// Structured twin of the JSON text payload (always an object).
+    #[serde(
+        rename = "structuredContent",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub structured_content: Option<Value>,
     #[serde(rename = "isError", skip_serializing_if = "Option::is_none")]
     pub is_error: Option<bool>,
 }
@@ -58,12 +69,24 @@ impl CallToolResult {
                 kind: "text".to_owned(),
                 text: text.into(),
             }],
+            structured_content: None,
             is_error: None,
         }
     }
 
+    /// JSON result: text carries the pretty payload and `structuredContent`
+    /// carries the same data as an object (arrays/scalars are wrapped so the
+    /// payload always validates against the tools' `outputSchema`).
     pub fn ok_json(value: &Value) -> Self {
-        Self::ok(serde_json::to_string_pretty(value).unwrap_or_else(|_| value.to_string()))
+        let structured = match value {
+            Value::Object(_) => value.clone(),
+            Value::Array(items) => json!({ "items": items }),
+            other => json!({ "value": other }),
+        };
+        let mut result = Self::ok(serde_json::to_string_pretty(value)
+            .unwrap_or_else(|_| value.to_string()));
+        result.structured_content = Some(structured);
+        result
     }
 
     pub fn error(message: impl Into<String>) -> Self {
@@ -72,6 +95,7 @@ impl CallToolResult {
                 kind: "text".to_owned(),
                 text: message.into(),
             }],
+            structured_content: None,
             is_error: Some(true),
         }
     }

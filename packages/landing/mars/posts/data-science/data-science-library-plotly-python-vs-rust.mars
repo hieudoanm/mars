@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Plotly vs plotly: Interactive Charts Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Plotly vs plotly: Interactive Charts Compared\n\nPlotly is widely used for interactive, shareable visualizations in Python. The Rust **`plotly`** crate provides a similar path to interactive charts, helping notebook users explore data visually and communicate results clearly.\n\n## What Plotly does\n\nPlotly provides an interactive charting ecosystem:\n\n- **Interactive charts** (line, scatter, bar, pie, 3D plots)\n- **Hover tooltips** and zoom/pan capabilities\n- **Web-based rendering** via HTML/JavaScript\n- **Export** to PNG, SVG, and PDF\n- **Dash integration** for building dashboards\n- **Collaborative sharing** via Plotly Cloud\n\nIt became the default library for interactive visualization in Python, especially for dashboards and exploratory analysis.\n\n## What plotly brings to Rust\n\n**`plotly`** is a Rust library for creating interactive charts:\n\n- **Chart types**: line, scatter, bar, pie, heatmap, 3D\n- **Interactive features**: zoom, pan, hover tooltips\n- **HTML/JS rendering** for web deployment\n- **Export** to static images\n- **Type-safe** chart construction\n- **Native performance** without Python overhead\n\nThe key difference: plotly generates interactive charts from Rust code and renders them in web browsers, combining Rust's performance with Plotly's interactivity.\n\n## Comparison\n\n| Feature       | Plotly (Python)                   | plotly (Rust)             |\n| ------------- | --------------------------------- | ------------------------- |\n| Line plot     | `fig = px.line(df, x='x', y='y')` | `Plot::new().line(x, y)`  |\n| Interactivity | Zoom, pan, hover tooltips         | Zoom, pan, hover tooltips |\n| Rendering     | HTML/JavaScript                   | HTML/JavaScript           |\n| Type safety   | Runtime                           | Compile-time              |\n| Performance   | Python + JavaScript               | Rust + JavaScript         |\n| Integration   | pandas, NumPy, Dash, etc.         | ndarray, polars, etc.     |\n\n## Example: Plotly",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import plotly.express as px\n\ndf = px.data.iris()\nfig = px.scatter(df, x='sepal_width', y='sepal_length')\nfig.show()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: plotly",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use plotly::Plot;\n\nlet mut plot = Plot::new();\nplot.add_trace(plotly::Scatter::new(x, y));\nplot.show();\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Plotly** in Python when you need interactive charts, Dash integration, or want to share visualizations via Plotly Cloud.\n- **plotly** in Rust when you need interactive charts with type safety and want to avoid the Python interpreter overhead.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nInteractive charts start as data — build the series once per language, renderers take it from there:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Plotly side: express API, figure captured as output.\nimport plotly.express as px\nimport pandas as pd\n\ndf = pd.DataFrame({\"x\": [1, 2, 3, 4], \"y\": [2, 1, 4, 3]})\nfig = px.line(df, x=\"x\", y=\"y\", title=\"trend\")\nfig.show()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// Rust charting crates consume the same (x, y) series.\nlet x = array![1.0, 2.0, 3.0, 4.0];\nlet y = array![2.0, 1.0, 4.0, 3.0];\nlet points: Vec<(f64, f64)> = x.iter().zip(y.iter()).map(|(a, b)| (*a, *b)).collect();\nprintln!(\"{} points for the chart\", points.len());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both Plotly versions in their respective language runtimes:\n\n- **Python cells** can use Plotly with HTML output rendering\n- **Rust cells** can use plotly via Cargo dependencies with HTML output\n- Both can coexist in the same `.mars` notebook\n- Interactive chart outputs render as HTML MIME bundles in the notebook\n\nStart with the [getting started guide](/docs/getting-started) to explore Plotly in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

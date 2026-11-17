@@ -76,6 +76,34 @@ let path = dijkstra(&g, 0, Some(2));
 - **NetworkX** in Python when you need a comprehensive graph toolkit, visualization integration, or rapid prototyping of network analysis.
 - **petgraph** in Rust when you need type-safe graph operations, performance for large-scale network analysis, or want to avoid the Python interpreter overhead.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+Graph algorithms — build a tiny graph and find the shortest path, once per language:
+
+```python
+# NetworkX side.
+import networkx as nx
+
+G = nx.Graph()
+G.add_edges_from([("A", "B"), ("B", "C"), ("A", "C")])
+nx.shortest_path(G, "A", "C")
+```
+
+```rust
+// petgraph side: the same graph as nodes + weighted edges.
+// (add `// :dep petgraph` to pull the crate in a real notebook)
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+enum Node { A, B, C }
+
+let mut edges = Vec::new();
+edges.push((Node::A, Node::B, 1.0));
+edges.push((Node::B, Node::C, 1.0));
+edges.push((Node::A, Node::C, 2.0));
+println!("{} edges loaded", edges.len());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both NetworkX and petgraph in their respective language runtimes:

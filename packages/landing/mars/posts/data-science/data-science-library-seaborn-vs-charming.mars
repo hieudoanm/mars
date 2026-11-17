@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Seaborn vs charming: Statistical Visualization Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Seaborn vs charming: Statistical Visualization Compared\n\nSeaborn builds expressive statistical graphics on top of Matplotlib in Python. Rust's **`charming`** brings a high-level charting API to Rust, making it easier to produce polished visualizations without manually assembling every plotting detail.\n\n## What Seaborn does\n\nSeaborn simplifies statistical visualization by providing:\n\n- **Statistical plots** (box plots, violin plots, distribution plots)\n- **Built-in themes** and color palettes\n- **Automatic estimation** of confidence intervals\n- **Faceting** for multi-panel figures\n- **Integration** with pandas DataFrames\n- **Regression plots** with fitted lines and confidence bands\n\nIt became the preferred library for statistical graphics in Python, especially for exploratory data analysis.\n\n## What charming brings to Rust\n\n**`charming`** is a Rust library for high-level statistical visualization:\n\n- **Statistical chart types** (histograms, box plots, violin plots)\n- **Theme support** for consistent styling\n- **Confidence interval** estimation\n- **Faceting** for grouped visualizations\n- **Composable** with plotters for rendering\n- **Type-safe** API for statistical operations\n\nThe key difference: charming provides a high-level abstraction over plotters, making it easier to create statistical visualizations while maintaining Rust's performance and type safety.\n\n## Comparison\n\n| Feature             | Seaborn (Python)                | charming (Rust)                    |\n| ------------------- | ------------------------------- | ---------------------------------- |\n| Box plot            | `sns.boxplot(data=df)`          | `Chart::new().boxplot(data)`       |\n| Theme               | `sns.set_theme('darkgrid')`     | Theme-based styling                |\n| Confidence interval | Automatic                       | Configurable, compile-time checked |\n| Type safety         | Runtime                         | Compile-time                       |\n| Performance         | Matplotlib backend              | Native plotters rendering          |\n| Integration         | pandas, Matplotlib, NumPy, etc. | plotters, ndarray, polars, etc.    |\n\n## Example: Seaborn",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import seaborn as sns\nimport matplotlib.pyplot as plt\n\nsns.boxplot(data=df, x='category', y='value')\nplt.savefig('boxplot.png')\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: charming",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use charming::prelude::*;\n\nlet chart = Chart::new().boxplot(data).theme(Theme::Dark);\nchart.save(\"boxplot.png\")?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Seaborn** in Python when you need a high-level API for statistical graphics, built-in themes, or integration with pandas and Matplotlib.\n- **charming** in Rust when you need high-level statistical visualization with type safety and native performance.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nStatistical visualization starts with correlation — compute it once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Seaborn side: corrplot-style pairwise correlations.\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"x\": [1.0, 2.0, 3.0, 4.0, 5.0],\n    \"y\": [2.1, 3.9, 6.2, 7.8, 10.1],\n})\ndf.corr()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// charming renders charts; correlation is plain ndarray math.\nlet x = array![1.0, 2.0, 3.0, 4.0, 5.0];\nlet y = array![2.1, 3.9, 6.2, 7.8, 10.1];\nlet mx = x.mean().unwrap();\nlet my = y.mean().unwrap();\nlet cov: f64 = x.iter().zip(y.iter()).map(|(a, b)| (a - mx) * (b - my)).sum();\nlet corr = cov / ((x.var(0.0).unwrap() * y.var(0.0).unwrap()).sqrt() * 5.0);\nprintln!(\"correlation ≈ {corr:.3}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both Seaborn and charming in their respective language runtimes:\n\n- **Python cells** can use Seaborn with automatic figure capture to PNG\n- **Rust cells** can use charming via Cargo dependencies with SVG/PNG output\n- Both can coexist in the same `.mars` notebook\n- Statistical chart outputs render as rich MIME bundles in the notebook\n\nStart with the [getting started guide](/docs/getting-started) to explore Seaborn and charming in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

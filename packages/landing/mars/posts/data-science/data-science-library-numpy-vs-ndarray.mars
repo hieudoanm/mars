@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "NumPy vs ndarray: Numerical Computing Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# NumPy vs ndarray: Numerical Computing Compared\n\nNumPy is the foundation of numerical computing in Python. Rust's **`ndarray`** provides n-dimensional arrays, slicing, broadcasting-style operations, and efficient numerical routines—compiled to native code with no interpreter overhead.\n\n## What NumPy does\n\nNumPy introduced the concept of n-dimensional arrays to Python, enabling:\n\n- Efficient array storage and memory management\n- Vectorized operations without explicit loops\n- Broadcasting for element-wise operations across arrays of different shapes\n- Linear algebra primitives\n- Integration with the broader scientific Python ecosystem\n\nIt became the default data structure for numerical work, and nearly every Python data science library builds on it.\n\n## What ndarray brings to Rust\n\n**`ndarray`** is Rust's answer to NumPy's array model:\n\n- **N-dimensional arrays** with generic element types\n- **Efficient storage** via contiguous memory layouts\n- **Slicing and views** without copying data\n- **Broadcasting-style operations** through explicit APIs\n- **Linear algebra** via integration with BLAS/LAPACK\n- **Zero-cost abstractions** that compile to optimized native code\n\nThe key difference: ndarray compiles array operations to native machine code, so tight numerical loops run at C-like speeds without leaving Rust.\n\n## Comparison\n\n| Feature           | NumPy (Python)                  | ndarray (Rust)                      |\n| ----------------- | ------------------------------- | ----------------------------------- |\n| Array creation    | `np.array([1, 2, 3])`           | `array![1, 2, 3]`                   |\n| Slicing           | `arr[1:5, ::2]`                 | `arr.slice(s![1..5, ..;2])`         |\n| Broadcasting      | Automatic                       | Explicit APIs, compile-time checked |\n| Type safety       | Runtime                         | Compile-time                        |\n| Performance       | C-backed via NumPy              | Native compilation, no interpreter  |\n| Memory management | Reference counting              | RAII, no garbage collector          |\n| Integration       | Pandas, SciPy, Matplotlib, etc. | Polars, faer, plotters, etc.        |\n\n## Example: NumPy",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import numpy as np\n\narr = np.array([[1, 2, 3], [4, 5, 6]])\nresult = arr * 2  # Element-wise multiplication\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: ndarray",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use ndarray::prelude::*;\n\nlet arr = array![[1, 2, 3], [4, 5, 6]];\nlet result = &arr * 2; // Element-wise multiplication\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **NumPy** in Python when you need maximum ecosystem compatibility, rapid prototyping, or integration with pandas, scikit-learn, and Matplotlib.\n- **ndarray** in Rust when you need compile-time safety, predictable performance, or want to avoid the Python interpreter overhead for array-heavy computations.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nThe canonical pair — same broadcasting operation, once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# NumPy side: broadcasting (3,) against (2, 3).\nimport numpy as np\n\na = np.array([[1, 2, 3], [4, 5, 6]])\nb = np.array([10, 20, 30])\na + b\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// ndarray side: identical broadcast semantics.\nlet a = array![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];\nlet b = array![10.0, 20.0, 30.0];\nlet sum = &a + &b;\nprintln!(\"{sum:?}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars runs both Python and Rust in the same notebook environment:\n\n- **Python cells** can use NumPy with standard library imports\n- **Rust cells** can use ndarray via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Variables persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore NumPy and ndarray in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

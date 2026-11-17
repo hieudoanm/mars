@@ -598,3 +598,20 @@ fn slides_export_groups_cells_into_sections() {
     assert!(html.contains("data-slide=\"0\""));
     assert!(html.contains("data-slide=\"1\""));
 }
+
+#[test]
+fn render_markdown_notebook_uses_cell_and_notebook_language_for_fences() {
+    let mut notebook = notebook_with(vec![
+        Cell::new(CellType::Code, "print('hi')"),
+        Cell::new(CellType::Code, "cat('hi')"),
+    ]);
+    notebook.metadata.language = "python".to_owned();
+    notebook.cells[1]
+        .metadata
+        .insert("language".to_owned(), serde_json::json!("r"));
+
+    let markdown = render_markdown_notebook(&notebook);
+    assert!(markdown.contains("```python\nprint('hi')\n```"));
+    assert!(markdown.contains("```r\ncat('hi')\n```"));
+    assert!(!markdown.contains("```rust"));
+}

@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "CatBoost vs catboost-rs: Categorical Gradient Boosting Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# CatBoost vs catboost-rs: Categorical Gradient Boosting Compared\n\nCatBoost handles categorical features effectively and often performs well with minimal preprocessing. **`catboost-rs`** provides Rust access to CatBoost workflows, supporting practical ML tasks where categorical data is central.\n\n## What CatBoost does\n\nCatBoost provides a gradient boosting framework optimized for categorical features:\n\n- **Automatic handling** of categorical features\n- **Ordered boosting** to reduce overfitting\n- **Fast training** on GPU\n- **Cross-validation** and early stopping\n- **Model interpretation** via feature importance\n- **Production deployment** support\n\nIt became the preferred library for datasets with many categorical features, often outperforming other boosting libraries with minimal preprocessing.\n\n## What catboost-rs brings to Rust\n\n**`catboost-rs`** provides Rust bindings to CatBoost:\n\n- **Gradient boosting** via CatBoost C API\n- **Training and prediction** APIs\n- **Categorical feature** handling\n- **GPU support** for faster training\n- **Type-safe** data interfaces\n- **Performance** with native Rust data structures\n\nThe key difference: catboost-rs allows you to use CatBoost's categorical handling from Rust, combining CatBoost's strengths with Rust's type safety and deployment simplicity.\n\n## Comparison\n\n| Feature              | CatBoost (Python)               | catboost-rs (Rust)       |\n| -------------------- | ------------------------------- | ------------------------ |\n| Train model          | `model.fit(X, y, cat_features)` | `train(pool, params)`    |\n| Predict              | `model.predict(X)`              | `predict(&model, &pool)` |\n| Categorical features | Automatic detection             | Specified via pool       |\n| Type safety          | Runtime                         | Compile-time             |\n| Performance          | Python + C++ backend            | Rust + C++ backend       |\n| GPU support          | CUDA                            | CUDA                     |\n\n## Example: CatBoost",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "from catboost import CatBoostClassifier\n\nmodel = CatBoostClassifier(cat_features=['cat1', 'cat2'])\nmodel.fit(X, y)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: catboost-rs",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use catboost::{Pool, TrainParams};\n\nlet pool = Pool::from_features(features, cat_features)?;\nlet model = train(&params, &pool)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **CatBoost** in Python when you need automatic categorical handling, GPU training, or integration with pandas and scikit-learn.\n- **catboost-rs** in Rust when you want to use CatBoost from Rust, combine it with Rust's type system, or deploy models in Rust applications.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nCatBoost's edge is categorical features — here is the preprocessing step both sides share, once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Python side: CatBoost handles categoricals natively.\nimport numpy as np\nfrom catboost import CatBoostClassifier\n\nX = np.array([[\"red\", 1.0], [\"blue\", 2.0], [\"red\", 1.5], [\"green\", 3.0]])\ny = np.array([0, 1, 0, 1])\ncat_features = [0]\n\nmodel = CatBoostClassifier(iterations=10, verbose=0)\nmodel.fit(X, y, cat_features=cat_features)\nmodel.predict(X)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// Rust side: label-encode the categorical column before training —\n// the step catboost-rs callers do when features arrive as strings.\nlet colors = [\"red\", \"blue\", \"red\", \"green\"];\nlet mut codes = std::collections::HashMap::new();\nlet encoded: Vec<f64> = colors.iter().map(|c| {\n    let next = codes.len() as f64;\n    *codes.entry(*c).or_insert(next)\n}).collect();\nprintln!(\"encoded categories: {encoded:?}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both CatBoost versions in their respective language runtimes:\n\n- **Python cells** can use CatBoost with standard library imports\n- **Rust cells** can use catboost-rs via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and datasets persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore CatBoost in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

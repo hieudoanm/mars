@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "OpenCV vs opencv: Computer Vision Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# OpenCV vs opencv: Computer Vision Compared\n\nOpenCV is a foundational computer vision library. The Rust **`opencv`** crate exposes OpenCV functionality for image processing, feature detection, and video workflows, making it a natural companion for ML systems that operate on visual data.\n\n## What OpenCV does\n\nOpenCV provides a comprehensive computer vision toolkit:\n\n- **Image processing** (filtering, transformations, geometric operations)\n- **Feature detection** (SIFT, ORB, Harris corners)\n- **Object detection** (Haar cascades, deep learning models)\n- **Video I/O** and processing\n- **Camera calibration** and 3D vision\n- **Machine learning** integration (SVM, random forest)\n\nIt became the default library for computer vision in Python, used across robotics, medical imaging, and automated inspection.\n\n## What opencv brings to Rust\n\n**`opencv`** provides Rust bindings to OpenCV:\n\n- **Image processing** via OpenCV C API\n- **Feature detection** and matching\n- **Video capture** and processing\n- **Camera calibration** functions\n- **Type-safe** image data structures\n- **Performance** with native Rust data structures\n\nThe key difference: opencv allows you to use OpenCV's proven computer vision capabilities from Rust, combining OpenCV's breadth with Rust's type safety and memory safety.\n\n## Comparison\n\n| Feature           | OpenCV (Python)                  | opencv (Rust)                  |\n| ----------------- | -------------------------------- | ------------------------------ |\n| Load image        | `cv2.imread('image.jpg')`        | `imread('image.jpg')?`         |\n| Edge detection    | `cv2.Canny(image, ...)`          | `canny(&image, ...)`           |\n| Feature detection | `orb.detectAndCompute(...)`      | `ORB::detect_and_compute(...)` |\n| Type safety       | Runtime                          | Compile-time                   |\n| Performance       | Python + C++ backend             | Rust + C++ backend             |\n| Integration       | NumPy, PyTorch, TensorFlow, etc. | ndarray, image crates, etc.    |\n\n## Example: OpenCV",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import cv2\n\nimage = cv2.imread('image.jpg')\nedges = cv2.Canny(image, 100, 200)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: opencv",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use opencv::prelude::*;\n\nlet image = imread('image.jpg')?;\nlet edges = canny(&image, 100.0, 200.0, None, None)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **OpenCV** in Python when you need the full OpenCV ecosystem, rapid prototyping, or integration with NumPy and deep learning frameworks.\n- **opencv** in Rust when you want to use OpenCV from Rust, combine it with Rust's type system, or deploy computer vision applications in Rust.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nA classic vision op — RGB to grayscale — once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# OpenCV side: cvtColor on a small RGB array.\nimport numpy as np\nimport cv2\n\nimg = np.array([[[255, 0, 0], [0, 255, 0]],\n                [[0, 0, 255], [255, 255, 255]]], dtype=np.uint8)\n\ngray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)\ngray.tolist()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// Same op with ndarray: luminance = 0.299R + 0.587G + 0.114B.\nlet img = array![[[255.0, 0.0, 0.0], [0.0, 255.0, 0.0]],\n                 [[0.0, 0.0, 255.0], [255.0, 255.0, 255.0]]];\nlet gray = &img * array![[[0.299, 0.587, 0.114]]];\nprintln!(\"grayscale sum: {:.1}\", gray.sum());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both OpenCV versions in their respective language runtimes:\n\n- **Python cells** can use OpenCV with standard library imports\n- **Rust cells** can use opencv via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Images and video frames persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore OpenCV in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

@@ -74,6 +74,39 @@ let result = df.filter(col("a").gt(1)).groupby(["a"]).sum();
 - **pandas** in Python when you need the vast ecosystem, familiar syntax, or compatibility with existing Python workflows.
 - **polars** in Rust when you need performance for large datasets, parallel execution, or want to avoid the Python interpreter overhead.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+Group-by aggregation — pandas' split-apply-combine, once per language:
+
+```python
+# pandas side.
+import pandas as pd
+
+df = pd.DataFrame({
+    "group": ["a", "a", "b", "b"],
+    "value": [1.0, 3.0, 2.0, 4.0],
+})
+df.groupby("group")["value"].agg(["mean", "sum"])
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// polars does this lazily; eager equivalent with ndarray:
+// group rows by key and accumulate sums.
+let keys = array!["a", "a", "b", "b"];
+let values = array![1.0, 3.0, 2.0, 4.0];
+let mut sums: std::collections::HashMap<&str, f64> = Default::default();
+for (k, v) in keys.iter().zip(values.iter()) {
+    *sums.entry(*k).or_insert(0.0) += *v;
+}
+println!("group sums: {sums:?}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both pandas and Polars in their respective language runtimes:

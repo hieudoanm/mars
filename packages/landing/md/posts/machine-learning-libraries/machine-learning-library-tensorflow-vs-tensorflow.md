@@ -69,6 +69,31 @@ let output = model.run(&inputs)?;
 - **TensorFlow** in Python when you need the full TensorFlow ecosystem, distributed training, or production serving.
 - **tensorflow** in Rust when you want to use TensorFlow models from Rust, integrate with Rust applications, or leverage TensorFlow's serving capabilities.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+TensorFlow's core abstraction — a tensor and a reduction — once per language:
+
+```python
+# TensorFlow side.
+import tensorflow as tf
+
+t = tf.constant([[1.0, 2.0], [3.0, 4.0]])
+tf.reduce_mean(t).numpy()   # -> 2.5
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// The rust `tensorflow` crate targets the same graph API; ndarray
+// covers the eager equivalent here.
+let t = array![[1.0, 2.0], [3.0, 4.0]];
+println!("mean: {:.2}", t.mean().unwrap());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both TensorFlow versions in their respective language runtimes:

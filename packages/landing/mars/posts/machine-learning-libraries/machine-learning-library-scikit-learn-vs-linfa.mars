@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "scikit-learn vs linfa: Classical ML Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# scikit-learn vs linfa: Classical ML Compared\n\nscikit-learn is the standard toolkit for classical ML in Python. Rust's **`linfa`** aims to provide a similar experience with algorithms for clustering, classification, preprocessing, and model evaluation—designed for fast, type-safe experimentation in notebooks.\n\n## What scikit-learn does\n\nscikit-learn provides a unified interface for classical ML:\n\n- **Classification**: SVM, random forest, logistic regression, k-NN\n- **Regression**: linear regression, ridge, lasso, decision trees\n- **Clustering**: k-means, DBSCAN, hierarchical clustering\n- **Preprocessing**: scaling, encoding, dimensionality reduction\n- **Model selection**: cross-validation, grid search\n- **Metrics**: accuracy, precision, recall, F1-score\n\nIt became the default library for classical ML in Python, used across industry and academia.\n\n## What linfa brings to Rust\n\n**`linfa`** is a Rust machine learning library:\n\n- **Algorithms**: k-means, hierarchical clustering, PCA, logistic regression\n- **Preprocessing**: scaling, encoding, feature extraction\n- **Model evaluation**: cross-validation, metrics\n- **Type-safe APIs** that catch errors at compile time\n- **Modular design** with trait-based abstractions\n- **Performance** via native compilation\n\nThe key difference: linfa provides a Rust-native approach to classical ML with compile-time type safety and performance benefits, while scikit-learn offers a broader algorithm set with mature ecosystem integration.\n\n## Comparison\n\n| Feature            | scikit-learn (Python)           | linfa (Rust)                   |\n| ------------------ | ------------------------------- | ------------------------------ |\n| Train model        | `model.fit(X, y)`               | `model.fit(&dataset)`          |\n| Predict            | `model.predict(X)`              | `model.predict(&features)`     |\n| K-means clustering | `KMeans(n_clusters=3)`          | `KMeans::new_with_params(3)`   |\n| Type safety        | Runtime                         | Compile-time                   |\n| Performance        | C-backed via NumPy/scipy        | Native compilation             |\n| Integration        | NumPy, pandas, Matplotlib, etc. | ndarray, plotters, serde, etc. |\n\n## Example: scikit-learn",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "from sklearn.cluster import KMeans\n\nkmeans = KMeans(n_clusters=3)\nkmeans.fit(X)\nlabels = kmeans.predict(X)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: linfa",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use linfa_clustering::KMeans;\n\nlet kmeans = KMeans::params(3).fit(&dataset)?;\nlet labels = kmeans.predict(&dataset);\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **scikit-learn** in Python when you need the broadest algorithm set, mature ecosystem, or integration with pandas and NumPy.\n- **linfa** in Rust when you need type-safe ML operations, performance for large datasets, or want to avoid the Python interpreter overhead.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nThe canonical ML workflow — load data, split, fit, score — in both ecosystems:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# scikit-learn side.\nfrom sklearn.datasets import load_iris\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import train_test_split\n\nX, y = load_iris(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)\n\nclf = LogisticRegression(max_iter=200).fit(X_train, y_train)\nclf.score(X_test, y_test)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n// :dep rand = \"0.8\"\n\nuse ndarray::Array2;\nuse rand::Rng;\n\n// linfa-style split + baseline on synthetic data — the shape a\n// linfa LogisticRegression::fit call takes.\nlet mut rng = rand::thread_rng();\nlet n = 300;\nlet mut xs = Array2::zeros((n, 2));\nlet mut ys = Vec::with_capacity(n);\nfor i in 0..n {\n    let a = rng.gen_range(-1.0..1.0);\n    let b = rng.gen_range(-1.0..1.0);\n    xs[[i, 0]] = a;\n    xs[[i, 1]] = b;\n    ys.push(if a - b > 0.0 { 1 } else { 0 });\n}\nlet split = n * 4 / 5;\nprintln!(\"train rows: {}, test rows: {}\", split, n - split);\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both scikit-learn and linfa in their respective language runtimes:\n\n- **Python cells** can use scikit-learn with standard library imports\n- **Rust cells** can use linfa via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and datasets persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) and the [machine learning example](https://github.com/hieudoanm/mars/tree/main/examples/mars/02-machine-learning) to explore scikit-learn and linfa in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

@@ -72,6 +72,40 @@ let booster = Booster::train(&params, &dtrain)?;
 - **XGBoost** in Python when you need the full XGBoost ecosystem, rapid prototyping, or integration with pandas and scikit-learn.
 - **xgboost-rs** in Rust when you want to use XGBoost from Rust, combine it with Rust's type system, or deploy models in Rust applications.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+Gradient-boosted trees on tabular data — the sklearn-style call in Python, the DMatrix concept in Rust:
+
+```python
+# XGBoost side: the sklearn API on a small frame.
+import numpy as np
+import xgboost as xgb
+
+rng = np.random.default_rng(0)
+X = rng.normal(size=(200, 4))
+y = (X[:, 0] - X[:, 1] > 0).astype(int)
+
+model = xgb.XGBClassifier(n_estimators=20).fit(X, y)
+model.score(X, y)
+```
+
+```rust
+// :dep ndarray = "0.16"
+// :dep rand = "0.8"
+
+use ndarray::Array2;
+use rand::Rng;
+
+// xgboost-rs consumes a DMatrix — features as a dense matrix plus
+// labels. Build that view with ndarray:
+let mut rng = rand::thread_rng();
+let features = Array2::from_shape_fn((50, 4), |_| rng.gen_range(-1.0..1.0));
+let labels: Vec<u32> = (0..50).map(|_| rng.gen_range(0..2)).collect();
+println!("dmatrix shape: {:?}, labels: {}", features.dim(), labels.len());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both XGBoost versions in their respective language runtimes:

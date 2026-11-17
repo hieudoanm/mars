@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "NetworkX vs petgraph: Graph Data Structures Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# NetworkX vs petgraph: Graph Data Structures Compared\n\nNetworkX is the go-to Python library for graphs and networks. Rust's **`petgraph`** provides graph data structures and algorithms—from traversals to shortest paths—with strong performance and type safety for network analysis tasks.\n\n## What NetworkX does\n\nNetworkX provides a comprehensive graph toolkit:\n\n- **Graph types**: directed, undirected, multigraphs\n- **Algorithms**: shortest paths, centrality, clustering, community detection\n- **I/O**: support for GML, GraphML, JSON, and other formats\n- **Drawing** via Matplotlib integration\n- **Analysis tools**: degree distribution, connectivity, assortativity\n- **Large-scale** computation with optimized algorithms\n\nIt became the default library for network analysis in Python, used across social network analysis, bioinformatics, and infrastructure modeling.\n\n## What petgraph brings to Rust\n\n**`petgraph`** is a Rust library for graph data structures and algorithms:\n\n- **Graph types**: directed, undirected, multigraphs with generic node/edge types\n- **Algorithms**: Dijkstra, A*, Bellman-Ford, Floyd-Warshall, centrality measures\n- **Traversals**: BFS, DFS, topological sort\n- **Connectivity**: strongly connected components, minimum spanning trees\n- **Performance**: O(1) neighbor access, memory-efficient representations\n- **Type safety**: compile-time guarantees for graph operations\n\nThe key difference: petgraph provides graph primitives with Rust's type system and compile-time safety, making it suitable for performance-critical network analysis tasks.\n\n## Comparison\n\n| Feature        | NetworkX (Python)                     | petgraph (Rust)                |\n| -------------- | ------------------------------------- | ------------------------------ |\n| Graph creation | `G = nx.Graph()`                      | `Graph::new()`                 |\n| Add edge       | `G.add_edge(0, 1)`                    | `g.add_edge(0, 1)`             |\n| Shortest path  | `nx.shortest_path(G, source, target)` | `dijkstra(&g, source, target)` |\n| Type safety    | Runtime                               | Compile-time                   |\n| Performance    | Python interpreter                    | Native compilation             |\n| Memory model   | Python objects                        | Struct-based, efficient        |\n\n## Example: NetworkX",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import networkx as nx\n\nG = nx.Graph()\nG.add_edge(0, 1)\nG.add_edge(1, 2)\npath = nx.shortest_path(G, 0, 2)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: petgraph",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use petgraph::Graph;\nuse petgraph::algo::dijkstra;\n\nlet mut g = Graph::new();\ng.add_edge(0, 1, ());\ng.add_edge(1, 2, ());\nlet path = dijkstra(&g, 0, Some(2));\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **NetworkX** in Python when you need a comprehensive graph toolkit, visualization integration, or rapid prototyping of network analysis.\n- **petgraph** in Rust when you need type-safe graph operations, performance for large-scale network analysis, or want to avoid the Python interpreter overhead.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nGraph algorithms — build a tiny graph and find the shortest path, once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# NetworkX side.\nimport networkx as nx\n\nG = nx.Graph()\nG.add_edges_from([(\"A\", \"B\"), (\"B\", \"C\"), (\"A\", \"C\")])\nnx.shortest_path(G, \"A\", \"C\")\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// petgraph side: the same graph as nodes + weighted edges.\n// (add `// :dep petgraph` to pull the crate in a real notebook)\n#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]\nenum Node { A, B, C }\n\nlet mut edges = Vec::new();\nedges.push((Node::A, Node::B, 1.0));\nedges.push((Node::B, Node::C, 1.0));\nedges.push((Node::A, Node::C, 2.0));\nprintln!(\"{} edges loaded\", edges.len());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both NetworkX and petgraph in their respective language runtimes:\n\n- **Python cells** can use NetworkX with standard library imports\n- **Rust cells** can use petgraph via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Graphs persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore NetworkX and petgraph in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

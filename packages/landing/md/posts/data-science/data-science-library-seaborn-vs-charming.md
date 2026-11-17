@@ -72,6 +72,38 @@ chart.save("boxplot.png")?;
 - **Seaborn** in Python when you need a high-level API for statistical graphics, built-in themes, or integration with pandas and Matplotlib.
 - **charming** in Rust when you need high-level statistical visualization with type safety and native performance.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+Statistical visualization starts with correlation — compute it once per language:
+
+```python
+# Seaborn side: corrplot-style pairwise correlations.
+import pandas as pd
+
+df = pd.DataFrame({
+    "x": [1.0, 2.0, 3.0, 4.0, 5.0],
+    "y": [2.1, 3.9, 6.2, 7.8, 10.1],
+})
+df.corr()
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// charming renders charts; correlation is plain ndarray math.
+let x = array![1.0, 2.0, 3.0, 4.0, 5.0];
+let y = array![2.1, 3.9, 6.2, 7.8, 10.1];
+let mx = x.mean().unwrap();
+let my = y.mean().unwrap();
+let cov: f64 = x.iter().zip(y.iter()).map(|(a, b)| (a - mx) * (b - my)).sum();
+let corr = cov / ((x.var(0.0).unwrap() * y.var(0.0).unwrap()).sqrt() * 5.0);
+println!("correlation ≈ {corr:.3}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both Seaborn and charming in their respective language runtimes:

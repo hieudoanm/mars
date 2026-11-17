@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "TensorFlow vs tensorflow: Production ML Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# TensorFlow vs tensorflow: Production ML Compared\n\nTensorFlow supports large-scale training and deployment scenarios. The Rust **`tensorflow`** crate exposes TensorFlow capabilities to Rust applications, allowing developers to integrate established ML graphs and inference workflows into a Rust-first environment.\n\n## What TensorFlow does\n\nTensorFlow provides a production-ready ML framework:\n\n- **Computational graphs** for ML operations\n- **Tensor operations** with automatic differentiation\n- **Keras API** for high-level model building\n- **Distributed training** across multiple devices\n- **Serving** for production deployment\n- **TensorBoard** for visualization\n\nIt became the standard for production ML workloads, especially at scale.\n\n## What tensorflow brings to Rust\n\n**`tensorflow`** provides Rust bindings to TensorFlow:\n\n- **Tensor operations** via TensorFlow C API\n- **Graph construction** and execution\n- **Model loading** for inference\n- **GPU support** via CUDA\n- **Type-safe** tensor operations\n\nThe key difference: tensorflow allows you to leverage TensorFlow's production capabilities from Rust, combining TensorFlow's ecosystem with Rust's safety and performance.\n\n## Comparison\n\n| Feature         | TensorFlow (Python)                | tensorflow (Rust)         |\n| --------------- | ---------------------------------- | ------------------------- |\n| Tensor creation | `tf.constant([1, 2, 3])`           | `Tensor::new(&[1, 2, 3])` |\n| Model loading   | `tf.keras.models.load_model(path)` | `SavedModel::load(path)`  |\n| Type safety     | Runtime                            | Compile-time (mostly)     |\n| Performance     | Python + C++ backend               | Rust + C++ backend        |\n| GPU support     | CUDA                               | CUDA                      |\n\n## Example: TensorFlow",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import tensorflow as tf\n\nx = tf.constant([1.0, 2.0, 3.0])\ny = x * 2\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: tensorflow",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use tensorflow::{Tensor, SavedModel};\n\nlet model = SavedModel::load(\"model\")?;\nlet output = model.run(&inputs)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **TensorFlow** in Python when you need the full TensorFlow ecosystem, distributed training, or production serving.\n- **tensorflow** in Rust when you want to use TensorFlow models from Rust, integrate with Rust applications, or leverage TensorFlow's serving capabilities.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nTensorFlow's core abstraction — a tensor and a reduction — once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# TensorFlow side.\nimport tensorflow as tf\n\nt = tf.constant([[1.0, 2.0], [3.0, 4.0]])\ntf.reduce_mean(t).numpy()   # -> 2.5\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// The rust `tensorflow` crate targets the same graph API; ndarray\n// covers the eager equivalent here.\nlet t = array![[1.0, 2.0], [3.0, 4.0]];\nprintln!(\"mean: {:.2}\", t.mean().unwrap());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both TensorFlow versions in their respective language runtimes:\n\n- **Python cells** can use TensorFlow with standard library imports\n- **Rust cells** can use tensorflow via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and tensors persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore TensorFlow in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

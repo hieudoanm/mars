@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Statsmodels vs statrs: Statistical Modeling Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Statsmodels vs statrs: Statistical Modeling Compared\n\nStatsmodels provides statistical modeling and inference tools in Python. Rust's **`statrs`** supplies implementations of common statistical distributions, functions, and utilities for analysis, simulation, and modeling.\n\n## What Statsmodels does\n\nStatsmodels extends Python's scientific stack with:\n\n- **Statistical models** (linear regression, logistic regression, time series)\n- **Hypothesis tests** (t-tests, ANOVA, chi-square)\n- **Probability distributions** and density functions\n- **Descriptive statistics** and summary functions\n- **Time series analysis** (ARIMA, VAR)\n- **Regression diagnostics** and model validation\n\nIt became the go-to library for statistical inference in Python, widely used in academia and industry.\n\n## What statrs brings to Rust\n\n**`statrs`** is a Rust library for statistical computing:\n\n- **Probability distributions** (normal, beta, gamma, exponential, etc.)\n- **Statistical functions** (mean, variance, skewness, kurtosis)\n- **Hypothesis tests** (t-tests, chi-square)\n- **Random sampling** from distributions\n- **Regression** utilities\n- **Compile-time type safety** for statistical operations\n\nThe key difference: statrs provides statistical primitives in a type-safe, compiled environment, making it suitable for simulation, analysis, and modeling tasks in Rust.\n\n## Comparison\n\n| Feature         | Statsmodels (Python)            | statrs (Rust)                           |\n| --------------- | ------------------------------- | --------------------------------------- |\n| Distribution    | `stats.norm.cdf(x)`             | `Normal::new(0.0, 1.0).unwrap().cdf(x)` |\n| Random sampling | `np.random.normal()`            | `Normal::sample(&mut rng)`              |\n| Hypothesis test | `stats.ttest_ind(a, b)`         | `test::t_test_independent(a, b)`        |\n| Type safety     | Runtime                         | Compile-time                            |\n| Performance     | C-backed via NumPy              | Native compilation                      |\n| Integration     | NumPy, pandas, Matplotlib, etc. | ndarray, rand, etc.                     |\n\n## Example: Statsmodels",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import numpy as np\nfrom scipy import stats\n\ndata = np.array([1, 2, 3, 4, 5])\nresult = stats.ttest_1samp(data, 3.0)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: statrs",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use statrs::distribution::{Normal, Continuous};\nuse statrs::statistics::Statistics;\n\nlet normal = Normal::new(0.0, 1.0).unwrap();\nlet x = 1.96;\nlet result = normal.cdf(x);\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Statsmodels** in Python when you need a comprehensive statistical modeling suite, time series analysis, or integration with pandas and NumPy.\n- **statrs** in Rust when you need type-safe statistical primitives, performance for simulations, or want to avoid the Python interpreter overhead.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nDescriptive statistics — the numbers behind every OLS summary — once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# statsmodels side: the full regression summary.\nimport numpy as np\nimport statsmodels.api as sm\n\nx = np.array([1.0, 2.0, 3.0, 4.0, 5.0])\ny = 2.0 * x + 1.0 + np.array([0.1, -0.2, 0.0, 0.1, -0.1])\nX = sm.add_constant(x)\nsm.OLS(y, X).fit().summary()\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// statrs provides the same moments; ndarray computes them eagerly.\nlet y = array![3.1, 5.8, 7.0, 9.1, 10.9];\nlet mean = y.mean().unwrap();\nlet var = y.var(0.0).unwrap();\nprintln!(\"mean={mean:.3} var={var:.3} n={}\", y.len());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both Statsmodels and statrs in their respective language runtimes:\n\n- **Python cells** can use Statsmodels with standard library imports\n- **Rust cells** can use statrs via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Statistical results persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore Statsmodels and statrs in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

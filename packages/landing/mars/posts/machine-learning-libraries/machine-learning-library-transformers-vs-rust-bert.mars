@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Transformers vs rust-bert: NLP Models Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Transformers vs rust-bert: NLP Models Compared\n\nThe Python Transformers ecosystem made pretrained NLP models widely accessible. **`rust-bert`** provides Rust implementations and bindings for transformer-based models, enabling tasks like classification, embeddings, and generation in Rust applications and notebooks.\n\n## What Transformers does\n\nTransformers provides access to pretrained transformer models:\n\n- **Pretrained models** (BERT, GPT, T5, etc.)\n- **Tokenization** and preprocessing\n- **Model fine-tuning** for custom tasks\n- **Pipeline** APIs for common NLP tasks\n- **Integration** with PyTorch and TensorFlow\n- **Hub sharing** for model distribution\n\nIt became the default library for NLP in Python, democratizing access to state-of-the-art transformer models.\n\n## What rust-bert brings to Rust\n\n**`rust-bert`** provides Rust implementations of transformer models:\n\n- **BERT models** for classification and embeddings\n- **Tokenization** with Rust implementations\n- **Inference** APIs for pretrained models\n- **Type-safe** tensor operations\n- **Performance** via native compilation\n- **Zero-copy** operations where possible\n\nThe key difference: rust-bert allows you to use transformer models from Rust, combining state-of-the-art NLP capabilities with Rust's type safety and performance.\n\n## Comparison\n\n| Feature      | Transformers (Python)                   | rust-bert (Rust)                       |\n| ------------ | --------------------------------------- | -------------------------------------- |\n| Load model   | `AutoModel.from_pretrained('bert')`     | `BertModel::load('bert-base-uncased')` |\n| Tokenization | `AutoTokenizer.from_pretrained('bert')` | Rust tokenizer implementation          |\n| Inference    | `model(input_ids)`                      | `model.forward(&input_ids)`            |\n| Type safety  | Runtime                                 | Compile-time                           |\n| Performance  | Python + backend                        | Native compilation                     |\n| Integration  | PyTorch, TensorFlow, etc.               | tch-rs, ndarray, etc.                  |\n\n## Example: Transformers",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "from transformers import AutoModel, AutoTokenizer\n\ntokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')\nmodel = AutoModel.from_pretrained('bert-base-uncased')\ninputs = tokenizer(\"Hello world\", return_tensors=\"pt\")\noutputs = model(**inputs)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: rust-bert",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use rust_bert::BertModel;\n\nlet model = BertModel::load(\"bert-base-uncased\")?;\nlet inputs = tokenizer.encode(\"Hello world\");\nlet outputs = model.forward(&inputs)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Transformers** in Python when you need the full Hugging Face ecosystem, access to thousands of models, or integration with PyTorch and TensorFlow.\n- **rust-bert** in Rust when you want to use transformer models from Rust, combine them with Rust's type system, or deploy NLP models in Rust applications.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nNLP in a notebook — a pretrained pipeline call in Python, and the token-counting step rust-bert wraps, in Rust:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Transformers side: a pretrained pipeline (downloads weights once).\nfrom transformers import pipeline\n\nclassifier = pipeline(\"sentiment-analysis\")\nclassifier(\"Project Mars makes notebooks reproducible.\")\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// rust-bert handles tokenization + the transformer itself;\n// the input side is just text → token ids. Word counts first:\nlet text = \"mars notebooks are reproducible\";\nlet mut counts = std::collections::HashMap::new();\nfor word in text.split_whitespace() {\n    *counts.entry(word).or_insert(0usize) += 1;\n}\nprintln!(\"token histogram: {counts:?}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both Transformers and rust-bert in their respective language runtimes:\n\n- **Python cells** can use Transformers with standard library imports\n- **Rust cells** can use rust-bert via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and tokenizers persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore Transformers and rust-bert in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Keras vs burn: High-Level ML Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Keras vs burn: High-Level ML Compared\n\nKeras is known for its approachable, high-level API. **`burn`** offers an ergonomic Rust framework for building and training models with a modern developer experience, bridging the gap between low-level tensor control and productive model development.\n\n## What Keras does\n\nKeras provides a high-level deep learning API:\n\n- **Model building** with sequential and functional APIs\n- **Layers**: convolutional, recurrent, pooling, normalization\n- **Optimizers**: SGD, Adam, RMSprop, etc.\n- **Training callbacks** for monitoring and control\n- **Pretrained models** via Keras Applications\n- **Integration** with TensorFlow, JAX, and PyTorch backends\n\nIt became the default interface for deep learning in Python, especially for beginners and rapid prototyping.\n\n## What burn brings to Rust\n\n**`burn`** is a Rust deep learning framework:\n\n- **Training framework** with flexible configuration\n- **Neural network modules** (linear, convolution, transformer)\n- **Optimizers** (SGD, Adam, AdamW)\n- **Training loop** abstractions\n- **Type-safe** tensor operations\n- **Backend-agnostic** design (supports multiple backends)\n\nThe key difference: burn provides a Rust-native approach to deep learning with type safety and ergonomic abstractions, while Keras offers a Python-friendly API with broad backend support.\n\n## Comparison\n\n| Feature         | Keras (Python)              | burn (Rust)                       |\n| --------------- | --------------------------- | --------------------------------- |\n| Model building  | `model = Sequential([...])` | `ModelConfig::new().build()`      |\n| Training        | `model.fit(X, y)`           | `Trainer::fit(model, dataloader)` |\n| Type safety     | Runtime                     | Compile-time                      |\n| Performance     | Python + backend            | Rust + backend                    |\n| Backend support | TensorFlow, JAX, PyTorch    | Multiple backends                 |\n\n## Example: Keras",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "from tensorflow import keras\n\nmodel = keras.Sequential([\n    keras.layers.Dense(128, activation='relu'),\n    keras.layers.Dense(10)\n])\nmodel.compile(optimizer='adam', loss='mse')\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: burn",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use burn::nn::loss::MseLoss;\nuse burn::train::TrainStep;\n\nlet model = ModelConfig::new().build();\nlet optimizer = AdamConfig::new().init();\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Keras** in Python when you need a high-level API, broad backend support, or integration with the Python ML ecosystem.\n- **burn** in Rust when you want a Rust-native deep learning framework with type safety and ergonomic abstractions.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nA minimal dense model — Keras above, the tensor ops burn wraps below:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Keras side: one Dense layer, one fit call.\nimport numpy as np\nfrom tensorflow import keras\n\nX = np.random.default_rng(0).normal(size=(32, 4))\ny = (X.sum(axis=1) > 0).astype(float)\n\nmodel = keras.Sequential([keras.layers.Dense(1, input_shape=(4,))])\nmodel.compile(optimizer=\"sgd\", loss=\"mse\")\nmodel.fit(X, y, epochs=2, verbose=0)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::{array, Array2};\n\n// burn wraps exactly this: a dense layer is a matmul + bias.\n// Forward pass for y = Wx + b on one sample.\nlet w = Array2::from_shape_vec((1, 4), vec![0.5, -0.5, 0.25, 0.25]).unwrap();\nlet b = 0.1;\nlet x = array![1.0, 2.0, -1.0, 0.5];\nlet y = w.dot(&x) + b;\nprintln!(\"dense output: {}\", y[0]);\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both Keras and burn in their respective language runtimes:\n\n- **Python cells** can use Keras with standard library imports\n- **Rust cells** can use burn via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and training states persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore Keras and burn in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

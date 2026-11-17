@@ -71,6 +71,35 @@ let y = x * 2;
 - **PyTorch** in Python when you need the full Torch ecosystem, rapid prototyping, or integration with Python ML workflows.
 - **tch-rs** in Rust when you want to use PyTorch from Rust, combine it with Rust's type system, or build Rust applications that leverage Torch.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+Autograd in one cell — PyTorch's signature feature, and the op tch-rs exposes to Rust:
+
+```python
+# PyTorch side: a scalar loss and its gradient.
+import torch
+
+x = torch.tensor(3.0, requires_grad=True)
+loss = x ** 2
+loss.backward()
+x.grad          # -> tensor(6.)
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::{array, Array2};
+
+// tch-rs exposes the same tensor ops; here the forward pass y = Wx
+// that an autograd tape would record for backward().
+let w = Array2::from_shape_vec((2, 2), vec![1.0, 0.0, 0.0, 1.0]).unwrap();
+let x = array![3.0, 4.0];
+let y = w.dot(&x);
+println!("forward: {y:?}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both PyTorch and tch-rs in their respective language runtimes:

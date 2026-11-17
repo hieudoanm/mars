@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "JAX vs dfdx: Composable ML Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# JAX vs dfdx: Composable ML Compared\n\nJAX combines array programming with composable transformations. **`dfdx`** offers a Rust approach to tensor and differentiable programming patterns, giving developers a path to experiment with modern ML building blocks in a safe, compiled setting.\n\n## What JAX does\n\nJAX provides a composable transformation library:\n\n- **Automatic differentiation** with forward and reverse modes\n- **Just-in-time compilation** via XLA\n- **Vectorized functions** (vmap, pmap)\n- **Array programming** with NumPy-like API\n- **Neural network libraries** (flax, optax)\n- **GPU/TPU acceleration**\n\nIt became the preferred library for research requiring composable transformations and automatic differentiation.\n\n## What dfdx brings to Rust\n\n**`dfdx`** is a Rust library for differentiable programming:\n\n- **Automatic differentiation** via forward and reverse modes\n- **Tensor operations** with gradients\n- **Neural network modules** (linear, convolution, etc.)\n- **Training loops** with optimizers\n- **Type-safe** tensor operations\n- **Zero-cost abstractions** that compile to efficient code\n\nThe key difference: dfdx provides a Rust-native approach to differentiable programming with compile-time type safety, while JAX offers JIT compilation and a NumPy-like API with broad research adoption.\n\n## Comparison\n\n| Feature              | JAX (Python)             | dfdx (Rust)                     |\n| -------------------- | ------------------------ | ------------------------------- |\n| Tensor creation      | `jnp.array([1, 2, 3])`   | `Tensor::from_array([1, 2, 3])` |\n| Gradient computation | `grad(f)(x)`             | `backward(&f, &x)`              |\n| Vectorization        | `vmap(f)`                | Manual implementation           |\n| Type safety          | Runtime                  | Compile-time                    |\n| Performance          | JIT via XLA              | Native compilation              |\n| Integration          | NumPy, flax, optax, etc. | ndarray, burn, etc.             |\n\n## Example: JAX",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import jax.numpy as jnp\nfrom jax import grad\n\ndef f(x):\n    return jnp.sum(x ** 2)\n\ngrad_f = grad(f)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: dfdx",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use dfdx::prelude::*;\n\nfn f(x: &Tensor) -> Tensor {\n    x.pow_scalar(2.0).sum()\n}\n\nlet grad_f = backward(&f, &x)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **JAX** in Python when you need composable transformations, JIT compilation, or integration with the JAX ecosystem (flax, optax).\n- **dfdx** in Rust when you need automatic differentiation with type safety, or want to build differentiable ML components in Rust.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nAutodiff is the shared idea — take a gradient of f(x) = x² at x = 3:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# JAX side: jax.grad gives the derivative symbolically.\nimport jax\nimport jax.numpy as jnp\n\nf = lambda x: x ** 2\njax.grad(f)(3.0)   # -> 6.0\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// dfdx-style thinking by hand: central-difference gradient of x^2.\nlet f = |x: f64| x * x;\nlet h = 1e-6;\nlet grad = (f(3.0 + h) - f(3.0 - h)) / (2.0 * h);\nprintln!(\"numeric gradient: {grad:.6}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both JAX and dfdx in their respective language runtimes:\n\n- **Python cells** can use JAX with standard library imports\n- **Rust cells** can use dfdx via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Tensors and gradients persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore JAX and dfdx in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

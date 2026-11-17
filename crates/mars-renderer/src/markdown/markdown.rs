@@ -53,7 +53,13 @@ pub fn render_markdown_notebook(notebook: &mars_document::Notebook) -> String {
                 }
             }
             CellType::Code => {
-                let mut block = fenced_code("rust", &cell.source);
+                let language = cell
+                    .metadata
+                    .get("language")
+                    .and_then(|value| value.as_str())
+                    .filter(|language| !language.trim().is_empty())
+                    .unwrap_or(&notebook.metadata.language);
+                let mut block = fenced_code(language, &cell.source);
                 for output in &cell.outputs {
                     if let Some(rendered) = render_markdown_output(output) {
                         block.push_str("\n\n");

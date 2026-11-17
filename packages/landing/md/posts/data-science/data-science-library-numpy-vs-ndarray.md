@@ -71,6 +71,33 @@ let result = &arr * 2; // Element-wise multiplication
 - **NumPy** in Python when you need maximum ecosystem compatibility, rapid prototyping, or integration with pandas, scikit-learn, and Matplotlib.
 - **ndarray** in Rust when you need compile-time safety, predictable performance, or want to avoid the Python interpreter overhead for array-heavy computations.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+The canonical pair — same broadcasting operation, once per language:
+
+```python
+# NumPy side: broadcasting (3,) against (2, 3).
+import numpy as np
+
+a = np.array([[1, 2, 3], [4, 5, 6]])
+b = np.array([10, 20, 30])
+a + b
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// ndarray side: identical broadcast semantics.
+let a = array![[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+let b = array![10.0, 20.0, 30.0];
+let sum = &a + &b;
+println!("{sum:?}");
+```
+
 ## How Project Mars supports both
 
 Project Mars runs both Python and Rust in the same notebook environment:

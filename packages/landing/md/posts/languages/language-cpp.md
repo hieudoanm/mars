@@ -69,6 +69,26 @@ C++11, C++14, C++17, C++20, and C++23 modernized the language significantly:
 
 You can write modern C++ that feels less like 1990s code and more like a contemporary language — but the complexity is still there, and the compiler is still demanding.
 
+## Try it in Project Mars
+
+C++ cells run on a **replay runtime**: Mars compiles each cell with your system compiler — `clang++` or `g++` — and streams diagnostics back onto the cell. Earlier cells are replayed for shared state, so bindings declared in one cell are visible in the next.
+
+```cpp
+#include <vector>
+
+// This binding is part of the replayed prefix — later cells see it.
+std::vector<double> samples = {5.1, 4.9, 4.7, 4.6, 5.0};
+```
+
+```cpp
+#include <iostream>
+#include <numeric>
+
+// Replay re-evaluates earlier cells, so `samples` is in scope here.
+double mean = std::accumulate(samples.begin(), samples.end(), 0.0) / samples.size();
+std::cout << "mean sepal length: " << mean << " cm" << std::endl;
+```
+
 ## Where Project Mars fits
 
 Project Mars does not ask you to leave C++ behind. It provides a notebook where C++ code runs interactively with automatic compilation and isolated execution. What Project Mars offers is a notebook where you can:

@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "XGBoost vs xgboost-rs: Gradient Boosting Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# XGBoost vs xgboost-rs: Gradient Boosting Compared\n\nXGBoost is a widely used gradient boosting library for tabular data. **`xgboost-rs`** brings that power to Rust, making it possible to train and evaluate strong tree-based models where latency, throughput, and deployment simplicity matter.\n\n## What XGBoost does\n\nXGBoost provides an optimized gradient boosting framework:\n\n- **Gradient boosting** with decision trees\n- **Regularization** to prevent overfitting\n- **Handling missing values** automatically\n- **Cross-validation** and early stopping\n- **GPU acceleration** for training\n- **Deployment** to production environments\n\nIt became the go-to library for tabular ML competitions and production workloads.\n\n## What xgboost-rs brings to Rust\n\n**`xgboost-rs`** provides Rust bindings to XGBoost:\n\n- **Gradient boosting** via XGBoost C API\n- **Training and prediction** APIs\n- **Cross-validation** support\n- **GPU support** via CUDA\n- **Type-safe** data handling\n- **Performance** with native Rust data structures\n\nThe key difference: xgboost-rs allows you to use XGBoost's proven gradient boosting from Rust, combining XGBoost's performance with Rust's type safety and deployment simplicity.\n\n## Comparison\n\n| Feature          | XGBoost (Python)         | xgboost-rs (Rust)           |\n| ---------------- | ------------------------ | --------------------------- |\n| Train model      | `model.fit(X, y)`        | `booster.train(&dtrain)`    |\n| Predict          | `model.predict(X)`       | `booster.predict(&dmatrix)` |\n| Cross-validation | `xgb.cv(dtrain, params)` | Native support              |\n| Type safety      | Runtime                  | Compile-time                |\n| Performance      | Python + C++ backend     | Rust + C++ backend          |\n| GPU support      | CUDA                     | CUDA                        |\n\n## Example: XGBoost",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import xgboost as xgb\n\ndtrain = xgb.DMatrix(X, label=y)\nparams = {'max_depth': 3, 'eta': 0.1}\nmodel = xgb.train(params, dtrain)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: xgboost-rs",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use xgboost::{parameters, Booster, DMatrix};\n\nlet dtrain = DMatrix::from_dense(&features)?;\nlet booster = Booster::train(&params, &dtrain)?;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **XGBoost** in Python when you need the full XGBoost ecosystem, rapid prototyping, or integration with pandas and scikit-learn.\n- **xgboost-rs** in Rust when you want to use XGBoost from Rust, combine it with Rust's type system, or deploy models in Rust applications.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nGradient-boosted trees on tabular data — the sklearn-style call in Python, the DMatrix concept in Rust:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# XGBoost side: the sklearn API on a small frame.\nimport numpy as np\nimport xgboost as xgb\n\nrng = np.random.default_rng(0)\nX = rng.normal(size=(200, 4))\ny = (X[:, 0] - X[:, 1] > 0).astype(int)\n\nmodel = xgb.XGBClassifier(n_estimators=20).fit(X, y)\nmodel.score(X, y)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n// :dep rand = \"0.8\"\n\nuse ndarray::Array2;\nuse rand::Rng;\n\n// xgboost-rs consumes a DMatrix — features as a dense matrix plus\n// labels. Build that view with ndarray:\nlet mut rng = rand::thread_rng();\nlet features = Array2::from_shape_fn((50, 4), |_| rng.gen_range(-1.0..1.0));\nlet labels: Vec<u32> = (0..50).map(|_| rng.gen_range(0..2)).collect();\nprintln!(\"dmatrix shape: {:?}, labels: {}\", features.dim(), labels.len());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both XGBoost versions in their respective language runtimes:\n\n- **Python cells** can use XGBoost with standard library imports\n- **Rust cells** can use xgboost-rs via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Models and datasets persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore XGBoost in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

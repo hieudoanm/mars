@@ -75,6 +75,35 @@ let arr = Array::from_shape((2, 2)).unwrap();
 - **xarray** in Python when you need labeled arrays, coordinate systems, or integration with scientific data formats (NetCDF, Zarr).
 - **ndarray** in Rust when you need core array operations with type safety and performance, adding labels via domain-specific crates as needed.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+N-dimensional arrays — xarray's labeled dims, ndarray's raw shape — once per language:
+
+```python
+# xarray side: dims and coords on a 3-D array.
+import numpy as np
+import xarray as xr
+
+data = xr.DataArray(
+    np.random.default_rng(0).normal(size=(2, 3, 4)),
+    dims=("time", "lat", "lon"),
+)
+data.mean(dim="time")
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::Array2;
+
+// ndarray side: same shape, axes by position.
+let cube = Array2::zeros((24, 1));
+let data = cube.into_shape((2, 3, 4)).unwrap();
+println!("shape: {:?}, size: {}", data.shape(), data.len());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both xarray and ndarray in their respective language runtimes:

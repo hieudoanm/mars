@@ -69,8 +69,9 @@ df
 ```rust
 // Cell 1: Rust
 let arr = vec![1, 2, 3];
+```
 
-// Cell 2: Python (in same notebook)
+```python
 # Cell: Python
 import numpy as np
 arr = np.array([1, 2, 3])
@@ -112,6 +113,31 @@ t.test(df.values)
 ```
 
 Each language has its own persistent runtime, so variables persist across cells within that language.
+
+## Try it in Project Mars
+
+This post is about notebooks — so here is one. The cells below are the same document you're reading: Rust, Python, and R sessions side by side in a single `.mars` file, each keeping its own state.
+
+```rust
+// Rust session: replay runtime, bindings persist across cells.
+let samples = vec![5.1, 4.9, 4.7, 4.6, 5.0];
+let total: f64 = samples.iter().sum();
+println!("rust sees {} samples, total {total:.2}", samples.len());
+```
+
+```python
+# Python session: independent interpreter, same notebook.
+import statistics
+
+sepal_lengths = [5.1, 4.9, 4.7, 4.6, 5.0]
+statistics.mean(sepal_lengths)
+```
+
+```r
+# R session: yet another runtime in the same .mars file.
+sepal_lengths <- c(5.1, 4.9, 4.7, 4.6, 5.0)
+mean(sepal_lengths)
+```
 
 ## Get started with Project Mars
 

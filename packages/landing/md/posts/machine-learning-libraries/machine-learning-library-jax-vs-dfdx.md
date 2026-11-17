@@ -77,6 +77,29 @@ let grad_f = backward(&f, &x)?;
 - **JAX** in Python when you need composable transformations, JIT compilation, or integration with the JAX ecosystem (flax, optax).
 - **dfdx** in Rust when you need automatic differentiation with type safety, or want to build differentiable ML components in Rust.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+Autodiff is the shared idea — take a gradient of f(x) = x² at x = 3:
+
+```python
+# JAX side: jax.grad gives the derivative symbolically.
+import jax
+import jax.numpy as jnp
+
+f = lambda x: x ** 2
+jax.grad(f)(3.0)   # -> 6.0
+```
+
+```rust
+// dfdx-style thinking by hand: central-difference gradient of x^2.
+let f = |x: f64| x * x;
+let h = 1e-6;
+let grad = (f(3.0 + h) - f(3.0 - h)) / (2.0 * h);
+println!("numeric gradient: {grad:.6}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both JAX and dfdx in their respective language runtimes:

@@ -72,6 +72,38 @@ let result = A.cholesky();
 - **SciPy** in Python when you need the full scientific stack, optimization routines, or integration with NumPy-based workflows.
 - **faer** in Rust when you need fast linear algebra, compile-time safety, or want to avoid the Python interpreter overhead for matrix-heavy computations.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+Numerical linear algebra — solve Ax = b — once per language:
+
+```python
+# SciPy side.
+import numpy as np
+from scipy.linalg import solve
+
+A = np.array([[3.0, 1.0], [1.0, 2.0]])
+b = np.array([9.0, 8.0])
+solve(A, b)   # -> [2. 3.]
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// faer solves this natively; gradient-descent equivalent with ndarray:
+let a = array![[3.0, 1.0], [1.0, 2.0]];
+let b = array![9.0, 8.0];
+let mut x = array![0.0, 0.0];
+for _ in 0..200 {
+    let r = &a.dot(&x) - &b;
+    x = &x - 0.1 * &a.t().dot(&r);
+}
+println!("solution ≈ {x:?}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both SciPy and faer in their respective language runtimes:

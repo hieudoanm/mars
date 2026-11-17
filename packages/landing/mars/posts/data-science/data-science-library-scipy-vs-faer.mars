@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "SciPy vs faer: Scientific Computing Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# SciPy vs faer: Scientific Computing Compared\n\nSciPy covers a broad scientific stack in Python, from linear algebra to optimization. Rust's **`faer`** offers high-performance linear algebra primitives with a strong focus on correctness and speed.\n\n## What SciPy does\n\nSciPy extends NumPy with a comprehensive set of scientific computing tools:\n\n- **Linear algebra** via `scipy.linalg`\n- **Optimization** algorithms\n- **Integration** and differential equation solvers\n- **Signal processing** and Fourier transforms\n- **Sparse matrices** and iterative solvers\n- **Statistical functions** and distributions\n\nIt became the backbone of scientific computing in Python, used across physics, engineering, and biology.\n\n## What faer brings to Rust\n\n**`faer`** is a Rust library focused on high-performance linear algebra:\n\n- **Dense linear algebra** with BLAS/LAPACK integration\n- **Matrix operations** optimized for modern CPUs\n- **Cholesky, QR, SVD** decompositions\n- **Eigenvalue** problems\n- **Sparse matrix** support\n- **Compile-time optimization** with generics\n\nThe key difference: faer leverages Rust's type system and compile-time optimizations to produce fast, safe linear algebra code without runtime overhead.\n\n## Comparison\n\n| Feature               | SciPy (Python)                  | faer (Rust)                                |\n| --------------------- | ------------------------------- | ------------------------------------------ |\n| Matrix multiplication | `np.dot(A, B)`                  | `A * B`                                    |\n| Decomposition         | `scipy.linalg.cholesky(A)`      | `A.cholesky()`                             |\n| Performance           | C-backed via LAPACK             | Native BLAS/LAPACK, compile-time optimized |\n| Type safety           | Runtime                         | Compile-time                               |\n| Memory layout         | Row-major or column-major       | Explicit control, column-major by default  |\n| Integration           | NumPy, pandas, Matplotlib, etc. | ndarray, nalgebra, etc.                    |\n\n## Example: SciPy",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import numpy as np\nfrom scipy import linalg\n\nA = np.array([[1, 2], [3, 4]])\nresult = linalg.cholesky(A)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: faer",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use faer::prelude::*;\n\nlet A = Mat::from_fn(2, 2, |i, j| (i * 2 + j + 1) as f64);\nlet result = A.cholesky();\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **SciPy** in Python when you need the full scientific stack, optimization routines, or integration with NumPy-based workflows.\n- **faer** in Rust when you need fast linear algebra, compile-time safety, or want to avoid the Python interpreter overhead for matrix-heavy computations.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nNumerical linear algebra — solve Ax = b — once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# SciPy side.\nimport numpy as np\nfrom scipy.linalg import solve\n\nA = np.array([[3.0, 1.0], [1.0, 2.0]])\nb = np.array([9.0, 8.0])\nsolve(A, b)   # -> [2. 3.]\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::array;\n\n// faer solves this natively; gradient-descent equivalent with ndarray:\nlet a = array![[3.0, 1.0], [1.0, 2.0]];\nlet b = array![9.0, 8.0];\nlet mut x = array![0.0, 0.0];\nfor _ in 0..200 {\n    let r = &a.dot(&x) - &b;\n    x = &x - 0.1 * &a.t().dot(&r);\n}\nprintln!(\"solution ≈ {x:?}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both SciPy and faer in their respective language runtimes:\n\n- **Python cells** can use SciPy with standard library imports\n- **Rust cells** can use faer via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Matrices persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore SciPy and faer in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

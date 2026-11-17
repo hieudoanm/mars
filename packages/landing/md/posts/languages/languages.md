@@ -101,6 +101,33 @@ When working in Project Mars, consider these guidelines:
 - **Use Julia** for numerical computing, scientific computing, and when you need both performance and ease of use
 - **Use C++** for high-performance computing, systems programming, or when integrating with existing C++ codebases
 
+## One notebook, many languages
+
+A `.mars` document is language-agnostic: each code cell carries its own `language` in its metadata, so a single notebook can mix runtimes. The five cells below run in their own persistent sessions — Rust on the replay runtime, Python, R, and Julia in subprocess drivers, and C++ via replay compilation — all inside one document. Run them top to bottom and watch each session stay independent.
+
+```rust
+let greeting = "hello from Rust";
+println!("{greeting}");
+```
+
+```python
+print("hello from Python")
+"python cells share one persistent interpreter session"
+```
+
+```r
+cat("hello from R\n")
+```
+
+```julia
+println("hello from Julia")
+```
+
+```cpp
+#include <iostream>
+std::cout << "hello from C++" << std::endl;
+```
+
 ## Get Started
 
 Explore these languages in Project Mars:

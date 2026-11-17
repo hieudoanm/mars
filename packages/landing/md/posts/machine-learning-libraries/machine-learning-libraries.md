@@ -86,6 +86,51 @@ OpenCV is a foundational computer vision library. The Rust **`opencv`** crate ex
 
 See [OpenCV Python vs Rust](/blog/machine-learning-library-opencv-vs-opencv) for a detailed comparison.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+The same task — fit a tiny model and score it — once per ecosystem:
+
+```python
+# scikit-learn side: load iris, fit logistic regression, score.
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+model = LogisticRegression(max_iter=200).fit(X_train, y_train)
+model.score(X_test, y_test)
+```
+
+```rust
+// :dep ndarray = "0.16"
+// :dep rand = "0.8"
+
+use ndarray::{s, Array2};
+use rand::Rng;
+
+// linfa-style workflow on the replay runtime: synthetic features,
+// a train/test split, and a mean baseline — no external ML crate needed.
+let mut rng = rand::thread_rng();
+let n = 200;
+let mut xs = Array2::zeros((n, 2));
+let mut ys = Vec::with_capacity(n);
+for i in 0..n {
+    let a = rng.gen_range(-1.0..1.0);
+    let b = rng.gen_range(-1.0..1.0);
+    xs[[i, 0]] = a;
+    xs[[i, 1]] = b;
+    ys.push(if a + b > 0.0 { 1.0 } else { 0.0 });
+}
+let split = n * 4 / 5;
+let (x_train, y_train) = (&xs.slice(s![..split, ..]), &ys[..split]);
+let baseline = y_train.iter().sum::<f64>() / y_train.len() as f64;
+println!("train mean: {baseline:.3}");
+```
+
 ## How Project Mars supports both ecosystems
 
 Project Mars is built to make ML development in Python, Rust, Julia, and C++ interactive, reproducible, and practical:

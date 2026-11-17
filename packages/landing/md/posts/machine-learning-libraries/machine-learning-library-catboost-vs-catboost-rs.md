@@ -71,6 +71,38 @@ let model = train(&params, &pool)?;
 - **CatBoost** in Python when you need automatic categorical handling, GPU training, or integration with pandas and scikit-learn.
 - **catboost-rs** in Rust when you want to use CatBoost from Rust, combine it with Rust's type system, or deploy models in Rust applications.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+CatBoost's edge is categorical features — here is the preprocessing step both sides share, once per language:
+
+```python
+# Python side: CatBoost handles categoricals natively.
+import numpy as np
+from catboost import CatBoostClassifier
+
+X = np.array([["red", 1.0], ["blue", 2.0], ["red", 1.5], ["green", 3.0]])
+y = np.array([0, 1, 0, 1])
+cat_features = [0]
+
+model = CatBoostClassifier(iterations=10, verbose=0)
+model.fit(X, y, cat_features=cat_features)
+model.predict(X)
+```
+
+```rust
+// Rust side: label-encode the categorical column before training —
+// the step catboost-rs callers do when features arrive as strings.
+let colors = ["red", "blue", "red", "green"];
+let mut codes = std::collections::HashMap::new();
+let encoded: Vec<f64> = colors.iter().map(|c| {
+    let next = codes.len() as f64;
+    *codes.entry(*c).or_insert(next)
+}).collect();
+println!("encoded categories: {encoded:?}");
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both CatBoost versions in their respective language runtimes:

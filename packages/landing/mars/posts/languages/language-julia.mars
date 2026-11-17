@@ -1,0 +1,71 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Why Julia?",
+    "language": "julia"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Why Julia?\n\nJulia was designed from the ground up for scientific computing. It walks like Python, runs like C, and makes high-performance numerical work feel natural. The reasons it exists say a lot about what data scientists actually need: approachability without sacrificing speed.\n\n## Walks like Python\n\nJulia's syntax is intentionally familiar to Python and MATLAB users. No semicolons, no type annotations required, and a REPL that encourages exploration:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "function moving_average(values, window)\n    totals = Float64[]\n    for i in 1:length(values)\n        chunk = values[max(1, i - window + 1):i]\n        push!(totals, sum(chunk) / length(chunk))\n    end\n    return totals\nend\n",
+      "metadata": {},
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "A Python user can read this and understand most of it immediately. The differences are minor and intentional: Julia uses 1-based indexing, `push!` for in-place mutation, and `end` instead of indentation. The learning curve is shallow enough that many Julia tutorials start with \"if you know Python, you already know Julia.\"\n\n## Runs like C\n\nThe same function runs at near-C speed because Julia compiles through LLVM. The hot loops become native machine code, not bytecode interpretation. A tight numerical loop in Julia does not need to delegate to a C extension — it _is_ compiled to native code from the start.\n\nThis changes the tradeoffs:\n\n- **No performance tax for loops.** You can write a naive algorithm and it will be fast enough for many workloads.\n- **No boundary between \"Python code\" and \"C code.\"** The same language handles high-level orchestration and low-level optimization.\n- **Just-in-time compilation.** Functions are compiled on first use, so startup is slower but repeated calls are fast.\n\nJulia's designers realized that data scientists write loops, not just high-level library calls. Making those loops fast without leaving the language is a real productivity win.\n\n## Multiple dispatch\n\nJulia's signature feature is multiple dispatch: the language chooses which method to call based on the types of all arguments, not just the first one.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "area(rectangle::Rectangle) = rectangle.width * rectangle.height\narea(circle::Circle) = π * circle.radius^2\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "This makes code generic and extensible. You can add a new type with an `area` method without touching the original functions, and the language will route calls correctly. Python can do this with single dispatch and some metaprogramming, but Julia makes it the default and the fast path.\n\nMultiple dispatch enables:\n\n- **Composable libraries.** Different packages can extend the same functions without coordination.\n- **Generic algorithms.** One implementation works on many types automatically.\n- **No inheritance hierarchies.** You don't need to structure your types around a shared base class.\n\n## The ecosystem is growing\n\nJulia is younger than Python, but its ecosystem has matured rapidly:\n\n- **DataFrames.jl** — tabular data manipulation\n- **Flux.jl** — machine learning with automatic differentiation\n- **DifferentialEquations.jl** — solving ODEs and PDEs\n- **Makie.jl** — plotting and visualization\n- **JuliaPy** — calling Python from Julia\n\nEach package benefits from Julia's performance and multiple dispatch. A plotting library can define methods for custom types without knowing them in advance, and a differential equation solver can accept any array-like type.\n\n## What Julia costs\n\nThe same design choices that make Julia fast create trade-offs:\n\n- **Compilation latency.** The first call to a function triggers JIT compilation, which can be slow for complex functions. Warm runs are fast, but startup time is higher than interpreted languages.\n- **Package loading time.** Julia packages can take time to precompile on first use, especially when using many dependencies.\n- **Smaller community.** The ecosystem is growing but still smaller than Python's; fewer libraries and less Stack Overflow knowledge.\n- **1-based indexing.** Coming from Python or R requires adjusting mental models for array and string indexing.\n\nNone of this made Julia a bad choice — it made it a _different_ choice, optimized for performance-first development without sacrificing the REPL experience.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nJulia cells evaluate inside the `MarsKernel` module in a persistent session. The last expression of a cell is displayed via its MIME representations, `display()` publishes rich mime bundles, and `readline()` asks the kernel for input.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# Cells share the MarsKernel module; the last expression displays automatically.\nsepal_lengths = [5.1, 4.9, 4.7, 4.6, 5.0]\n\nsum(sepal_lengths) / length(sepal_lengths)   # -> 4.86\n",
+      "metadata": {},
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "# display() publishes MIME bundles; `ans` holds the last displayed value.\ndisplay(\"MarsKernel: hello from Julia\")\nans\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## Where Project Mars fits\n\nProject Mars does not ask you to choose Julia over Python. It supports both in the same notebook environment, so you can use the right tool for each cell. What Project Mars offers with Julia is:\n\n- A persistent Julia subprocess with stateful execution\n- Interactive `readline()` for user input\n- MIME bundle output for rich rendering\n- Variable inspection and diagnostics\n- A notebook where the Julia code stays fast and readable\n\nJulia is where Python's approach (dynamic, interpreted) meets C's performance (compiled, native speed). Project Mars is where that approach lives in a multi-language notebook with Rust, Python, R, and C++ alongside it.\n\nJulia proved that data scientists want speed without leaving the REPL. Project Mars is for the workloads where that speed matters.",
+      "metadata": {}
+    }
+  ]
+}

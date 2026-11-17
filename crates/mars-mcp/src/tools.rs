@@ -31,6 +31,7 @@ fn tool(
         title: Some(crate::mcp::titleize(name)),
         description: Some(description.to_owned()),
         input_schema: schema,
+        output_schema: Some(json!({ "type": "object" })),
         annotations,
     }
 }

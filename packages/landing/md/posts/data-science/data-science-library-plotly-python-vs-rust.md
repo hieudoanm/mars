@@ -73,6 +73,34 @@ plot.show();
 - **Plotly** in Python when you need interactive charts, Dash integration, or want to share visualizations via Plotly Cloud.
 - **plotly** in Rust when you need interactive charts with type safety and want to avoid the Python interpreter overhead.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+Interactive charts start as data — build the series once per language, renderers take it from there:
+
+```python
+# Plotly side: express API, figure captured as output.
+import plotly.express as px
+import pandas as pd
+
+df = pd.DataFrame({"x": [1, 2, 3, 4], "y": [2, 1, 4, 3]})
+fig = px.line(df, x="x", y="y", title="trend")
+fig.show()
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// Rust charting crates consume the same (x, y) series.
+let x = array![1.0, 2.0, 3.0, 4.0];
+let y = array![2.0, 1.0, 4.0, 3.0];
+let points: Vec<(f64, f64)> = x.iter().zip(y.iter()).map(|(a, b)| (*a, *b)).collect();
+println!("{} points for the chart", points.len());
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both Plotly versions in their respective language runtimes:

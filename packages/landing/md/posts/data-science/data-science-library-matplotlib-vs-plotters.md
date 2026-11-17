@@ -76,6 +76,36 @@ let mut chart = ChartBuilder::on(&root)
 - **Matplotlib** in Python when you need the vast ecosystem, familiar API, or integration with NumPy and pandas.
 - **plotters** in Rust when you need native performance, type safety, or want to avoid the Python interpreter overhead for chart rendering.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+A line chart's data pipeline — compute the series, then hand it to the renderer — once per language:
+
+```python
+# Matplotlib side: plot is captured as cell output.
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2 * np.pi, 50)
+plt.plot(x, np.sin(x))
+plt.title("sin(x)")
+plt.show()
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::Array2;
+
+// plotters renders charts to SVG/PNG; the data side is ndarray.
+let x = Array2::from_shape_fn((50, 1), |(i, _)| {
+    (i as f64) * 2.0 * std::f64::consts::PI / 49.0
+});
+let y: Vec<f64> = x.column(0).iter().map(|v| v.sin()).collect();
+println!("series ready: {} points, first={:.3}", y.len(), y[0]);
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both Matplotlib and plotters in their respective language runtimes:

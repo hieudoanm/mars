@@ -1,0 +1,95 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "Jupyter vs Project Mars: Interactive Notebooks Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# Jupyter vs Project Mars: Interactive Notebooks Compared\n\nJupyter defines the interactive notebook experience for many Python users. Project Mars builds on that paradigm with a Rust-first platform, multi-language support, and a new document format designed for reproducible data science workflows.\n\n## What Jupyter does\n\nJupyter introduced the notebook paradigm to data science:\n\n- **Interactive code cells** with execution and output\n- **Markdown cells** for documentation\n- **Rich outputs** (HTML, images, LaTeX, widgets)\n- **Kernel architecture** for language backends\n- **File format** (`.ipynb`) for sharing notebooks\n- **Extensible ecosystem** of kernels and extensions\n\nIt became the default environment for data science experimentation, education, and research.\n\n## What Project Mars brings\n\nProject Mars provides a Rust-first interactive notebook platform:\n\n- **Rust-first design** with native `.mars` document format\n- **Multi-language support** (Rust, Python, R, Julia, C++) in the same notebook\n- **Persistent runtime sessions** for each language\n- **Replay-based Rust execution** with Cargo dependencies\n- **Desktop application** with CodeMirror editor and LSP integration\n- **CLI** for headless execution and automation\n- **Jupyter interoperability** via import/export\n\nThe key difference: Project Mars is designed as an independent notebook platform with a native document format and execution architecture, not just another Jupyter kernel or frontend.\n\n## Comparison\n\n| Feature              | Jupyter (Python)             | Project Mars                        |\n| -------------------- | ---------------------------- | ----------------------------------- |\n| Code execution       | Python kernel                | Rust, Python, R, Julia, C++ kernels |\n| Cell structure       | Code, Markdown, raw          | Code, Markdown, raw                 |\n| Rich outputs         | HTML, images, LaTeX, widgets | HTML, images, LaTeX, tables, charts |\n| Variable persistence | Across cells (Python)        | Across cells (per language)         |\n| Document format      | `.ipynb` (JSON)              | `.mars` (JSON, versioned)           |\n| Type safety          | Runtime                      | Compile-time (Rust)                 |\n| Dependencies         | pip, conda                   | Cargo (Rust), pip (Python), etc.    |\n| Multi-language       | Via multiple kernels         | Native multi-language support       |\n| Desktop editor       | Web-based (JupyterLab)       | Native Tauri application with LSP   |\n| CLI                  | Limited                      | Full CLI for automation             |\n\n## Example: Jupyter",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import numpy as np\nimport pandas as pd\n\narr = np.array([1, 2, 3])\ndf = pd.DataFrame({'a': arr})\ndf\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: Project Mars (Rust)",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "// Cell 1: Rust\nlet arr = vec![1, 2, 3];\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "code",
+      "source": "# Cell: Python\nimport numpy as np\narr = np.array([1, 2, 3])\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **Jupyter** in Python when you need the mature ecosystem, broad language support via kernels, or integration with Python-specific tools.\n- **Project Mars** when you want a Rust-first notebook platform, multi-language notebooks in a single file, native desktop application, or CLI automation.\n\n## How Project Mars supports Jupyter workflows\n\nProject Mars provides Jupyter interoperability:\n\n- **Import** `.ipynb` notebooks to `.mars` format\n- **Export** `.mars` notebooks to `.ipynb` format\n- **Rich output preservation** (HTML, images, LaTeX, tables)\n- **Metadata preservation** for unsupported features\n- **Cell structure mapping** (code, Markdown, raw)\n\nThis makes it easy to migrate existing Jupyter workflows to Project Mars while maintaining compatibility with the broader ecosystem.\n\n## Multi-language notebooks\n\nProject Mars allows mixing languages in a single notebook:\n\n```mars\n// Cell 1: Rust\nlet signal = load_signal();\n\n// Cell 2: Python\n# Use Python's pandas for analysis\nimport pandas as pd\ndf = pd.DataFrame(signal)\n\n// Cell 3: R\n# Use R for statistical tests\nt.test(df.values)\n```\n\nEach language has its own persistent runtime, so variables persist across cells within that language.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nThis post is about notebooks — so here is one. The cells below are the same document you're reading: Rust, Python, and R sessions side by side in a single `.mars` file, each keeping its own state.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// Rust session: replay runtime, bindings persist across cells.\nlet samples = vec![5.1, 4.9, 4.7, 4.6, 5.0];\nlet total: f64 = samples.iter().sum();\nprintln!(\"rust sees {} samples, total {total:.2}\", samples.len());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "code",
+      "source": "# Python session: independent interpreter, same notebook.\nimport statistics\n\nsepal_lengths = [5.1, 4.9, 4.7, 4.6, 5.0]\nstatistics.mean(sepal_lengths)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "id": "cell-10",
+      "cell_type": "code",
+      "source": "# R session: yet another runtime in the same .mars file.\nsepal_lengths <- c(5.1, 4.9, 4.7, 4.6, 5.0)\nmean(sepal_lengths)\n",
+      "metadata": {
+        "language": "r"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "id": "cell-11",
+      "cell_type": "markdown",
+      "source": "## Get started with Project Mars\n\nExplore Project Mars's multi-language notebook platform:\n\n- [Getting started guide](/docs/getting-started)\n- [Runtime documentation](/docs/02-platform/runtime.md)\n- [CLI reference](/docs/02-platform/cli.md)\n- [Desktop application](packages/desktop)\n- [Extension guides](/docs/extension-vscode.md)",
+      "metadata": {}
+    }
+  ]
+}

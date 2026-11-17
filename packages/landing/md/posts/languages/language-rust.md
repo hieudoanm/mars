@@ -50,6 +50,34 @@ Rust is the only language that gives you:
 
 The Rust ML ecosystem is young — `ndarray`, `linfa`, `burn`, `tch-rs`, and `tensors` are all under active development — but it is growing fast. Every Python library in ML has a Rust counterpart, and the Rust versions are faster and safer by construction.
 
+## Try it in Project Mars
+
+Rust cells run on Mars's **replay runtime**: each cell is compiled with `rustc` against Cargo dependencies declared via `// :dep` comments, and the notebook's `Cargo.lock` snapshot keeps reruns reproducible. rust-analyzer diagnostics, hover, and completion work inside the editor through `mars-lsp`.
+
+The cell below pulls in `ndarray` — the same crate used across Mars's own ML examples — and multiplies two small matrices:
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::Array2;
+
+// ndarray is the Rust counterpart of NumPy's ndarray.
+let a = Array2::from_shape_vec((2, 2), vec![1.0, 2.0, 3.0, 4.0]).unwrap();
+let product = a.dot(&a);
+
+println!("{product:?}");
+```
+
+```rust
+// :dep serde_json = "1"
+
+use serde_json::json;
+
+// Structured data stays type-checked end to end — no dynamic surprises.
+let payload = json!({ "mean_sepal_length": 5.84, "samples": 150 });
+println!("{}", payload["mean_sepal_length"]);
+```
+
 ## The catch
 
 Rust has a steeper learning curve. Ownership and borrowing feel alien at first, and the compiler is uncompromising. But that friction is the point: the compiler is an assistant that catches your mistakes before they reach production. Once the borrow checker stops fighting you, you wonder how you ever wrote C++.

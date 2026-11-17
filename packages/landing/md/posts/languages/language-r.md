@@ -50,6 +50,27 @@ Honesty requires acknowledging R's structural weaknesses:
 
 These are not reasons to dismiss R — they are reasons R and Python both lean on native extensions for the heavy lifting.
 
+## Try it in Project Mars
+
+R cells share a single R session per notebook. Assignments persist across cells, `cat()`/`print()` stream to cell output, and plots render inline — the same workflow as RStudio, inside a `.mars` document.
+
+```r
+# Cells share one R session; bindings persist across cells.
+sepal_lengths <- c(5.1, 4.9, 4.7, 4.6, 5.0)
+
+# R is vectorized by default — summary stats are one-liners.
+summary(sepal_lengths)
+```
+
+```r
+# <<- assigns into .GlobalEnv explicitly when needed inside functions.
+iris_means <- data.frame(
+  feature = c("sepal_length", "sepal_width"),
+  mean    = c(mean(sepal_lengths), mean(c(3.5, 3.0, 3.2, 3.1, 3.6)))
+)
+iris_means
+```
+
 ## Why Project Mars is thinking about R
 
 Project Mars's document model was designed to be language-agnostic from the start: a notebook is prose, code cells, and outputs, and the metadata declares which language the code is written in. Supporting R is a natural extension of that design, not a bolt-on.

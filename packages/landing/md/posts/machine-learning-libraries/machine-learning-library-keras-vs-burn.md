@@ -74,6 +74,39 @@ let optimizer = AdamConfig::new().init();
 - **Keras** in Python when you need a high-level API, broad backend support, or integration with the Python ML ecosystem.
 - **burn** in Rust when you want a Rust-native deep learning framework with type safety and ergonomic abstractions.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+A minimal dense model — Keras above, the tensor ops burn wraps below:
+
+```python
+# Keras side: one Dense layer, one fit call.
+import numpy as np
+from tensorflow import keras
+
+X = np.random.default_rng(0).normal(size=(32, 4))
+y = (X.sum(axis=1) > 0).astype(float)
+
+model = keras.Sequential([keras.layers.Dense(1, input_shape=(4,))])
+model.compile(optimizer="sgd", loss="mse")
+model.fit(X, y, epochs=2, verbose=0)
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::{array, Array2};
+
+// burn wraps exactly this: a dense layer is a matmul + bias.
+// Forward pass for y = Wx + b on one sample.
+let w = Array2::from_shape_vec((1, 4), vec![0.5, -0.5, 0.25, 0.25]).unwrap();
+let b = 0.1;
+let x = array![1.0, 2.0, -1.0, 0.5];
+let y = w.dot(&x) + b;
+println!("dense output: {}", y[0]);
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both Keras and burn in their respective language runtimes:

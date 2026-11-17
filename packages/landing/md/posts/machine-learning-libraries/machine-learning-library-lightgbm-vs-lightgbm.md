@@ -72,6 +72,39 @@ let model = train(&params, &dataset)?;
 - **LightGBM** in Python when you need fast gradient boosting, large dataset support, or integration with pandas and scikit-learn.
 - **lightgbm** in Rust when you want to use LightGBM from Rust, combine it with Rust's type system, or deploy models in Rust applications.
 
+## Try it in Project Mars
+
+Both runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.
+
+LightGBM's speed comes from histogram binning — the idea, once per language:
+
+```python
+# LightGBM side: the sklearn-style API on a small frame.
+import numpy as np
+from lightgbm import LGBMClassifier
+
+rng = np.random.default_rng(0)
+X = rng.normal(size=(200, 5))
+y = (X[:, 0] + X[:, 1] > 0).astype(int)
+
+model = LGBMClassifier(n_estimators=20, verbose=-1).fit(X, y)
+model.score(X, y)
+```
+
+```rust
+// Histogram binning by hand: sort a feature and count per bucket —
+// the preprocessing step behind LightGBM's speed.
+let mut values: Vec<f64> = (0..100).map(|i| (i % 17) as f64).collect();
+values.sort_by(|a, b| a.partial_cmp(b).unwrap());
+let bins = 4;
+let per_bin = values.len() / bins;
+for b in 0..bins {
+    let lo = b * per_bin;
+    let hi = if b == bins - 1 { values.len() } else { lo + per_bin };
+    println!("bin {b}: {} samples", hi - lo);
+}
+```
+
 ## How Project Mars supports both
 
 Project Mars supports both LightGBM versions in their respective language runtimes:

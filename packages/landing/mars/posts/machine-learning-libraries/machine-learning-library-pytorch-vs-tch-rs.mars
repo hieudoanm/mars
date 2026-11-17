@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "PyTorch vs tch-rs: Deep Learning Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# PyTorch vs tch-rs: Deep Learning Compared\n\nPyTorch is popular for research and production deep learning. **`tch-rs`** provides Rust bindings to the Torch ecosystem, enabling tensor computation and neural network workflows from Rust code. In Project Mars, developers can prototype model logic interactively while staying in a compiled language.\n\n## What PyTorch does\n\nPyTorch provides a deep learning framework:\n\n- **Tensor operations** with automatic differentiation\n- **Neural network modules** (convolutions, RNNs, transformers)\n- **Training loops** with optimizers and schedulers\n- **GPU acceleration** via CUDA\n- **Dynamic computation graphs**\n- **Deployment** to production environments\n\nIt became the dominant framework for research and production deep learning in Python.\n\n## What tch-rs brings to Rust\n\n**`tch-rs`** provides Rust bindings to PyTorch:\n\n- **Tensor operations** via LibTorch\n- **Automatic differentiation** with autograd\n- **Neural network modules** (linear, convolution, RNN)\n- **Optimizers** (SGD, Adam, RMSprop)\n- **GPU support** via CUDA\n- **Type-safe** tensor operations\n\nThe key difference: tch-rs allows you to use PyTorch's capabilities from Rust, combining Torch's ecosystem with Rust's type safety and performance.\n\n## Comparison\n\n| Feature         | PyTorch (Python)          | tch-rs (Rust)                  |\n| --------------- | ------------------------- | ------------------------------ |\n| Tensor creation | `torch.tensor([1, 2, 3])` | `Tensor::of_slice(&[1, 2, 3])` |\n| Neural network  | `nn.Linear(in, out)`      | `nn::linear(in, out)`          |\n| Training loop   | Python for loops          | Rust iterators                 |\n| Type safety     | Runtime                   | Compile-time (mostly)          |\n| Performance     | Python + C++ backend      | Rust + C++ backend             |\n| GPU support     | CUDA                      | CUDA                           |\n\n## Example: PyTorch",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import torch\n\nx = torch.tensor([1.0, 2.0, 3.0])\ny = x * 2\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: tch-rs",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use tch::Tensor;\n\nlet x = Tensor::of_slice(&[1.0, 2.0, 3.0]);\nlet y = x * 2;\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **PyTorch** in Python when you need the full Torch ecosystem, rapid prototyping, or integration with Python ML workflows.\n- **tch-rs** in Rust when you want to use PyTorch from Rust, combine it with Rust's type system, or build Rust applications that leverage Torch.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth runtimes share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — and state stays inside each language's own session.\n\nAutograd in one cell — PyTorch's signature feature, and the op tch-rs exposes to Rust:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# PyTorch side: a scalar loss and its gradient.\nimport torch\n\nx = torch.tensor(3.0, requires_grad=True)\nloss = x ** 2\nloss.backward()\nx.grad          # -> tensor(6.)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::{array, Array2};\n\n// tch-rs exposes the same tensor ops; here the forward pass y = Wx\n// that an autograd tape would record for backward().\nlet w = Array2::from_shape_vec((2, 2), vec![1.0, 0.0, 0.0, 1.0]).unwrap();\nlet x = array![3.0, 4.0];\nlet y = w.dot(&x);\nprintln!(\"forward: {y:?}\");\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both PyTorch and tch-rs in their respective language runtimes:\n\n- **Python cells** can use PyTorch with standard library imports\n- **Rust cells** can use tch-rs via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Tensors and models persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore PyTorch and tch-rs in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

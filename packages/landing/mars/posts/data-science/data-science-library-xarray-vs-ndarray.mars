@@ -1,0 +1,75 @@
+{
+  "format_version": 2,
+  "metadata": {
+    "title": "xarray vs ndarray: Labeled Arrays Compared",
+    "language": "rust"
+  },
+  "cells": [
+    {
+      "id": "cell-1",
+      "cell_type": "markdown",
+      "source": "# xarray vs ndarray: Labeled Arrays Compared\n\nxarray extends arrays with labels and dimensions for scientific datasets in Python. Rust workflows often compose **`ndarray`** with domain-specific crates to represent multi-dimensional data. In Project Mars, these array-centric workflows can live alongside Markdown, outputs, and reproducible execution.\n\n## What xarray does\n\nxarray provides labeled n-dimensional arrays:\n\n- **Named dimensions** and coordinates\n- **Label-based indexing** and selection\n- **Grouped operations** along dimensions\n- **Integration** with NumPy, pandas, and dask\n- **I/O** for NetCDF, Zarr, and other scientific formats\n- **Out-of-core** computation via dask\n\nIt became the standard for working with labeled, multi-dimensional scientific data in Python.\n\n## What ndarray brings to Rust\n\n**`ndarray`** provides the core array representation in Rust:\n\n- **N-dimensional arrays** with generic element types\n- **Efficient storage** via contiguous memory layouts\n- **Slicing and views** without copying\n- **Broadcasting-style operations**\n- **Integration** with domain-specific crates for labeled data\n- **Zero-cost abstractions** that compile to optimized native code\n\nThe key difference: ndarray provides the core array primitive, while domain-specific Rust crates add labeling and metadata. This modular approach allows flexibility while maintaining performance.\n\n## Comparison\n\n| Feature          | xarray (Python)                       | ndarray (Rust)                   |\n| ---------------- | ------------------------------------- | -------------------------------- |\n| Array creation   | `xr.DataArray(data, dims=['x', 'y'])` | `Array::from_shape((x, y))`      |\n| Labeled indexing | `da.sel(x=1)`                         | Manual via domain crates         |\n| Grouping         | `da.groupby('x').mean()`              | Manual implementation            |\n| Type safety      | Runtime                               | Compile-time                     |\n| Performance      | NumPy-backed                          | Native compilation               |\n| Metadata         | Built-in coordinates                  | Custom structs via domain crates |\n\n## Example: xarray",
+      "metadata": {}
+    },
+    {
+      "id": "cell-2",
+      "cell_type": "code",
+      "source": "import xarray as xr\n\nda = xr.DataArray(\n    [[1, 2], [3, 4]],\n    dims=['x', 'y'],\n    coords={'x': [0, 1], 'y': [0, 1]}\n)\nresult = da.sel(x=0)\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "id": "cell-3",
+      "cell_type": "markdown",
+      "source": "## Example: ndarray",
+      "metadata": {}
+    },
+    {
+      "id": "cell-4",
+      "cell_type": "code",
+      "source": "use ndarray::prelude::*;\n\nlet arr = Array::from_shape((2, 2)).unwrap();\n// Add labeling via custom structs or domain crates\n",
+      "metadata": {},
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "id": "cell-5",
+      "cell_type": "markdown",
+      "source": "## When to use each\n\n- **xarray** in Python when you need labeled arrays, coordinate systems, or integration with scientific data formats (NetCDF, Zarr).\n- **ndarray** in Rust when you need core array operations with type safety and performance, adding labels via domain-specific crates as needed.",
+      "metadata": {}
+    },
+    {
+      "id": "cell-6",
+      "cell_type": "markdown",
+      "source": "## Try it in Project Mars\n\nBoth ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.\n\nN-dimensional arrays — xarray's labeled dims, ndarray's raw shape — once per language:",
+      "metadata": {}
+    },
+    {
+      "id": "cell-7",
+      "cell_type": "code",
+      "source": "# xarray side: dims and coords on a 3-D array.\nimport numpy as np\nimport xarray as xr\n\ndata = xr.DataArray(\n    np.random.default_rng(0).normal(size=(2, 3, 4)),\n    dims=(\"time\", \"lat\", \"lon\"),\n)\ndata.mean(dim=\"time\")\n",
+      "metadata": {
+        "language": "python"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "id": "cell-8",
+      "cell_type": "code",
+      "source": "// :dep ndarray = \"0.16\"\n\nuse ndarray::Array2;\n\n// ndarray side: same shape, axes by position.\nlet cube = Array2::zeros((24, 1));\nlet data = cube.into_shape((2, 3, 4)).unwrap();\nprintln!(\"shape: {:?}, size: {}\", data.shape(), data.len());\n",
+      "metadata": {},
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "id": "cell-9",
+      "cell_type": "markdown",
+      "source": "## How Project Mars supports both\n\nProject Mars supports both xarray and ndarray in their respective language runtimes:\n\n- **Python cells** can use xarray with standard library imports\n- **Rust cells** can use ndarray via Cargo dependencies\n- Both can coexist in the same `.mars` notebook\n- Arrays persist across cells within each language runtime\n\nStart with the [getting started guide](/docs/getting-started) to explore xarray and ndarray in Project Mars notebooks.",
+      "metadata": {}
+    }
+  ]
+}

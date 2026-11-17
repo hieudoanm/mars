@@ -86,6 +86,38 @@ NetworkX is the go-to Python library for graphs and networks. **`petgraph`** pro
 
 See [NetworkX vs petgraph](/blog/data-science-library-networkx-vs-petgraph) for a detailed comparison.
 
+## Try it in Project Mars
+
+Both ecosystems share one `.mars` document: Python cells run in a persistent interpreter, Rust cells on the replay runtime with `// :dep` Cargo dependencies — variables persist across cells within each language's own session.
+
+The same profiling task — load a frame, compute column stats — once per ecosystem:
+
+```python
+# pandas side: describe() gives the whole profile.
+import pandas as pd
+
+df = pd.DataFrame({
+    "sepal_length": [5.1, 4.9, 4.7, 4.6, 5.0],
+    "sepal_width":  [3.5, 3.0, 3.2, 3.1, 3.6],
+})
+df.describe()
+```
+
+```rust
+// :dep ndarray = "0.16"
+
+use ndarray::array;
+
+// ndarray side: the same summary stats by hand.
+let lengths = array![5.1, 4.9, 4.7, 4.6, 5.0];
+let widths  = array![3.5, 3.0, 3.2, 3.1, 3.6];
+for (name, col) in [("sepal_length", &lengths), ("sepal_width", &widths)] {
+    let mean = col.mean().unwrap();
+    let var = col.var(0.0).unwrap();
+    println!("{name}: mean={mean:.3} var={var:.3}");
+}
+```
+
 ## How Project Mars supports both ecosystems
 
 Project Mars is designed as a **multi-language interactive notebook**. That means both Python and Rust data science ecosystems are first-class citizens:

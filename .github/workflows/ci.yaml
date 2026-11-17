@@ -79,7 +79,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: rust-coverage
+          name: test-coverage-rust
           path: |
             lcov.info
             coverage/html/
@@ -133,7 +133,7 @@ jobs:
       - name: Upload CLI binary
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-cli-${{ matrix.os }}
+          name: cli-${{ matrix.os }}
           path: mars-*
           if-no-files-found: error
 
@@ -170,7 +170,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: desktop-coverage
+          name: test-coverage-desktop
           path: packages/desktop/coverage/
           if-no-files-found: warn
 
@@ -234,7 +234,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-desktop-e2e-artifacts
+          name: test-e2e-desktop
           path: packages/desktop/e2e/artifacts
           if-no-files-found: ignore
 
@@ -312,7 +312,7 @@ jobs:
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-desktop-macos
+          name: desktop-macos
           path: |
             target/release/bundle/dmg/*.dmg
             target/release/bundle/macos/*.app.zip
@@ -322,7 +322,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-desktop-linux
+          name: desktop-linux
           path: |
             target/release/bundle/deb/*.deb
             target/release/bundle/rpm/*.rpm
@@ -333,7 +333,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-desktop-windows
+          name: desktop-windows
           path: |
             target/release/bundle/msi/*.msi
             target/release/bundle/nsis/*.exe
@@ -428,7 +428,7 @@ jobs:
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-vscode-vsix
+          name: extension-vscode-vsix
           path: extensions/vscode/vsix/*.vsix
           if-no-files-found: error
 
@@ -473,7 +473,7 @@ jobs:
       - name: Upload WASM artifact
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-zed-wasm
+          name: extension-zed-wasm
           path: target/wasm32-wasip1/release/mars_zed.wasm
           if-no-files-found: error
 
@@ -510,7 +510,7 @@ jobs:
       - name: Upload plugin artifact
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: mars-jetbrains-plugin
+          name: extension-jetbrains-plugin
           path: extensions/jetbrains/build/distributions/*.zip
           if-no-files-found: error
 
@@ -528,33 +528,33 @@ jobs:
       - name: Download CLI artifacts
         uses: actions/download-artifact@v8.0.2
         with:
-          pattern: mars-cli-*
+          pattern: cli-*
           path: dist
           merge-multiple: true
 
       - name: Download desktop artifacts
         uses: actions/download-artifact@v8.0.2
         with:
-          pattern: mars-desktop-*
+          pattern: desktop-*
           path: dist
           merge-multiple: true
 
       - name: Download VS Code extension artifact
         uses: actions/download-artifact@v8.0.2
         with:
-          name: mars-vscode-vsix
+          name: extension-vscode-vsix
           path: dist
 
       - name: Download Zed extension artifact
         uses: actions/download-artifact@v8.0.2
         with:
-          name: mars-zed-wasm
+          name: extension-zed-wasm
           path: dist
 
       - name: Download JetBrains extension artifact
         uses: actions/download-artifact@v8.0.2
         with:
-          name: mars-jetbrains-plugin
+          name: extension-jetbrains-plugin
           path: dist
 
       - name: Delete existing latest release
