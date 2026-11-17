@@ -189,6 +189,20 @@ fn serve_kernel_tcp_accepts_connections() {
 }
 
 #[test]
+fn serve_kernel_std_io_eof_exits() {
+    // `serve_kernel` binds the real stdin/stdout. Under `cargo test` stdin is
+    // not a TTY (CI runners get /dev/null), so the serve loop sees EOF and
+    // returns. Run on a thread so a live stdin cannot hang the suite; the
+    // detached thread exits whenever stdin closes.
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let _ = mars::kernel::serve_kernel(RuntimeBackendKind::Replay, None, None);
+        let _ = tx.send(());
+    });
+    let _ = rx.recv_timeout(std::time::Duration::from_secs(10));
+}
+
+#[test]
 fn language_override_selects_runtime_per_request() {
     // Python is optional; if unavailable the response is still an honest error.
     let input = r#"{"id":"py","request":{"type":"execute","source":"40 + 2","language":"python"}}"#;

@@ -73,3 +73,76 @@ fn rejects_execution_data_on_markdown() {
         Err(DocumentError::NonCodeExecutionData(_))
     ));
 }
+
+#[test]
+fn cell_operations_reject_invalid_input() {
+    let mut notebook = Notebook::new();
+    notebook
+        .add_cell(Cell::new(CellType::Code, "first"))
+        .expect("add");
+    let duplicate = notebook.cell(0).expect("cell").clone();
+
+    assert!(matches!(
+        notebook.add_cell(duplicate.clone()),
+        Err(DocumentError::DuplicateCellId(_))
+    ));
+    assert!(matches!(
+        notebook.insert_cell(99, Cell::new(CellType::Code, "x")),
+        Err(DocumentError::CellIndexOutOfBounds(99))
+    ));
+    assert!(matches!(
+        notebook.insert_cell(0, duplicate),
+        Err(DocumentError::DuplicateCellId(_))
+    ));
+    assert!(matches!(
+        notebook.remove_cell(42),
+        Err(DocumentError::CellIndexOutOfBounds(42))
+    ));
+    assert!(matches!(
+        notebook.move_cell(0, 9),
+        Err(DocumentError::CellIndexOutOfBounds(_))
+    ));
+    assert!(matches!(
+        notebook.cell(7),
+        Err(DocumentError::CellIndexOutOfBounds(7))
+    ));
+    assert!(matches!(
+        notebook.cell_mut(7),
+        Err(DocumentError::CellIndexOutOfBounds(7))
+    ));
+
+    notebook
+        .cell_mut(0)
+        .expect("cell mut")
+        .source
+        .push_str(" // edited");
+    assert!(notebook.cell(0).expect("cell").source.ends_with("edited"));
+}
+
+#[test]
+fn history_evicts_past_and_clears_redo_on_record() {
+    let initial = Notebook::new();
+    let mut history = NotebookHistory::new(initial.clone(), 2);
+    assert_eq!(history.current(), Some(&initial));
+    // Undo at the root is a no-op.
+    assert!(history.undo().is_none());
+
+    for source in ["a", "b", "c"] {
+        let mut notebook = history.current().expect("current").clone();
+        notebook
+            .add_cell(Cell::new(CellType::Code, source))
+            .expect("add");
+        history.record(notebook);
+    }
+    // Capacity 2 keeps only the two most recent snapshots.
+    assert_eq!(history.current().expect("current").cells.len(), 3);
+    history.undo().expect("undo");
+    assert_eq!(history.current().expect("current").cells.len(), 2);
+    // A new record discards the redo branch.
+    let mut notebook = history.current().expect("current").clone();
+    notebook
+        .add_cell(Cell::new(CellType::Code, "d"))
+        .expect("add");
+    history.record(notebook);
+    assert!(history.redo().is_none());
+}

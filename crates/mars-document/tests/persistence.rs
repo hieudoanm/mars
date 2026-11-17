@@ -110,6 +110,25 @@ fn cell_operations_report_errors_instead_of_panicking() {
 }
 
 #[test]
+fn from_json_migrates_format_version_one() {
+    // v1 documents are upgraded in place to the current format version.
+    let document = r#"{"format_version":1,"metadata":{"language":"rust"},"cells":[]}"#;
+    let notebook = from_json(document).expect("v1 document migrates");
+    assert_eq!(notebook.metadata.language, "rust");
+}
+
+#[test]
+fn save_atomic_handles_paths_without_file_names() {
+    // A trailing `..` has no file_name component; the temp path falls back to
+    // a default name and the rename still fails cleanly as an Io error.
+    let weird = PathBuf::from("/tmp/..");
+    assert!(matches!(
+        save_atomic(&Notebook::new(), &weird),
+        Err(DocumentError::Io { .. })
+    ));
+}
+
+#[test]
 fn save_atomic_and_load_round_trip() {
     let dir = temp_dir("round-trip");
     let path = dir.join("book.mars");

@@ -104,6 +104,9 @@ jobs:
             run_coverage
           }
           # `report` reuses the profraw from the run above — no re-test.
+          # The text table surfaces the function-coverage numbers that
+          # --lcov hides, so a fail-under trip is diagnosable from the log.
+          cargo llvm-cov report
           cargo llvm-cov report --html --output-dir coverage/html
 
       - name: Upload Rust coverage report

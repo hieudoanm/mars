@@ -220,3 +220,105 @@ fn tools_call_dispatches_lab_tools() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn prompts_and_resources_dispatch() {
+    let mut server = MarsMcpServer::new(RuntimeBackendKind::Replay, true, None);
+    let call = |server: &mut MarsMcpServer, method: &str, params: Option<Value>| {
+        server
+            .handle(Request {
+                id: Some(json!(1)),
+                method: method.to_owned(),
+                params,
+            })
+            .expect("response")
+    };
+
+    // prompts/list advertises the built-in prompts.
+    let list = call(&mut server, "prompts/list", None);
+    let prompts = list.result.expect("result")["prompts"]
+        .as_array()
+        .expect("prompts")
+        .clone();
+    for name in ["notebook_walkthrough", "debug_cell"] {
+        assert!(prompts.iter().any(|p| p["name"] == name), "missing {name}");
+        let got = call(&mut server, "prompts/get", Some(json!({"name": name})));
+        assert!(got.result.is_some(), "{name} should resolve");
+        assert!(got.result.expect("result")["messages"].is_array());
+    }
+    let unknown = call(&mut server, "prompts/get", Some(json!({"name": "nope"})));
+    assert!(unknown.error.is_some());
+
+    // resources/list starts empty; resources/read rejects bad URIs.
+    let empty = call(&mut server, "resources/list", None);
+    assert_eq!(empty.result.expect("result")["resources"], json!([]));
+    let bad_uri = call(
+        &mut server,
+        "resources/read",
+        Some(json!({"uri": "https://x"})),
+    );
+    assert!(bad_uri.error.is_some());
+
+    // Preload a notebook: it appears as a resource and reads back as JSON.
+    let dir = std::env::temp_dir().join(format!("mars-mcp-res-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let path = dir.join("book.mars");
+    mars_document::save_atomic(&mars_document::Notebook::new(), &path).expect("save");
+    server.preload_notebook(&path).expect("preload");
+
+    let listed = call(&mut server, "resources/list", None);
+    let resources = listed.result.expect("result")["resources"]
+        .as_array()
+        .expect("resources")
+        .clone();
+    assert_eq!(resources.len(), 1);
+    let uri = resources[0]["uri"].as_str().expect("uri").to_owned();
+    assert!(uri.starts_with("mars://notebook/"));
+
+    let read = call(&mut server, "resources/read", Some(json!({"uri": uri})));
+    let contents = read.result.expect("result")["contents"]
+        .as_array()
+        .expect("contents")
+        .clone();
+    assert!(
+        contents[0]["text"]
+            .as_str()
+            .expect("text")
+            .contains("\"cells\"")
+    );
+
+    // A well-formed URI for a notebook that is not open is an error.
+    let other = dir.join("other.mars");
+    mars_document::save_atomic(&mars_document::Notebook::new(), &other).expect("save");
+    let not_open = call(
+        &mut server,
+        "resources/read",
+        Some(json!({"uri": format!("mars://notebook/{}", other.display())})),
+    );
+    assert!(not_open.error.is_some());
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn tools_call_rejects_missing_params_and_name() {
+    let mut server = MarsMcpServer::new(RuntimeBackendKind::Replay, true, None);
+    let bare = server
+        .handle(Request {
+            id: Some(json!(1)),
+            method: "tools/call".to_owned(),
+            params: None,
+        })
+        .expect("response");
+    assert!(bare.error.is_some());
+
+    let no_name = server
+        .handle(Request {
+            id: Some(json!(2)),
+            method: "tools/call".to_owned(),
+            params: Some(json!({"arguments": {}})),
+        })
+        .expect("response");
+    assert!(no_name.error.is_some());
+}

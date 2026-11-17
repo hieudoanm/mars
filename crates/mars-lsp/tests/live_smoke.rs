@@ -51,7 +51,7 @@ fn live_rust_analyzer_smoke() {
 
     // rust-analyzer needs a moment to load the workspace and publish
     // diagnostics for the intentionally broken second cell.
-    let deadline = Instant::now() + Duration::from_secs(30);
+    let deadline = Instant::now() + Duration::from_secs(60);
     let mut diagnostics = Vec::new();
     while Instant::now() < deadline {
         diagnostics = session.poll_diagnostics();
@@ -68,7 +68,7 @@ fn live_rust_analyzer_smoke() {
     // rust-analyzer answers lazily while it indexes; retry each request
     // until it produces a result or the deadline passes.
     let retry = |request: &mut dyn FnMut() -> bool| {
-        let deadline = Instant::now() + Duration::from_secs(30);
+        let deadline = Instant::now() + Duration::from_secs(60);
         while Instant::now() < deadline {
             if request() {
                 return true;

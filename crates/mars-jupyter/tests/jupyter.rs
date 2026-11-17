@@ -268,6 +268,31 @@ fn mime_bundle_prefers_typed_outputs_and_preserves_unknowns() {
         convert_mime_bundle(bundle(&[("image/png", string("aGk="))]), Map::new()),
         Some(Output::Image { mime_type, data }) if mime_type == "image/png" && data == "aGk="
     ));
+    assert!(matches!(
+        convert_mime_bundle(
+            bundle(&[("application/vnd.vega-lite+json", json!({"mark": "line"}))]),
+            Map::new()
+        ),
+        Some(Output::Chart { spec }) if spec["mark"] == "line"
+    ));
+    assert!(matches!(
+        convert_mime_bundle(bundle(&[("image/svg+xml", string("<svg/>"))]), Map::new()),
+        Some(Output::Image { mime_type, .. }) if mime_type == "image/svg+xml"
+    ));
+    // An image entry whose value is not a string falls through to a bundle.
+    let non_string_image =
+        convert_mime_bundle(bundle(&[("image/png", json!({"raw": true}))]), Map::new())
+            .expect("bundle");
+    assert!(matches!(non_string_image, Output::MimeBundle { .. }));
+    // A single unrecognised MIME entry is preserved as a bundle.
+    let unknown = convert_mime_bundle(
+        bundle(&[("application/x-custom", json!({"k": 1}))]),
+        Map::new(),
+    )
+    .expect("bundle");
+    assert!(
+        matches!(unknown, Output::MimeBundle { data, .. } if data.contains_key("application/x-custom"))
+    );
     assert!(convert_mime_bundle(Map::new(), Map::new()).is_none());
 
     // Multiple MIME entries stay a bundle.

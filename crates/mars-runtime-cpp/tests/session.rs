@@ -1,8 +1,8 @@
 use mars_runtime::RuntimeBackend;
 use mars_runtime_cpp::CppSession;
 use std::collections::HashMap;
-use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
 fn session() -> Option<CppSession> {
@@ -36,10 +36,12 @@ fn executes_cpp_cells_with_persistent_state() {
         )
         .expect("second cell");
     assert_eq!(second.execution_count, 2);
-    assert!(second
-        .outputs
-        .iter()
-        .any(|output| matches!(output, mars_core::Output::Text { .. })));
+    assert!(
+        second
+            .outputs
+            .iter()
+            .any(|output| matches!(output, mars_core::Output::Text { .. }))
+    );
 
     assert_eq!(session.execution_count(), 2);
     assert!(session.cargo_lock().expect("lock").is_none());
@@ -179,6 +181,38 @@ fn dependencies_require_conan() {
     // conan is not installed in CI/dev shells; either the conanfile write or
     // the `conan install` spawn must surface as an error, never a panic.
     assert!(result.is_err());
+}
+
+#[test]
+fn locked_with_lockfile_and_offline_reaches_conan_install() {
+    let mut deps = HashMap::new();
+    deps.insert("fmt".to_owned(), "11.0.0".to_owned());
+    let Ok(mut session) = CppSession::new(deps, Some("conan-lock-content".to_owned()), true, true)
+    else {
+        eprintln!("no C++ compiler available; skipping");
+        return;
+    };
+    let result = session.execute_with_control(
+        "int x = 1;",
+        Some(Duration::from_secs(60)),
+        Arc::new(AtomicBool::new(false)),
+    );
+    // conan is absent in CI/dev shells: the lockfile write, --offline and
+    // --lockfile args, and the `conan install` spawn must all surface as an
+    // error, never a panic.
+    assert!(result.is_err());
+}
+
+#[test]
+fn compiler_env_override_and_fallback() {
+    // A valid MARS_CPP_COMPILER is honoured; a bogus value falls back to
+    // PATH probing for clang++/g++.
+    unsafe { std::env::set_var("MARS_CPP_COMPILER", "clang++") };
+    let explicit = CppSession::new(HashMap::new(), None, false, false).is_ok();
+    unsafe { std::env::set_var("MARS_CPP_COMPILER", "definitely-not-a-compiler-xyz") };
+    let fallback = CppSession::new(HashMap::new(), None, false, false).is_ok();
+    unsafe { std::env::remove_var("MARS_CPP_COMPILER") };
+    assert!(explicit && fallback);
 }
 
 #[test]

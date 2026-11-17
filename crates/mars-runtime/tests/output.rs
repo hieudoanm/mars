@@ -128,3 +128,30 @@ fn interrupted_result_marks_execution_interrupted() {
         if name == "Interrupted" && message == "cancelled")
     );
 }
+
+#[test]
+fn extracts_mime_marker_and_keeps_malformed_lines() {
+    let stdout = concat!(
+        "__MARS_MIME__={\"text/html\":\"<i>x</i>\",\"image/png\":\"aGk=\"}\n",
+        "__MARS_MIME__=[1,2]\n",
+        "__MARS_IMAGE__={\"mime_type\":\"image/png\"}\n",
+        "__MARS_HTML__{bad json\n",
+    );
+    let outputs = execution_outputs(stdout.as_bytes(), b"", "RuntimeError");
+    assert_eq!(outputs.len(), 2);
+    match &outputs[0] {
+        Output::Text { text } => {
+            assert!(text.contains("__MARS_MIME__=[1,2]"));
+            assert!(text.contains("__MARS_IMAGE__="));
+            assert!(text.contains("__MARS_HTML__"));
+        }
+        other => panic!("expected text, got {other:?}"),
+    }
+    match &outputs[1] {
+        Output::MimeBundle { data, .. } => {
+            assert_eq!(data.len(), 2);
+            assert_eq!(data["text/html"], serde_json::json!("<i>x</i>"));
+        }
+        other => panic!("expected mime bundle, got {other:?}"),
+    }
+}
