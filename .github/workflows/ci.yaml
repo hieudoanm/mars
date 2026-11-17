@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cli-check:
-    name: CLI check
+  cli-quality:
+    name: CLI - Quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -94,12 +94,12 @@ jobs:
           fail_ci_if_error: false
 
   cli-build:
-    name: CLI build (${{ matrix.os }})
+    name: CLI - Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     # Release binaries are only needed for the master-branch release job;
-    # PRs are covered by the `cli-check` job.
+    # PRs are covered by the `cli-quality` job.
     if: github.event_name != 'pull_request'
-    needs: cli-check
+    needs: cli-quality
     strategy:
       fail-fast: false
       matrix:
@@ -137,8 +137,8 @@ jobs:
           path: mars-*
           if-no-files-found: error
 
-  desktop-check:
-    name: Desktop check
+  desktop-quality:
+    name: Desktop - Quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -185,7 +185,7 @@ jobs:
   desktop-e2e:
     name: Desktop e2e (tauri-driver)
     runs-on: ubuntu-latest
-    needs: desktop-check
+    needs: desktop-quality
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
@@ -242,9 +242,9 @@ jobs:
     name: Desktop build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     # Release bundles are only needed for the master-branch release job;
-    # PRs are covered by the `desktop-check` job.
+    # PRs are covered by the `desktop-quality` job.
     if: github.event_name != 'pull_request'
-    needs: desktop-check
+    needs: desktop-quality
     strategy:
       fail-fast: false
       matrix:

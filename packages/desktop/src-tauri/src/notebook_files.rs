@@ -99,11 +99,19 @@ pub fn create_checkpoint(notebook_path: &str) -> Result<String, String> {
     let directory_path = checkpoints_directory(notebook_path)?;
     let directory = Path::new(&directory_path);
     std::fs::create_dir_all(directory).map_err(|error| error.to_string())?;
-    let timestamp = std::time::SystemTime::now()
+    let mut timestamp = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|error| error.to_string())?
         .as_millis();
-    let checkpoint = directory.join(format!("checkpoint-{timestamp}.mars"));
+    // Two checkpoints created within the same millisecond would collide, so
+    // bump the timestamp until the target name is free.
+    let checkpoint = loop {
+        let candidate = directory.join(format!("checkpoint-{timestamp}.mars"));
+        if !candidate.exists() {
+            break candidate;
+        }
+        timestamp += 1;
+    };
     std::fs::copy(source, &checkpoint).map_err(|error| error.to_string())?;
     Ok(checkpoint.to_string_lossy().into_owned())
 }

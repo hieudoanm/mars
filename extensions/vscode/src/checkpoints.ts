@@ -13,7 +13,19 @@ export const checkpointsDirectory = (notebookPath: string): string => {
 export const createCheckpoint = async (notebookPath: string): Promise<string> => {
   const directory = checkpointsDirectory(notebookPath);
   await fs.mkdir(directory, { recursive: true });
-  const checkpoint = path.join(directory, `checkpoint-${Date.now()}.mars`);
+  // Two checkpoints created within the same millisecond would collide, so
+  // bump the timestamp until the target name is free.
+  let timestamp = Date.now();
+  let checkpoint = path.join(directory, `checkpoint-${timestamp}.mars`);
+  while (
+    await fs.stat(checkpoint).then(
+      () => true,
+      () => false,
+    )
+  ) {
+    timestamp += 1;
+    checkpoint = path.join(directory, `checkpoint-${timestamp}.mars`);
+  }
   await fs.copyFile(notebookPath, checkpoint);
   return checkpoint;
 };

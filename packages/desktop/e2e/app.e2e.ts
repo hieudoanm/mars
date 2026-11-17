@@ -55,7 +55,7 @@ describe('Mars desktop (tauri-driver)', () => {
     // "New notebook" also exists as an aria-label in the file explorer; scope
     // the click to the welcome view so we hit the session-creating button.
     const welcomeButtons = await $$(
-      '[data-component="WelcomeView"] //button[contains(normalize-space(.), "New notebook")]',
+      '//*[@data-component="WelcomeView"]//button[contains(normalize-space(.), "New notebook") or @aria-label="New notebook"]',
     );
     await welcomeButtons[0].waitForDisplayed({ timeout: 15_000 });
     await welcomeButtons[0].click();
