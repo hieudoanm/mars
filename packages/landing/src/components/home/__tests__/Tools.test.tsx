@@ -27,6 +27,6 @@ describe('Tools', () => {
     render(<Tools />);
     expect(screen.getByText(/explore desktop/i)).toBeInTheDocument();
     expect(screen.getByText(/read the cli guide/i)).toBeInTheDocument();
-    expect(screen.getByText(/see the extension/i)).toBeInTheDocument();
+    expect(screen.getByText(/download extensions/i)).toBeInTheDocument();
   });
 });

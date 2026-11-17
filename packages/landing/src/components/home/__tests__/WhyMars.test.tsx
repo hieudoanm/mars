@@ -27,9 +27,10 @@ describe('WhyMars', () => {
     expect(screen.getByText(/human-readable by design/i)).toBeInTheDocument();
   });
 
-  it('renders code preview for the large feature card', () => {
+  it('renders all feature footnote labels', () => {
     render(<WhyMars />);
-    expect(screen.getByText(/analyze the signal/i)).toBeInTheDocument();
-    expect(screen.getByText(/chart rendered/i)).toBeInTheDocument();
+    expect(screen.getByText(/rich multi-media output/i)).toBeInTheDocument();
+    expect(screen.getByText(/process-isolated execution/i)).toBeInTheDocument();
+    expect(screen.getByText(/human-readable by design/i)).toBeInTheDocument();
   });
 });
