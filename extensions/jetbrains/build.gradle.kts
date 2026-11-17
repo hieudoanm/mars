@@ -23,7 +23,6 @@ dependencies {
     intellijPlatform {
         create(IntelliJPlatformType.IntellijIdeaCommunity, "2024.3")
         bundledModule("com.intellij.modules.json")
-        instrumentationTools()
     }
     implementation("com.google.code.gson:gson:2.15.0")
 }
