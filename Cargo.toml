@@ -47,7 +47,7 @@ polars-lazy = "=0.55.2"
 protobuf = "=3.7.2"
 rand = "=0.10.4"
 rand08 = { package = "rand", version = "=0.8.6" }
-regex = "=1.13.1"
+regex = "=1.13.2"
 sha2 = "=0.11.1"
 sqlx = { version = "=0.9.0", features = ["runtime-tokio", "sqlite", "chrono", "uuid", "json"] }
 tokio = { version = "=1.54.1", features = ["full"] }
