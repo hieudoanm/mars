@@ -18,7 +18,10 @@ use std::time::Duration;
 static ENV_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
 
 fn env_lock() -> std::sync::MutexGuard<'static, ()> {
-    ENV_LOCK.get_or_init(|| Mutex::new(())).lock().unwrap()
+    ENV_LOCK
+        .get_or_init(|| Mutex::new(()))
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 struct EnvGuard {
@@ -197,13 +200,25 @@ fn exec_spawn_fails_when_compiler_produces_no_binary() {
 fn kill_failure_surfaces_when_path_lacks_kill() {
     let _guard = env_lock();
     let _env = EnvGuard::new();
-    // PATH contains only an empty dir: the absolute compiler still works but
-    // `kill` cannot be resolved when the timeout fires. The cell sleeps only
-    // 5s so the orphaned binary self-terminates quickly.
-    let empty = fake_bin("empty-path", "");
+    // PATH holds only `sleep`/`chmod` symlinks — no `kill` — so the timeout's
+    // process-tree kill fails to spawn. A fake compiler (absolute path via
+    // MARS_CPP_COMPILER) writes a shell-script `main` that sleeps 5s and
+    // self-terminates, so nothing real is needed from PATH. posix_spawnp
+    // falls through PATH on exec failure, so a broken `kill` shim cannot be
+    // used — the binary must be genuinely absent.
+    let bin = std::env::temp_dir().join("mars-cpp-fakebin-nokill");
+    let _ = fs::remove_dir_all(&bin);
+    fs::create_dir_all(&bin).unwrap();
+    for tool in ["sleep", "chmod"] {
+        std::os::unix::fs::symlink(format!("/bin/{tool}"), bin.join(tool)).unwrap();
+    }
+    let compiler = fake_bin(
+        "cc-sleep",
+        "#!/bin/sh\nout=\"\"\nprev=\"\"\nfor a in \"$@\"; do\n  if [ \"$prev\" = \"-o\" ]; then out=\"$a\"; fi\n  prev=\"$a\"\ndone\nprintf '#!/bin/sh\\nsleep 5\\n' > \"$out\"\nchmod +x \"$out\"\nexit 0\n",
+    );
     unsafe {
-        std::env::set_var("PATH", &empty);
-        std::env::set_var("MARS_CPP_COMPILER", "/usr/bin/clang++");
+        std::env::set_var("PATH", &bin);
+        std::env::set_var("MARS_CPP_COMPILER", compiler.join("cc-sleep"));
     }
 
     let mut session = match CppSession::new(HashMap::new(), None, false, false) {
@@ -212,7 +227,7 @@ fn kill_failure_surfaces_when_path_lacks_kill() {
     };
     let error = session
         .execute_with_control(
-            "#include <unistd.h>\nsleep(5);",
+            "int x = 1;",
             Some(Duration::from_millis(300)),
             Arc::new(AtomicBool::new(false)),
         )

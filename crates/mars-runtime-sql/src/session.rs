@@ -9,6 +9,12 @@ use std::time::{Duration, Instant};
 /// Maximum rows returned by a single query cell before truncation.
 const MAX_ROWS: usize = 5_000;
 
+/// Shared `map_err` target for `E: Display` errors surfaced as
+/// `RuntimeError::Backend` — avoids a closure per call site.
+fn backend_error<E: std::fmt::Display>(error: E) -> RuntimeError {
+    RuntimeError::Backend(error.to_string())
+}
+
 pub struct SqlSession {
     sources: Vec<SqlSource>,
     connection: Option<Connection>,
@@ -34,11 +40,10 @@ impl SqlSession {
 
     fn connection(&mut self) -> Result<&mut Connection, RuntimeError> {
         if self.connection.is_none() {
-            let connection = Connection::open_in_memory()
-                .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+            let connection = Connection::open_in_memory().map_err(backend_error)?;
             connection
                 .busy_timeout(Duration::from_secs(5))
-                .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+                .map_err(backend_error)?;
             self.connection = Some(connection);
             self.ingest_sources()?;
         }
@@ -85,7 +90,7 @@ fn ingest_csv(
     })?;
     let headers = reader
         .headers()
-        .map_err(|error| RuntimeError::Backend(error.to_string()))?
+        .map_err(backend_error)?
         .iter()
         .map(|header| {
             let cleaned: String = header
@@ -128,7 +133,7 @@ fn ingest_csv(
 
     let mut rows: Vec<Vec<String>> = Vec::new();
     for record in reader.records() {
-        let record = record.map_err(|error| RuntimeError::Backend(error.to_string()))?;
+        let record = record.map_err(backend_error)?;
         rows.push(record.iter().map(str::to_owned).collect());
     }
 
@@ -176,7 +181,7 @@ fn ingest_csv(
             "CREATE TABLE {} ({columns_sql});",
             quote_identifier(name)
         ))
-        .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+        .map_err(backend_error)?;
 
     if rows.is_empty() {
         return Ok(());
@@ -194,9 +199,7 @@ fn ingest_csv(
             .collect::<Vec<_>>()
             .join(", ")
     );
-    let mut statement = connection
-        .prepare(&insert_sql)
-        .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+    let mut statement = connection.prepare(&insert_sql).map_err(backend_error)?;
     for row in &mut rows {
         // Pad short rows; extra cells are ignored.
         let values: Vec<SqlValue> = (0..headers.len())
@@ -220,7 +223,7 @@ fn ingest_csv(
             .collect();
         statement
             .execute(params_from_iter(values.iter()))
-            .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+            .map_err(backend_error)?;
     }
     Ok(())
 }
@@ -291,9 +294,7 @@ impl RuntimeBackend for SqlSession {
             let connection = self.connection()?;
             let mut affected_rows = 0usize;
             for statement_sql in split_statements(sql) {
-                let mut statement = connection
-                    .prepare(&statement_sql)
-                    .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+                let mut statement = connection.prepare(&statement_sql).map_err(backend_error)?;
                 let column_count = statement.column_count();
                 if column_count > 0 {
                     let columns = statement
@@ -302,21 +303,15 @@ impl RuntimeBackend for SqlSession {
                         .map(|name| (*name).to_owned())
                         .collect::<Vec<_>>();
                     let mut rows = Vec::new();
-                    let mut query = statement
-                        .query([])
-                        .map_err(|error| RuntimeError::Backend(error.to_string()))?;
-                    while let Some(row) = query
-                        .next()
-                        .map_err(|error| RuntimeError::Backend(error.to_string()))?
-                    {
+                    let mut query = statement.query([]).map_err(backend_error)?;
+                    while let Some(row) = query.next().map_err(backend_error)? {
                         if rows.len() >= MAX_ROWS {
                             break;
                         }
                         let mut values = Vec::with_capacity(column_count);
                         for index in 0..column_count {
                             values.push(value_to_string(
-                                row.get::<_, SqlValue>(index)
-                                    .map_err(|error| RuntimeError::Backend(error.to_string()))?,
+                                row.get::<_, SqlValue>(index).map_err(backend_error)?,
                             ));
                         }
                         rows.push(values);
@@ -324,9 +319,7 @@ impl RuntimeBackend for SqlSession {
                     drop(query);
                     outputs.push(Output::Table { columns, rows });
                 } else {
-                    affected_rows += statement
-                        .execute([])
-                        .map_err(|error| RuntimeError::Backend(error.to_string()))?;
+                    affected_rows += statement.execute([]).map_err(backend_error)?;
                 }
             }
             if affected_rows > 0 {
