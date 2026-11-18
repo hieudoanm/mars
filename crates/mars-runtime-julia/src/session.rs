@@ -56,10 +56,12 @@ impl JuliaSession {
             source,
         })?;
         let driver_path = workdir.join("driver.jl");
-        fs::write(&driver_path, DRIVER_SOURCE).map_err(|source| RuntimeError::Io {
-            path: driver_path.clone(),
-            source,
-        })?;
+        if let Err(source) = fs::write(&driver_path, DRIVER_SOURCE) {
+            return Err(RuntimeError::Io {
+                path: driver_path.clone(),
+                source,
+            });
+        }
         Ok(Self {
             julia,
             workdir,
@@ -80,10 +82,7 @@ impl JuliaSession {
             }
         }
         self.kill_child();
-        *self
-            .stderr_tail
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = String::new();
+        *stderr_tail_lock(&self.stderr_tail) = String::new();
 
         let mut command = configured_command(&self.julia);
         command
@@ -96,14 +95,16 @@ impl JuliaSession {
         let mut child = command.spawn().map_err(|source| {
             RuntimeError::Backend(format!("failed to start Julia driver: {source}"))
         })?;
-        let stdin = child
-            .stdin
-            .take()
-            .ok_or_else(|| RuntimeError::Backend("julia driver stdin unavailable".to_owned()))?;
-        let stdout = child
-            .stdout
-            .take()
-            .ok_or_else(|| RuntimeError::Backend("julia driver stdout unavailable".to_owned()))?;
+        let Some(stdin) = child.stdin.take() else {
+            return Err(RuntimeError::Backend(
+                "julia driver stdin unavailable".to_owned(),
+            ));
+        };
+        let Some(stdout) = child.stdout.take() else {
+            return Err(RuntimeError::Backend(
+                "julia driver stdout unavailable".to_owned(),
+            ));
+        };
         let stderr = child.stderr.take();
 
         if let Some(stderr) = stderr {
@@ -113,41 +114,49 @@ impl JuliaSession {
         let (sender, receiver) = mpsc::channel::<String>();
         thread::spawn(move || read_stdout_lines(stdout, sender));
 
-        *self
-            .stdin
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = None;
+        *driver_stdin_lock(&self.stdin) = None;
         self.child = Some(child);
-        *self
-            .stdin
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = Some(stdin);
+        *driver_stdin_lock(&self.stdin) = Some(stdin);
         self.lines = Some(receiver);
         Ok(())
     }
 
     fn write_driver_line(&self, payload: &[u8]) -> Result<(), RuntimeError> {
-        let mut guard = self
-            .stdin
-            .lock()
-            .map_err(|_| RuntimeError::Backend("julia driver stdin lock poisoned".to_owned()))?;
-        let stdin = guard
-            .as_mut()
-            .ok_or_else(|| RuntimeError::Backend("julia driver stdin unavailable".to_owned()))?;
-        stdin
+        let mut guard = match self.stdin.lock() {
+            Ok(guard) => guard,
+            Err(_) => {
+                return Err(RuntimeError::Backend(
+                    "julia driver stdin lock poisoned".to_owned(),
+                ));
+            }
+        };
+        let Some(stdin) = guard.as_mut() else {
+            return Err(RuntimeError::Backend(
+                "julia driver stdin unavailable".to_owned(),
+            ));
+        };
+        let write = stdin
             .write_all(payload)
             .and_then(|()| stdin.write_all(b"\n"))
-            .and_then(|()| stdin.flush())
-            .map_err(|source| {
-                RuntimeError::Backend(format!("failed to write to julia driver: {source}"))
-            })
+            .and_then(|()| stdin.flush());
+        if let Err(source) = write {
+            return Err(RuntimeError::Backend(format!(
+                "failed to write to julia driver: {source}"
+            )));
+        }
+        Ok(())
     }
 
     fn send(&mut self, message: &Value) -> Result<(), RuntimeError> {
         self.ensure_spawn()?;
-        let payload = serde_json::to_vec(message).map_err(|source| {
-            RuntimeError::Backend(format!("failed to encode request: {source}"))
-        })?;
+        let payload = match serde_json::to_vec(message) {
+            Ok(payload) => payload,
+            Err(source) => {
+                return Err(RuntimeError::Backend(format!(
+                    "failed to encode request: {source}"
+                )));
+            }
+        };
         self.write_driver_line(&payload)
     }
 
@@ -156,19 +165,12 @@ impl JuliaSession {
             let _ = terminate_process_tree(&mut child);
             let _ = child.wait();
         }
-        self.stdin
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .take();
+        driver_stdin_lock(&self.stdin).take();
         self.lines = None;
     }
 
     fn driver_exit_error(&self) -> RuntimeError {
-        let tail = self
-            .stderr_tail
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .clone();
+        let tail = stderr_tail_lock(&self.stderr_tail).clone();
         let detail = if tail.trim().is_empty() {
             "process exited".to_owned()
         } else {
@@ -185,15 +187,15 @@ impl JuliaSession {
         expected_type: &str,
         timeout: Duration,
     ) -> Result<Value, RuntimeError> {
-        let id = request
-            .get("id")
-            .and_then(Value::as_u64)
-            .ok_or_else(|| RuntimeError::Backend("request missing id".to_owned()))?;
+        let Some(id) = request.get("id").and_then(Value::as_u64) else {
+            return Err(RuntimeError::Backend("request missing id".to_owned()));
+        };
         self.send(&request)?;
-        let receiver = self
-            .lines
-            .as_ref()
-            .ok_or_else(|| RuntimeError::Backend("julia driver stdout unavailable".to_owned()))?;
+        let Some(receiver) = self.lines.as_ref() else {
+            return Err(RuntimeError::Backend(
+                "julia driver stdout unavailable".to_owned(),
+            ));
+        };
         let started = Instant::now();
         loop {
             match receiver.recv_timeout(Duration::from_millis(20)) {
@@ -261,10 +263,11 @@ impl JuliaSession {
         )> = Vec::new();
         let mut error: Option<(String, String, Vec<String>)> = None;
 
-        let receiver = self
-            .lines
-            .as_ref()
-            .ok_or_else(|| RuntimeError::Backend("julia driver stdout unavailable".to_owned()))?;
+        let Some(receiver) = self.lines.as_ref() else {
+            return Err(RuntimeError::Backend(
+                "julia driver stdout unavailable".to_owned(),
+            ));
+        };
         loop {
             if cancellation.load(Ordering::Relaxed)
                 || timeout.is_some_and(|limit| started.elapsed() >= limit)
@@ -458,7 +461,7 @@ fn drain_stderr(mut stderr: impl std::io::Read, tail: Arc<Mutex<String>>) {
         match stderr.read(&mut buffer) {
             Ok(0) | Err(_) => break,
             Ok(read) => {
-                let mut guard = tail.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+                let mut guard = stderr_tail_lock(&tail);
                 guard.push_str(&String::from_utf8_lossy(&buffer[..read]));
                 if guard.len() > STDERR_TAIL_LIMIT {
                     let excess = guard.len() - STDERR_TAIL_LIMIT;
@@ -466,6 +469,22 @@ fn drain_stderr(mut stderr: impl std::io::Read, tail: Arc<Mutex<String>>) {
                 }
             }
         }
+    }
+}
+
+fn stderr_tail_lock(tail: &Mutex<String>) -> std::sync::MutexGuard<'_, String> {
+    match tail.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => poisoned.into_inner(),
+    }
+}
+
+fn driver_stdin_lock(
+    slot: &Mutex<Option<ChildStdin>>,
+) -> std::sync::MutexGuard<'_, Option<ChildStdin>> {
+    match slot.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => poisoned.into_inner(),
     }
 }
 
@@ -614,26 +633,40 @@ impl RuntimeBackend for JuliaSession {
     fn stdin_writer(&self) -> Option<StdinWriter> {
         let stdin = Arc::clone(&self.stdin);
         Some(StdinWriter(Arc::new(move |text: Option<&str>| {
-            let payload = serde_json::to_vec(&json!({
+            let payload = match serde_json::to_vec(&json!({
                 "type": "input_response",
                 "text": text,
-            }))
-            .map_err(|source| {
-                RuntimeError::Backend(format!("failed to encode input response: {source}"))
-            })?;
-            let mut guard = stdin.lock().map_err(|_| {
-                RuntimeError::Backend("julia driver stdin lock poisoned".to_owned())
-            })?;
-            let child_stdin = guard.as_mut().ok_or_else(|| {
-                RuntimeError::Backend("julia driver stdin unavailable".to_owned())
-            })?;
-            child_stdin
+            })) {
+                Ok(payload) => payload,
+                Err(source) => {
+                    return Err(RuntimeError::Backend(format!(
+                        "failed to encode input response: {source}"
+                    )));
+                }
+            };
+            let mut guard = match stdin.lock() {
+                Ok(guard) => guard,
+                Err(_) => {
+                    return Err(RuntimeError::Backend(
+                        "julia driver stdin lock poisoned".to_owned(),
+                    ));
+                }
+            };
+            let Some(child_stdin) = guard.as_mut() else {
+                return Err(RuntimeError::Backend(
+                    "julia driver stdin unavailable".to_owned(),
+                ));
+            };
+            let write = child_stdin
                 .write_all(&payload)
                 .and_then(|()| child_stdin.write_all(b"\n"))
-                .and_then(|()| child_stdin.flush())
-                .map_err(|source| {
-                    RuntimeError::Backend(format!("failed to write to julia driver: {source}"))
-                })
+                .and_then(|()| child_stdin.flush());
+            if let Err(source) = write {
+                return Err(RuntimeError::Backend(format!(
+                    "failed to write to julia driver: {source}"
+                )));
+            }
+            Ok(())
         })))
     }
 }

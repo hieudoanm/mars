@@ -98,14 +98,14 @@ fn cmd_algorithms(task: Option<TaskType>) -> Result<(), String> {
 async fn cmd_dataset(path: &Path) -> Result<(), String> {
     let bytes = std::fs::read(path)
         .map_err(|error| format!("failed to read {}: {error}", path.display()))?;
-    csv::parse_csv(&String::from_utf8_lossy(&bytes)).map_err(|e| e.to_string())?;
+    csv::parse_csv(&String::from_utf8_lossy(&bytes)).map_err(crate::util::error_string)?;
 
     let (dataset_id, storage_key, sha256, size) =
-        write_dataset(&bytes).map_err(|e| e.to_string())?;
+        write_dataset(&bytes).map_err(crate::util::error_string)?;
 
     let db = Database::connect(&get_settings())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let dataset = mars_lab::domain::Dataset {
         id: dataset_id,
         original_filename: path
@@ -122,7 +122,7 @@ async fn cmd_dataset(path: &Path) -> Result<(), String> {
     };
     datasets::insert_dataset(db.pool(), &dataset)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     println!("Dataset uploaded:");
     println!("  id: {dataset_id}");
@@ -139,8 +139,8 @@ fn cmd_datasets() -> Result<(), String> {
         return Ok(());
     }
     println!("Datasets:");
-    for entry in std::fs::read_dir(&dir).map_err(|e| e.to_string())? {
-        let entry = entry.map_err(|e| e.to_string())?;
+    for entry in std::fs::read_dir(&dir).map_err(crate::util::error_string)? {
+        let entry = entry.map_err(crate::util::error_string)?;
         let name = entry.file_name().to_string_lossy().to_string();
         if entry.path().join(format!("{name}.csv")).exists() {
             println!("  {name}");
@@ -223,10 +223,10 @@ async fn cmd_train(opts: &TrainOpts) -> Result<(), String> {
 
     let db = Database::connect(&get_settings())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let dataset = datasets::get_dataset(db.pool(), dataset_id)
         .await
-        .map_err(|e| e.to_string())?
+        .map_err(crate::util::error_string)?
         .ok_or_else(|| format!("dataset not found: {dataset_id}"))?;
     let df = DataFrame::from_csv_path(&dataset_path(&dataset.storage_key))
         .map_err(|e| format!("failed to load dataset: {e}"))?;
@@ -263,10 +263,10 @@ async fn cmd_train(opts: &TrainOpts) -> Result<(), String> {
 
     jobs::insert_job(db.pool(), &job)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     jobs::set_status(db.pool(), job.id, JobStatus::Training.as_str())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     let result = train_job(&db, &job, &df).await;
     if let Err(err) = &result {
@@ -292,7 +292,7 @@ async fn train_job(db: &Database, job: &Job, df: &DataFrame) -> Result<(), Strin
 
     jobs::set_status(db.pool(), job.id, JobStatus::Exporting.as_str())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     println!("\nTraining completed!");
     println!("  Model kind: {:?}", output.model.kind);
@@ -312,10 +312,10 @@ async fn train_job(db: &Database, job: &Job, df: &DataFrame) -> Result<(), Strin
     let onnx_bytes =
         export::onnx::export_onnx(&output.model).map_err(|e| format!("ONNX export failed: {e}"))?;
 
-    ensure_dirs().map_err(|e| e.to_string())?;
+    ensure_dirs().map_err(crate::util::error_string)?;
     let (storage_key, path, byte_size) =
         write_artefact(job.id, &onnx_bytes, &format!("{}.onnx", job.id))
-            .map_err(|e| e.to_string())?;
+            .map_err(crate::util::error_string)?;
 
     let artefact = Artefact {
         id: Uuid::new_v4(),
@@ -328,11 +328,11 @@ async fn train_job(db: &Database, job: &Job, df: &DataFrame) -> Result<(), Strin
     };
     artefacts::insert_artefact(db.pool(), &artefact)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     jobs::set_status(db.pool(), job.id, JobStatus::Completed.as_str())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     let metric = JobMetric {
         job_id: job.id,
@@ -342,10 +342,10 @@ async fn train_job(db: &Database, job: &Job, df: &DataFrame) -> Result<(), Strin
     };
     jobs::record_metrics(db.pool(), &metric)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     jobs::record_completion(db.pool(), job.id, Some(metric.metrics))
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     println!("\nONNX exported to: {}", path.display());
     println!("  Size: {} bytes", onnx_bytes.len());
@@ -359,17 +359,17 @@ async fn cmd_job(id: &str) -> Result<(), String> {
     let job_id = Uuid::parse_str(id).map_err(|e| format!("invalid job ID: {e}"))?;
     let db = Database::connect(&get_settings())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let job = jobs::get_job(db.pool(), job_id)
         .await
-        .map_err(|e| e.to_string())?
+        .map_err(crate::util::error_string)?
         .ok_or_else(|| format!("job not found: {id}"))?;
     let metric = jobs::get_metric(db.pool(), job_id)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let artefacts = artefacts::list_artefacts(db.pool(), job_id)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
 
     println!("Job: {}", job.id);
     println!("  Status: {}", job.status);
@@ -398,10 +398,10 @@ async fn cmd_job(id: &str) -> Result<(), String> {
 async fn cmd_jobs() -> Result<(), String> {
     let db = Database::connect(&get_settings())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let list = jobs::list_jobs(db.pool(), &jobs::JobFilters::default(), 100, None)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     if list.items.is_empty() {
         println!("No jobs found.");
         return Ok(());
@@ -422,17 +422,17 @@ async fn cmd_export(job_id: &str, output: &Path, format: &str) -> Result<(), Str
     let job_uuid = Uuid::parse_str(job_id).map_err(|e| format!("invalid job ID: {e}"))?;
     let db = Database::connect(&get_settings())
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let artefacts = artefacts::list_artefacts(db.pool(), job_uuid)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(crate::util::error_string)?;
     let artefact = artefacts
         .iter()
         .find(|a| a.format == format)
         .ok_or_else(|| format!("no {format} artefact found for job {job_id}"))?;
     let path = artefact_path(&artefact.storage_key, job_uuid);
     let bytes = std::fs::read(&path).map_err(|e| format!("failed to read artefact: {e}"))?;
-    std::fs::write(output, &bytes).map_err(|e| e.to_string())?;
+    std::fs::write(output, &bytes).map_err(crate::util::error_string)?;
     println!("Exported {format} artefact to: {}", output.display());
     println!("  Size: {} bytes", bytes.len());
     Ok(())

@@ -87,7 +87,7 @@ fn run_notebook_command(args: &[String]) -> Result<(), String> {
         "inspect" => {
             let path = args.get(1).ok_or_else(crate::util::notebook_usage)?;
             let json = args[2..].iter().any(|arg| arg == "--json");
-            let notebook = load(path).map_err(|error| error.to_string())?;
+            let notebook = load(path).map_err(crate::util::error_string)?;
             if json {
                 println!(
                     "{}",
@@ -100,7 +100,7 @@ fn run_notebook_command(args: &[String]) -> Result<(), String> {
                         "code_cells": notebook.cells.iter().filter(|cell| cell.cell_type == CellType::Code).count(),
                         "dependencies": notebook.metadata.dependencies,
                     }))
-                    .map_err(|error| error.to_string())?
+                    .map_err(crate::util::error_string)?
                 );
             } else {
                 println!("format_version: {}", notebook.format_version);
@@ -111,7 +111,7 @@ fn run_notebook_command(args: &[String]) -> Result<(), String> {
         }
         "open" => {
             let path = args.get(1).ok_or_else(crate::util::notebook_usage)?;
-            load(path).map_err(|error| error.to_string())?;
+            load(path).map_err(crate::util::error_string)?;
             crate::util::open_with_system(path)?;
             Ok(())
         }
@@ -130,9 +130,9 @@ fn run_notebook_command(args: &[String]) -> Result<(), String> {
                 || crate::util::default_mars_path(input),
                 |path| Path::new(path).to_path_buf(),
             );
-            let content = fs::read_to_string(input).map_err(|error| error.to_string())?;
-            let notebook = import_ipynb(&content).map_err(|error| error.to_string())?;
-            save_atomic(&notebook, &output).map_err(|error| error.to_string())?;
+            let content = fs::read_to_string(input).map_err(crate::util::error_string)?;
+            let notebook = import_ipynb(&content).map_err(crate::util::error_string)?;
+            save_atomic(&notebook, &output).map_err(crate::util::error_string)?;
             println!("Imported {} -> {}", input, output.display());
             Ok(())
         }
@@ -152,12 +152,12 @@ fn run_notebook_command(args: &[String]) -> Result<(), String> {
                 || crate::util::default_export_path(input, format),
                 |path| Path::new(path).to_path_buf(),
             );
-            let notebook = load(input).map_err(|error| error.to_string())?;
+            let notebook = load(input).map_err(crate::util::error_string)?;
             let page_size =
-                mars_core::PaperSize::parse(page_size_str).map_err(|error| error.to_string())?;
+                mars_core::PaperSize::parse(page_size_str).map_err(crate::util::error_string)?;
             let output_bytes = match format {
                 "ipynb" => export_ipynb(&notebook)
-                    .map_err(|error| error.to_string())?
+                    .map_err(crate::util::error_string)?
                     .into_bytes(),
                 "html" => render_notebook(&notebook).into_bytes(),
                 "slides" => mars_renderer::render_slides_notebook(&notebook).into_bytes(),
@@ -165,7 +165,7 @@ fn run_notebook_command(args: &[String]) -> Result<(), String> {
                 "pdf" => render_pdf_notebook(&notebook, page_size),
                 _ => return Err(format!("unsupported export format: {format}")),
             };
-            fs::write(&output, output_bytes).map_err(|error| error.to_string())?;
+            fs::write(&output, output_bytes).map_err(crate::util::error_string)?;
             println!("Exported {} -> {}", input, output.display());
             Ok(())
         }
@@ -236,14 +236,14 @@ fn new_notebook(path: &str, args: &[String]) -> Result<(), String> {
         let mut notebook = Notebook::new();
         notebook
             .add_cell(Cell::new(CellType::Markdown, "# New Project Mars notebook"))
-            .map_err(|error| error.to_string())?;
+            .map_err(crate::util::error_string)?;
         notebook
     };
     // An explicit language flag wins over the template/example default.
     if let Some(language) = language {
         notebook.metadata.language = language;
     }
-    save_atomic(&notebook, path).map_err(|error| error.to_string())?;
+    save_atomic(&notebook, path).map_err(crate::util::error_string)?;
     println!("Created {path}");
     Ok(())
 }
@@ -251,10 +251,10 @@ fn new_notebook(path: &str, args: &[String]) -> Result<(), String> {
 /// `mars notebook diff <file.mars> [other]` — cell-aware diff. `other` is
 /// either another `.mars` path or a git ref (default `HEAD`).
 fn diff_notebook(path: &str, other: Option<&str>) -> Result<(), String> {
-    let current = load(path).map_err(|error| error.to_string())?;
+    let current = load(path).map_err(crate::util::error_string)?;
     let (label, baseline) = match other {
         Some(other) if other.ends_with(".mars") || Path::new(other).exists() => {
-            let notebook = load(other).map_err(|error| error.to_string())?;
+            let notebook = load(other).map_err(crate::util::error_string)?;
             (other.to_owned(), notebook)
         }
         Some(git_ref) => {
@@ -342,7 +342,7 @@ fn watch_notebook(path: &str, options: &mars::options::RunOptions) -> Result<(),
 }
 
 fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
-    let mut notebook = load(path).map_err(|error| error.to_string())?;
+    let mut notebook = load(path).map_err(crate::util::error_string)?;
     if options.deterministic
         && !notebook.metadata.dependencies.is_empty()
         && notebook.metadata.cargo_lock.is_none()
@@ -373,7 +373,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
             None => {
                 println!("Changed-only run: no code cells changed since {git_ref}; nothing to run");
                 if options.save {
-                    save_atomic(&notebook, path).map_err(|error| error.to_string())?;
+                    save_atomic(&notebook, path).map_err(crate::util::error_string)?;
                 }
                 return Ok(());
             }
@@ -411,13 +411,13 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
                         Some(Ok(text)) => {
                             pending
                                 .lock()
-                                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                .unwrap_or_else(std::sync::PoisonError::into_inner)
                                 .push_back(Some(text));
                         }
                         Some(Err(_)) | None => {
                             pending
                                 .lock()
-                                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                .unwrap_or_else(std::sync::PoisonError::into_inner)
                                 .push_back(None);
                             eof.store(true, Ordering::Relaxed);
                             break;
@@ -443,13 +443,13 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
                     let action = {
                         let mut pending = pending
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner());
+                            .unwrap_or_else(std::sync::PoisonError::into_inner);
                         let writers = writers
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner());
+                            .unwrap_or_else(std::sync::PoisonError::into_inner);
                         let language = active
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner())
+                            .unwrap_or_else(std::sync::PoisonError::into_inner)
                             .clone();
                         let writer = writers.get(&language).cloned();
                         match (pending.front(), writer) {
@@ -472,7 +472,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
                             if writer.write(&text).is_err() {
                                 pending
                                     .lock()
-                                    .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                                     .push_front(Some(text));
                             }
                         }
@@ -486,7 +486,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
                             if failed {
                                 pending
                                     .lock()
-                                    .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                                     .push_front(None);
                             }
                         }
@@ -496,10 +496,10 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
                             // missed wakeup would stall prompt delivery.
                             let pending = pending
                                 .lock()
-                                .unwrap_or_else(|poisoned| poisoned.into_inner());
+                                .unwrap_or_else(std::sync::PoisonError::into_inner);
                             let _guard = changed
                                 .wait_timeout(pending, std::time::Duration::from_millis(200))
-                                .unwrap_or_else(|poisoned| poisoned.into_inner());
+                                .unwrap_or_else(std::sync::PoisonError::into_inner);
                         }
                     }
                 }
@@ -530,11 +530,11 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
                     },
                 },
             )
-            .map_err(|error| error.to_string())?;
+            .map_err(crate::util::error_string)?;
             if let Some(writer) = session.stdin_writer() {
                 let mut guard = stdin_writers
                     .lock()
-                    .unwrap_or_else(|poisoned| poisoned.into_inner());
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
                 guard.insert(language.clone(), writer);
                 if stdin_eof.load(Ordering::Relaxed) {
                     if let Some(writer) = guard.get(&language) {
@@ -548,7 +548,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
         }
         *active_language
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = language.clone();
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = language.clone();
         let session = sessions
             .get_mut(&language)
             .ok_or_else(|| "runtime session unavailable".to_owned())?;
@@ -556,7 +556,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
         println!("Running cell {} ({language})...", index + 1);
         let result = session
             .execute_with_control(&source, options.timeout, Arc::new(AtomicBool::new(false)))
-            .map_err(|error| error.to_string())?;
+            .map_err(crate::util::error_string)?;
         notebook.cells[index].execution_count = Some(result.execution_count);
         notebook.cells[index].outputs = result.outputs.clone();
         let failed = result
@@ -566,7 +566,7 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
         print_execution_result(index, &result);
         if failed || result.interrupted {
             if options.save {
-                save_atomic(&notebook, path).map_err(|error| error.to_string())?;
+                save_atomic(&notebook, path).map_err(crate::util::error_string)?;
             }
             return Err(format!("execution failed in cell {}", index + 1));
         }
@@ -575,11 +575,11 @@ fn run_notebook(path: &str, options: &RunOptions) -> Result<(), String> {
             && notebook.metadata.cargo_lock.is_none()
         {
             notebook.metadata.cargo_lock =
-                session.cargo_lock().map_err(|error| error.to_string())?;
+                session.cargo_lock().map_err(crate::util::error_string)?;
         }
     }
     if options.save {
-        save_atomic(&notebook, path).map_err(|error| error.to_string())?;
+        save_atomic(&notebook, path).map_err(crate::util::error_string)?;
     }
     if options.report {
         let code_cells = notebook

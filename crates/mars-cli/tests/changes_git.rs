@@ -251,3 +251,21 @@ fn diff_against_unknown_git_ref_errors() {
         .is_err()
     );
 }
+
+#[test]
+fn diff_since_missing_file_errors_before_git() {
+    let dir = std::env::temp_dir().join(format!("mars-cli-git-{}-missing", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).expect("temp dir");
+    let missing = dir.join("does-not-exist.mars");
+    // canonicalize fails before any git invocation.
+    assert!(
+        run_cli(args(&[
+            "notebook",
+            "diff",
+            &missing.to_string_lossy(),
+            "HEAD",
+        ]))
+        .is_err()
+    );
+}

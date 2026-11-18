@@ -25,6 +25,8 @@ def send(msg):
     sys.stdout.write(json.dumps(msg) + "\n")
     sys.stdout.flush()
 
+arm_die = False
+
 for line in sys.stdin:
     line = line.strip()
     if not line:
@@ -42,7 +44,18 @@ for line in sys.stdin:
             with open(LOG, "a") as f:
                 f.write(str(req.get("text")) + "\n")
         continue
+    if rtype in ("comm_msg", "comm_close"):
+        if arm_die:
+            sys.exit(3)
+        send({"type": "comm", "comm_id": "out-1", "comm_type": "comm_msg",
+              "target_name": "test.widget", "data": {"value": 7}})
+        send({"type": "comm_ack", "id": rid})
+        continue
     if rtype == "inspect":
+        sys.stdout.write("this is not json\n")
+        sys.stdout.flush()
+        send({"type": "stream", "id": rid, "stream": "stdout", "data": "wrong type\n"})
+        send({"type": "inspection", "id": 999999, "variables": []})
         send({"type": "inspection", "id": rid, "variables": [
             {"name": "alpha", "type": "Int64", "value": "42"},
             {"name": "beta"},
@@ -64,6 +77,38 @@ for line in sys.stdin:
         sys.exit(3)
     if "FAKE_SLEEP" in src:
         time.sleep(30)
+    if "FAKE_ARM_DIE" in src:
+        arm_die = True
+    if "FAKE_CLOSE_FD" in src:
+        os.close(0)
+    if "FAKE_DYING_STDERR" in src:
+        sys.stderr.write("dying now\n")
+        sys.stderr.flush()
+        time.sleep(0.2)
+        sys.exit(3)
+    if "FAKE_STDERR_BIG" in src:
+        sys.stderr.write("x" * 70000)
+        sys.stderr.flush()
+    if "FAKE_TYPES" in src:
+        send({"type": "stream", "id": rid, "stream": "other", "data": "odd\n"})
+        send({"type": "mystery", "id": rid})
+    if "FAKE_COMMSG" in src:
+        send({"type": "comm", "id": rid, "comm_id": "c1",
+              "comm_type": "comm_msg", "target_name": "w",
+              "data": {"x": 1}})
+    if "FAKE_COMMBAD" in src:
+        send({"type": "comm", "id": rid, "data": {}})
+    if "FAKE_BAD_DISPLAY" in src:
+        send({"type": "display", "id": rid, "data": "scalar"})
+        send({"type": "display", "id": rid,
+              "data": [["only-mime"], ["text/plain", 42], "junk"]})
+    if "FAKE_BAD_MIME" in src:
+        send({"type": "mime", "id": rid, "data": "not-an-object"})
+    if "FAKE_ENV" in src:
+        send({"type": "stream", "id": rid, "stream": "stdout",
+              "data": "mpl=%s pkgs=%s\n" % (
+                  os.environ.get("MPLBACKEND"),
+                  os.environ.get("MARS_PYTHON_PACKAGES"))})
     if "FAKE_NOISE" in src:
         sys.stdout.write("this is not json\n")
         sys.stdout.flush()
@@ -100,6 +145,9 @@ for line in sys.stdin:
             "traceback": ["frame1", "frame2"]}})
     else:
         send({"type": "result", "id": rid, "ok": True})
+    if "FAKE_CLOSE_FD" in src:
+        while True:
+            time.sleep(1)
 "#;
 
 fn python3_available() -> bool {
@@ -398,4 +446,164 @@ fn reset_clears_execution_count() {
 fn cargo_lock_is_none() {
     let Some(session) = session() else { return };
     assert_eq!(session.cargo_lock().expect("cargo_lock"), None);
+}
+
+#[test]
+fn comm_messages_reach_event_sink() {
+    let Some(mut session) = session() else { return };
+    let mut events = Vec::new();
+    session
+        .execute_with_events(
+            "FAKE_COMMSG",
+            None,
+            Arc::new(AtomicBool::new(false)),
+            &mut |event| events.push(event),
+        )
+        .expect("execute");
+    assert!(events.iter().any(|e| matches!(e,
+        StreamEvent::Comm { message }
+            if message.comm_id == "c1" && message.data == serde_json::json!({"x": 1}))));
+}
+
+#[test]
+fn comm_message_without_id_is_dropped() {
+    let Some(mut session) = session() else { return };
+    let mut events = Vec::new();
+    session
+        .execute_with_events(
+            "FAKE_COMMBAD",
+            None,
+            Arc::new(AtomicBool::new(false)),
+            &mut |event| events.push(event),
+        )
+        .expect("execute");
+    assert!(!events.iter().any(|e| matches!(e, StreamEvent::Comm { .. })));
+}
+
+#[test]
+fn input_request_without_events_is_silent() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_INPUT");
+    assert!(!result.interrupted);
+    assert_eq!(result.execution_count, 1);
+}
+
+#[test]
+fn unknown_stream_and_message_types_are_ignored() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_TYPES");
+    assert!(!result.interrupted);
+    assert_eq!(result.execution_count, 1);
+}
+
+#[test]
+fn malformed_display_and_mime_parts_are_ignored() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_BAD_DISPLAY FAKE_BAD_MIME");
+    assert!(!result.interrupted);
+    assert_eq!(result.execution_count, 1);
+    assert_eq!(text_outputs(&result), vec!["fake result"]);
+}
+
+#[test]
+fn oversized_stderr_is_truncated() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_STDERR_BIG");
+    assert!(!result.interrupted);
+}
+
+#[test]
+fn driver_death_with_stderr_reports_tail() {
+    let Some(mut session) = session() else { return };
+    let err = session
+        .execute_with_control("FAKE_DYING_STDERR", None, Arc::new(AtomicBool::new(false)))
+        .expect_err("driver death must error");
+    assert!(matches!(err, RuntimeError::Backend(_)));
+    assert!(err.to_string().contains("dying now"), "error was: {err}");
+}
+
+#[test]
+fn inspect_ignores_noise_and_wrong_ids() {
+    let Some(mut session) = session() else { return };
+    let vars = session.inspect_variables().expect("inspect");
+    assert_eq!(vars.len(), 2);
+}
+
+#[test]
+fn handle_comm_returns_published_messages() {
+    let Some(mut session) = session() else { return };
+    let comms = session
+        .handle_comm("widget-1", "comm_msg", &serde_json::json!({"value": 3}))
+        .expect("handle_comm");
+    assert_eq!(comms.len(), 1);
+    assert_eq!(comms[0].comm_id, "out-1");
+    assert_eq!(comms[0].comm_type, "comm_msg");
+    assert_eq!(comms[0].target_name.as_deref(), Some("test.widget"));
+    assert_eq!(comms[0].data, serde_json::json!({"value": 7}));
+}
+
+#[test]
+fn handle_comm_close_also_works() {
+    let Some(mut session) = session() else { return };
+    let comms = session
+        .handle_comm("widget-1", "comm_close", &serde_json::Value::Null)
+        .expect("handle_comm close");
+    assert_eq!(comms.len(), 1);
+}
+
+#[test]
+fn handle_comm_driver_death_surfaces_backend_error() {
+    let Some(mut session) = session() else { return };
+    execute(&mut session, "FAKE_ARM_DIE");
+    let err = session
+        .handle_comm("widget-1", "comm_msg", &serde_json::Value::Null)
+        .expect_err("comm on dead driver must error");
+    assert!(matches!(err, RuntimeError::Backend(_)));
+}
+
+#[test]
+fn closed_driver_stdin_fails_next_write() {
+    let Some(mut session) = session() else { return };
+    execute(&mut session, "FAKE_CLOSE_FD");
+    let err = session
+        .execute_with_control(
+            "next",
+            Some(Duration::from_secs(5)),
+            Arc::new(AtomicBool::new(false)),
+        )
+        .expect_err("write to closed stdin must fail");
+    assert!(
+        err.to_string().contains("failed to write"),
+        "error was: {err}"
+    );
+}
+
+#[test]
+fn packages_option_reaches_driver_env() {
+    let Some(mut session) = session_with_packages() else {
+        return;
+    };
+    let result = execute(&mut session, "FAKE_ENV");
+    assert!(
+        text_outputs(&result)
+            .iter()
+            .any(|t| t.contains("pkgs=[\"numpy\"]")),
+        "outputs were: {:?}",
+        result.outputs
+    );
+}
+
+fn session_with_packages() -> Option<PythonSession> {
+    if !python3_available() {
+        return None;
+    }
+    unsafe {
+        std::env::set_var("MARS_PYTHON", fake_driver_path());
+        std::env::set_var("FAKE_MARS_DRIVER_LOG", input_log_path());
+    }
+    PythonSession::with_options(mars_runtime_python::PythonOptions {
+        packages: vec!["numpy".to_owned()],
+        ..Default::default()
+    })
+    .ok()
 }

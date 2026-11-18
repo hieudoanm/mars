@@ -149,3 +149,10 @@ fn mcp_options_reject_invalid_values() {
         assert!(parse_mcp_options(&args(case)).is_err(), "{case:?}");
     }
 }
+
+#[test]
+fn mcp_options_reject_missing_flag_values() {
+    for flag in ["--runtime", "--notebook", "--http", "--token", "--language"] {
+        assert!(parse_mcp_options(&args(&[flag])).is_err(), "{flag}");
+    }
+}

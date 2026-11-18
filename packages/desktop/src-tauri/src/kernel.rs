@@ -16,8 +16,8 @@ pub(super) struct StreamMessage<'a> {
     event: &'a StreamEvent,
 }
 
-pub(super) fn stream_sink<'a>(
-    app: &'a tauri::AppHandle,
+pub fn stream_sink<'a, R: tauri::Runtime>(
+    app: &'a tauri::AppHandle<R>,
     session: &'a str,
     language: &'a str,
 ) -> impl FnMut(StreamEvent) + 'a {

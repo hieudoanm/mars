@@ -60,13 +60,17 @@ fn reports_julia_errors_without_incrementing_count() {
     let Some(mut session) = session() else {
         return;
     };
-    let result = execute(&mut session, "1 / 0");
+    // `1 / 0` is `Inf` in Julia; integer division is what raises DivideError.
+    let result = execute(&mut session, "1 ÷ 0");
     let errors = error_outputs(&result);
     assert_eq!(errors.len(), 1);
     match errors[0] {
         Output::Error { name, message, .. } => {
-            assert!(message.contains("Division by zero") || message.contains("divide"));
-            assert!(!name.is_empty());
+            assert!(
+                name.contains("DivideError")
+                    || message.contains("division")
+                    || message.contains("divide")
+            );
         }
         _ => unreachable!(),
     }
@@ -102,7 +106,12 @@ fn function_definitions_and_calls_work() {
         &mut session,
         "greet(name) = \"hi \" * name\n\ngreet(\"mars\")",
     );
-    assert_eq!(text_outputs(&result), vec!["\"hi mars\""]);
+    // String values render as a mime bundle; html is preferred over text/plain.
+    assert!(result.outputs.iter().any(|output| match output {
+        Output::Html { html } => html.contains("hi mars"),
+        Output::Text { text } => text.contains("hi mars"),
+        _ => false,
+    }));
 }
 
 #[test]

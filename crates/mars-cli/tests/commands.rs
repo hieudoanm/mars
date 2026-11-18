@@ -1051,3 +1051,75 @@ fn diff_against_another_mars_file() {
         .is_err()
     );
 }
+
+#[test]
+fn diff_reports_modified_cells() {
+    let dir = temp_dir("diff-modified");
+    // Two notebooks sharing a cell id but with different sources hit the
+    // Modified branch (baseline lookup + line diff).
+    let mut before = Notebook::new();
+    let mut cell = Cell::new(CellType::Code, "let x = 1;");
+    cell.id = mars_core::CellId::from_string("shared-cell").expect("cell id");
+    before.add_cell(cell).expect("cell");
+    let a_path = dir.join("a.mars");
+    write_notebook(&a_path, &before);
+
+    let mut after = Notebook::new();
+    let mut cell = Cell::new(CellType::Code, "let x = 2;");
+    cell.id = mars_core::CellId::from_string("shared-cell").expect("cell id");
+    after.add_cell(cell).expect("cell");
+    let b_path = dir.join("b.mars");
+    write_notebook(&b_path, &after);
+
+    run_cli(args(&[
+        "notebook",
+        "diff",
+        &a_path.to_string_lossy(),
+        &b_path.to_string_lossy(),
+    ]))
+    .expect("diff modified");
+}
+
+#[test]
+fn run_rejects_unknown_notebook_language() {
+    let dir = temp_dir("run-bad-language");
+    let path = dir.join("badlang.mars");
+    let mut notebook = Notebook::new();
+    notebook.metadata.language = "cobol".to_owned();
+    notebook
+        .add_cell(Cell::new(CellType::Code, "print(1);"))
+        .expect("cell");
+    write_notebook(&path, &notebook);
+    assert!(run_cli(args(&["notebook", "run", &path.to_string_lossy()])).is_err());
+}
+
+#[test]
+fn doctor_reads_cell_level_language_metadata() {
+    let dir = temp_dir("doctor-cell-lang");
+    let path = dir.join("celllang.mars");
+    let mut notebook = Notebook::new();
+    notebook.metadata.language = "markdown".to_owned();
+    let mut cell = Cell::new(CellType::Code, "fn main() {}");
+    cell.metadata.insert("language".to_owned(), json!("rust"));
+    notebook.add_cell(cell).expect("cell");
+    write_notebook(&path, &notebook);
+    // Probes rust toolchain; result depends on environment, just must not crash.
+    let _ = run_cli(args(&["notebook", "doctor", &path.to_string_lossy()]));
+}
+
+#[test]
+fn new_example_ambiguous_name_is_an_error() {
+    let dir = temp_dir("example-ambiguous");
+    let path = dir.join("ambiguous.mars");
+    // `getting-started` exists under rust/, python/, r/, julia/, cpp/.
+    assert!(
+        run_cli(args(&[
+            "notebook",
+            "new",
+            &path.to_string_lossy(),
+            "--example",
+            "getting-started",
+        ]))
+        .is_err()
+    );
+}

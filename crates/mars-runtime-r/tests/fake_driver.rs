@@ -21,6 +21,8 @@ def send(msg):
     sys.stdout.write(json.dumps(msg) + "\n")
     sys.stdout.flush()
 
+arm_die = False
+
 for line in sys.stdin:
     line = line.strip()
     if not line:
@@ -36,6 +38,14 @@ for line in sys.stdin:
     if rtype == "input_response":
         continue
     if rtype == "inspect":
+        if arm_die:
+            sys.stderr.write("inspect died\n")
+            sys.stderr.flush()
+            sys.exit(3)
+        sys.stdout.write("this is not json\n")
+        sys.stdout.flush()
+        send({"type": "stream", "id": rid, "stream": "stdout", "data": "wrong type\n"})
+        send({"type": "inspection", "id": 999999, "variables": []})
         send({"type": "inspection", "id": rid, "variables": [
             {"name": "alpha", "type": "numeric", "value": "42"},
             {"name": "beta"},
@@ -53,10 +63,35 @@ for line in sys.stdin:
     if rtype != "execute":
         continue
     src = req.get("source", "")
+    if "FAKE_CLOSE_FD" in src:
+        os.close(0)
     if "FAKE_DIE" in src:
         sys.exit(3)
     if "FAKE_SLEEP" in src:
         time.sleep(30)
+    if "FAKE_ARM_DIE" in src:
+        arm_die = True
+    if "FAKE_STDERR_MSG" in src:
+        sys.stderr.write("driver warning\n")
+        sys.stderr.flush()
+    if "FAKE_STDERR_BIG" in src:
+        sys.stderr.write("x" * 70000)
+        sys.stderr.flush()
+    if "FAKE_TYPES" in src:
+        send({"type": "stream", "id": rid, "stream": "other", "data": "odd\n"})
+        send({"type": "mystery", "id": rid})
+    if "FAKE_BAD_DISPLAY" in src:
+        send({"type": "display", "id": rid, "data": "not-an-array"})
+    if "FAKE_DYING_STDERR" in src:
+        sys.stderr.write("dying now\n")
+        sys.stderr.flush()
+        time.sleep(0.2)
+        sys.exit(3)
+    if "FAKE_SLOW_DIE" in src:
+        sys.stderr.write("slow death\n")
+        sys.stderr.flush()
+        time.sleep(0.3)
+        sys.exit(3)
     if "FAKE_NOISE" in src:
         sys.stdout.write("this is not json\n")
         sys.stdout.flush()
@@ -87,6 +122,9 @@ for line in sys.stdin:
             "traceback": ["frame1"]}})
     else:
         send({"type": "result", "id": rid, "ok": True})
+    if "FAKE_CLOSE_FD" in src:
+        while True:
+            time.sleep(1)
 "#;
 
 fn python3_available() -> bool {
@@ -356,4 +394,106 @@ fn reset_clears_execution_count() {
 fn cargo_lock_is_none() {
     let Some(session) = session() else { return };
     assert_eq!(session.cargo_lock().expect("cargo_lock"), None);
+}
+
+#[test]
+fn real_stderr_is_drained() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_STDERR_MSG");
+    assert!(!result.interrupted);
+    assert_eq!(result.execution_count, 1);
+}
+
+#[test]
+fn oversized_stderr_is_truncated() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_STDERR_BIG");
+    assert!(!result.interrupted);
+}
+
+#[test]
+fn unknown_stream_and_message_types_are_ignored() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_TYPES");
+    assert!(!result.interrupted);
+    assert_eq!(result.execution_count, 1);
+}
+
+#[test]
+fn stderr_stream_reaches_chunk_sink() {
+    let Some(mut session) = session() else { return };
+    let mut events = Vec::new();
+    session
+        .execute_with_events(
+            "FAKE_STDERR",
+            None,
+            Arc::new(AtomicBool::new(false)),
+            &mut |event| events.push(event),
+        )
+        .expect("execute");
+    assert!(events.iter().any(|e| matches!(e,
+        StreamEvent::Chunk { stream: ChunkStream::Stderr, data } if data == "warn text\n")));
+}
+
+#[test]
+fn driver_death_with_stderr_reports_tail() {
+    let Some(mut session) = session() else { return };
+    let err = session
+        .execute_with_control("FAKE_DYING_STDERR", None, Arc::new(AtomicBool::new(false)))
+        .expect_err("driver death must error");
+    assert!(matches!(err, RuntimeError::Backend(_)));
+    assert!(err.to_string().contains("dying now"), "error was: {err}");
+}
+
+#[test]
+fn slow_driver_death_surfaces_backend_error() {
+    let Some(mut session) = session() else { return };
+    let err = session
+        .execute_with_control("FAKE_SLOW_DIE", None, Arc::new(AtomicBool::new(false)))
+        .expect_err("driver death must error");
+    assert!(matches!(err, RuntimeError::Backend(_)));
+}
+
+#[test]
+fn inspect_ignores_noise_and_wrong_ids() {
+    let Some(mut session) = session() else { return };
+    let vars = session.inspect_variables().expect("inspect");
+    assert_eq!(vars.len(), 2);
+}
+
+#[test]
+fn non_array_display_data_is_ignored() {
+    let Some(mut session) = session() else { return };
+    let result = execute(&mut session, "FAKE_BAD_DISPLAY");
+    assert!(!result.interrupted);
+    assert_eq!(result.execution_count, 1);
+    assert_eq!(text_outputs(&result), vec!["[1] fake result"]);
+}
+
+#[test]
+fn closed_driver_stdin_fails_next_write() {
+    let Some(mut session) = session() else { return };
+    execute(&mut session, "FAKE_CLOSE_FD");
+    let err = session
+        .execute_with_control(
+            "next",
+            Some(Duration::from_secs(5)),
+            Arc::new(AtomicBool::new(false)),
+        )
+        .expect_err("write to closed stdin must fail");
+    assert!(
+        err.to_string().contains("failed to write"),
+        "error was: {err}"
+    );
+}
+
+#[test]
+fn inspect_driver_death_surfaces_backend_error() {
+    let Some(mut session) = session() else { return };
+    execute(&mut session, "FAKE_ARM_DIE");
+    let err = session
+        .inspect_variables()
+        .expect_err("inspect on dead driver must error");
+    assert!(matches!(err, RuntimeError::Backend(_)));
+    assert!(err.to_string().contains("inspect died"), "error was: {err}");
 }

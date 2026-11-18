@@ -20,9 +20,9 @@ pub fn serve_mcp(args: &[String]) -> Result<(), String> {
                 .or_else(|| std::env::var("MCP_AUTH_TOKEN").ok()),
             &mut server,
         )
-        .map_err(|error| error.to_string());
+        .map_err(crate::util::error_string);
     }
-    mars_mcp::serve_stdio(&mut server).map_err(|error| error.to_string())
+    mars_mcp::serve_stdio(&mut server).map_err(crate::util::error_string)
 }
 
 /// `mars tools list|call` — client-side MCP commands.
@@ -105,7 +105,7 @@ fn split_server_arg(args: &[String]) -> Result<(Vec<String>, Vec<String>), Strin
 
 /// Default MCP server: this same `mars` binary running `mcp serve`.
 fn default_server_command() -> Result<Vec<String>, String> {
-    let exe = std::env::current_exe().map_err(|error| error.to_string())?;
+    let exe = std::env::current_exe().map_err(crate::util::error_string)?;
     Ok(vec![
         exe.to_string_lossy().into_owned(),
         "mcp".to_owned(),

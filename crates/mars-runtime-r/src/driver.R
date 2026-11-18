@@ -318,9 +318,10 @@ local({
     send_msg(list(type = "check_result", id = request$id, error = payload))
   }
 
+  input_con <- file("stdin")
   repeat {
     line <- tryCatch(
-      readLines(stdin(), n = 1L, warn = FALSE),
+      readLines(input_con, n = 1L, warn = FALSE),
       error = function(e) character()
     )
     if (length(line) == 0) {

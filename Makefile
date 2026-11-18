@@ -36,12 +36,10 @@ coverage:
 		--fail-under-lines $(COVERAGE_MIN_LINES) \
 		--fail-under-functions $(COVERAGE_MIN_FUNCTIONS)
 
-# The Tauri host keeps a lower function threshold: AppHandle-bound command
-# wrappers and OS-spawn helpers cannot be driven from integration tests.
 coverage-tauri:
 	cargo llvm-cov -p mars-tauri --tests \
 		--fail-under-lines 80 \
-		--fail-under-functions 60
+		--fail-under-functions 80
 
 build:
 	cargo build --workspace

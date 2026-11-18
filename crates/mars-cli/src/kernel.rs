@@ -48,7 +48,7 @@ fn build_kernel(
 ) -> Result<Kernel, String> {
     if language == "sql" {
         return Kernel::for_language_with_sql_sources(language, backend, sql_sources.to_vec())
-            .map_err(|error| error.to_string());
+            .map_err(crate::util::error_string);
     }
     if language == "python" {
         let options = request_options
@@ -61,7 +61,7 @@ fn build_kernel(
             })
             .unwrap_or_default();
         return Kernel::for_language_with_python_options(language, backend, options)
-            .map_err(|error| error.to_string());
+            .map_err(crate::util::error_string);
     }
     if let Some(notebook) = notebook {
         Kernel::for_language_with_configuration(
@@ -72,9 +72,9 @@ fn build_kernel(
             false,
             backend,
         )
-        .map_err(|error| error.to_string())
+        .map_err(crate::util::error_string)
     } else {
-        Kernel::for_language(language, backend).map_err(|error| error.to_string())
+        Kernel::for_language(language, backend).map_err(crate::util::error_string)
     }
 }
 
@@ -85,9 +85,9 @@ fn write_json<W: Write, T: serde::Serialize>(
     let mut guard = writer
         .lock()
         .map_err(|_| "kernel output writer poisoned".to_owned())?;
-    serde_json::to_writer(&mut *guard, value).map_err(|error| error.to_string())?;
-    guard.write_all(b"\n").map_err(|error| error.to_string())?;
-    guard.flush().map_err(|error| error.to_string())
+    serde_json::to_writer(&mut *guard, value).map_err(crate::util::error_string)?;
+    guard.write_all(b"\n").map_err(crate::util::error_string)?;
+    guard.flush().map_err(crate::util::error_string)
 }
 
 /// Serve one connection. Requests are read on the calling thread while an
@@ -153,7 +153,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
         .and_then(|path| Path::new(path).parent().map(Path::to_path_buf))
         .unwrap_or_else(|| Path::new(".").to_path_buf());
     let notebook = notebook_path
-        .map(|path| load(&path).map_err(|error| error.to_string()))
+        .map(|path| load(&path).map_err(crate::util::error_string))
         .transpose()?;
     let sql_sources = notebook
         .as_ref()
@@ -196,12 +196,12 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                         let language = language.unwrap_or_else(|| {
                             exec_language
                                 .lock()
-                                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                .unwrap_or_else(std::sync::PoisonError::into_inner)
                                 .clone()
                         });
                         *exec_language
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner()) = language.clone();
+                            .unwrap_or_else(std::sync::PoisonError::into_inner) = language.clone();
                         match kernel_for_language(
                             &mut kernels,
                             &exec_notebook,
@@ -288,7 +288,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                         // empty session.
                         let language = exec_language
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner())
+                            .unwrap_or_else(std::sync::PoisonError::into_inner)
                             .clone();
                         match kernels.get_mut(&language) {
                             Some(kernel) => kernel.handle_with_cancellation(
@@ -326,12 +326,12 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                         let language = language.unwrap_or_else(|| {
                             exec_language
                                 .lock()
-                                .unwrap_or_else(|poisoned| poisoned.into_inner())
+                                .unwrap_or_else(std::sync::PoisonError::into_inner)
                                 .clone()
                         });
                         *exec_language
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner()) = language.clone();
+                            .unwrap_or_else(std::sync::PoisonError::into_inner) = language.clone();
                         let request = KernelRequest::Comm {
                             comm_id,
                             comm_type,
@@ -360,7 +360,7 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                     other => {
                         let language = exec_language
                             .lock()
-                            .unwrap_or_else(|poisoned| poisoned.into_inner())
+                            .unwrap_or_else(std::sync::PoisonError::into_inner)
                             .clone();
                         match kernel_for_language(
                             &mut kernels,
@@ -421,11 +421,11 @@ pub fn serve_connection<R: BufRead, W: Write + Send>(
                 // running Execute is not blocked behind this request.
                 let language = reader_language
                     .lock()
-                    .unwrap_or_else(|poisoned| poisoned.into_inner())
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .clone();
                 let handle = reader_writers
                     .lock()
-                    .unwrap_or_else(|poisoned| poisoned.into_inner())
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .get(&language)
                     .cloned();
                 if let Some(handle) = handle {

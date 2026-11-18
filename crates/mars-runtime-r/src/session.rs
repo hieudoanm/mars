@@ -57,10 +57,12 @@ impl RSession {
             source,
         })?;
         let driver_path = workdir.join("driver.R");
-        fs::write(&driver_path, DRIVER_SOURCE).map_err(|source| RuntimeError::Io {
-            path: driver_path.clone(),
-            source,
-        })?;
+        if let Err(source) = fs::write(&driver_path, DRIVER_SOURCE) {
+            return Err(RuntimeError::Io {
+                path: driver_path.clone(),
+                source,
+            });
+        }
         Ok(Self {
             rscript,
             workdir,
@@ -81,10 +83,7 @@ impl RSession {
             }
         }
         self.kill_child();
-        *self
-            .stderr_tail
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner()) = String::new();
+        *stderr_tail_lock(&self.stderr_tail) = String::new();
 
         let mut command = configured_command(&self.rscript);
         command
@@ -96,14 +95,16 @@ impl RSession {
         let mut child = command.spawn().map_err(|source| {
             RuntimeError::Backend(format!("failed to start R driver: {source}"))
         })?;
-        let stdin = child
-            .stdin
-            .take()
-            .ok_or_else(|| RuntimeError::Backend("R driver stdin unavailable".to_owned()))?;
-        let stdout = child
-            .stdout
-            .take()
-            .ok_or_else(|| RuntimeError::Backend("R driver stdout unavailable".to_owned()))?;
+        let Some(stdin) = child.stdin.take() else {
+            return Err(RuntimeError::Backend(
+                "R driver stdin unavailable".to_owned(),
+            ));
+        };
+        let Some(stdout) = child.stdout.take() else {
+            return Err(RuntimeError::Backend(
+                "R driver stdout unavailable".to_owned(),
+            ));
+        };
         let stderr = child.stderr.take();
 
         if let Some(stderr) = stderr {
@@ -121,20 +122,29 @@ impl RSession {
 
     fn send(&mut self, message: &Value) -> Result<(), RuntimeError> {
         self.ensure_spawn()?;
-        let stdin = self
-            .stdin
-            .as_mut()
-            .ok_or_else(|| RuntimeError::Backend("R driver stdin unavailable".to_owned()))?;
-        let payload = serde_json::to_vec(message).map_err(|source| {
-            RuntimeError::Backend(format!("failed to encode request: {source}"))
-        })?;
-        stdin
+        let Some(stdin) = self.stdin.as_mut() else {
+            return Err(RuntimeError::Backend(
+                "R driver stdin unavailable".to_owned(),
+            ));
+        };
+        let payload = match serde_json::to_vec(message) {
+            Ok(payload) => payload,
+            Err(source) => {
+                return Err(RuntimeError::Backend(format!(
+                    "failed to encode request: {source}"
+                )));
+            }
+        };
+        let write = stdin
             .write_all(&payload)
             .and_then(|()| stdin.write_all(b"\n"))
-            .and_then(|()| stdin.flush())
-            .map_err(|source| {
-                RuntimeError::Backend(format!("failed to write to R driver: {source}"))
-            })
+            .and_then(|()| stdin.flush());
+        if let Err(source) = write {
+            return Err(RuntimeError::Backend(format!(
+                "failed to write to R driver: {source}"
+            )));
+        }
+        Ok(())
     }
 
     fn kill_child(&mut self) {
@@ -147,11 +157,7 @@ impl RSession {
     }
 
     fn driver_exit_error(&self) -> RuntimeError {
-        let tail = self
-            .stderr_tail
-            .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
-            .clone();
+        let tail = stderr_tail_lock(&self.stderr_tail).clone();
         let detail = if tail.trim().is_empty() {
             "process exited".to_owned()
         } else {
@@ -168,15 +174,15 @@ impl RSession {
         expected_type: &str,
         timeout: Duration,
     ) -> Result<Value, RuntimeError> {
-        let id = request
-            .get("id")
-            .and_then(Value::as_u64)
-            .ok_or_else(|| RuntimeError::Backend("request missing id".to_owned()))?;
+        let Some(id) = request.get("id").and_then(Value::as_u64) else {
+            return Err(RuntimeError::Backend("request missing id".to_owned()));
+        };
         self.send(&request)?;
-        let receiver = self
-            .lines
-            .as_ref()
-            .ok_or_else(|| RuntimeError::Backend("R driver stdout unavailable".to_owned()))?;
+        let Some(receiver) = self.lines.as_ref() else {
+            return Err(RuntimeError::Backend(
+                "R driver stdout unavailable".to_owned(),
+            ));
+        };
         let started = Instant::now();
         loop {
             match receiver.recv_timeout(Duration::from_millis(20)) {
@@ -240,10 +246,11 @@ impl RSession {
         let mut displays: Vec<Vec<(String, String)>> = Vec::new();
         let mut error: Option<(String, String, Vec<String>)> = None;
 
-        let receiver = self
-            .lines
-            .as_ref()
-            .ok_or_else(|| RuntimeError::Backend("R driver stdout unavailable".to_owned()))?;
+        let Some(receiver) = self.lines.as_ref() else {
+            return Err(RuntimeError::Backend(
+                "R driver stdout unavailable".to_owned(),
+            ));
+        };
         loop {
             if cancellation.load(Ordering::Relaxed)
                 || timeout.is_some_and(|limit| started.elapsed() >= limit)
@@ -392,6 +399,13 @@ impl RSession {
     }
 }
 
+fn stderr_tail_lock(tail: &Mutex<String>) -> std::sync::MutexGuard<'_, String> {
+    match tail.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => poisoned.into_inner(),
+    }
+}
+
 fn read_stdout_lines(stdout: ChildStdout, sender: mpsc::Sender<String>) {
     for line in BufReader::new(stdout).lines() {
         match line {
@@ -411,7 +425,7 @@ fn drain_stderr(mut stderr: impl std::io::Read, tail: Arc<Mutex<String>>) {
         match stderr.read(&mut buffer) {
             Ok(0) | Err(_) => break,
             Ok(read) => {
-                let mut guard = tail.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+                let mut guard = stderr_tail_lock(&tail);
                 guard.push_str(&String::from_utf8_lossy(&buffer[..read]));
                 if guard.len() > STDERR_TAIL_LIMIT {
                     let excess = guard.len() - STDERR_TAIL_LIMIT;

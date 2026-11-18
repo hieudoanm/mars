@@ -33,6 +33,11 @@ language)` and lazily created via `kernel_for`; stdin writers,
   intentionally process-local.
 - `tauri.conf.json` CSP stays as restrictive as possible; `capabilities/`
   permissions stay minimal (`core:default`, `dialog:default`, window close).
+- Adding a Tauri plugin requires all of: the `tauri-plugin-*` crate in
+  `Cargo.toml`, `.plugin(...)` registration in `lib.rs`, the matching
+  `@tauri-apps/plugin-*` npm package, a permission entry in
+  `capabilities/default.json`, and any plugin config under `plugins` in
+  `tauri.conf.json`. `tauri-plugin-dialog` is the reference wiring.
 - Keep serde payload shapes stable — they are the wire contract with the
   React frontend (`src/types/types.ts` mirrors them).
 
@@ -43,6 +48,14 @@ cargo fmt --all --check
 cargo clippy -p mars-tauri --all-targets -- -D warnings
 cargo test -p mars-tauri
 ```
+
+Line and function coverage must stay at or above 80% — `make coverage-tauri`
+enforces both thresholds. When adding commands or helpers, keep the decision
+logic in `pub` functions that take plain data (no `AppHandle`) so integration
+tests can drive them; `AppHandle`-bound wrappers should stay thin. Tauri
+helpers that need a handle should be generic over `tauri::Runtime` so tests
+can pass a `tauri::test::mock_builder()` app (register
+`tauri_plugin_notification::init()` when the notification path is exercised).
 
 Tests are integration tests under `tests/` (linking `mars_tauri_lib`) — do not
 add `#[cfg(test)]` modules inside `src/`. Anything a test exercises must be

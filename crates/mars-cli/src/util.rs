@@ -42,3 +42,9 @@ pub fn default_export_path(input: &str, format: &str) -> std::path::PathBuf {
         _ => default_ipynb_path(input),
     }
 }
+
+/// Shared `map_err` target for `Result<_, E: Display>` sites that surface
+/// errors as `String` — avoids a closure per call site.
+pub fn error_string<E: std::fmt::Display>(error: E) -> String {
+    error.to_string()
+}

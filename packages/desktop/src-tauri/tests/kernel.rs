@@ -6,9 +6,13 @@ use mars_tauri_lib::kernel_query::*;
 use tauri::Manager;
 
 fn app() -> tauri::App<tauri::test::MockRuntime> {
-    let app = tauri::test::mock_app();
-    app.manage(AppState::new(RuntimeBackendKind::Replay));
-    app
+    // The notification plugin must be registered so `notify_unfocused`
+    // finds its managed state; `show()` itself is best-effort.
+    tauri::test::mock_builder()
+        .plugin(tauri_plugin_notification::init())
+        .manage(AppState::new(RuntimeBackendKind::Replay))
+        .build(tauri::test::mock_context(tauri::test::noop_assets()))
+        .expect("builds mock app")
 }
 
 fn noop_sink(_: mars_runtime::StreamEvent) {}
@@ -327,4 +331,64 @@ fn configure_kernel_builds_language_kernels() {
         Some(std::time::Duration::from_secs(30)),
         &mut noop_sink,
     );
+}
+
+#[test]
+fn kernel_failure_body_dedupes_and_recovers() {
+    let mut notified = std::collections::HashSet::new();
+    let host_err = Err("spawn failed".to_owned());
+    let kernel_err = Ok(KernelResponse::Error {
+        message: "process died".to_owned(),
+    });
+    let executed = Ok(KernelResponse::Execution {
+        outputs: vec![],
+        execution_count: 1,
+        duration_millis: 1,
+    });
+
+    // First host-side failure notifies; repeats within the streak do not.
+    let body = kernel_failure_body(&mut notified, "s1", "python", &host_err)
+        .expect("first failure notifies");
+    assert!(body.contains("python kernel unavailable"));
+    assert!(kernel_failure_body(&mut notified, "s1", "python", &host_err).is_none());
+    // A different language has its own streak.
+    assert!(kernel_failure_body(&mut notified, "s1", "rust", &host_err).is_some());
+    // KernelResponse::Error uses the "kernel error" wording.
+    let body = kernel_failure_body(&mut notified, "s2", "rust", &kernel_err)
+        .expect("kernel error notifies");
+    assert!(body.contains("rust kernel error"));
+    // Non-failure variants never notify.
+    assert!(
+        kernel_failure_body(&mut notified, "s3", "rust", &Ok(KernelResponse::Cancelled)).is_none()
+    );
+    // A successful execution clears the streak: the next failure re-notifies.
+    assert!(kernel_failure_body(&mut notified, "s1", "python", &executed).is_none());
+    assert!(kernel_failure_body(&mut notified, "s1", "python", &host_err).is_some());
+}
+
+#[test]
+fn stream_sink_emits_events() {
+    let app = app();
+    let mut sink = mars_tauri_lib::kernel::stream_sink(app.handle(), "sess", "rust");
+    sink(mars_runtime::StreamEvent::Prompt {
+        message: "hello".to_owned(),
+    });
+}
+
+#[test]
+fn notify_kernel_result_runs_on_mock_app() {
+    let app = app();
+    let state = app.state::<AppState>();
+    let ok = Ok(KernelResponse::Execution {
+        outputs: vec![],
+        execution_count: 0,
+        duration_millis: 1,
+    });
+    let kernel_err = Ok(KernelResponse::Error {
+        message: "died".to_owned(),
+    });
+    let host_err = Err("cannot start".to_owned());
+    for result in [&ok, &kernel_err, &host_err, &ok] {
+        notify_kernel_result(app.handle(), &state, "n1", "rust", result);
+    }
 }

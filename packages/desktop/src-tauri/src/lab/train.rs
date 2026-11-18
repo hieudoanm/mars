@@ -11,7 +11,7 @@ use mars_lab::storage::{dataset_path, ensure_dirs, write_artefact};
 use mars_lab::training::{TrainingOutput, train};
 use uuid::Uuid;
 
-fn emit_progress(app: &tauri::AppHandle, job_id: Uuid, stage: &str) {
+pub fn emit_progress<R: tauri::Runtime>(app: &tauri::AppHandle<R>, job_id: Uuid, stage: &str) {
     use tauri::Emitter;
     let _ = app.emit(
         "lab-job-progress",
@@ -24,7 +24,41 @@ pub async fn lab_train(
     app: tauri::AppHandle,
     request: LabTrainRequest,
 ) -> Result<LabJobDetail, String> {
-    lab_train_inner(request, |job_id, stage| emit_progress(&app, job_id, stage)).await
+    use std::sync::atomic::{AtomicBool, Ordering};
+    let job_started = AtomicBool::new(false);
+    let result = lab_train_inner(request, |job_id, stage| {
+        if stage == "training" {
+            job_started.store(true, Ordering::Relaxed);
+        }
+        emit_progress(&app, job_id, stage);
+    })
+    .await;
+
+    if let Some(body) = lab_notification_body(&result, job_started.load(Ordering::Relaxed)) {
+        crate::notify::notify_unfocused(&app, "Mars Lab", body);
+    }
+    result
+}
+
+/// Body for the training-completion notification, or `None` when nothing
+/// should fire: successes always notify, failures only once a job was
+/// actually created (`job_started`), and validation errors stay silent.
+pub fn lab_notification_body(
+    result: &Result<LabJobDetail, String>,
+    job_started: bool,
+) -> Option<String> {
+    match result {
+        Ok(detail) => {
+            let label = detail
+                .job
+                .name
+                .clone()
+                .unwrap_or_else(|| detail.job.algorithm_id.clone());
+            Some(format!("\"{label}\" training completed."))
+        }
+        Err(message) if job_started => Some(format!("Training failed: {message}")),
+        Err(_) => None,
+    }
 }
 
 /// Core of `lab_train` with progress reporting injected, so tests can drive

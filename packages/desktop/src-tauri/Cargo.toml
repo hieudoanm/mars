@@ -29,6 +29,7 @@ uuid.workspace = true
 tauri = { version = "=2.12.7", features = [] }
 tauri-plugin-dialog = "=2.8.4"
 thiserror.workspace = true
+tauri-plugin-notification = "=2.8.1"
 
 [dev-dependencies]
 tauri = { version = "=2.12.7", features = ["test"] }

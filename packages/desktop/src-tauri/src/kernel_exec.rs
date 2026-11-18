@@ -8,6 +8,52 @@ use mars_protocol::{KernelRequest, KernelResponse, RequestEnvelope};
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+/// Decides whether a kernel result should notify and returns the body,
+/// updating the per-`(session, language)` dedup set. Host-side `Err`
+/// (runtime cannot start) and `KernelResponse::Error` (backend process
+/// died) notify once per failure streak; ordinary cell errors arrive
+/// inside `Execution.outputs` and never notify. A successful `Execution`
+/// clears the streak so the next failure pings again.
+pub fn kernel_failure_body(
+    notified: &mut std::collections::HashSet<(String, String)>,
+    session: &str,
+    language: &str,
+    result: &Result<KernelResponse, String>,
+) -> Option<String> {
+    let key = kernel_key(session, language);
+    match result {
+        Ok(KernelResponse::Execution { .. }) => {
+            notified.remove(&key);
+            None
+        }
+        Ok(KernelResponse::Error { message }) => notified
+            .insert(key)
+            .then(|| format!("{language} kernel error: {message}")),
+        Err(message) => notified
+            .insert(key)
+            .then(|| format!("{language} kernel unavailable: {message}")),
+        _ => None,
+    }
+}
+
+/// Thin AppHandle wrapper around `kernel_failure_body`.
+pub fn notify_kernel_result<R: tauri::Runtime>(
+    app: &tauri::AppHandle<R>,
+    state: &AppState,
+    session: &str,
+    language: &str,
+    result: &Result<KernelResponse, String>,
+) {
+    let body = state
+        .notified_kernel_errors
+        .lock()
+        .ok()
+        .and_then(|mut notified| kernel_failure_body(&mut notified, session, language, result));
+    if let Some(body) = body {
+        crate::notify::notify_unfocused(app, "Mars Notebook", body);
+    }
+}
+
 #[tauri::command]
 pub fn execute_cell(
     app: tauri::AppHandle,
@@ -17,7 +63,9 @@ pub fn execute_cell(
     language: String,
 ) -> Result<KernelResponse, String> {
     let mut sink = stream_sink(&app, &session, &language);
-    execute_cell_inner(&state, &session, &source, &language, None, &mut sink)
+    let result = execute_cell_inner(&state, &session, &source, &language, None, &mut sink);
+    notify_kernel_result(&app, &state, &session, &language, &result);
+    result
 }
 
 #[tauri::command]
@@ -33,14 +81,16 @@ pub fn execute_cell_with_timeout(
         return Err("timeout_millis must be greater than zero".to_owned());
     }
     let mut sink = stream_sink(&app, &session, &language);
-    execute_cell_inner(
+    let result = execute_cell_inner(
         &state,
         &session,
         &source,
         &language,
         Some(Duration::from_millis(timeout_millis)),
         &mut sink,
-    )
+    );
+    notify_kernel_result(&app, &state, &session, &language, &result);
+    result
 }
 
 /// Shared execution path with the stream sink injected, so tests can drive it

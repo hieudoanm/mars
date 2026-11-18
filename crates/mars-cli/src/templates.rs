@@ -131,9 +131,9 @@ pub fn notebook_from_template(name: &str) -> Result<Notebook, String> {
         let mut cell = Cell::new(cell_type, *source);
         if is_code {
             cell.id = CellId::from_string(format!("{name}-{index}"))
-                .map_err(|error| error.to_string())?;
+                .map_err(crate::util::error_string)?;
         }
-        notebook.add_cell(cell).map_err(|error| error.to_string())?;
+        notebook.add_cell(cell).map_err(crate::util::error_string)?;
     }
     Ok(notebook)
 }
@@ -215,7 +215,7 @@ pub fn example_notebook(name: &str) -> Result<Notebook, String> {
         [] => Err(format!(
             "unknown example: {name} (run `mars notebook templates` to list)"
         )),
-        [(_, path)] => mars_document::load(path).map_err(|error| error.to_string()),
+        [(_, path)] => mars_document::load(path).map_err(crate::util::error_string),
         many => Err(format!(
             "ambiguous example: {name} matches {} — use a longer path",
             many.iter()

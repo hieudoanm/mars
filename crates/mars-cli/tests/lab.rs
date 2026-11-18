@@ -652,3 +652,32 @@ fn lab_export_surfaces_missing_artefact_file_and_bad_output() {
     );
     assert!(!out.exists());
 }
+
+#[test]
+fn lab_export_rejects_bad_ids_and_missing_artefacts() {
+    let _guard = serial();
+    isolate("export-errors");
+    assert!(
+        run_cli(args(&[
+            "lab",
+            "export",
+            "--job-id",
+            "not-a-uuid",
+            "--output",
+            "out.onnx",
+        ]))
+        .is_err()
+    );
+    // Well-formed UUID but no such job/artefact.
+    assert!(
+        run_cli(args(&[
+            "lab",
+            "export",
+            "--job-id",
+            &uuid_zero(),
+            "--output",
+            "out.onnx",
+        ]))
+        .is_err()
+    );
+}

@@ -109,3 +109,9 @@ fn serve_mcp_serves_until_stdin_eof() {
     // EOF so it should return promptly.
     serve_mcp(&[]).expect("serve until EOF");
 }
+
+#[test]
+fn serve_mcp_http_bind_failure_is_an_error() {
+    // Unbindable address: serve_http fails fast instead of hanging.
+    assert!(serve_mcp(&args(&["--http", "not-an-address"])).is_err());
+}

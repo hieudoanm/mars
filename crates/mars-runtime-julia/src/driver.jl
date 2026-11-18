@@ -42,7 +42,19 @@ const REAL_STDOUT = Base.stdout
 const REQUESTS = Channel{Any}(Inf)
 const PENDING_INPUT = Channel{Union{String, Nothing}}(Inf)
 const CURRENT_ID = Ref{Any}(nothing)
+const CURRENT_REQ = Ref{Any}(nothing)
 const M = Module(:MarsKernel)
+
+# Cell stdout/stderr are captured by redirecting Base.stdout/stderr into OS
+# pipes (the only stream types `redirect_stdout`/`redirect_stderr` accept on
+# Julia 1.13+) and pumping the bytes into per-cell ProtocolIO buffers. The
+# pipes and pump tasks live for the driver lifetime; CURRENT_*_IO route bytes
+# to the ProtocolIO of the cell currently executing.
+const OUT_PIPE = Pipe()
+const ERR_PIPE = Pipe()
+const CURRENT_OUT_IO = Ref{Any}(nothing)
+const CURRENT_ERR_IO = Ref{Any}(nothing)
+const SEND_LOCK = ReentrantLock()
 
 const DISPLAY_MIMES = (
     ("text/html", MIME"text/html"()),
@@ -54,22 +66,22 @@ const DISPLAY_MIMES = (
 )
 
 const SILENT_HEADS = Set{Symbol}([
-    :(=),
-    :(function),
-    :(macro),
-    :(module),
-    :(baremodule),
-    :(import),
-    :(using),
-    :(export),
-    :(global),
-    :(local),
-    :(const),
-    :(struct),
-    :(mutable),
-    :(abstract),
-    :(primitive),
-    :(type),
+    Symbol("="),
+    Symbol("function"),
+    Symbol("macro"),
+    Symbol("module"),
+    Symbol("baremodule"),
+    Symbol("import"),
+    Symbol("using"),
+    Symbol("export"),
+    Symbol("global"),
+    Symbol("local"),
+    Symbol("const"),
+    Symbol("struct"),
+    Symbol("mutable"),
+    Symbol("abstract"),
+    Symbol("primitive"),
+    Symbol("type"),
 ])
 
 # ---------------------------------------------------------------------------
@@ -398,9 +410,14 @@ end
 
 function send_msg(msg)
     msg isa Dict || (msg = Dict(msg))
-    haskey(msg, "id") || (msg["id"] = CURRENT_ID[])
-    print(REAL_STDOUT, json_dumps(msg), '\n')
-    flush(REAL_STDOUT)
+    if !haskey(msg, "id") && CURRENT_ID[] !== nothing
+        msg = Dict{String, Any}(msg)
+        msg["id"] = CURRENT_ID[]
+    end
+    lock(SEND_LOCK) do
+        print(REAL_STDOUT, json_dumps(msg), '\n')
+        flush(REAL_STDOUT)
+    end
     return nothing
 end
 
@@ -469,9 +486,18 @@ Base.eof(io::ProtocolIO) = false
 Base.isreadable(io::ProtocolIO) = false
 Base.iswritable(io::ProtocolIO) = true
 
-function Base.unsafe_flush(io::ProtocolIO)
+function Base.flush(io::ProtocolIO)
     emit_ready(io; force = true)
     return nothing
+end
+
+# Julia <= 1.12 flushed custom IOs through the internal `unsafe_flush` hook;
+# 1.13 removed it in favour of the public `flush(io::IO)` above.
+if isdefined(Base, :unsafe_flush)
+    @eval function Base.unsafe_flush(io::ProtocolIO)
+        emit_ready(io; force = true)
+        return nothing
+    end
 end
 
 function emit_ready(io::ProtocolIO; force::Bool = false)
@@ -663,6 +689,8 @@ function handle_execute(req)
     cell_bt = Ref{Any}(nothing)
     cell_value = Ref{Any}(nothing)
     cell_has_value = Ref{Bool}(false)
+    CURRENT_OUT_IO[] = out_io
+    CURRENT_ERR_IO[] = err_io
     try
         if isdefined(Base, :redirect_stderr)
             redirect_stdout(() -> redirect_stderr(() -> try
@@ -672,7 +700,7 @@ function handle_execute(req)
             catch err
                 cell_error[] = err
                 cell_bt[] = catch_backtrace()
-            end end), out_io)
+            end, ERR_PIPE), OUT_PIPE)
         else
             redirect_stdout(() -> try
                 v, hv = eval_cell(source)
@@ -681,14 +709,18 @@ function handle_execute(req)
             catch err
                 cell_error[] = err
                 cell_bt[] = catch_backtrace()
-            end, out_io)
+            end, OUT_PIPE)
         end
     catch err
         cell_error[] = err
         cell_bt[] = catch_backtrace()
     end
+    # Let the pipe pumps deliver bytes still buffered in the OS pipes.
+    sleep(0.02)
     emit_ready(out_io; force = true)
     emit_ready(err_io; force = true)
+    CURRENT_OUT_IO[] = nothing
+    CURRENT_ERR_IO[] = nothing
     if cell_error[] === nothing && cell_has_value[] && cell_value[] !== nothing
         record_ans(cell_value[])
         send_msg(Dict("type" => "display", "data" => display_parts(cell_value[])))
@@ -728,7 +760,7 @@ end
 
 function handle_inspect(req)
     skip = Set([:ans, :ans_prev, :display, :readline])
-    names = sort!(collect(names(M, all = true)); by = string)
+    names = sort!(collect(Base.names(M, all = true)); by = string)
     variables = Any[]
     for s in names
         s isa Symbol || continue
@@ -757,11 +789,25 @@ function handle_inspect(req)
     return nothing
 end
 
+function find_parse_error(ex)
+    ex isa Expr || return nothing
+    if (ex.head === :incomplete || ex.head === :error) && !isempty(ex.args)
+        return ex.args[1]
+    end
+    for a in ex.args
+        a isa Expr || continue
+        r = find_parse_error(a)
+        r === nothing || return r
+    end
+    return nothing
+end
+
 function handle_check(req)
     source = get(req, "source", "")
     err = nothing
     try
-        Meta.parseall(source)
+        parsed = Meta.parseall(source)
+        err = find_parse_error(parsed)
     catch e
         err = e
     end
@@ -787,7 +833,12 @@ end
 # ---------------------------------------------------------------------------
 
 function stdin_reader()
-    for line in eachline(Base.stdin)
+    # NOTE: `eachline(Base.stdin)` on a spawned thread prevents later
+    # `Core.eval` calls from committing module globals on Julia 1.13; a
+    # `readline` loop does not exhibit that behaviour.
+    while !eof(Base.stdin)
+        line = readline(Base.stdin)
+        line === nothing && break
         req = try
             json_parse_line(line)
         catch
@@ -809,6 +860,15 @@ function stdin_reader()
     return nothing
 end
 
+# Pre-declare ans/ans_prev: Julia 1.11+ rejects setglobal! on undeclared
+# module globals (1.9/1.10 silently allowed it).
+for decl in ("global ans = nothing", "global ans_prev = nothing")
+    try
+        Core.eval(M, Meta.parse(decl))
+    catch
+    end
+end
+
 # Install Mars-aware display/readline inside the cell module. The bindings
 # shadow the Base exports imported via the implicit `using Base`.
 for (name, fn) in ((:display, mars_display), (:readline, mars_readline))
@@ -819,11 +879,27 @@ for (name, fn) in ((:display, mars_display), (:readline, mars_readline))
     end
 end
 
-Base.Threads.@spawn(stdin_reader())
+function pump_pipe(pipe::Pipe, which::Symbol)
+    while true
+        data = try
+            readavailable(pipe)
+        catch
+            # Pipe endpoints initialise lazily on first redirect use.
+            sleep(0.05)
+            continue
+        end
+        isempty(data) && continue
+        io = which === :stdout ? CURRENT_OUT_IO[] : CURRENT_ERR_IO[]
+        io === nothing && continue
+        unsafe_write(io, pointer(data), UInt(length(data)))
+    end
+end
 
-while true
-    req = take!(REQUESTS)
-    req === nothing && break
+Base.Threads.@spawn(stdin_reader())
+Base.Threads.@spawn(pump_pipe(OUT_PIPE, :stdout))
+Base.Threads.@spawn(pump_pipe(ERR_PIPE, :stderr))
+
+function dispatch_request(req)
     t = get(req, "type", "")
     if t == "execute"
         handle_execute(req)
@@ -832,6 +908,19 @@ while true
     elseif t == "check"
         handle_check(req)
     end
+    return nothing
+end
+
+while true
+    req = take!(REQUESTS)
+    req === nothing && break
+    CURRENT_REQ[] = req
+    # Dispatch through Core.eval at global scope: on Julia 1.13, `Core.eval`
+    # called from inside a function inherits the caller's soft scope, so cell
+    # assignments would become invisible to `names`/`isdefined` (they only
+    # materialise as module globals when the eval chain bottoms out at global
+    # scope). Routing through this trampoline keeps cell bindings real globals.
+    Core.eval(Main, :(dispatch_request(CURRENT_REQ[])))
 end
 
 exit(0)

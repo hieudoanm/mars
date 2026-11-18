@@ -31,8 +31,14 @@ impl CppSession {
         offline: bool,
         locked: bool,
     ) -> Result<Self, RuntimeError> {
-        let workdir = TempDir::new()
-            .map_err(|e| RuntimeError::Backend(format!("Failed to create tempdir: {e}")))?;
+        let workdir = match TempDir::new() {
+            Ok(dir) => dir,
+            Err(e) => {
+                return Err(RuntimeError::Backend(format!(
+                    "Failed to create tempdir: {e}"
+                )));
+            }
+        };
 
         let compiler = find_compiler()?;
 
@@ -70,15 +76,21 @@ impl RuntimeBackend for CppSession {
 
         // Write program to source file
         let source_path = self.workdir_path().join("main.cpp");
-        fs::write(&source_path, program)
-            .map_err(|e| RuntimeError::Backend(format!("Failed to write source: {e}")))?;
+        if let Err(e) = fs::write(&source_path, program) {
+            return Err(RuntimeError::Backend(format!(
+                "Failed to write source: {e}"
+            )));
+        }
 
         // Handle dependencies with Conan
         if !self.dependencies.is_empty() {
             let conanfile = generate_conanfile(&self.dependencies);
             let conanfile_path = self.workdir_path().join("conanfile.txt");
-            fs::write(&conanfile_path, conanfile)
-                .map_err(|e| RuntimeError::Backend(format!("Failed to write conanfile: {e}")))?;
+            if let Err(e) = fs::write(&conanfile_path, conanfile) {
+                return Err(RuntimeError::Backend(format!(
+                    "Failed to write conanfile: {e}"
+                )));
+            }
 
             // Run conan install
             let mut conan_cmd = Command::new("conan");
@@ -95,8 +107,9 @@ impl RuntimeBackend for CppSession {
             if self.locked {
                 if let Some(lock) = &self.conan_lock {
                     let lock_path = self.workdir_path().join("conan.lock");
-                    fs::write(&lock_path, lock)
-                        .map_err(|e| RuntimeError::Backend(format!("Failed to write lock: {e}")))?;
+                    if let Err(e) = fs::write(&lock_path, lock) {
+                        return Err(RuntimeError::Backend(format!("Failed to write lock: {e}")));
+                    }
                     conan_cmd.arg("--lockfile=conan.lock");
                     conan_cmd.arg("--lockfile-out=conan.lock");
                 } else {
@@ -202,9 +215,12 @@ impl RuntimeBackend for CppSession {
             }
         }
 
-        let output = child
-            .wait_with_output()
-            .map_err(|e| RuntimeError::Backend(format!("Failed to get output: {e}")))?;
+        let output = match child.wait_with_output() {
+            Ok(output) => output,
+            Err(e) => {
+                return Err(RuntimeError::Backend(format!("Failed to get output: {e}")));
+            }
+        };
 
         let stdout = String::from_utf8_lossy(&output.stdout).to_string();
         let stderr = String::from_utf8_lossy(&output.stderr).to_string();

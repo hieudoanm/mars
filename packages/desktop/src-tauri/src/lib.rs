@@ -7,6 +7,7 @@ pub mod lsp;
 pub mod lsp_cmds;
 pub mod notebook_cmds;
 pub mod notebook_files;
+pub mod notify;
 pub mod open;
 
 use lab::{
@@ -15,7 +16,7 @@ use lab::{
     read_table_preview,
 };
 use mars_kernel::{Kernel, RuntimeBackendKind};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, atomic::AtomicBool};
 use tauri::Manager;
 
@@ -25,6 +26,9 @@ pub struct AppState {
     python_options: Mutex<HashMap<String, mars_kernel::PythonOptions>>,
     sql_sources: Mutex<HashMap<String, Vec<mars_runtime::SqlSource>>>,
     cancellations: Mutex<HashMap<String, Arc<AtomicBool>>>,
+    /// `(session, language)` pairs that already produced a kernel-failure
+    /// notification, so a dead runtime does not spam one per cell run.
+    notified_kernel_errors: Mutex<HashSet<(String, String)>>,
     lsp: lsp::LspSessions,
     backend: RuntimeBackendKind,
 }
@@ -37,6 +41,7 @@ impl AppState {
             python_options: Mutex::new(HashMap::new()),
             sql_sources: Mutex::new(HashMap::new()),
             cancellations: Mutex::new(HashMap::new()),
+            notified_kernel_errors: Mutex::new(HashSet::new()),
             lsp: lsp::LspSessions::new(),
             backend,
         }
@@ -58,6 +63,7 @@ pub fn run() -> tauri::Result<()> {
     tauri::Builder::default()
         .manage(AppState::new(backend))
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
         .invoke_handler(tauri::generate_handler![
             kernel_exec::execute_cell,
             kernel_exec::execute_cell_with_timeout,

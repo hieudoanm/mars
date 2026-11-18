@@ -53,7 +53,7 @@ const PROBES: &[Probe] = &[
 pub fn run_doctor(notebook_path: Option<&str>) -> Result<(), String> {
     let needed = match notebook_path {
         Some(path) => {
-            let notebook = load(path).map_err(|error| error.to_string())?;
+            let notebook = load(path).map_err(crate::util::error_string)?;
             notebook_languages(&notebook)
         }
         None => PROBES.iter().map(|probe| probe.language).collect(),

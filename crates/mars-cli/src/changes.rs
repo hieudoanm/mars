@@ -57,7 +57,7 @@ pub fn baseline_notebook(path: &str, git_ref: &str) -> Result<Notebook, String> 
     }
     let spec = format!("{git_ref}:{relative}");
     let content = git_output(repo_root_path, &["show", &spec])?;
-    mars_document::from_json(&content).map_err(|error| error.to_string())
+    mars_document::from_json(&content).map_err(crate::util::error_string)
 }
 
 /// How a cell differs between two notebook revisions.

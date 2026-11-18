@@ -257,6 +257,8 @@ async fn train_runs_linear_regression_and_exports_onnx() {
         .expect("trains model");
     assert_eq!(trained.job.status, "completed");
     assert!(serde_json::to_value(&trained).is_ok());
+    let body = lab_notification_body(&Ok(trained.clone()), true).expect("success notifies");
+    assert!(body.contains("coverage-test"));
     let _ = format!("{trained:?}");
     assert!(trained.metrics.is_some());
     assert!(trained.artefacts.iter().any(|a| a.format == "onnx"));
@@ -469,4 +471,20 @@ async fn dataset_with_text_column_and_missing_storage_file() {
 
     let request = train_request(dataset_id);
     assert!(lab_train_inner(request, |_, _| {}).await.is_err());
+}
+
+#[test]
+fn lab_notification_body_handles_failures() {
+    let body = lab_notification_body(&Err("boom".to_owned()), true).expect("started job notifies");
+    assert!(body.contains("Training failed"));
+    // Validation errors before a job exists stay silent.
+    assert!(lab_notification_body(&Err("boom".to_owned()), false).is_none());
+}
+
+#[test]
+fn emit_progress_emits_on_mock_app() {
+    let app = tauri::test::mock_builder()
+        .build(tauri::test::mock_context(tauri::test::noop_assets()))
+        .expect("builds mock app");
+    emit_progress(app.handle(), uuid::Uuid::new_v4(), "training");
 }
