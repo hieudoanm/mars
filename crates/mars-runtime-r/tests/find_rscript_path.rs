@@ -5,9 +5,21 @@
 
 use mars_runtime_r::RSession;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::{Mutex, OnceLock};
+
+// Both tests mutate process-global PATH/MARS_RSCRIPT; serialize them.
+static ENV_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+
+fn env_lock() -> std::sync::MutexGuard<'static, ()> {
+    ENV_LOCK
+        .get_or_init(|| Mutex::new(()))
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
 
 #[test]
 fn finds_rscript_on_path() {
+    let _guard = env_lock();
     let dir = std::env::temp_dir().join(format!("mars-r-path-probe-{}", std::process::id()));
     std::fs::create_dir_all(&dir).expect("probe dir");
     let script = dir.join("Rscript");
@@ -38,6 +50,7 @@ fn finds_rscript_on_path() {
 
 #[test]
 fn missing_rscript_errors() {
+    let _guard = env_lock();
     let dir = std::env::temp_dir().join(format!("mars-r-empty-path-{}", std::process::id()));
     std::fs::create_dir_all(&dir).expect("empty path dir");
 

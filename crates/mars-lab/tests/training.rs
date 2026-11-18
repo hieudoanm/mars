@@ -477,3 +477,245 @@ fn model_prediction_helpers_work() {
     let v = out.model.predict_value(&t[0]);
     assert!(v.is_finite());
 }
+
+// ── ONNX export across every model family ────────────────────────────────────
+
+fn csv_for(kind: &str) -> String {
+    match kind {
+        "classification" => classification_csv().to_string(),
+        "regression" => regression_csv().to_string(),
+        "cluster" => cluster_csv(),
+        "anomaly" => anomaly_csv(),
+        _ => unreachable!(),
+    }
+}
+
+type OnnxCase = (
+    &'static str,
+    TaskType,
+    &'static str,
+    &'static [&'static str],
+    Option<&'static str>,
+    serde_json::Value,
+);
+
+#[test]
+fn onnx_export_covers_all_model_families() {
+    // One representative per Model variant exercised by export_onnx: Linear,
+    // Trees (rf + gbdt), Mlp, Kernel, Clusters, Knn, NaiveBayes (gaussian +
+    // discrete), IsolationForest, Lof, Elliptic.
+    let cases: &[OnnxCase] = &[
+        (
+            "logistic_regression",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({"max_iter": 60}),
+        ),
+        (
+            "decision_tree_classifier",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({}),
+        ),
+        (
+            "gradient_boosting_classifier",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({"n_estimators": 5, "max_iter": 30}),
+        ),
+        (
+            "mlp_classifier",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({"max_iter": 30, "hidden_layer_sizes": [4]}),
+        ),
+        (
+            "svm_classifier",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({}),
+        ),
+        (
+            "k_neighbors_classifier",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({"n_neighbors": 3}),
+        ),
+        (
+            "gaussian_naive_bayes",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({}),
+        ),
+        (
+            "bernoulli_nb",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({}),
+        ),
+        (
+            "multinomial_nb",
+            TaskType::Classification,
+            "classification",
+            &["x1", "x2"],
+            Some("label"),
+            json!({}),
+        ),
+        (
+            "linear_regression",
+            TaskType::Regression,
+            "regression",
+            &["x1", "x2"],
+            Some("target"),
+            json!({}),
+        ),
+        (
+            "random_forest_regressor",
+            TaskType::Regression,
+            "regression",
+            &["x1", "x2"],
+            Some("target"),
+            json!({"n_estimators": 5}),
+        ),
+        (
+            "gradient_boosting_regressor",
+            TaskType::Regression,
+            "regression",
+            &["x1", "x2"],
+            Some("target"),
+            json!({"n_estimators": 5, "max_iter": 30}),
+        ),
+        (
+            "mlp_regressor",
+            TaskType::Regression,
+            "regression",
+            &["x1", "x2"],
+            Some("target"),
+            json!({"max_iter": 30, "hidden_layer_sizes": [4]}),
+        ),
+        (
+            "svm_regressor",
+            TaskType::Regression,
+            "regression",
+            &["x1", "x2"],
+            Some("target"),
+            json!({}),
+        ),
+        (
+            "k_neighbors_regressor",
+            TaskType::Regression,
+            "regression",
+            &["x1", "x2"],
+            Some("target"),
+            json!({"n_neighbors": 3}),
+        ),
+        (
+            "kmeans",
+            TaskType::Clustering,
+            "cluster",
+            &["x1", "x2"],
+            None,
+            json!({"n_clusters": 2}),
+        ),
+        (
+            "gaussian_mixture",
+            TaskType::Clustering,
+            "cluster",
+            &["x1", "x2"],
+            None,
+            json!({"n_components": 2, "max_iter": 20}),
+        ),
+        (
+            "isolation_forest",
+            TaskType::AnomalyDetection,
+            "anomaly",
+            &["x1", "x2"],
+            None,
+            json!({"n_estimators": 10}),
+        ),
+        (
+            "local_outlier_factor",
+            TaskType::AnomalyDetection,
+            "anomaly",
+            &["x1", "x2"],
+            None,
+            json!({"n_neighbors": 5}),
+        ),
+        (
+            "elliptic_envelope",
+            TaskType::AnomalyDetection,
+            "anomaly",
+            &["x1", "x2"],
+            None,
+            json!({}),
+        ),
+        (
+            "one_class_svm",
+            TaskType::AnomalyDetection,
+            "anomaly",
+            &["x1", "x2"],
+            None,
+            json!({}),
+        ),
+    ];
+    for (algo, task, kind, features, label, hp) in cases {
+        let df = DataFrame::from_csv_str(&csv_for(kind)).unwrap();
+        let job = make_job(*task, algo, features, *label, hp.clone());
+        let out = train(&job, &df).unwrap_or_else(|e| panic!("{algo} train failed: {e}"));
+        let bytes =
+            export_onnx(&out.model).unwrap_or_else(|e| panic!("{algo} onnx export failed: {e}"));
+        assert!(bytes.len() > 8, "{algo} produced empty ONNX");
+    }
+}
+
+#[test]
+fn onnx_export_covers_rl_and_mlp_activations() {
+    // RL FQI produces a tree ensemble → rl_graph.
+    let df = DataFrame::from_csv_str(&rl_csv()).unwrap();
+    let mut job = make_job(
+        TaskType::ReinforcementLearning,
+        "fitted_q_iteration",
+        &["state"],
+        None,
+        json!({"n_iterations": 3, "max_depth": 2}),
+    );
+    job.rl_columns = Some(RLColumns {
+        action_column: "action".to_string(),
+        reward_column: "reward".to_string(),
+        next_state_columns: vec!["next".to_string()],
+        done_column: None,
+        episode_column: None,
+    });
+    let out = train(&job, &df).unwrap();
+    assert!(!export_onnx(&out.model).unwrap().is_empty());
+
+    // MLP activation variants hit the activation_node branches.
+    let df = DataFrame::from_csv_str(classification_csv()).unwrap();
+    for activation in ["relu", "tanh", "logistic", "identity"] {
+        let job = make_job(
+            TaskType::Classification,
+            "mlp_classifier",
+            &["x1", "x2"],
+            Some("label"),
+            json!({"max_iter": 20, "hidden_layer_sizes": [4], "activation": activation, "solver": "sgd", "learning_rate_init": 0.01}),
+        );
+        let out = train(&job, &df).unwrap_or_else(|e| panic!("mlp {activation} failed: {e}"));
+        assert!(!export_onnx(&out.model).unwrap().is_empty(), "{activation}");
+    }
+}

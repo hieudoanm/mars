@@ -49,28 +49,24 @@ pub async fn list_jobs(
     cursor: Option<&JobCursor>,
 ) -> LabResult<JobPage> {
     let limit = if limit == 0 { 50 } else { limit.min(200) };
-    let mut builder = QueryBuilder::<Sqlite>::new("SELECT j.* FROM jobs j");
-    if !filters.tags.is_empty() {
-        builder.push(" LEFT JOIN job_tags t ON t.job_id = j.id");
-    }
-    builder.push(" WHERE 1=1");
+    let mut builder = QueryBuilder::<Sqlite>::new("SELECT j.* FROM jobs j WHERE 1=1");
     push_in(&mut builder, "j.status", &filters.statuses);
     push_in(&mut builder, "j.task_type", &filters.task_types);
     push_in(&mut builder, "j.algorithm_id", &filters.algorithm_ids);
     if !filters.tags.is_empty() {
-        builder.push(" AND t.tag IN (");
+        builder.push(" AND EXISTS (SELECT 1 FROM json_each(j.tags) je WHERE je.value IN (");
         let mut separated = builder.separated(", ");
         for tag in &filters.tags {
             separated.push_bind(tag.clone());
         }
-        builder.push(")");
+        builder.push("))");
     }
     if let Some(q) = &filters.q {
         builder.push(" AND (instr(lower(j.algorithm_id), lower(");
         builder.push_bind(q.clone());
-        builder.push(") > 0 OR instr(lower(j.task_type), lower(");
+        builder.push(")) > 0 OR instr(lower(j.task_type), lower(");
         builder.push_bind(q.clone());
-        builder.push(") > 0)");
+        builder.push(")) > 0)");
     }
     if let Some(from) = filters.created_from {
         builder.push(" AND j.created_at >= ");
