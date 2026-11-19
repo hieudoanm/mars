@@ -86,6 +86,13 @@ mars/
 - `.pre-commit-config.yaml` is a separate, optional Python `pre-commit` suite
   (fmt/clippy/tests/build checks); it is not installed by default.
 
+## Testing
+
+All Rust crates must keep line and function coverage at or above 80% —
+verify per crate with `cargo llvm-cov -p <crate> --tests` and workspace-wide
+with `make coverage` (the gate enforces 80% lines/functions on the covered
+packages). Frontend packages keep the same bar for their test suites.
+
 ## Documentation
 
 - [`README.md`](README.md) — project overview, features, quick start.

@@ -53,4 +53,5 @@ git status             # PNGs should show as modified, never as hand-edited
 ```
 
 There is no automated asset lint; visual review of the rendered PNG is the
-check.
+check. Assets themselves have no test suite — the repository-wide 80%
+line/function coverage rule applies to code, not artwork.

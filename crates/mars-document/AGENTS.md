@@ -23,3 +23,5 @@ Owns the `.mars` notebook representation. Depends only on `mars-core`.
 cargo test -p mars-document
 cargo clippy -p mars-document --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-document --tests` (workspace gate: `make coverage`).

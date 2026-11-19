@@ -53,6 +53,8 @@ pnpm --filter @mars/landing test
 pnpm --filter @mars/landing build
 ```
 
+Keep test coverage at or above 80% for new and changed code.
+
 Set `NEXT_PUBLIC_SITE_URL` when validating production metadata or Open Graph
 URLs. Inspect the static `out/` result after changes to routing, public assets,
 or metadata. Do not commit `.next/`, `out/`, coverage output, or TypeScript

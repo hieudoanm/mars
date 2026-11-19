@@ -76,3 +76,5 @@ failure). `kernel serve` clients pass the same shape via
 cargo test -p mars-runtime-python   # requires a python3 on PATH
 cargo clippy -p mars-runtime-python --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-runtime-python --tests` (workspace gate: `make coverage`).

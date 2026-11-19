@@ -26,3 +26,5 @@ Renders notebook cells and `Output` values to HTML, Markdown, and PDF. Depends o
 cargo test -p mars-renderer
 cargo clippy -p mars-renderer --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-renderer --tests` (workspace gate: `make coverage`).

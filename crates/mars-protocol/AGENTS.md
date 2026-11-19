@@ -19,8 +19,8 @@ Serde-typed wire protocol between clients (CLI, desktop) and the kernel. Depends
     delivery (`comm_msg`/`comm_close`) for widget state sync.
 - `KernelResponse`: `Execution { outputs, execution_count, duration_millis }`, `Status { status, execution_count }`, `Reset { status }`, `Cancelled`, `Variables { variables }`, `Diagnostics { diagnostics }`, `Input`, `Comm { comms }`, `Error { message }`.
 - `KernelEvent`: `StatusChanged`, `Output` — for future streaming/event channels.
-`KernelStreamEvent` (emitted as `EventEnvelope` during `Execute`) covers
-`Phase`, `Chunk`, `Prompt`, and `Comm` (widget comm traffic).
+  `KernelStreamEvent` (emitted as `EventEnvelope` during `Execute`) covers
+  `Phase`, `Chunk`, `Prompt`, and `Comm` (widget comm traffic).
 
 ## Rules
 
@@ -34,3 +34,5 @@ Serde-typed wire protocol between clients (CLI, desktop) and the kernel. Depends
 cargo test -p mars-protocol
 cargo clippy -p mars-protocol --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-protocol --tests` (workspace gate: `make coverage`).

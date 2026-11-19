@@ -25,3 +25,5 @@ cargo test -p mars-kernel
 cargo clippy -p mars-kernel --all-targets -- -D warnings
 cargo test -p mars-kernel --features experimental-evcxr   # also test the evcxr path
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-kernel --tests` (workspace gate: `make coverage`).

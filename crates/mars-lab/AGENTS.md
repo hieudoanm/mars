@@ -49,3 +49,5 @@ cargo test -p mars-lab
 cargo clippy -p mars-lab --all-targets -- -D warnings
 cargo fmt --all --check
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-lab --tests` (workspace gate: `make coverage`).

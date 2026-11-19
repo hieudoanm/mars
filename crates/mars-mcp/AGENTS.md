@@ -42,3 +42,5 @@ hand-rolled JSON-RPC 2.0 over newline-delimited JSON (same framing as
 cargo test -p mars-mcp
 cargo clippy -p mars-mcp --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-mcp --tests` (workspace gate: `make coverage`).

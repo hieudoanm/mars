@@ -40,6 +40,8 @@ cargo test -p mars-lsp
 cargo clippy -p mars-lsp --all-targets -- -D warnings
 ```
 
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-lsp --tests` (workspace gate: `make coverage`).
+
 ## Integration
 
 The LSP client is used by the Project Mars desktop application to provide Rust code

@@ -52,6 +52,8 @@ pnpm --filter mars-vscode test
 pnpm --filter mars-vscode build
 ```
 
+Keep test coverage at or above 80% for new and changed code.
+
 Run `pnpm --filter mars-vscode package` when modifying manifest contributions,
 packaging assets, or release behaviour. Do not commit generated `out/`, `vsix/`,
 coverage, or packaged `.vsix` files.

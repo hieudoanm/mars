@@ -30,3 +30,5 @@ cargo test -p mars
 cargo clippy -p mars --all-targets -- -D warnings
 cargo run -p mars -- notebook run examples/getting-started.mars
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars --tests` (workspace gate: `make coverage`).

@@ -65,3 +65,5 @@ Executes Julia code interactively with shared state across cells. Depends on
 cargo test -p mars-runtime-julia   # requires a julia on PATH; skips otherwise
 cargo clippy -p mars-runtime-julia --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-runtime-julia --tests` (workspace gate: `make coverage`).

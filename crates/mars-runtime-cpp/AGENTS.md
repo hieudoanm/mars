@@ -55,6 +55,8 @@ cargo test -p mars-runtime-cpp   # requires clang++ or g++ on PATH
 cargo clippy -p mars-runtime-cpp --all-targets -- -D warnings
 ```
 
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-runtime-cpp --tests` (workspace gate: `make coverage`).
+
 ## Limitations
 
 - Replay-based approach recompiles all cells on each execution (no true REPL).

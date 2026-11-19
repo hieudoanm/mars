@@ -21,4 +21,6 @@ Bidirectional conversion between Project Mars notebooks and Jupyter nbformat 4. 
 cargo test -p mars-jupyter
 cargo clippy -p mars-jupyter --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-jupyter --tests` (workspace gate: `make coverage`).
 Fixtures live in `tests/fixtures/` inside this crate.

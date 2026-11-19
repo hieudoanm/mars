@@ -23,3 +23,5 @@ Foundational crate with no internal dependencies. All other crates depend on it.
 cargo test -p mars-core
 cargo clippy -p mars-core --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-core --tests` (workspace gate: `make coverage`).

@@ -56,3 +56,5 @@ Executes R code interactively with shared state across cells. Depends on
 cargo test -p mars-runtime-r   # requires Rscript + jsonlite on PATH; skips otherwise
 cargo clippy -p mars-runtime-r --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-runtime-r --tests` (workspace gate: `make coverage`).

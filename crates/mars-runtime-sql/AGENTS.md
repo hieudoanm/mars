@@ -26,3 +26,5 @@
 cargo test -p mars-runtime-sql
 cargo clippy -p mars-runtime-sql --all-targets -- -D warnings
 ```
+
+Line and function coverage must stay at or above 80% — verify with `cargo llvm-cov -p mars-runtime-sql --tests` (workspace gate: `make coverage`).

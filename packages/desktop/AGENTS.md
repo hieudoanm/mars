@@ -70,6 +70,9 @@ cargo clippy -p mars-tauri --all-targets -- -D warnings
 cargo test -p mars-tauri
 ```
 
+`mars-tauri` line/function coverage must stay at or above 80% (`make
+coverage-tauri`); keep the same bar for frontend test coverage.
+
 Run `pnpm --filter @mars/desktop test:e2e` for changed end-user notebook flows
 when the local browser/runtime prerequisites are available.
 

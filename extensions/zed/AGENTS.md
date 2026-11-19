@@ -43,6 +43,9 @@ cargo test -p mars-zed
 cargo build --target wasm32-wasip1 -p mars-zed
 ```
 
+Line and function coverage must stay at or above 80% — verify with
+`cargo llvm-cov -p mars-zed --tests`.
+
 If grammar files change, also run the grammar package's available test/generate
 command from `grammars/tree-sitter-mars/` and review highlighting in Zed. Do not
 commit `target/`, generated WebAssembly output, or npm dependency directories.
