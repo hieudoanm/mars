@@ -6,7 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-evcxr = "=0.22.0"
+evcxr = "=0.23.0"
 mars-core = { path = "../mars-core" }
 mars-runtime = { path = "../mars-runtime" }
 serde_json.workspace = true
