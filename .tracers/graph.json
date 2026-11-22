@@ -3,8 +3,8 @@
   "tracersVersion": "0.0.1",
   "repository": {
     "id": "repository:.",
-    "name": "repository",
-    "root": ".",
+    "name": "mars",
+    "root": "/Users/hieudoan/git/github.com/hieudoanm/mars",
     "fileCount": 807,
     "languageCount": 23
   },
@@ -64409,12 +64409,6 @@
       "language": "rust"
     },
     {
-      "id": "external:rust:ClusterModel",
-      "kind": "external_symbol",
-      "name": "ClusterModel",
-      "language": "rust"
-    },
-    {
       "id": "external:rust:Command.new",
       "kind": "external_symbol",
       "name": "new",
@@ -64604,66 +64598,6 @@
       "id": "external:rust:MessageField.some",
       "kind": "external_symbol",
       "name": "some",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Clusters",
-      "kind": "external_symbol",
-      "name": "Clusters",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Elliptic",
-      "kind": "external_symbol",
-      "name": "Elliptic",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.IsolationForest",
-      "kind": "external_symbol",
-      "name": "IsolationForest",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Kernel",
-      "kind": "external_symbol",
-      "name": "Kernel",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Knn",
-      "kind": "external_symbol",
-      "name": "Knn",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Linear",
-      "kind": "external_symbol",
-      "name": "Linear",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Lof",
-      "kind": "external_symbol",
-      "name": "Lof",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Mlp",
-      "kind": "external_symbol",
-      "name": "Mlp",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.NaiveBayes",
-      "kind": "external_symbol",
-      "name": "NaiveBayes",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:Model.Trees",
-      "kind": "external_symbol",
-      "name": "Trees",
       "language": "rust"
     },
     {
@@ -64931,12 +64865,6 @@
       "language": "rust"
     },
     {
-      "id": "external:rust:TrainedModel",
-      "kind": "external_symbol",
-      "name": "TrainedModel",
-      "language": "rust"
-    },
-    {
       "id": "external:rust:TypeProto.new",
       "kind": "external_symbol",
       "name": "new",
@@ -65093,18 +65021,6 @@
       "language": "rust"
     },
     {
-      "id": "external:rust:crate::db::Database.in_memory",
-      "kind": "external_symbol",
-      "name": "in_memory",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:crate::error::RuntimeError.Backend",
-      "kind": "external_symbol",
-      "name": "Backend",
-      "language": "rust"
-    },
-    {
       "id": "external:rust:crossbeam_channel::Receiver",
       "kind": "external_symbol",
       "name": "Receiver",
@@ -65237,12 +65153,6 @@
       "language": "rust"
     },
     {
-      "id": "external:rust:jobs::JobFilters.default",
-      "kind": "external_symbol",
-      "name": "default",
-      "language": "rust"
-    },
-    {
       "id": "external:rust:libc.kill",
       "kind": "external_symbol",
       "name": "kill",
@@ -65258,12 +65168,6 @@
       "id": "external:rust:linfa",
       "kind": "external_symbol",
       "name": "linfa",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:lsp::LspSessions.new",
-      "kind": "external_symbol",
-      "name": "new",
       "language": "rust"
     },
     {
@@ -65288,24 +65192,6 @@
       "id": "external:rust:mars_document::Notebook.new",
       "kind": "external_symbol",
       "name": "new",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:mars_lab::config::Settings.new",
-      "kind": "external_symbol",
-      "name": "new",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:mars_lab::db::Database.connect",
-      "kind": "external_symbol",
-      "name": "connect",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:mars_lab::db::jobs::JobFilters.default",
-      "kind": "external_symbol",
-      "name": "default",
       "language": "rust"
     },
     {
@@ -65363,12 +65249,6 @@
       "language": "rust"
     },
     {
-      "id": "external:rust:ndarray.Array2",
-      "kind": "external_symbol",
-      "name": "Array2",
-      "language": "rust"
-    },
-    {
       "id": "external:rust:ndarray::Array1",
       "kind": "external_symbol",
       "name": "Array1",
@@ -65414,12 +65294,6 @@
       "id": "external:rust:polars::DataFrame",
       "kind": "external_symbol",
       "name": "DataFrame",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:preprocess::Preprocessor.fit",
-      "kind": "external_symbol",
-      "name": "fit",
       "language": "rust"
     },
     {
@@ -65750,18 +65624,6 @@
       "id": "external:rust:sqlx.AssertSqlSafe",
       "kind": "external_symbol",
       "name": "AssertSqlSafe",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:sqlx.QueryBuilder",
-      "kind": "external_symbol",
-      "name": "QueryBuilder",
-      "language": "rust"
-    },
-    {
-      "id": "external:rust:sqlx.Sqlite",
-      "kind": "external_symbol",
-      "name": "Sqlite",
       "language": "rust"
     },
     {
@@ -185291,12 +185153,6 @@
       "language": "rust"
     },
     {
-      "id": "unresolved:rust:ClusterModel",
-      "kind": "unknown",
-      "name": "ClusterModel",
-      "language": "rust"
-    },
-    {
       "id": "unresolved:rust:Default",
       "kind": "unknown",
       "name": "Default",
@@ -185447,12 +185303,6 @@
       "language": "rust"
     },
     {
-      "id": "unresolved:rust:Model",
-      "kind": "unknown",
-      "name": "Model",
-      "language": "rust"
-    },
-    {
       "id": "unresolved:rust:ModelProto",
       "kind": "unknown",
       "name": "ModelProto",
@@ -185558,12 +185408,6 @@
       "id": "unresolved:rust:TensorProto",
       "kind": "unknown",
       "name": "TensorProto",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:TrainedModel",
-      "kind": "unknown",
-      "name": "TrainedModel",
       "language": "rust"
     },
     {
@@ -185696,12 +185540,6 @@
       "id": "unresolved:rust:begin",
       "kind": "unknown",
       "name": "begin",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:bic",
-      "kind": "unknown",
-      "name": "bic",
       "language": "rust"
     },
     {
@@ -185855,12 +185693,6 @@
       "language": "rust"
     },
     {
-      "id": "unresolved:rust:cluster::ClusterModel",
-      "kind": "unknown",
-      "name": "cluster::ClusterModel",
-      "language": "rust"
-    },
-    {
       "id": "unresolved:rust:clustering_charts",
       "kind": "unknown",
       "name": "clustering_charts",
@@ -185930,120 +185762,6 @@
       "id": "unresolved:rust:copy_from_slice",
       "kind": "unknown",
       "name": "copy_from_slice",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::CoreError",
-      "kind": "unknown",
-      "name": "crate::CoreError",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::backend::StdinWriter",
-      "kind": "unknown",
-      "name": "crate::backend::StdinWriter",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::db::Database",
-      "kind": "unknown",
-      "name": "crate::db::Database",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::db::jobs::filters::JobFilters",
-      "kind": "unknown",
-      "name": "crate::db::jobs::filters::JobFilters",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::domain::Artefact",
-      "kind": "unknown",
-      "name": "crate::domain::Artefact",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::domain::Dataset",
-      "kind": "unknown",
-      "name": "crate::domain::Dataset",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::domain::DatasetInsight",
-      "kind": "unknown",
-      "name": "crate::domain::DatasetInsight",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::domain::Job",
-      "kind": "unknown",
-      "name": "crate::domain::Job",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::domain::JobMetric",
-      "kind": "unknown",
-      "name": "crate::domain::JobMetric",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::error::RuntimeError",
-      "kind": "unknown",
-      "name": "crate::error::RuntimeError",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::inspect::CellDiagnostic",
-      "kind": "unknown",
-      "name": "crate::inspect::CellDiagnostic",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::inspect::VariableInfo",
-      "kind": "unknown",
-      "name": "crate::inspect::VariableInfo",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::kernel::RuntimeBackendKind",
-      "kind": "unknown",
-      "name": "crate::kernel::RuntimeBackendKind",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::runtime::RuntimeConfig",
-      "kind": "unknown",
-      "name": "crate::runtime::RuntimeConfig",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::server::MarsMcpServer",
-      "kind": "unknown",
-      "name": "crate::server::MarsMcpServer",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::training::model::EllipticModel",
-      "kind": "unknown",
-      "name": "crate::training::model::EllipticModel",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::training::model::IsolationForest",
-      "kind": "unknown",
-      "name": "crate::training::model::IsolationForest",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::training::model::KnnModel",
-      "kind": "unknown",
-      "name": "crate::training::model::KnnModel",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:crate::training::model::LofModel",
-      "kind": "unknown",
-      "name": "crate::training::model::LofModel",
       "language": "rust"
     },
     {
@@ -186929,12 +186647,6 @@
       "language": "rust"
     },
     {
-      "id": "unresolved:rust:lsp::LspSessions",
-      "kind": "unknown",
-      "name": "lsp::LspSessions",
-      "language": "rust"
-    },
-    {
       "id": "unresolved:rust:manage",
       "kind": "unknown",
       "name": "manage",
@@ -186950,12 +186662,6 @@
       "id": "unresolved:rust:map_or_else",
       "kind": "unknown",
       "name": "map_or_else",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:mars::options::RunOptions",
-      "kind": "unknown",
-      "name": "mars::options::RunOptions",
       "language": "rust"
     },
     {
@@ -186989,39 +186695,9 @@
       "language": "rust"
     },
     {
-      "id": "unresolved:rust:mars_kernel::PythonOptions",
-      "kind": "unknown",
-      "name": "mars_kernel::PythonOptions",
-      "language": "rust"
-    },
-    {
       "id": "unresolved:rust:mars_kernel::RuntimeBackendKind",
       "kind": "unknown",
       "name": "mars_kernel::RuntimeBackendKind",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:mars_lab::db::jobs::filters::JobCursor",
-      "kind": "unknown",
-      "name": "mars_lab::db::jobs::filters::JobCursor",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:mars_lab::domain::Artefact",
-      "kind": "unknown",
-      "name": "mars_lab::domain::Artefact",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:mars_lab::domain::Dataset",
-      "kind": "unknown",
-      "name": "mars_lab::domain::Dataset",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:mars_lab::domain::Job",
-      "kind": "unknown",
-      "name": "mars_lab::domain::Job",
       "language": "rust"
     },
     {
@@ -187943,12 +187619,6 @@
       "language": "rust"
     },
     {
-      "id": "unresolved:rust:super::import::JupyterOutput",
-      "kind": "unknown",
-      "name": "super::import::JupyterOutput",
-      "language": "rust"
-    },
-    {
       "id": "unresolved:rust:supported_languages",
       "kind": "unknown",
       "name": "supported_languages",
@@ -188066,12 +187736,6 @@
       "id": "unresolved:rust:transpose",
       "kind": "unknown",
       "name": "transpose",
-      "language": "rust"
-    },
-    {
-      "id": "unresolved:rust:tree::TreeParams",
-      "kind": "unknown",
-      "name": "tree::TreeParams",
       "language": "rust"
     },
     {
@@ -482449,9 +482113,9 @@
     },
     {
       "source": "function:crates/mars-cli/src/commands.rs::watch_notebook",
-      "target": "unresolved:rust:mars::options::RunOptions",
+      "target": "struct:crates/mars-cli/src/options.rs::RunOptions",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -488800,9 +488464,9 @@
     },
     {
       "source": "function:crates/mars-cli/src/lab.rs::cmd_dataset",
-      "target": "unresolved:rust:mars_lab::domain::Dataset",
+      "target": "struct:crates/mars-lab/src/domain.rs::Dataset",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -490087,27 +489751,6 @@
     },
     {
       "source": "function:crates/mars-cli/src/lab.rs::cmd_jobs",
-      "target": "external:rust:jobs::JobFilters.default",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 402,
-            "column": 44,
-            "byte": 14564
-          },
-          "end": {
-            "line": 402,
-            "column": 71,
-            "byte": 14591
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/src/lab.rs::cmd_jobs",
       "target": "external:rust:std::Ok",
       "kind": "calls",
       "status": "resolved_external",
@@ -490255,6 +489898,27 @@
             "line": 399,
             "column": 47,
             "byte": 14458
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/src/lab.rs::cmd_jobs",
+      "target": "method:crates/mars-lab/src/db/jobs/filters.rs::JobFilters.default",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 402,
+            "column": 44,
+            "byte": 14564
+          },
+          "end": {
+            "line": 402,
+            "column": 71,
+            "byte": 14591
           }
         }
       ]
@@ -524422,27 +524086,6 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_export_surfaces_missing_artefact_file_and_bad_output",
-      "target": "external:rust:mars_lab::db::Database.connect",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 586,
-            "column": 22,
-            "byte": 16863
-          },
-          "end": {
-            "line": 586,
-            "column": 88,
-            "byte": 16929
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/tests/lab.rs::lab_export_surfaces_missing_artefact_file_and_bad_output",
       "target": "external:rust:std::Some",
       "kind": "calls",
       "status": "resolved_external",
@@ -525064,6 +524707,27 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_export_surfaces_missing_artefact_file_and_bad_output",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.connect",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 586,
+            "column": 22,
+            "byte": 16863
+          },
+          "end": {
+            "line": 586,
+            "column": 88,
+            "byte": 16929
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/tests/lab.rs::lab_export_surfaces_missing_artefact_file_and_bad_output",
       "target": "unresolved:rust:block_on",
       "kind": "calls",
       "status": "unresolved",
@@ -525130,9 +524794,9 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_export_surfaces_missing_artefact_file_and_bad_output",
-      "target": "unresolved:rust:mars_lab::domain::Artefact",
+      "target": "struct:crates/mars-lab/src/domain.rs::Artefact",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -525151,9 +524815,9 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_export_surfaces_missing_artefact_file_and_bad_output",
-      "target": "unresolved:rust:mars_lab::domain::Job",
+      "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -525250,27 +524914,6 @@
             "line": 465,
             "column": 60,
             "byte": 12779
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/tests/lab.rs::lab_job_shows_bare_job_without_metric_or_artefacts",
-      "target": "external:rust:mars_lab::db::Database.connect",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 473,
-            "column": 18,
-            "byte": 13090
-          },
-          "end": {
-            "line": 473,
-            "column": 84,
-            "byte": 13156
           }
         }
       ]
@@ -525844,6 +525487,27 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_job_shows_bare_job_without_metric_or_artefacts",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.connect",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 473,
+            "column": 18,
+            "byte": 13090
+          },
+          "end": {
+            "line": 473,
+            "column": 84,
+            "byte": 13156
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/tests/lab.rs::lab_job_shows_bare_job_without_metric_or_artefacts",
       "target": "unresolved:rust:block_on",
       "kind": "calls",
       "status": "unresolved",
@@ -525898,9 +525562,9 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_job_shows_bare_job_without_metric_or_artefacts",
-      "target": "unresolved:rust:mars_lab::domain::Job",
+      "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -526009,27 +525673,6 @@
             "line": 529,
             "column": 60,
             "byte": 15084
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_fails_when_stored_dataset_file_is_missing",
-      "target": "external:rust:mars_lab::db::Database.connect",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 537,
-            "column": 22,
-            "byte": 15336
-          },
-          "end": {
-            "line": 537,
-            "column": 88,
-            "byte": 15402
           }
         }
       ]
@@ -526417,6 +526060,27 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_train_fails_when_stored_dataset_file_is_missing",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.connect",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 537,
+            "column": 22,
+            "byte": 15336
+          },
+          "end": {
+            "line": 537,
+            "column": 88,
+            "byte": 15402
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_fails_when_stored_dataset_file_is_missing",
       "target": "unresolved:rust:block_on",
       "kind": "calls",
       "status": "unresolved",
@@ -526474,27 +526138,6 @@
             "line": 400,
             "column": 60,
             "byte": 10869
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_failure_is_recorded_and_reported",
-      "target": "external:rust:mars_lab::db::Database.connect",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 408,
-            "column": 22,
-            "byte": 11106
-          },
-          "end": {
-            "line": 408,
-            "column": 88,
-            "byte": 11172
           }
         }
       ]
@@ -526879,6 +526522,27 @@
     },
     {
       "source": "function:crates/mars-cli/tests/lab.rs::lab_train_failure_is_recorded_and_reported",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.connect",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 408,
+            "column": 22,
+            "byte": 11106
+          },
+          "end": {
+            "line": 408,
+            "column": 88,
+            "byte": 11172
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_failure_is_recorded_and_reported",
       "target": "unresolved:rust:block_on",
       "kind": "calls",
       "status": "unresolved",
@@ -526936,60 +526600,6 @@
             "line": 208,
             "column": 60,
             "byte": 5383
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_jobs_export_roundtrip",
-      "target": "external:rust:mars_lab::db::Database.connect",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 217,
-            "column": 22,
-            "byte": 5692
-          },
-          "end": {
-            "line": 217,
-            "column": 88,
-            "byte": 5758
-          }
-        },
-        {
-          "start": {
-            "line": 254,
-            "column": 22,
-            "byte": 6684
-          },
-          "end": {
-            "line": 254,
-            "column": 88,
-            "byte": 6750
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_jobs_export_roundtrip",
-      "target": "external:rust:mars_lab::db::jobs::JobFilters.default",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 259,
-            "column": 18,
-            "byte": 6903
-          },
-          "end": {
-            "line": 259,
-            "column": 59,
-            "byte": 6944
           }
         }
       ]
@@ -527650,6 +527260,60 @@
             "line": 262,
             "column": 14,
             "byte": 7001
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_jobs_export_roundtrip",
+      "target": "method:crates/mars-lab/src/db/jobs/filters.rs::JobFilters.default",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 259,
+            "column": 18,
+            "byte": 6903
+          },
+          "end": {
+            "line": 259,
+            "column": 59,
+            "byte": 6944
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-cli/tests/lab.rs::lab_train_jobs_export_roundtrip",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.connect",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 217,
+            "column": 22,
+            "byte": 5692
+          },
+          "end": {
+            "line": 217,
+            "column": 88,
+            "byte": 5758
+          }
+        },
+        {
+          "start": {
+            "line": 254,
+            "column": 22,
+            "byte": 6684
+          },
+          "end": {
+            "line": 254,
+            "column": 88,
+            "byte": 6750
           }
         }
       ]
@@ -539347,6 +539011,27 @@
     },
     {
       "source": "function:crates/mars-jupyter/src/conversion.rs::convert_output",
+      "target": "enum:crates/mars-jupyter/src/import.rs::JupyterOutput",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 4,
+            "column": 31,
+            "byte": 84
+          },
+          "end": {
+            "line": 4,
+            "column": 59,
+            "byte": 112
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-jupyter/src/conversion.rs::convert_output",
       "target": "unresolved:rust:Output::Text",
       "kind": "uses_type",
       "status": "unresolved",
@@ -539362,27 +539047,6 @@
             "line": 6,
             "column": 79,
             "byte": 231
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-jupyter/src/conversion.rs::convert_output",
-      "target": "unresolved:rust:super::import::JupyterOutput",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 4,
-            "column": 31,
-            "byte": 84
-          },
-          "end": {
-            "line": 4,
-            "column": 59,
-            "byte": 112
           }
         }
       ]
@@ -547513,6 +547177,27 @@
     },
     {
       "source": "function:crates/mars-kernel/src/runtime.rs::create_runtime",
+      "target": "enum:crates/mars-kernel/src/kernel.rs::RuntimeBackendKind",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 48,
+            "column": 14,
+            "byte": 1903
+          },
+          "end": {
+            "line": 48,
+            "column": 47,
+            "byte": 1936
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-kernel/src/runtime.rs::create_runtime",
       "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -547591,27 +547276,6 @@
             "line": 53,
             "column": 35,
             "byte": 2085
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-kernel/src/runtime.rs::create_runtime",
-      "target": "unresolved:rust:crate::kernel::RuntimeBackendKind",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 48,
-            "column": 14,
-            "byte": 1903
-          },
-          "end": {
-            "line": 48,
-            "column": 47,
-            "byte": 1936
           }
         }
       ]
@@ -563443,6 +563107,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.create_test_job",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.pool",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 151,
+            "column": 20,
+            "byte": 4834
+          },
+          "end": {
+            "line": 151,
+            "column": 29,
+            "byte": 4843
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.create_test_job",
       "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "calls",
       "status": "resolved_internal",
@@ -563458,27 +563143,6 @@
             "line": 150,
             "column": 10,
             "byte": 4813
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.create_test_job",
-      "target": "unresolved:rust:pool",
-      "kind": "calls",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 151,
-            "column": 20,
-            "byte": 4834
-          },
-          "end": {
-            "line": 151,
-            "column": 29,
-            "byte": 4843
           }
         }
       ]
@@ -563518,30 +563182,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.create_test_job",
-      "target": "struct:crates/mars-lab/src/domain.rs::Job",
+      "target": "struct:crates/mars-lab/src/db/mod.rs::Database",
       "kind": "uses_type",
       "status": "resolved_internal",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 126,
-            "column": 19,
-            "byte": 3990
-          },
-          "end": {
-            "line": 126,
-            "column": 22,
-            "byte": 3993
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.create_test_job",
-      "target": "unresolved:rust:crate::db::Database",
-      "kind": "uses_type",
-      "status": "unresolved",
       "origin": "syntax",
       "sites": [
         {
@@ -563559,22 +563202,22 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_delete_artefacts",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.create_test_job",
+      "target": "struct:crates/mars-lab/src/domain.rs::Job",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
       "sites": [
         {
           "start": {
-            "line": 262,
-            "column": 18,
-            "byte": 9362
+            "line": 126,
+            "column": 19,
+            "byte": 3990
           },
           "end": {
-            "line": 262,
-            "column": 50,
-            "byte": 9394
+            "line": 126,
+            "column": 22,
+            "byte": 3993
           }
         }
       ]
@@ -563818,6 +563461,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_delete_artefacts",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 262,
+            "column": 18,
+            "byte": 9362
+          },
+          "end": {
+            "line": 262,
+            "column": 50,
+            "byte": 9394
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_delete_artefacts",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -563869,27 +563533,6 @@
             "line": 270,
             "column": 49,
             "byte": 9820
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 227,
-            "column": 18,
-            "byte": 7850
-          },
-          "end": {
-            "line": 227,
-            "column": 50,
-            "byte": 7882
           }
         }
       ]
@@ -564121,6 +563764,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 227,
+            "column": 18,
+            "byte": 7850
+          },
+          "end": {
+            "line": 227,
+            "column": 50,
+            "byte": 7882
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -564193,27 +563857,6 @@
             "line": 241,
             "column": 76,
             "byte": 8598
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact_not_found",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 240,
-            "column": 18,
-            "byte": 8474
-          },
-          "end": {
-            "line": 240,
-            "column": 50,
-            "byte": 8506
           }
         }
       ]
@@ -564295,6 +563938,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact_not_found",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 240,
+            "column": 18,
+            "byte": 8474
+          },
+          "end": {
+            "line": 240,
+            "column": 50,
+            "byte": 8506
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact_not_found",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -564331,27 +563995,6 @@
             "line": 253,
             "column": 37,
             "byte": 9027
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact_wrong_job",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 249,
-            "column": 18,
-            "byte": 8765
-          },
-          "end": {
-            "line": 249,
-            "column": 50,
-            "byte": 8797
           }
         }
       ]
@@ -564562,6 +564205,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact_wrong_job",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 249,
+            "column": 18,
+            "byte": 8765
+          },
+          "end": {
+            "line": 249,
+            "column": 50,
+            "byte": 8797
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_get_artefact_wrong_job",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -564601,27 +564265,6 @@
             "line": 256,
             "column": 44,
             "byte": 9205
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_insert_and_list_artefacts",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 169,
-            "column": 18,
-            "byte": 5339
-          },
-          "end": {
-            "line": 169,
-            "column": 50,
-            "byte": 5371
           }
         }
       ]
@@ -564856,6 +564499,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_insert_and_list_artefacts",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 169,
+            "column": 18,
+            "byte": 5339
+          },
+          "end": {
+            "line": 169,
+            "column": 50,
+            "byte": 5371
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_insert_and_list_artefacts",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -564916,27 +564580,6 @@
             "line": 184,
             "column": 65,
             "byte": 6115
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_empty",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 183,
-            "column": 18,
-            "byte": 6002
-          },
-          "end": {
-            "line": 183,
-            "column": 50,
-            "byte": 6034
           }
         }
       ]
@@ -565018,6 +564661,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_empty",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 183,
+            "column": 18,
+            "byte": 6002
+          },
+          "end": {
+            "line": 183,
+            "column": 50,
+            "byte": 6034
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_empty",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -565033,27 +564697,6 @@
             "line": 184,
             "column": 49,
             "byte": 6099
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_for_jobs",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 214,
-            "column": 18,
-            "byte": 7302
-          },
-          "end": {
-            "line": 214,
-            "column": 50,
-            "byte": 7334
           }
         }
       ]
@@ -565264,6 +564907,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_for_jobs",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 214,
+            "column": 18,
+            "byte": 7302
+          },
+          "end": {
+            "line": 214,
+            "column": 50,
+            "byte": 7334
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_for_jobs",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -565303,27 +564967,6 @@
             "line": 221,
             "column": 55,
             "byte": 7706
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_for_jobs_empty",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 207,
-            "column": 18,
-            "byte": 7051
-          },
-          "end": {
-            "line": 207,
-            "column": 50,
-            "byte": 7083
           }
         }
       ]
@@ -565405,6 +565048,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_for_jobs_empty",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 207,
+            "column": 18,
+            "byte": 7051
+          },
+          "end": {
+            "line": 207,
+            "column": 50,
+            "byte": 7083
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_for_jobs_empty",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -565441,27 +565105,6 @@
             "line": 198,
             "column": 38,
             "byte": 6723
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_multiple",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 190,
-            "column": 18,
-            "byte": 6261
-          },
-          "end": {
-            "line": 190,
-            "column": 50,
-            "byte": 6293
           }
         }
       ]
@@ -565729,6 +565372,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_multiple",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 190,
+            "column": 18,
+            "byte": 6261
+          },
+          "end": {
+            "line": 190,
+            "column": 50,
+            "byte": 6293
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_list_artefacts_multiple",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -565780,27 +565444,6 @@
             "line": 201,
             "column": 49,
             "byte": 6890
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_storage_keys",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 276,
-            "column": 18,
-            "byte": 9963
-          },
-          "end": {
-            "line": 276,
-            "column": 50,
-            "byte": 9995
           }
         }
       ]
@@ -566023,6 +565666,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_storage_keys",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 276,
+            "column": 18,
+            "byte": 9963
+          },
+          "end": {
+            "line": 276,
+            "column": 50,
+            "byte": 9995
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_storage_keys",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -566083,27 +565747,6 @@
             "line": 291,
             "column": 58,
             "byte": 10651
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_storage_keys_empty",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 290,
-            "column": 18,
-            "byte": 10545
-          },
-          "end": {
-            "line": 290,
-            "column": 50,
-            "byte": 10577
           }
         }
       ]
@@ -566179,6 +565822,27 @@
             "line": 291,
             "column": 59,
             "byte": 10652
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/artefacts.rs::tests.test_storage_keys_empty",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 290,
+            "column": 18,
+            "byte": 10545
+          },
+          "end": {
+            "line": 290,
+            "column": 50,
+            "byte": 10577
           }
         }
       ]
@@ -566761,9 +566425,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/convert.rs::tests.encode_decode_artefact_row",
-      "target": "unresolved:rust:crate::domain::Artefact",
+      "target": "struct:crates/mars-lab/src/domain.rs::Artefact",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -567121,9 +566785,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/convert.rs::tests.encode_decode_dataset_row",
-      "target": "unresolved:rust:crate::domain::Dataset",
+      "target": "struct:crates/mars-lab/src/domain.rs::Dataset",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -567358,9 +567022,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/convert.rs::tests.encode_decode_insight_row",
-      "target": "unresolved:rust:crate::domain::DatasetInsight",
+      "target": "struct:crates/mars-lab/src/domain.rs::DatasetInsight",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -567790,9 +567454,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/convert.rs::tests.encode_decode_job_row_minimal",
-      "target": "unresolved:rust:crate::domain::Job",
+      "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -568003,9 +567667,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/convert.rs::tests.encode_decode_metric_row",
-      "target": "unresolved:rust:crate::domain::JobMetric",
+      "target": "struct:crates/mars-lab/src/domain.rs::JobMetric",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -570154,27 +569818,6 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_dataset_not_found",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 145,
-            "column": 18,
-            "byte": 4820
-          },
-          "end": {
-            "line": 145,
-            "column": 50,
-            "byte": 4852
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_dataset_not_found",
       "target": "external:rust:std::assert",
       "kind": "calls",
       "status": "resolved_external",
@@ -570250,6 +569893,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_dataset_not_found",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 145,
+            "column": 18,
+            "byte": 4820
+          },
+          "end": {
+            "line": 145,
+            "column": 50,
+            "byte": 4852
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_dataset_not_found",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -570286,27 +569950,6 @@
             "line": 170,
             "column": 59,
             "byte": 5848
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_insight_not_found",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 169,
-            "column": 18,
-            "byte": 5741
-          },
-          "end": {
-            "line": 169,
-            "column": 50,
-            "byte": 5773
           }
         }
       ]
@@ -570388,6 +570031,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_insight_not_found",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 169,
+            "column": 18,
+            "byte": 5741
+          },
+          "end": {
+            "line": 169,
+            "column": 50,
+            "byte": 5773
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_get_insight_not_found",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -570403,27 +570067,6 @@
             "line": 170,
             "column": 43,
             "byte": 5832
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_and_get_dataset",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 133,
-            "column": 18,
-            "byte": 4316
-          },
-          "end": {
-            "line": 133,
-            "column": 50,
-            "byte": 4348
           }
         }
       ]
@@ -570604,6 +570247,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_and_get_dataset",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 133,
+            "column": 18,
+            "byte": 4316
+          },
+          "end": {
+            "line": 133,
+            "column": 50,
+            "byte": 4348
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_and_get_dataset",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -570631,27 +570295,6 @@
             "line": 136,
             "column": 46,
             "byte": 4515
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_and_get_insight",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 152,
-            "column": 18,
-            "byte": 5068
-          },
-          "end": {
-            "line": 152,
-            "column": 50,
-            "byte": 5100
           }
         }
       ]
@@ -570886,6 +570529,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_and_get_insight",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 152,
+            "column": 18,
+            "byte": 5068
+          },
+          "end": {
+            "line": 152,
+            "column": 50,
+            "byte": 5100
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_and_get_insight",
       "target": "struct:crates/mars-lab/src/domain.rs::DatasetInsight",
       "kind": "calls",
       "status": "resolved_internal",
@@ -570967,27 +570631,6 @@
             "line": 155,
             "column": 37,
             "byte": 5258
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_dataset_duplicate",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 176,
-            "column": 18,
-            "byte": 5991
-          },
-          "end": {
-            "line": 176,
-            "column": 50,
-            "byte": 6023
           }
         }
       ]
@@ -571096,6 +570739,27 @@
             "line": 177,
             "column": 44,
             "byte": 6083
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/datasets.rs::tests.test_insert_dataset_duplicate",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 176,
+            "column": 18,
+            "byte": 5991
+          },
+          "end": {
+            "line": 176,
+            "column": 50,
+            "byte": 6023
           }
         }
       ]
@@ -572506,9 +572170,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.create_test_dataset",
-      "target": "unresolved:rust:crate::domain::Dataset",
+      "target": "struct:crates/mars-lab/src/domain.rs::Dataset",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -572746,10 +572410,10 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.create_test_job",
-      "target": "unresolved:rust:pool",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.pool",
       "kind": "calls",
-      "status": "unresolved",
-      "origin": "syntax",
+      "status": "resolved_internal",
+      "origin": "lexical",
       "sites": [
         {
           "start": {
@@ -572800,9 +572464,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.create_test_job",
-      "target": "unresolved:rust:crate::db::Database",
+      "target": "struct:crates/mars-lab/src/db/mod.rs::Database",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -572821,9 +572485,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.create_test_job",
-      "target": "unresolved:rust:crate::domain::Job",
+      "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -572884,7 +572548,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.create_test_response_body",
-      "target": "external:rust:serde_json.Value",
+      "target": "external:rust:serde_json::Value",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -572920,27 +572584,6 @@
             "line": 279,
             "column": 38,
             "byte": 9664
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_different_body_hash",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 236,
-            "column": 18,
-            "byte": 7836
-          },
-          "end": {
-            "line": 236,
-            "column": 50,
-            "byte": 7868
           }
         }
       ]
@@ -573202,6 +572845,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_different_body_hash",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 236,
+            "column": 18,
+            "byte": 7836
+          },
+          "end": {
+            "line": 236,
+            "column": 50,
+            "byte": 7868
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_different_body_hash",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -573241,27 +572905,6 @@
             "line": 249,
             "column": 38,
             "byte": 8461
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_expired_key",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 210,
-            "column": 18,
-            "byte": 6837
-          },
-          "end": {
-            "line": 210,
-            "column": 50,
-            "byte": 6869
           }
         }
       ]
@@ -573610,6 +573253,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_expired_key",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 210,
+            "column": 18,
+            "byte": 6837
+          },
+          "end": {
+            "line": 210,
+            "column": 50,
+            "byte": 6869
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_expired_key",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -573661,27 +573325,6 @@
             "line": 230,
             "column": 38,
             "byte": 7673
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_hit_with_valid_key",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 191,
-            "column": 18,
-            "byte": 6068
-          },
-          "end": {
-            "line": 191,
-            "column": 50,
-            "byte": 6100
           }
         }
       ]
@@ -573967,6 +573610,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_hit_with_valid_key",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 191,
+            "column": 18,
+            "byte": 6068
+          },
+          "end": {
+            "line": 191,
+            "column": 50,
+            "byte": 6100
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_hit_with_valid_key",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -574006,27 +573670,6 @@
             "line": 202,
             "column": 38,
             "byte": 6584
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_miss",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 179,
-            "column": 18,
-            "byte": 5589
-          },
-          "end": {
-            "line": 179,
-            "column": 50,
-            "byte": 5621
           }
         }
       ]
@@ -574225,6 +573868,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_miss",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 179,
+            "column": 18,
+            "byte": 5589
+          },
+          "end": {
+            "line": 179,
+            "column": 50,
+            "byte": 5621
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_lookup_miss",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -574252,27 +573916,6 @@
             "line": 183,
             "column": 38,
             "byte": 5852
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_record_overwrites_existing_key",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 255,
-            "column": 18,
-            "byte": 8620
-          },
-          "end": {
-            "line": 255,
-            "column": 50,
-            "byte": 8652
           }
         }
       ]
@@ -574606,6 +574249,27 @@
             "line": 262,
             "column": 58,
             "byte": 9090
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/idempotency.rs::tests.test_record_overwrites_existing_key",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 255,
+            "column": 18,
+            "byte": 8620
+          },
+          "end": {
+            "line": 255,
+            "column": 50,
+            "byte": 8652
           }
         }
       ]
@@ -579241,6 +578905,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::comparable_value",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 113,
+            "column": 15,
+            "byte": 4034
+          },
+          "end": {
+            "line": 113,
+            "column": 51,
+            "byte": 4070
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::comparable_value",
       "target": "type:crates/mars-lab/src/error.rs::LabResult",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -579256,27 +578941,6 @@
             "line": 115,
             "column": 15,
             "byte": 4103
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::comparable_value",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 113,
-            "column": 15,
-            "byte": 4034
-          },
-          "end": {
-            "line": 113,
-            "column": 51,
-            "byte": 4070
           }
         }
       ]
@@ -581653,7 +581317,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::push_bound",
-      "target": "external:rust:sqlx.QueryBuilder",
+      "target": "external:rust:sqlx::QueryBuilder",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -581674,7 +581338,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::push_bound",
-      "target": "external:rust:sqlx.Sqlite",
+      "target": "external:rust:sqlx::Sqlite",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -581836,7 +581500,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::push_in",
-      "target": "external:rust:sqlx.QueryBuilder",
+      "target": "external:rust:sqlx::QueryBuilder",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -581857,7 +581521,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::push_in",
-      "target": "external:rust:sqlx.Sqlite",
+      "target": "external:rust:sqlx::Sqlite",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -581968,9 +581632,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::sort_expression",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -582736,7 +582400,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.encode_serializes_with_sorted_json_keys",
-      "target": "external:rust:serde_json.Value",
+      "target": "external:rust:serde_json::Value",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -583069,9 +582733,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_comparable_value_algorithm_id",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -583207,9 +582871,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_comparable_value_created_at",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -583324,9 +582988,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_comparable_value_invalid_field",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -583462,9 +583126,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_comparable_value_status",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -583600,9 +583264,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_comparable_value_updated_at",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -586369,9 +586033,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_sort_expression_algorithm_id",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -586453,9 +586117,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_sort_expression_created_at",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -586537,9 +586201,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_sort_expression_status",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -586621,9 +586285,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_sort_expression_unknown_defaults",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -586705,9 +586369,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/helpers.rs::tests.test_sort_expression_updated_at",
-      "target": "unresolved:rust:crate::db::jobs::filters::JobFilters",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -589045,6 +588709,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.create_test_job",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.pool",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 139,
+            "column": 20,
+            "byte": 4335
+          },
+          "end": {
+            "line": 139,
+            "column": 29,
+            "byte": 4344
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.create_test_job",
       "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "calls",
       "status": "resolved_internal",
@@ -589060,27 +588745,6 @@
             "line": 138,
             "column": 10,
             "byte": 4314
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.create_test_job",
-      "target": "unresolved:rust:pool",
-      "kind": "calls",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 139,
-            "column": 20,
-            "byte": 4335
-          },
-          "end": {
-            "line": 139,
-            "column": 29,
-            "byte": 4344
           }
         }
       ]
@@ -589120,6 +588784,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.create_test_job",
+      "target": "struct:crates/mars-lab/src/db/mod.rs::Database",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 112,
+            "column": 35,
+            "byte": 3387
+          },
+          "end": {
+            "line": 112,
+            "column": 54,
+            "byte": 3406
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.create_test_job",
       "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -589135,27 +588820,6 @@
             "line": 114,
             "column": 22,
             "byte": 3494
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.create_test_job",
-      "target": "unresolved:rust:crate::db::Database",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 112,
-            "column": 35,
-            "byte": 3387
-          },
-          "end": {
-            "line": 112,
-            "column": 54,
-            "byte": 3406
           }
         }
       ]
@@ -589273,27 +588937,6 @@
             "line": 144,
             "column": 18,
             "byte": 4462
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_delete_metrics",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 213,
-            "column": 18,
-            "byte": 7261
-          },
-          "end": {
-            "line": 213,
-            "column": 50,
-            "byte": 7293
           }
         }
       ]
@@ -589537,6 +589180,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_delete_metrics",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 213,
+            "column": 18,
+            "byte": 7261
+          },
+          "end": {
+            "line": 213,
+            "column": 50,
+            "byte": 7293
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_delete_metrics",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -589609,27 +589273,6 @@
             "line": 170,
             "column": 58,
             "byte": 5550
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_get_metric_not_found",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 169,
-            "column": 18,
-            "byte": 5444
-          },
-          "end": {
-            "line": 169,
-            "column": 50,
-            "byte": 5476
           }
         }
       ]
@@ -589711,6 +589354,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_get_metric_not_found",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 169,
+            "column": 18,
+            "byte": 5444
+          },
+          "end": {
+            "line": 169,
+            "column": 50,
+            "byte": 5476
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_get_metric_not_found",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -589726,27 +589390,6 @@
             "line": 170,
             "column": 42,
             "byte": 5534
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_by_ids",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 200,
-            "column": 18,
-            "byte": 6690
-          },
-          "end": {
-            "line": 200,
-            "column": 50,
-            "byte": 6722
           }
         }
       ]
@@ -589978,6 +589621,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_by_ids",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 200,
+            "column": 18,
+            "byte": 6690
+          },
+          "end": {
+            "line": 200,
+            "column": 50,
+            "byte": 6722
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_by_ids",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -590017,27 +589681,6 @@
             "line": 206,
             "column": 46,
             "byte": 7068
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_by_ids_empty",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 193,
-            "column": 18,
-            "byte": 6457
-          },
-          "end": {
-            "line": 193,
-            "column": 50,
-            "byte": 6489
           }
         }
       ]
@@ -590119,6 +589762,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_by_ids_empty",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 193,
+            "column": 18,
+            "byte": 6457
+          },
+          "end": {
+            "line": 193,
+            "column": 50,
+            "byte": 6489
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_by_ids_empty",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -590155,27 +589819,6 @@
             "line": 234,
             "column": 35,
             "byte": 8239
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_without_charts",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 226,
-            "column": 18,
-            "byte": 7842
-          },
-          "end": {
-            "line": 226,
-            "column": 50,
-            "byte": 7874
           }
         }
       ]
@@ -590377,6 +590020,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_without_charts",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 226,
+            "column": 18,
+            "byte": 7842
+          },
+          "end": {
+            "line": 226,
+            "column": 50,
+            "byte": 7874
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_metrics_without_charts",
       "target": "struct:crates/mars-lab/src/domain.rs::JobMetric",
       "kind": "calls",
       "status": "resolved_internal",
@@ -590458,27 +590122,6 @@
             "line": 230,
             "column": 31,
             "byte": 8097
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_record_and_get_metric",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 154,
-            "column": 18,
-            "byte": 4755
-          },
-          "end": {
-            "line": 154,
-            "column": 50,
-            "byte": 4787
           }
         }
       ]
@@ -590734,6 +590377,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_record_and_get_metric",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 154,
+            "column": 18,
+            "byte": 4755
+          },
+          "end": {
+            "line": 154,
+            "column": 50,
+            "byte": 4787
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_record_and_get_metric",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -590773,27 +590437,6 @@
             "line": 160,
             "column": 45,
             "byte": 5132
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_record_metrics_update",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 176,
-            "column": 18,
-            "byte": 5690
-          },
-          "end": {
-            "line": 176,
-            "column": 50,
-            "byte": 5722
           }
         }
       ]
@@ -591046,6 +590689,27 @@
             "line": 183,
             "column": 53,
             "byte": 6078
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/metrics.rs::tests.test_record_metrics_update",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 176,
+            "column": 18,
+            "byte": 5690
+          },
+          "end": {
+            "line": 176,
+            "column": 50,
+            "byte": 5722
           }
         }
       ]
@@ -595027,27 +594691,6 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/queries.rs::tests.test_list_jobs_basic",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 274,
-            "column": 18,
-            "byte": 9387
-          },
-          "end": {
-            "line": 274,
-            "column": 50,
-            "byte": 9419
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/queries.rs::tests.test_list_jobs_basic",
       "target": "external:rust:std::unwrap",
       "kind": "calls",
       "status": "resolved_external",
@@ -595105,6 +594748,27 @@
             "line": 275,
             "column": 44,
             "byte": 9479
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/queries.rs::tests.test_list_jobs_basic",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 274,
+            "column": 18,
+            "byte": 9387
+          },
+          "end": {
+            "line": 274,
+            "column": 50,
+            "byte": 9419
           }
         }
       ]
@@ -597097,7 +596761,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::record_completion",
-      "target": "external:rust:serde_json.Value",
+      "target": "external:rust:serde_json::Value",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -598825,27 +598489,6 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_delete_job",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 367,
-            "column": 18,
-            "byte": 13101
-          },
-          "end": {
-            "line": 367,
-            "column": 50,
-            "byte": 13133
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_delete_job",
       "target": "external:rust:std::assert",
       "kind": "calls",
       "status": "resolved_external",
@@ -599008,6 +598651,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_delete_job",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 367,
+            "column": 18,
+            "byte": 13101
+          },
+          "end": {
+            "line": 367,
+            "column": 50,
+            "byte": 13133
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_delete_job",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -599035,27 +598699,6 @@
             "line": 371,
             "column": 29,
             "byte": 13353
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_delete_job_not_found",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 378,
-            "column": 18,
-            "byte": 13608
-          },
-          "end": {
-            "line": 378,
-            "column": 50,
-            "byte": 13640
           }
         }
       ]
@@ -599103,22 +598746,22 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_insert_and_set_status",
-      "target": "external:rust:crate::db::Database.in_memory",
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_delete_job_not_found",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
           "start": {
-            "line": 258,
+            "line": 378,
             "column": 18,
-            "byte": 8546
+            "byte": 13608
           },
           "end": {
-            "line": 258,
+            "line": 378,
             "column": 50,
-            "byte": 8578
+            "byte": 13640
           }
         }
       ]
@@ -599353,6 +598996,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_insert_and_set_status",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 258,
+            "column": 18,
+            "byte": 8546
+          },
+          "end": {
+            "line": 258,
+            "column": 50,
+            "byte": 8578
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_insert_and_set_status",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -599404,27 +599068,6 @@
             "line": 264,
             "column": 51,
             "byte": 8939
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_insert_job",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 270,
-            "column": 18,
-            "byte": 9101
-          },
-          "end": {
-            "line": 270,
-            "column": 50,
-            "byte": 9133
           }
         }
       ]
@@ -599650,6 +599293,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_insert_job",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 270,
+            "column": 18,
+            "byte": 9101
+          },
+          "end": {
+            "line": 270,
+            "column": 50,
+            "byte": 9133
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_insert_job",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -599689,27 +599353,6 @@
             "line": 275,
             "column": 51,
             "byte": 9427
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_job_exists_false",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 357,
-            "column": 18,
-            "byte": 12839
-          },
-          "end": {
-            "line": 357,
-            "column": 50,
-            "byte": 12871
           }
         }
       ]
@@ -599757,22 +599400,22 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_job_exists_true",
-      "target": "external:rust:crate::db::Database.in_memory",
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_job_exists_false",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
           "start": {
-            "line": 347,
+            "line": 357,
             "column": 18,
-            "byte": 12409
+            "byte": 12839
           },
           "end": {
-            "line": 347,
+            "line": 357,
             "column": 50,
-            "byte": 12441
+            "byte": 12871
           }
         }
       ]
@@ -599929,6 +599572,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_job_exists_true",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 347,
+            "column": 18,
+            "byte": 12409
+          },
+          "end": {
+            "line": 347,
+            "column": 50,
+            "byte": 12441
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_job_exists_true",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -599956,27 +599620,6 @@
             "line": 351,
             "column": 29,
             "byte": 12661
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_mark_attempt",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 321,
-            "column": 18,
-            "byte": 11203
-          },
-          "end": {
-            "line": 321,
-            "column": 50,
-            "byte": 11235
           }
         }
       ]
@@ -600235,6 +599878,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_mark_attempt",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 321,
+            "column": 18,
+            "byte": 11203
+          },
+          "end": {
+            "line": 321,
+            "column": 50,
+            "byte": 11235
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_mark_attempt",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -600298,27 +599962,6 @@
             "line": 328,
             "column": 51,
             "byte": 11641
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_record_completion",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 307,
-            "column": 18,
-            "byte": 10585
-          },
-          "end": {
-            "line": 307,
-            "column": 50,
-            "byte": 10617
           }
         }
       ]
@@ -600574,6 +600217,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_record_completion",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 307,
+            "column": 18,
+            "byte": 10585
+          },
+          "end": {
+            "line": 307,
+            "column": 50,
+            "byte": 10617
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_record_completion",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -600625,27 +600289,6 @@
             "line": 315,
             "column": 51,
             "byte": 11039
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_record_failure",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 283,
-            "column": 18,
-            "byte": 9703
-          },
-          "end": {
-            "line": 283,
-            "column": 50,
-            "byte": 9735
           }
         }
       ]
@@ -600970,6 +600613,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_record_failure",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 283,
+            "column": 18,
+            "byte": 9703
+          },
+          "end": {
+            "line": 283,
+            "column": 50,
+            "byte": 9735
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_record_failure",
       "target": "unresolved:rust:pool",
       "kind": "calls",
       "status": "unresolved",
@@ -601021,27 +600685,6 @@
             "line": 296,
             "column": 51,
             "byte": 10231
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_schedule_retry",
-      "target": "external:rust:crate::db::Database.in_memory",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 334,
-            "column": 18,
-            "byte": 11799
-          },
-          "end": {
-            "line": 334,
-            "column": 50,
-            "byte": 11831
           }
         }
       ]
@@ -601291,6 +600934,27 @@
             "line": 337,
             "column": 59,
             "byte": 12021
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/db/jobs/writes.rs::tests.test_schedule_retry",
+      "target": "method:crates/mars-lab/src/db/mod.rs::Database.in_memory",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 334,
+            "column": 18,
+            "byte": 11799
+          },
+          "end": {
+            "line": 334,
+            "column": 50,
+            "byte": 11831
           }
         }
       ]
@@ -608272,6 +607936,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/export/onnx.rs::elliptic_graph",
+      "target": "struct:crates/mars-lab/src/training/model.rs::EllipticModel",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 1008,
+            "column": 27,
+            "byte": 33807
+          },
+          "end": {
+            "line": 1008,
+            "column": 64,
+            "byte": 33844
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/export/onnx.rs::elliptic_graph",
       "target": "unresolved:rust:GraphProto",
       "kind": "uses_type",
       "status": "unresolved",
@@ -608299,27 +607984,6 @@
             "line": 1058,
             "column": 15,
             "byte": 35410
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/export/onnx.rs::elliptic_graph",
-      "target": "unresolved:rust:crate::training::model::EllipticModel",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 1008,
-            "column": 27,
-            "byte": 33807
-          },
-          "end": {
-            "line": 1008,
-            "column": 64,
-            "byte": 33844
           }
         }
       ]
@@ -610495,6 +610159,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/export/onnx.rs::isolation_forest_graph",
+      "target": "struct:crates/mars-lab/src/training/model.rs::IsolationForest",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 831,
+            "column": 14,
+            "byte": 27390
+          },
+          "end": {
+            "line": 831,
+            "column": 53,
+            "byte": 27429
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/export/onnx.rs::isolation_forest_graph",
       "target": "unresolved:rust:GraphProto",
       "kind": "uses_type",
       "status": "unresolved",
@@ -610522,27 +610207,6 @@
             "line": 921,
             "column": 15,
             "byte": 31136
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/export/onnx.rs::isolation_forest_graph",
-      "target": "unresolved:rust:crate::training::model::IsolationForest",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 831,
-            "column": 14,
-            "byte": 27390
-          },
-          "end": {
-            "line": 831,
-            "column": 53,
-            "byte": 27429
           }
         }
       ]
@@ -612658,6 +612322,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/export/onnx.rs::knn_graph",
+      "target": "struct:crates/mars-lab/src/training/model.rs::KnnModel",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 600,
+            "column": 22,
+            "byte": 19927
+          },
+          "end": {
+            "line": 600,
+            "column": 54,
+            "byte": 19959
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/export/onnx.rs::knn_graph",
       "target": "unresolved:rust:GraphProto",
       "kind": "uses_type",
       "status": "unresolved",
@@ -612685,27 +612370,6 @@
             "line": 690,
             "column": 15,
             "byte": 22819
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/export/onnx.rs::knn_graph",
-      "target": "unresolved:rust:crate::training::model::KnnModel",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 600,
-            "column": 22,
-            "byte": 19927
-          },
-          "end": {
-            "line": 600,
-            "column": 54,
-            "byte": 19959
           }
         }
       ]
@@ -614284,6 +613948,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/export/onnx.rs::lof_graph",
+      "target": "struct:crates/mars-lab/src/training/model.rs::LofModel",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 931,
+            "column": 22,
+            "byte": 31442
+          },
+          "end": {
+            "line": 931,
+            "column": 54,
+            "byte": 31474
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/export/onnx.rs::lof_graph",
       "target": "unresolved:rust:GraphProto",
       "kind": "uses_type",
       "status": "unresolved",
@@ -614311,27 +613996,6 @@
             "line": 998,
             "column": 15,
             "byte": 33509
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/export/onnx.rs::lof_graph",
-      "target": "unresolved:rust:crate::training::model::LofModel",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 931,
-            "column": 22,
-            "byte": 31442
-          },
-          "end": {
-            "line": 931,
-            "column": 54,
-            "byte": 31474
           }
         }
       ]
@@ -632206,9 +631870,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_agglomerative",
-      "target": "unresolved:rust:ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -632221,27 +631885,6 @@
             "line": 341,
             "column": 78,
             "byte": 11249
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_dbscan",
-      "target": "external:rust:ClusterModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 330,
-            "column": 5,
-            "byte": 10849
-          },
-          "end": {
-            "line": 336,
-            "column": 6,
-            "byte": 11049
           }
         }
       ]
@@ -632791,6 +632434,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_dbscan",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 330,
+            "column": 5,
+            "byte": 10849
+          },
+          "end": {
+            "line": 336,
+            "column": 6,
+            "byte": 11049
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_dbscan",
       "target": "unresolved:rust:sqrt",
       "kind": "calls",
       "status": "unresolved",
@@ -632824,9 +632488,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_dbscan",
-      "target": "unresolved:rust:ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -632851,27 +632515,6 @@
             "line": 330,
             "column": 17,
             "byte": 10861
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_gmm",
-      "target": "external:rust:ClusterModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 251,
-            "column": 5,
-            "byte": 8385
-          },
-          "end": {
-            "line": 257,
-            "column": 6,
-            "byte": 8536
           }
         }
       ]
@@ -633436,6 +633079,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_gmm",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 251,
+            "column": 5,
+            "byte": 8385
+          },
+          "end": {
+            "line": 257,
+            "column": 6,
+            "byte": 8536
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_gmm",
       "target": "unresolved:rust:clamp",
       "kind": "calls",
       "status": "unresolved",
@@ -633568,9 +633232,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_gmm",
-      "target": "unresolved:rust:ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -633616,39 +633280,6 @@
             "line": 166,
             "column": 75,
             "byte": 5108
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans",
-      "target": "external:rust:ClusterModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 145,
-            "column": 16,
-            "byte": 4437
-          },
-          "end": {
-            "line": 155,
-            "column": 10,
-            "byte": 4749
-          }
-        },
-        {
-          "start": {
-            "line": 176,
-            "column": 13,
-            "byte": 5413
-          },
-          "end": {
-            "line": 186,
-            "column": 14,
-            "byte": 5791
           }
         }
       ]
@@ -634078,6 +633709,39 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 145,
+            "column": 16,
+            "byte": 4437
+          },
+          "end": {
+            "line": 155,
+            "column": 10,
+            "byte": 4749
+          }
+        },
+        {
+          "start": {
+            "line": 176,
+            "column": 13,
+            "byte": 5413
+          },
+          "end": {
+            "line": 186,
+            "column": 14,
+            "byte": 5791
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans",
       "target": "unresolved:rust:centroids",
       "kind": "calls",
       "status": "unresolved",
@@ -634267,7 +633931,7 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans",
-      "target": "external:rust:ndarray.Array2",
+      "target": "external:rust:ndarray::Array2",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -634288,9 +633952,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans",
-      "target": "unresolved:rust:ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -634327,27 +633991,6 @@
             "line": 176,
             "column": 25,
             "byte": 5425
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans_hand_rolled",
-      "target": "external:rust:ClusterModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 123,
-            "column": 5,
-            "byte": 3960
-          },
-          "end": {
-            "line": 133,
-            "column": 6,
-            "byte": 4250
           }
         }
       ]
@@ -635074,6 +634717,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans_hand_rolled",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 123,
+            "column": 5,
+            "byte": 3960
+          },
+          "end": {
+            "line": 133,
+            "column": 6,
+            "byte": 4250
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans_hand_rolled",
       "target": "unresolved:rust:clamp",
       "kind": "calls",
       "status": "unresolved",
@@ -635137,9 +634801,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_kmeans_hand_rolled",
-      "target": "unresolved:rust:ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -635212,9 +634876,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/cluster.rs::fit_placeholder_kmeans",
-      "target": "unresolved:rust:ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -645574,9 +645238,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_anomaly",
-      "target": "external:rust:Model.Elliptic",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Elliptic",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -645607,9 +645271,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_anomaly",
-      "target": "external:rust:Model.IsolationForest",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.IsolationForest",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -645640,9 +645304,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_anomaly",
-      "target": "external:rust:Model.Lof",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Lof",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -645961,6 +645625,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_anomaly",
+      "target": "enum:crates/mars-lab/src/training/model.rs::Model",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 584,
+            "column": 57,
+            "byte": 20862
+          },
+          "end": {
+            "line": 584,
+            "column": 62,
+            "byte": 20867
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::fit_anomaly",
       "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -645981,31 +645666,10 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/training/mod.rs::fit_anomaly",
-      "target": "unresolved:rust:Model",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 584,
-            "column": 57,
-            "byte": 20862
-          },
-          "end": {
-            "line": 584,
-            "column": 62,
-            "byte": 20867
-          }
-        }
-      ]
-    },
-    {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "external:rust:Model.Kernel",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Kernel",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -646024,9 +645688,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "external:rust:Model.Knn",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Knn",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -646045,9 +645709,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "external:rust:Model.Linear",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Linear",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -646102,9 +645766,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "external:rust:Model.Mlp",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Mlp",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -646123,9 +645787,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "external:rust:Model.NaiveBayes",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.NaiveBayes",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -646180,9 +645844,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "external:rust:Model.Trees",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Trees",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -647503,6 +647167,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
+      "target": "enum:crates/mars-lab/src/training/model.rs::Model",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 246,
+            "column": 6,
+            "byte": 7616
+          },
+          "end": {
+            "line": 246,
+            "column": 11,
+            "byte": 7621
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
       "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -647518,27 +647203,6 @@
             "line": 240,
             "column": 14,
             "byte": 7516
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::fit_classifier",
-      "target": "unresolved:rust:Model",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 246,
-            "column": 6,
-            "byte": 7616
-          },
-          "end": {
-            "line": 246,
-            "column": 11,
-            "byte": 7621
           }
         }
       ]
@@ -648202,9 +647866,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_clusterer",
-      "target": "unresolved:rust:cluster::ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -648223,9 +647887,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
-      "target": "external:rust:Model.Kernel",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Kernel",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -648244,9 +647908,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
-      "target": "external:rust:Model.Knn",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Knn",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -648265,9 +647929,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
-      "target": "external:rust:Model.Linear",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Linear",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -648322,9 +647986,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
-      "target": "external:rust:Model.Mlp",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Mlp",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -648343,9 +648007,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
-      "target": "external:rust:Model.Trees",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Trees",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -649360,6 +649024,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
+      "target": "enum:crates/mars-lab/src/training/model.rs::Model",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 414,
+            "column": 87,
+            "byte": 13952
+          },
+          "end": {
+            "line": 414,
+            "column": 92,
+            "byte": 13957
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
       "target": "struct:crates/mars-lab/src/domain.rs::Job",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -649375,27 +649060,6 @@
             "line": 414,
             "column": 27,
             "byte": 13892
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::fit_regressor",
-      "target": "unresolved:rust:Model",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 414,
-            "column": 87,
-            "byte": 13952
-          },
-          "end": {
-            "line": 414,
-            "column": 92,
-            "byte": 13957
           }
         }
       ]
@@ -651445,27 +651109,6 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train",
-      "target": "external:rust:preprocess::Preprocessor.fit",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 1046,
-            "column": 32,
-            "byte": 37697
-          },
-          "end": {
-            "line": 1046,
-            "column": 87,
-            "byte": 37752
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train",
       "target": "external:rust:std::Ok",
       "kind": "calls",
       "status": "resolved_external",
@@ -651655,6 +651298,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train",
+      "target": "method:crates/mars-lab/src/training/preprocess.rs::Preprocessor.fit",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 1046,
+            "column": 32,
+            "byte": 37697
+          },
+          "end": {
+            "line": 1046,
+            "column": 87,
+            "byte": 37752
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train",
       "target": "struct:crates/mars-lab/src/training/mod.rs::TrainingOutput",
       "kind": "calls",
       "status": "resolved_internal",
@@ -651793,27 +651457,6 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
-      "target": "external:rust:TrainedModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 1019,
-            "column": 19,
-            "byte": 36756
-          },
-          "end": {
-            "line": 1026,
-            "column": 6,
-            "byte": 36956
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
       "target": "external:rust:Vec.new",
       "kind": "calls",
       "status": "resolved_external",
@@ -651874,27 +651517,6 @@
             "line": 997,
             "column": 57,
             "byte": 36044
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
-      "target": "external:rust:preprocess::Preprocessor.fit",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 993,
-            "column": 24,
-            "byte": 35775
-          },
-          "end": {
-            "line": 993,
-            "column": 79,
-            "byte": 35830
           }
         }
       ]
@@ -652267,6 +651889,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
+      "target": "method:crates/mars-lab/src/training/preprocess.rs::Preprocessor.fit",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 993,
+            "column": 24,
+            "byte": 35775
+          },
+          "end": {
+            "line": 993,
+            "column": 79,
+            "byte": 35830
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
       "target": "struct:crates/mars-lab/src/training/mod.rs::TrainingOutput",
       "kind": "calls",
       "status": "resolved_internal",
@@ -652282,6 +651925,27 @@
             "line": 1031,
             "column": 6,
             "byte": 37044
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 1019,
+            "column": 19,
+            "byte": 36756
+          },
+          "end": {
+            "line": 1026,
+            "column": 6,
+            "byte": 36956
           }
         }
       ]
@@ -652468,6 +652132,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 1019,
+            "column": 19,
+            "byte": 36756
+          },
+          "end": {
+            "line": 1019,
+            "column": 31,
+            "byte": 36768
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
       "target": "type:crates/mars-lab/src/error.rs::LabResult",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -652488,31 +652173,10 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_anomaly",
-      "target": "unresolved:rust:TrainedModel",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 1019,
-            "column": 19,
-            "byte": 36756
-          },
-          "end": {
-            "line": 1019,
-            "column": 31,
-            "byte": 36768
-          }
-        }
-      ]
-    },
-    {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
-      "target": "external:rust:Model.Clusters",
+      "target": "constant:crates/mars-lab/src/training/model.rs::Model.Clusters",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -652525,27 +652189,6 @@
             "line": 969,
             "column": 47,
             "byte": 35079
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
-      "target": "external:rust:TrainedModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 975,
-            "column": 19,
-            "byte": 35281
-          },
-          "end": {
-            "line": 982,
-            "column": 6,
-            "byte": 35499
           }
         }
       ]
@@ -652600,27 +652243,6 @@
             "line": 981,
             "column": 31,
             "byte": 35492
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
-      "target": "external:rust:preprocess::Preprocessor.fit",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 948,
-            "column": 24,
-            "byte": 34010
-          },
-          "end": {
-            "line": 948,
-            "column": 79,
-            "byte": 34065
           }
         }
       ]
@@ -653113,6 +652735,48 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
+      "target": "method:crates/mars-lab/src/training/model.rs::Model.bic",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 970,
+            "column": 24,
+            "byte": 35104
+          },
+          "end": {
+            "line": 970,
+            "column": 50,
+            "byte": 35130
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
+      "target": "method:crates/mars-lab/src/training/preprocess.rs::Preprocessor.fit",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 948,
+            "column": 24,
+            "byte": 34010
+          },
+          "end": {
+            "line": 948,
+            "column": 79,
+            "byte": 34065
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
       "target": "struct:crates/mars-lab/src/training/mod.rs::TrainingOutput",
       "kind": "calls",
       "status": "resolved_internal",
@@ -653134,21 +652798,21 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
-      "target": "unresolved:rust:bic",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
       "kind": "calls",
-      "status": "unresolved",
-      "origin": "syntax",
+      "status": "resolved_internal",
+      "origin": "lexical",
       "sites": [
         {
           "start": {
-            "line": 970,
-            "column": 24,
-            "byte": 35104
+            "line": 975,
+            "column": 19,
+            "byte": 35281
           },
           "end": {
-            "line": 970,
-            "column": 50,
-            "byte": 35130
+            "line": 982,
+            "column": 6,
+            "byte": 35499
           }
         }
       ]
@@ -653377,30 +653041,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
-      "target": "type:crates/mars-lab/src/error.rs::LabResult",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
       "kind": "uses_type",
       "status": "resolved_internal",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 945,
-            "column": 51,
-            "byte": 33898
-          },
-          "end": {
-            "line": 945,
-            "column": 60,
-            "byte": 33907
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
-      "target": "unresolved:rust:TrainedModel",
-      "kind": "uses_type",
-      "status": "unresolved",
       "origin": "syntax",
       "sites": [
         {
@@ -653418,22 +653061,22 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
-      "target": "external:rust:TrainedModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_clustering",
+      "target": "type:crates/mars-lab/src/error.rs::LabResult",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
       "sites": [
         {
           "start": {
-            "line": 922,
-            "column": 19,
-            "byte": 33285
+            "line": 945,
+            "column": 51,
+            "byte": 33898
           },
           "end": {
-            "line": 929,
-            "column": 6,
-            "byte": 33497
+            "line": 945,
+            "column": 60,
+            "byte": 33907
           }
         }
       ]
@@ -653491,27 +653134,6 @@
             "line": 928,
             "column": 31,
             "byte": 33490
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
-      "target": "external:rust:preprocess::Preprocessor.fit",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 863,
-            "column": 24,
-            "byte": 31138
-          },
-          "end": {
-            "line": 863,
-            "column": 87,
-            "byte": 31201
           }
         }
       ]
@@ -654955,6 +654577,27 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
+      "target": "method:crates/mars-lab/src/training/preprocess.rs::Preprocessor.fit",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 863,
+            "column": 24,
+            "byte": 31138
+          },
+          "end": {
+            "line": 863,
+            "column": 87,
+            "byte": 31201
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
       "target": "struct:crates/mars-lab/src/training/mod.rs::TrainingOutput",
       "kind": "calls",
       "status": "resolved_internal",
@@ -654970,6 +654613,27 @@
             "line": 942,
             "column": 6,
             "byte": 33843
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 922,
+            "column": 19,
+            "byte": 33285
+          },
+          "end": {
+            "line": 929,
+            "column": 6,
+            "byte": 33497
           }
         }
       ]
@@ -655360,30 +655024,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
-      "target": "type:crates/mars-lab/src/error.rs::LabResult",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
       "kind": "uses_type",
       "status": "resolved_internal",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 773,
-            "column": 56,
-            "byte": 28056
-          },
-          "end": {
-            "line": 773,
-            "column": 65,
-            "byte": 28065
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
-      "target": "unresolved:rust:TrainedModel",
-      "kind": "uses_type",
-      "status": "unresolved",
       "origin": "syntax",
       "sites": [
         {
@@ -655401,34 +655044,22 @@
       ]
     },
     {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
-      "target": "external:rust:TrainedModel",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_semi_supervised",
+      "target": "type:crates/mars-lab/src/error.rs::LabResult",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
       "sites": [
         {
           "start": {
-            "line": 701,
-            "column": 23,
-            "byte": 25342
+            "line": 773,
+            "column": 56,
+            "byte": 28056
           },
           "end": {
-            "line": 708,
-            "column": 10,
-            "byte": 25582
-          }
-        },
-        {
-          "start": {
-            "line": 756,
-            "column": 23,
-            "byte": 27569
-          },
-          "end": {
-            "line": 763,
-            "column": 10,
-            "byte": 27800
+            "line": 773,
+            "column": 65,
+            "byte": 28065
           }
         }
       ]
@@ -655498,39 +655129,6 @@
             "line": 762,
             "column": 35,
             "byte": 27789
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
-      "target": "external:rust:preprocess::Preprocessor.fit",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 688,
-            "column": 28,
-            "byte": 24756
-          },
-          "end": {
-            "line": 688,
-            "column": 93,
-            "byte": 24821
-          }
-        },
-        {
-          "start": {
-            "line": 750,
-            "column": 28,
-            "byte": 27111
-          },
-          "end": {
-            "line": 750,
-            "column": 93,
-            "byte": 27176
           }
         }
       ]
@@ -656854,6 +656452,39 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
+      "target": "method:crates/mars-lab/src/training/preprocess.rs::Preprocessor.fit",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 688,
+            "column": 28,
+            "byte": 24756
+          },
+          "end": {
+            "line": 688,
+            "column": 93,
+            "byte": 24821
+          }
+        },
+        {
+          "start": {
+            "line": 750,
+            "column": 28,
+            "byte": 27111
+          },
+          "end": {
+            "line": 750,
+            "column": 93,
+            "byte": 27176
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
       "target": "struct:crates/mars-lab/src/training/mod.rs::TrainingOutput",
       "kind": "calls",
       "status": "resolved_internal",
@@ -656881,6 +656512,39 @@
             "line": 769,
             "column": 10,
             "byte": 27990
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 701,
+            "column": 23,
+            "byte": 25342
+          },
+          "end": {
+            "line": 708,
+            "column": 10,
+            "byte": 25582
+          }
+        },
+        {
+          "start": {
+            "line": 756,
+            "column": 23,
+            "byte": 27569
+          },
+          "end": {
+            "line": 763,
+            "column": 10,
+            "byte": 27800
           }
         }
       ]
@@ -657211,30 +656875,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
-      "target": "type:crates/mars-lab/src/error.rs::LabResult",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
       "kind": "uses_type",
       "status": "resolved_internal",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 611,
-            "column": 51,
-            "byte": 22070
-          },
-          "end": {
-            "line": 611,
-            "column": 60,
-            "byte": 22079
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
-      "target": "unresolved:rust:TrainedModel",
-      "kind": "uses_type",
-      "status": "unresolved",
       "origin": "syntax",
       "sites": [
         {
@@ -657259,6 +656902,27 @@
             "line": 756,
             "column": 35,
             "byte": 27581
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/src/training/mod.rs::train_supervised",
+      "target": "type:crates/mars-lab/src/error.rs::LabResult",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 611,
+            "column": 51,
+            "byte": 22070
+          },
+          "end": {
+            "line": 611,
+            "column": 60,
+            "byte": 22079
           }
         }
       ]
@@ -657589,9 +657253,9 @@
     },
     {
       "source": "function:crates/mars-lab/src/training/mod.rs::tree_params",
-      "target": "unresolved:rust:tree::TreeParams",
+      "target": "struct:crates/mars-lab/src/training/tree.rs::TreeParams",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -672256,6 +671920,39 @@
     },
     {
       "source": "function:crates/mars-lab/tests/storage_db.rs::list_jobs_filters_and_paginates",
+      "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobCursor",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 383,
+            "column": 15,
+            "byte": 13509
+          },
+          "end": {
+            "line": 383,
+            "column": 53,
+            "byte": 13547
+          }
+        },
+        {
+          "start": {
+            "line": 412,
+            "column": 19,
+            "byte": 14311
+          },
+          "end": {
+            "line": 412,
+            "column": 57,
+            "byte": 14349
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-lab/tests/storage_db.rs::list_jobs_filters_and_paginates",
       "target": "struct:crates/mars-lab/src/db/jobs/filters.rs::JobFilters",
       "kind": "uses_type",
       "status": "resolved_internal",
@@ -672355,39 +672052,6 @@
             "line": 401,
             "column": 23,
             "byte": 13985
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-lab/tests/storage_db.rs::list_jobs_filters_and_paginates",
-      "target": "unresolved:rust:mars_lab::db::jobs::filters::JobCursor",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 383,
-            "column": 15,
-            "byte": 13509
-          },
-          "end": {
-            "line": 383,
-            "column": 53,
-            "byte": 13547
-          }
-        },
-        {
-          "start": {
-            "line": 412,
-            "column": 19,
-            "byte": 14311
-          },
-          "end": {
-            "line": 412,
-            "column": 57,
-            "byte": 14349
           }
         }
       ]
@@ -695026,10 +694690,10 @@
     },
     {
       "source": "function:crates/mars-mcp/src/http.rs::dispatch",
-      "target": "unresolved:rust:handle",
+      "target": "method:crates/mars-mcp/src/server.rs::MarsMcpServer.handle",
       "kind": "calls",
-      "status": "unresolved",
-      "origin": "syntax",
+      "status": "resolved_internal",
+      "origin": "lexical",
       "sites": [
         {
           "start": {
@@ -695068,9 +694732,9 @@
     },
     {
       "source": "function:crates/mars-mcp/src/http.rs::dispatch",
-      "target": "unresolved:rust:crate::server::MarsMcpServer",
+      "target": "struct:crates/mars-mcp/src/server.rs::MarsMcpServer",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -696190,9 +695854,9 @@
     },
     {
       "source": "function:crates/mars-mcp/src/http.rs::handle_connection",
-      "target": "unresolved:rust:crate::server::MarsMcpServer",
+      "target": "struct:crates/mars-mcp/src/server.rs::MarsMcpServer",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -696511,9 +696175,9 @@
     },
     {
       "source": "function:crates/mars-mcp/src/http.rs::serve_http",
-      "target": "unresolved:rust:crate::server::MarsMcpServer",
+      "target": "struct:crates/mars-mcp/src/server.rs::MarsMcpServer",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -700264,27 +699928,6 @@
     },
     {
       "source": "function:crates/mars-mcp/src/lab.rs::lab_jobs",
-      "target": "external:rust:jobs::JobFilters.default",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 438,
-            "column": 14,
-            "byte": 14610
-          },
-          "end": {
-            "line": 438,
-            "column": 41,
-            "byte": 14637
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-mcp/src/lab.rs::lab_jobs",
       "target": "external:rust:std::Ok",
       "kind": "calls",
       "status": "resolved_external",
@@ -700384,6 +700027,27 @@
             "line": 446,
             "column": 7,
             "byte": 14823
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-mcp/src/lab.rs::lab_jobs",
+      "target": "method:crates/mars-lab/src/db/jobs/filters.rs::JobFilters.default",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 438,
+            "column": 14,
+            "byte": 14610
+          },
+          "end": {
+            "line": 438,
+            "column": 41,
+            "byte": 14637
           }
         }
       ]
@@ -722806,7 +722470,7 @@
     },
     {
       "source": "function:crates/mars-mcp/tests/server.rs::notifications_and_non_request_json_get_no_response_or_parse_error",
-      "target": "external:rust:serde_json.Value",
+      "target": "external:rust:serde_json::Value",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -724921,27 +724585,6 @@
     },
     {
       "source": "function:crates/mars-mcp/tests/server.rs::tools_call_dispatches_lab_tools",
-      "target": "external:rust:mars_lab::config::Settings.new",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 199,
-            "column": 36,
-            "byte": 7637
-          },
-          "end": {
-            "line": 202,
-            "column": 6,
-            "byte": 7763
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-mcp/tests/server.rs::tools_call_dispatches_lab_tools",
       "target": "external:rust:serde_json.from_str",
       "kind": "calls",
       "status": "resolved_external",
@@ -725308,6 +724951,27 @@
             "line": 212,
             "column": 36,
             "byte": 8226
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-mcp/tests/server.rs::tools_call_dispatches_lab_tools",
+      "target": "method:crates/mars-lab/src/config.rs::Settings.new",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 199,
+            "column": 36,
+            "byte": 7637
+          },
+          "end": {
+            "line": 202,
+            "column": 6,
+            "byte": 7763
           }
         }
       ]
@@ -742189,7 +741853,7 @@
     },
     {
       "source": "function:crates/mars-renderer/src/util.rs::resolve_attachment_refs",
-      "target": "external:rust:serde_json.Value",
+      "target": "external:rust:serde_json::Value",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -802963,9 +802627,9 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.diagnose",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -802984,9 +802648,9 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.diagnose",
-      "target": "unresolved:rust:crate::inspect::CellDiagnostic",
+      "target": "struct:crates/mars-runtime/src/inspect.rs::CellDiagnostic",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -803020,6 +802684,27 @@
             "line": 42,
             "column": 65,
             "byte": 1501
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.execute_with_events",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 40,
+            "column": 34,
+            "byte": 1383
+          },
+          "end": {
+            "line": 40,
+            "column": 60,
+            "byte": 1409
           }
         }
       ]
@@ -803151,27 +802836,6 @@
       ]
     },
     {
-      "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.execute_with_events",
-      "target": "unresolved:rust:crate::error::RuntimeError",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 40,
-            "column": 34,
-            "byte": 1383
-          },
-          "end": {
-            "line": 40,
-            "column": 60,
-            "byte": 1409
-          }
-        }
-      ]
-    },
-    {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.handle_comm",
       "target": "external:rust:Vec.new",
       "kind": "calls",
@@ -803215,6 +802879,27 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.handle_comm",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 76,
+            "column": 46,
+            "byte": 2698
+          },
+          "end": {
+            "line": 76,
+            "column": 72,
+            "byte": 2724
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.handle_comm",
       "target": "external:rust:serde_json.Value",
       "kind": "uses_type",
       "status": "resolved_external",
@@ -803230,27 +802915,6 @@
             "line": 75,
             "column": 34,
             "byte": 2651
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.handle_comm",
-      "target": "unresolved:rust:crate::error::RuntimeError",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 76,
-            "column": 46,
-            "byte": 2698
-          },
-          "end": {
-            "line": 76,
-            "column": 72,
-            "byte": 2724
           }
         }
       ]
@@ -803320,9 +802984,9 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.inspect_variables",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -803341,9 +803005,9 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.inspect_variables",
-      "target": "unresolved:rust:crate::inspect::VariableInfo",
+      "target": "struct:crates/mars-runtime/src/inspect.rs::VariableInfo",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -803383,9 +803047,9 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.write_stdin",
-      "target": "external:rust:crate::error::RuntimeError.Backend",
+      "target": "constant:crates/mars-runtime/src/error.rs::RuntimeError.Backend",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -803446,9 +803110,9 @@
     },
     {
       "source": "function:crates/mars-runtime/src/backend.rs::RuntimeBackend.write_stdin",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -848038,27 +847702,6 @@
     },
     {
       "source": "function:packages/desktop/src-tauri/src/lab/jobs.rs::lab_list_jobs",
-      "target": "external:rust:jobs::JobFilters.default",
-      "kind": "calls",
-      "status": "resolved_external",
-      "origin": "lexical",
-      "sites": [
-        {
-          "start": {
-            "line": 30,
-            "column": 44,
-            "byte": 882
-          },
-          "end": {
-            "line": 30,
-            "column": 71,
-            "byte": 909
-          }
-        }
-      ]
-    },
-    {
-      "source": "function:packages/desktop/src-tauri/src/lab/jobs.rs::lab_list_jobs",
       "target": "external:rust:std::Ok",
       "kind": "calls",
       "status": "resolved_external",
@@ -848116,6 +847759,27 @@
             "line": 29,
             "column": 18,
             "byte": 830
+          }
+        }
+      ]
+    },
+    {
+      "source": "function:packages/desktop/src-tauri/src/lab/jobs.rs::lab_list_jobs",
+      "target": "method:crates/mars-lab/src/db/jobs/filters.rs::JobFilters.default",
+      "kind": "calls",
+      "status": "resolved_internal",
+      "origin": "lexical",
+      "sites": [
+        {
+          "start": {
+            "line": 30,
+            "column": 44,
+            "byte": 882
+          },
+          "end": {
+            "line": 30,
+            "column": 71,
+            "byte": 909
           }
         }
       ]
@@ -945190,6 +944854,27 @@
     },
     {
       "source": "method:crates/mars-core/src/cell_id.rs::CellId.from_string",
+      "target": "enum:crates/mars-core/src/error.rs::CoreError",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 14,
+            "column": 66,
+            "byte": 358
+          },
+          "end": {
+            "line": 14,
+            "column": 82,
+            "byte": 374
+          }
+        }
+      ]
+    },
+    {
+      "source": "method:crates/mars-core/src/cell_id.rs::CellId.from_string",
       "target": "external:rust:std::Into",
       "kind": "uses_type",
       "status": "resolved_external",
@@ -945205,27 +944890,6 @@
             "line": 14,
             "column": 40,
             "byte": 332
-          }
-        }
-      ]
-    },
-    {
-      "source": "method:crates/mars-core/src/cell_id.rs::CellId.from_string",
-      "target": "unresolved:rust:crate::CoreError",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 14,
-            "column": 66,
-            "byte": 358
-          },
-          "end": {
-            "line": 14,
-            "column": 82,
-            "byte": 374
           }
         }
       ]
@@ -947662,9 +947326,9 @@
     },
     {
       "source": "method:crates/mars-kernel/src/kernel.rs::Kernel.build",
-      "target": "unresolved:rust:crate::runtime::RuntimeConfig",
+      "target": "struct:crates/mars-kernel/src/runtime.rs::RuntimeConfig",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -947872,9 +947536,9 @@
     },
     {
       "source": "method:crates/mars-kernel/src/kernel.rs::Kernel.build_with_sql",
-      "target": "unresolved:rust:crate::runtime::RuntimeConfig",
+      "target": "struct:crates/mars-kernel/src/runtime.rs::RuntimeConfig",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1000645,7 +1000309,7 @@
     },
     {
       "source": "method:crates/mars-runtime-python/src/session.rs::PythonSession.handle_comm",
-      "target": "external:rust:serde_json.Value",
+      "target": "external:rust:serde_json::Value",
       "kind": "uses_type",
       "status": "resolved_external",
       "origin": "syntax",
@@ -1010548,9 +1010212,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/backend.rs::RuntimeBackend.cargo_lock",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1010563,6 +1010227,27 @@
             "line": 49,
             "column": 78,
             "byte": 1693
+          }
+        }
+      ]
+    },
+    {
+      "source": "method:crates/mars-runtime/src/backend.rs::RuntimeBackend.execute_with_control",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 32,
+            "column": 34,
+            "byte": 1121
+          },
+          "end": {
+            "line": 32,
+            "column": 60,
+            "byte": 1147
           }
         }
       ]
@@ -1010652,31 +1010337,10 @@
       ]
     },
     {
-      "source": "method:crates/mars-runtime/src/backend.rs::RuntimeBackend.execute_with_control",
-      "target": "unresolved:rust:crate::error::RuntimeError",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 32,
-            "column": 34,
-            "byte": 1121
-          },
-          "end": {
-            "line": 32,
-            "column": 60,
-            "byte": 1147
-          }
-        }
-      ]
-    },
-    {
       "source": "method:crates/mars-runtime/src/backend.rs::RuntimeBackend.reset",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1013362,9 +1013026,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.cargo_lock",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1013404,9 +1013068,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.diagnose",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1013425,9 +1013089,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.diagnose",
-      "target": "unresolved:rust:crate::inspect::CellDiagnostic",
+      "target": "struct:crates/mars-runtime/src/inspect.rs::CellDiagnostic",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1015546,6 +1015210,27 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.execute_with_control~1",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 212,
+            "column": 34,
+            "byte": 7354
+          },
+          "end": {
+            "line": 212,
+            "column": 60,
+            "byte": 7380
+          }
+        }
+      ]
+    },
+    {
+      "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.execute_with_control~1",
       "target": "external:rust:std::Arc",
       "kind": "uses_type",
       "status": "resolved_external",
@@ -1015629,27 +1015314,6 @@
       ]
     },
     {
-      "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.execute_with_control~1",
-      "target": "unresolved:rust:crate::error::RuntimeError",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 212,
-            "column": 34,
-            "byte": 7354
-          },
-          "end": {
-            "line": 212,
-            "column": 60,
-            "byte": 7380
-          }
-        }
-      ]
-    },
-    {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.execute_with_events",
       "target": "external:rust:std::Some",
       "kind": "calls",
@@ -1015687,6 +1015351,27 @@
             "line": 223,
             "column": 72,
             "byte": 7803
+          }
+        }
+      ]
+    },
+    {
+      "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.execute_with_events",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 222,
+            "column": 34,
+            "byte": 7702
+          },
+          "end": {
+            "line": 222,
+            "column": 60,
+            "byte": 7728
           }
         }
       ]
@@ -1015813,27 +1015498,6 @@
             "line": 222,
             "column": 32,
             "byte": 7700
-          }
-        }
-      ]
-    },
-    {
-      "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.execute_with_events",
-      "target": "unresolved:rust:crate::error::RuntimeError",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 222,
-            "column": 34,
-            "byte": 7702
-          },
-          "end": {
-            "line": 222,
-            "column": 60,
-            "byte": 7728
           }
         }
       ]
@@ -1016008,9 +1015672,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.inspect_variables",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1016029,9 +1015693,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.inspect_variables",
-      "target": "unresolved:rust:crate::inspect::VariableInfo",
+      "target": "struct:crates/mars-runtime/src/inspect.rs::VariableInfo",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1016092,9 +1015756,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.reset",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1016494,9 +1016158,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.stdin_writer",
-      "target": "unresolved:rust:crate::backend::StdinWriter",
+      "target": "struct:crates/mars-runtime/src/backend.rs::StdinWriter",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1016536,9 +1016200,9 @@
     },
     {
       "source": "method:crates/mars-runtime/src/session_execution.rs::RustSession.write_stdin",
-      "target": "unresolved:rust:crate::error::RuntimeError",
+      "target": "enum:crates/mars-runtime/src/error.rs::RuntimeError",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1032628,9 +1032292,9 @@
     },
     {
       "source": "method:packages/desktop/src-tauri/src/lib.rs::AppState.new",
-      "target": "external:rust:lsp::LspSessions.new",
+      "target": "method:packages/desktop/src-tauri/src/lsp.rs::LspSessions.new",
       "kind": "calls",
-      "status": "resolved_external",
+      "status": "resolved_internal",
       "origin": "lexical",
       "sites": [
         {
@@ -1059874,9 +1059538,9 @@
     },
     {
       "source": "module:crates/mars-lab/src/training/mod.rs",
-      "target": "unresolved:rust:cluster::ClusterModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::ClusterModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1312178,6 +1311842,27 @@
     },
     {
       "source": "struct:crates/mars-kernel/src/runtime.rs::RuntimeConfig",
+      "target": "enum:crates/mars-kernel/src/kernel.rs::RuntimeBackendKind",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 10,
+            "column": 18,
+            "byte": 395
+          },
+          "end": {
+            "line": 10,
+            "column": 51,
+            "byte": 428
+          }
+        }
+      ]
+    },
+    {
+      "source": "struct:crates/mars-kernel/src/runtime.rs::RuntimeConfig",
       "target": "external:rust:std::BTreeMap",
       "kind": "uses_type",
       "status": "resolved_external",
@@ -1312214,27 +1311899,6 @@
             "line": 16,
             "column": 38,
             "byte": 675
-          }
-        }
-      ]
-    },
-    {
-      "source": "struct:crates/mars-kernel/src/runtime.rs::RuntimeConfig",
-      "target": "unresolved:rust:crate::kernel::RuntimeBackendKind",
-      "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 10,
-            "column": 18,
-            "byte": 395
-          },
-          "end": {
-            "line": 10,
-            "column": 51,
-            "byte": 428
           }
         }
       ]
@@ -1313300,9 +1312964,9 @@
     },
     {
       "source": "struct:crates/mars-lab/src/training/mod.rs::TrainingOutput",
-      "target": "unresolved:rust:TrainedModel",
+      "target": "struct:crates/mars-lab/src/training/model.rs::TrainedModel",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1316651,30 +1316315,9 @@
     },
     {
       "source": "struct:packages/desktop/src-tauri/src/lib.rs::AppState",
-      "target": "unresolved:rust:lsp::LspSessions",
+      "target": "struct:crates/mars-runtime-python/src/session.rs::PythonOptions",
       "kind": "uses_type",
-      "status": "unresolved",
-      "origin": "syntax",
-      "sites": [
-        {
-          "start": {
-            "line": 32,
-            "column": 10,
-            "byte": 1163
-          },
-          "end": {
-            "line": 32,
-            "column": 26,
-            "byte": 1179
-          }
-        }
-      ]
-    },
-    {
-      "source": "struct:packages/desktop/src-tauri/src/lib.rs::AppState",
-      "target": "unresolved:rust:mars_kernel::PythonOptions",
-      "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1316693,9 +1316336,9 @@
     },
     {
       "source": "struct:packages/desktop/src-tauri/src/lib.rs::AppState",
-      "target": "unresolved:rust:mars_runtime::SqlSource",
+      "target": "struct:crates/mars-runtime/src/backend.rs::SqlSource",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1316714,9 +1316357,9 @@
     },
     {
       "source": "struct:packages/desktop/src-tauri/src/lib.rs::AppState",
-      "target": "unresolved:rust:mars_runtime::StdinWriter",
+      "target": "struct:crates/mars-runtime/src/backend.rs::StdinWriter",
       "kind": "uses_type",
-      "status": "unresolved",
+      "status": "resolved_internal",
       "origin": "syntax",
       "sites": [
         {
@@ -1316729,6 +1316372,27 @@
             "line": 25,
             "column": 77,
             "byte": 738
+          }
+        }
+      ]
+    },
+    {
+      "source": "struct:packages/desktop/src-tauri/src/lib.rs::AppState",
+      "target": "struct:packages/desktop/src-tauri/src/lsp.rs::LspSessions",
+      "kind": "uses_type",
+      "status": "resolved_internal",
+      "origin": "syntax",
+      "sites": [
+        {
+          "start": {
+            "line": 32,
+            "column": 10,
+            "byte": 1163
+          },
+          "end": {
+            "line": 32,
+            "column": 26,
+            "byte": 1179
           }
         }
       ]
@@ -1319166,17 +1318830,17 @@
   "statistics": {
     "files": 807,
     "packages": 9,
-    "nodes": 16719,
+    "nodes": 16663,
     "edges": 57342,
     "symbols": 12406,
-    "unresolvedEdges": 3585,
+    "unresolvedEdges": 3498,
     "diagnostics": 120,
     "byNodeKind": {
       "class": 62,
       "constant": 2750,
       "constructor": 34,
       "enum": 35,
-      "external_symbol": 1307,
+      "external_symbol": 1284,
       "file": 807,
       "framework": 28,
       "function": 2502,
@@ -1319191,7 +1318855,7 @@
       "struct": 161,
       "trait": 2,
       "type": 208,
-      "unknown": 1197,
+      "unknown": 1164,
       "variable": 5095
     },
     "byEdgeKind": {
@@ -1319212,15 +1318876,15 @@
       "markdown": 333,
       "python": 183,
       "r": 13,
-      "rust": 10091,
+      "rust": 10035,
       "tsx": 2418,
       "typescript": 2829
     },
     "byStatus": {
       "ambiguous": 12,
-      "resolved_external": 14951,
-      "resolved_internal": 38806,
-      "unresolved": 3573
+      "resolved_external": 14872,
+      "resolved_internal": 38972,
+      "unresolved": 3486
     },
     "byFramework": {
       "chrono": 1,
