@@ -133,10 +133,52 @@
   ],
   "frameworks": [
     {
+      "name": "chrono",
+      "displayName": "chrono",
+      "family": "rust",
+      "version": "uuid",
+      "confidence": "high"
+    },
+    {
       "name": "clap.rs",
       "displayName": "clap.rs",
       "family": "rust",
       "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "config-rs",
+      "displayName": "config-rs",
+      "family": "rust",
+      "version": null,
+      "confidence": "medium"
+    },
+    {
+      "name": "csv",
+      "displayName": "csv",
+      "family": "rust",
+      "version": "temporal",
+      "confidence": "medium"
+    },
+    {
+      "name": "gson",
+      "displayName": "Gson",
+      "family": "java",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "junit",
+      "displayName": "JUnit",
+      "family": "java",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "matplotlib",
+      "displayName": "Matplotlib",
+      "family": "python",
+      "version": "3.7.0",
       "confidence": "medium"
     },
     {
@@ -147,10 +189,143 @@
       "confidence": "high"
     },
     {
+      "name": "numpy",
+      "displayName": "NumPy",
+      "family": "python",
+      "version": "1.24.0",
+      "confidence": "medium"
+    },
+    {
+      "name": "pandas",
+      "displayName": "Pandas",
+      "family": "python",
+      "version": "2.0.0",
+      "confidence": "medium"
+    },
+    {
+      "name": "playwright",
+      "displayName": "Playwright",
+      "family": "ecmascript",
+      "version": "tailwindcss",
+      "confidence": "high"
+    },
+    {
+      "name": "polars",
+      "displayName": "Polars",
+      "family": "python",
+      "version": null,
+      "confidence": "medium"
+    },
+    {
+      "name": "rand",
+      "displayName": "rand",
+      "family": "rust",
+      "version": null,
+      "confidence": "high"
+    },
+    {
       "name": "react",
       "displayName": "React",
       "family": "ecmascript",
       "version": "codemirror",
+      "confidence": "high"
+    },
+    {
+      "name": "regex",
+      "displayName": "regex",
+      "family": "rust",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "rusqlite",
+      "displayName": "rusqlite",
+      "family": "rust",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "scikit-learn",
+      "displayName": "scikit-learn",
+      "family": "python",
+      "version": "1.3.0",
+      "confidence": "medium"
+    },
+    {
+      "name": "serde",
+      "displayName": "Serde",
+      "family": "rust",
+      "version": "v4",
+      "confidence": "high"
+    },
+    {
+      "name": "sqlx",
+      "displayName": "sqlx",
+      "family": "go",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "tailwindcss",
+      "displayName": "Tailwind CSS",
+      "family": "ecmascript",
+      "version": "tailwindcss",
+      "confidence": "medium"
+    },
+    {
+      "name": "tauri",
+      "displayName": "Tauri",
+      "family": "ecmascript",
+      "version": "tauri-apps",
+      "confidence": "high"
+    },
+    {
+      "name": "thiserror",
+      "displayName": "thiserror",
+      "family": "rust",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "tokio",
+      "displayName": "Tokio",
+      "family": "rust",
+      "version": null,
+      "confidence": "medium"
+    },
+    {
+      "name": "tracing",
+      "displayName": "tracing",
+      "family": "rust",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "turborepo",
+      "displayName": "Turborepo",
+      "family": "ecmascript",
+      "version": "mars",
+      "confidence": "medium"
+    },
+    {
+      "name": "uuid",
+      "displayName": "UUID",
+      "family": "go",
+      "version": null,
+      "confidence": "high"
+    },
+    {
+      "name": "vite",
+      "displayName": "Vite",
+      "family": "ecmascript",
+      "version": "codemirror",
+      "confidence": "medium"
+    },
+    {
+      "name": "vitest",
+      "displayName": "Vitest",
+      "family": "ecmascript",
+      "version": "eslint",
       "confidence": "high"
     }
   ],
@@ -66575,13 +66750,73 @@
       "language": "bash"
     },
     {
+      "id": "framework:chrono:uuid",
+      "kind": "framework",
+      "name": "chrono",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "chrono"
+      }
+    },
+    {
       "id": "framework:clap.rs",
       "kind": "framework",
       "name": "clap.rs",
       "metadata": {
-        "confidence": "medium",
+        "confidence": "high",
         "family": "rust",
         "framework": "clap.rs"
+      }
+    },
+    {
+      "id": "framework:config-rs",
+      "kind": "framework",
+      "name": "config-rs",
+      "metadata": {
+        "confidence": "medium",
+        "family": "rust",
+        "framework": "config-rs"
+      }
+    },
+    {
+      "id": "framework:csv:temporal",
+      "kind": "framework",
+      "name": "csv",
+      "metadata": {
+        "confidence": "medium",
+        "family": "rust",
+        "framework": "csv"
+      }
+    },
+    {
+      "id": "framework:gson",
+      "kind": "framework",
+      "name": "Gson",
+      "metadata": {
+        "confidence": "high",
+        "family": "java",
+        "framework": "gson"
+      }
+    },
+    {
+      "id": "framework:junit",
+      "kind": "framework",
+      "name": "JUnit",
+      "metadata": {
+        "confidence": "high",
+        "family": "java",
+        "framework": "junit"
+      }
+    },
+    {
+      "id": "framework:matplotlib:3.7.0",
+      "kind": "framework",
+      "name": "Matplotlib",
+      "metadata": {
+        "confidence": "medium",
+        "family": "python",
+        "framework": "matplotlib"
       }
     },
     {
@@ -66595,6 +66830,56 @@
       }
     },
     {
+      "id": "framework:numpy:1.24.0",
+      "kind": "framework",
+      "name": "NumPy",
+      "metadata": {
+        "confidence": "medium",
+        "family": "python",
+        "framework": "numpy"
+      }
+    },
+    {
+      "id": "framework:pandas:2.0.0",
+      "kind": "framework",
+      "name": "Pandas",
+      "metadata": {
+        "confidence": "medium",
+        "family": "python",
+        "framework": "pandas"
+      }
+    },
+    {
+      "id": "framework:playwright:tailwindcss",
+      "kind": "framework",
+      "name": "Playwright",
+      "metadata": {
+        "confidence": "high",
+        "family": "ecmascript",
+        "framework": "playwright"
+      }
+    },
+    {
+      "id": "framework:polars",
+      "kind": "framework",
+      "name": "Polars",
+      "metadata": {
+        "confidence": "medium",
+        "family": "python",
+        "framework": "polars"
+      }
+    },
+    {
+      "id": "framework:rand",
+      "kind": "framework",
+      "name": "rand",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "rand"
+      }
+    },
+    {
       "id": "framework:react:codemirror",
       "kind": "framework",
       "name": "React",
@@ -66602,6 +66887,146 @@
         "confidence": "high",
         "family": "ecmascript",
         "framework": "react"
+      }
+    },
+    {
+      "id": "framework:regex",
+      "kind": "framework",
+      "name": "regex",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "regex"
+      }
+    },
+    {
+      "id": "framework:rusqlite",
+      "kind": "framework",
+      "name": "rusqlite",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "rusqlite"
+      }
+    },
+    {
+      "id": "framework:scikit-learn:1.3.0",
+      "kind": "framework",
+      "name": "scikit-learn",
+      "metadata": {
+        "confidence": "medium",
+        "family": "python",
+        "framework": "scikit-learn"
+      }
+    },
+    {
+      "id": "framework:serde:v4",
+      "kind": "framework",
+      "name": "Serde",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "serde"
+      }
+    },
+    {
+      "id": "framework:sqlx",
+      "kind": "framework",
+      "name": "sqlx",
+      "metadata": {
+        "confidence": "high",
+        "family": "go",
+        "framework": "sqlx"
+      }
+    },
+    {
+      "id": "framework:tailwindcss:tailwindcss",
+      "kind": "framework",
+      "name": "Tailwind CSS",
+      "metadata": {
+        "confidence": "medium",
+        "family": "ecmascript",
+        "framework": "tailwindcss"
+      }
+    },
+    {
+      "id": "framework:tauri:tauri-apps",
+      "kind": "framework",
+      "name": "Tauri",
+      "metadata": {
+        "confidence": "high",
+        "family": "ecmascript",
+        "framework": "tauri"
+      }
+    },
+    {
+      "id": "framework:thiserror",
+      "kind": "framework",
+      "name": "thiserror",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "thiserror"
+      }
+    },
+    {
+      "id": "framework:tokio",
+      "kind": "framework",
+      "name": "Tokio",
+      "metadata": {
+        "confidence": "medium",
+        "family": "rust",
+        "framework": "tokio"
+      }
+    },
+    {
+      "id": "framework:tracing",
+      "kind": "framework",
+      "name": "tracing",
+      "metadata": {
+        "confidence": "high",
+        "family": "rust",
+        "framework": "tracing"
+      }
+    },
+    {
+      "id": "framework:turborepo:mars",
+      "kind": "framework",
+      "name": "Turborepo",
+      "metadata": {
+        "confidence": "medium",
+        "family": "ecmascript",
+        "framework": "turborepo"
+      }
+    },
+    {
+      "id": "framework:uuid",
+      "kind": "framework",
+      "name": "UUID",
+      "metadata": {
+        "confidence": "high",
+        "family": "go",
+        "framework": "uuid"
+      }
+    },
+    {
+      "id": "framework:vite:codemirror",
+      "kind": "framework",
+      "name": "Vite",
+      "metadata": {
+        "confidence": "medium",
+        "family": "ecmascript",
+        "framework": "vite"
+      }
+    },
+    {
+      "id": "framework:vitest:eslint",
+      "kind": "framework",
+      "name": "Vitest",
+      "metadata": {
+        "confidence": "high",
+        "family": "ecmascript",
+        "framework": "vitest"
       }
     },
     {
@@ -1303940,7 +1304365,49 @@
     },
     {
       "source": "repository:.",
+      "target": "framework:chrono:uuid",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
       "target": "framework:clap.rs",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:config-rs",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:csv:temporal",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:gson",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:junit",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:matplotlib:3.7.0",
       "kind": "uses_framework",
       "status": "resolved_internal",
       "origin": "syntax"
@@ -1303954,7 +1304421,140 @@
     },
     {
       "source": "repository:.",
+      "target": "framework:numpy:1.24.0",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:pandas:2.0.0",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:playwright:tailwindcss",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:polars",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:rand",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
       "target": "framework:react:codemirror",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:regex",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:rusqlite",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:scikit-learn:1.3.0",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:serde:v4",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:sqlx",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:tailwindcss:tailwindcss",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:tauri:tauri-apps",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:thiserror",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:tokio",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:tracing",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:turborepo:mars",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:uuid",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:vite:codemirror",
+      "kind": "uses_framework",
+      "status": "resolved_internal",
+      "origin": "syntax"
+    },
+    {
+      "source": "repository:.",
+      "target": "framework:vitest:eslint",
       "kind": "uses_framework",
       "status": "resolved_internal",
       "origin": "syntax"
@@ -1315885,8 +1316485,8 @@
   "statistics": {
     "files": 807,
     "packages": 9,
-    "nodes": 16970,
-    "edges": 56353,
+    "nodes": 16995,
+    "edges": 56378,
     "symbols": 12095,
     "unresolvedEdges": 17254,
     "diagnostics": 337,
@@ -1315897,7 +1316497,7 @@
       "enum": 35,
       "external_symbol": 705,
       "file": 807,
-      "framework": 3,
+      "framework": 28,
       "function": 2502,
       "interface": 13,
       "method": 550,
@@ -1315921,7 +1316521,7 @@
       "implements": 48,
       "imports": 2212,
       "inherits": 23,
-      "uses_framework": 3,
+      "uses_framework": 28,
       "uses_type": 3059
     },
     "byLanguage": {
@@ -1315938,13 +1316538,38 @@
     "byStatus": {
       "ambiguous": 26,
       "resolved_external": 3636,
-      "resolved_internal": 35463,
+      "resolved_internal": 35488,
       "unresolved": 17228
     },
     "byFramework": {
+      "chrono": 1,
       "clap.rs": 1,
+      "config-rs": 1,
+      "csv": 1,
+      "gson": 1,
+      "junit": 1,
+      "matplotlib": 1,
       "nextjs": 1,
-      "react": 1
+      "numpy": 1,
+      "pandas": 1,
+      "playwright": 1,
+      "polars": 1,
+      "rand": 1,
+      "react": 1,
+      "regex": 1,
+      "rusqlite": 1,
+      "scikit-learn": 1,
+      "serde": 1,
+      "sqlx": 1,
+      "tailwindcss": 1,
+      "tauri": 1,
+      "thiserror": 1,
+      "tokio": 1,
+      "tracing": 1,
+      "turborepo": 1,
+      "uuid": 1,
+      "vite": 1,
+      "vitest": 1
     }
   }
 }
