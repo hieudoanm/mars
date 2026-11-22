@@ -42,3 +42,4 @@ examples/*/.venv/
 # WASM Test
 wasm-test/
 .mars-lab-data/
+.tracers-cache/
