@@ -653,7 +653,11 @@ jobs:
           for f in **/*.msi; do mv "$f" desktop-mars-x86_64-pc-windows-msvc.msi; done
           for f in **/*-setup.exe; do mv "$f" desktop-mars-x86_64-pc-windows-msvc-setup.exe; done
           for f in **/*.vsix; do mv "$f" extension-vscode-mars.vsix; done
-          for f in **/*.tar.gz; do mv "$f" extension-zed-mars.tar.gz; done
+          for f in **/*.tar.gz; do
+            # `make package` already emits the canonical name; skip the
+            # rename when source and destination are the same file.
+            [ "$(basename "$f")" = "extension-zed-mars.tar.gz" ] || mv "$f" extension-zed-mars.tar.gz
+          done
           for f in **/*jetbrains*.zip; do
             version="$(basename "$f")"
             version="${version##*-}"
