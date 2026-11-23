@@ -10,7 +10,14 @@ import {
   extensionDownloads,
   type DownloadItem,
 } from '@/lib/downloads';
-import { FaApple, FaWindows, FaLinux, FaCode, FaTerminal, FaTools } from 'react-icons/fa';
+import {
+  PiAppleLogo,
+  PiWindowsLogo,
+  PiLinuxLogo,
+  PiCode,
+  PiTerminal,
+  PiToolbox,
+} from 'react-icons/pi';
 
 export const metadata: Metadata = {
   title: 'Downloads',
@@ -37,21 +44,21 @@ export const metadata: Metadata = {
 const sectionShell = 'mx-auto w-full max-w-shell px-6 max-sm-nav:px-4';
 
 const desktopIcons: Record<string, FC> = {
-  macOS: FaApple,
-  Windows: FaWindows,
-  Linux: FaLinux,
+  macOS: PiAppleLogo,
+  Windows: PiWindowsLogo,
+  Linux: PiLinuxLogo,
 };
 
 const extensionIcons: Record<string, FC> = {
-  'VS Code': FaCode,
-  Zed: FaTerminal,
-  JetBrains: FaTools,
+  'VS Code': PiCode,
+  Zed: PiTerminal,
+  JetBrains: PiToolbox,
 };
 
 const cliIcons: Record<string, FC> = {
-  'Linux x86_64': FaLinux,
-  macOS: FaApple,
-  'Windows x64': FaWindows,
+  'Linux x86_64': PiLinuxLogo,
+  macOS: PiAppleLogo,
+  'Windows x64': PiWindowsLogo,
 };
 
 function DownloadCard({ item, icon }: { item: DownloadItem; icon: FC }) {

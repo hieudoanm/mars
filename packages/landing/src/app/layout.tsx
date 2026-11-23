@@ -4,6 +4,8 @@ import type { FC, ReactNode } from 'react';
 import marsOg from '@/assets/png/mars-og.png';
 import './globals.css';
 
+const BASE = process.env.NODE_ENV === 'production' ? '/mars' : '';
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://hieudoanm.github.io/mars'),
   title: {
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'hieudoan', url: 'https://github.com/hieudoanm/mars' }],
   category: 'software',
   applicationName: 'Project Mars',
-  manifest: '/manifest.json',
+  manifest: `${BASE}/manifest.json`,
   alternates: {
     languages: {
       en: 'https://hieudoanm.github.io/mars',
@@ -45,10 +47,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icons/mars-logo.svg', type: 'image/svg+xml' },
-      { url: '/icons/mars-logo.png', type: 'image/png', sizes: '512x512' },
+      { url: `${BASE}/icons/mars-logo.svg`, type: 'image/svg+xml' },
+      { url: `${BASE}/icons/mars-logo.png`, type: 'image/png', sizes: '512x512' },
     ],
-    apple: [{ url: '/icons/mars-logo.png', sizes: '512x512' }],
+    apple: [{ url: `${BASE}/icons/mars-logo.png`, sizes: '512x512' }],
   },
   openGraph: {
     title: 'Project Mars - Explore ideas. Execute code.',

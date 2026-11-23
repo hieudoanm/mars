@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import { HiArrowLeft, HiHome } from 'react-icons/hi';
+import { PiArrowLeft, PiHouse } from 'react-icons/pi';
+
 import marsLogo from '@/assets/svg/mars-logo.svg';
 
 const NotFound: NextPage = () => {
@@ -21,12 +22,12 @@ const NotFound: NextPage = () => {
           <Link
             className='border-orange bg-orange font-bold-plus text-ink-4 inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs transition-transform duration-200 hover:-translate-y-0.5'
             href='/'>
-            <HiHome className='h-4 w-4' /> Go home
+            <PiHouse className='h-4 w-4' /> Go home
           </Link>
           <Link
             className='border-line-2 text-ink font-bold-plus inline-flex items-center gap-2 rounded-lg border px-4.5 py-3.5 text-xs transition-transform duration-200 hover:-translate-y-0.5'
             href='/docs'>
-            <HiArrowLeft className='h-4 w-4' /> Back to docs
+            <PiArrowLeft className='h-4 w-4' /> Back to docs
           </Link>
         </div>
       </div>

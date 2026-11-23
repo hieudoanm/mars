@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { HiMenu, HiX } from 'react-icons/hi';
+import { PiList, PiX } from 'react-icons/pi';
 
 type HamburgerButtonProps = Readonly<{
   open: boolean;
@@ -14,7 +14,7 @@ const HamburgerButton: FC<HamburgerButtonProps> = ({ open, onClick }) => (
     aria-expanded={open}
     aria-controls='mobile-navigation'
     onClick={onClick}>
-    {open ? <HiX className='h-6 w-6' /> : <HiMenu className='h-6 w-6' />}
+    {open ? <PiX className='h-6 w-6' /> : <PiList className='h-6 w-6' />}
   </button>
 );
 
