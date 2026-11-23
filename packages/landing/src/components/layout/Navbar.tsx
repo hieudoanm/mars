@@ -42,11 +42,18 @@ const Navbar: FC<NavbarProps> = ({ className = headerShell, showHome = false }) 
         <img className='h-7.5 w-7.5 rounded-lg' src={marsLogo.src} alt='' />
         <span>Project Mars</span>
       </Link>
-      <a
-        className='text-orange-2 hover:text-ink text-sm-plus max-sm-nav:text-xs-plus md-nav:order-3 md-nav:justify-self-auto justify-self-end font-semibold'
-        href={repositoryUrl}>
-        GitHub <span aria-hidden='true'>↗</span>
-      </a>
+      <span className='flex items-center gap-4'>
+        <a
+          className='text-orange-2 hover:text-ink text-sm-plus max-sm-nav:text-xs-plus md-nav:order-3 md-nav:justify-self-auto justify-self-end font-semibold'
+          href={repositoryUrl}>
+          GitHub <span aria-hidden='true'>↗</span>
+        </a>
+        <a
+          className='text-orange-2 hover:text-ink text-sm-plus max-sm-nav:text-xs-plus font-semibold'
+          href={repositoryUrl}>
+          Star <span aria-hidden='true'>↗</span>
+        </a>
+      </span>
       <nav
         className='text-sm-plus md-nav:order-2 md-nav:w-auto md-nav:gap-7.5 md-nav:flex hidden w-full flex-wrap items-center justify-center gap-x-5 gap-y-2'
         aria-label='Primary navigation'>
