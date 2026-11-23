@@ -1441,12 +1441,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "doc-comment"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "780955b8b195a21ab8e4ac6b60dd1dbdcec1dc6c51c0617964b08c81785e12c9"
-
-[[package]]
 name = "document-features"
 version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3193,21 +3187,33 @@ dependencies = [
 ]
 
 [[package]]
-name = "linfa-clustering"
-version = "0.8.1"
+name = "linfa"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "928ab4447b02bdf856ec2f52a577d34016018bf4848a49c339d3137847c46eb3"
+checksum = "fbefe292bc39006d84c4c3a14fa157eedc9ace8f9b053a4b43229e9691debd75"
 dependencies = [
- "linfa",
+ "approx",
+ "ndarray",
+ "num-traits",
+ "rand 0.8.6",
+ "sprs",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "linfa-clustering"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d27181c5eeeb6a82ec4c90edf33dbfe0e9577158f53a2eed931a0332e1943501"
+dependencies = [
+ "linfa 0.9.0",
  "linfa-linalg",
  "linfa-nn",
  "ndarray",
  "ndarray-rand",
  "ndarray-stats",
  "noisy_float",
- "num-traits",
  "rand_xoshiro",
- "space",
  "thiserror 2.0.21",
 ]
 
@@ -3224,16 +3230,15 @@ dependencies = [
 
 [[package]]
 name = "linfa-nn"
-version = "0.8.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7ba257f89880df17b486e67731ef20c4a748a5f5f5eaace010853f69a0beee3"
+checksum = "b50e10820b106711ac509c894c649f3f52e5653bfd68c0cb7c6ae153ad9211fc"
 dependencies = [
  "kdtree",
- "linfa",
+ "linfa 0.9.0",
  "ndarray",
  "ndarray-stats",
  "noisy_float",
- "num-traits",
  "order-stat",
  "thiserror 2.0.21",
 ]
@@ -3413,7 +3418,7 @@ dependencies = [
  "base64 0.23.1",
  "chrono",
  "clap",
- "linfa",
+ "linfa 0.8.1",
  "linfa-clustering",
  "ndarray",
  "onnx-protobuf",
@@ -4375,15 +4380,6 @@ dependencies = [
  "fixedbitset",
  "hashbrown 0.15.5",
  "indexmap 2.14.2",
-]
-
-[[package]]
-name = "pgat"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4869dd82b796b9550e24016b4695f63fc5ecf903cae9078e109831532120e48"
-dependencies = [
- "doc-comment",
 ]
 
 [[package]]
@@ -7248,17 +7244,6 @@ dependencies = [
  "gobject-sys",
  "libc",
  "system-deps",
-]
-
-[[package]]
-name = "space"
-version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7324caaf44e7e7bf7465364048c12a50b169b0e4f86821ea37277dc98eb3c4fe"
-dependencies = [
- "doc-comment",
- "num-traits",
- "pgat",
 ]
 
 [[package]]
