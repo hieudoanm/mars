@@ -43,3 +43,4 @@ examples/*/.venv/
 wasm-test/
 .mars-lab-data/
 .tracers-cache/
+.tracers/cache/
