@@ -33,6 +33,20 @@ document.
 - [SQL runtime](/docs/runtime-sql/) — in-process SQLite cells and CSV-backed tables.
 - [MCP integration](/docs/mcp/) — Model Context Protocol for AI assistants and automation.
 
+### Installation guides
+
+- [CLI on macOS (Apple Silicon)](/docs/how-to-install-cli-macos-silicon/) — installation guide.
+- [CLI on macOS (Intel)](/docs/how-to-install-cli-macos-intel/) — installation guide.
+- [CLI on Linux](/docs/how-to-install-cli-linux/) — installation guide.
+- [CLI on Windows](/docs/how-to-install-cli-windows/) — installation guide.
+- [Desktop on macOS (Apple Silicon)](/docs/how-to-install-desktop-macos-silicon/) — installation guide.
+- [Desktop on macOS (Intel)](/docs/how-to-install-desktop-macos-intel/) — installation guide.
+- [Desktop on Linux](/docs/how-to-install-desktop-linux/) — installation guide.
+- [Desktop on Windows](/docs/how-to-install-desktop-windows/) — installation guide.
+- [VS Code extension](/docs/how-to-install-vscode/) — installation guide.
+- [Zed extension](/docs/how-to-install-zed/) — installation guide.
+- [JetBrains plugin](/docs/how-to-install-jetbrains/) — installation guide.
+
 ### Mars Lab
 
 - [Lab overview](/docs/lab-overview/) — the machine learning studio: features and architecture.
