@@ -7,19 +7,22 @@
       <stop offset=".48" stop-color="#e34d3d"/>
       <stop offset="1" stop-color="#9f2631"/>
     </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#080b12" flood-opacity=".35"/>
+    </filter>
     <clipPath id="planetClip">
-      <circle cx="256" cy="256" r="256"/>
+      <circle cx="256" cy="256" r="142"/>
     </clipPath>
   </defs>
-  <g clip-path="url(#planetClip)">
-    <circle cx="256" cy="256" r="256" fill="url(#planet)"/>
-    <g fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
-      <path d="M-40 187c146-81 319-99 560-27" stroke-width="32"/>
-      <path d="M-18 389c132-70 306-97 515-56" stroke-width="23"/>
-      <path d="M117 -15c-45 99-45 222 20 353s173 211 313 238" stroke-width="20"/>
-      <path d="M-4 281c92 31 200 34 317 5 112-27 207-81 272-159" stroke-width="14"/>
+  <g transform="translate(256 256) scale(1.8028169014084507) translate(-256 -256)">
+    <circle cx="256" cy="256" r="142" fill="url(#planet)" filter="url(#shadow)"/>
+    <g clip-path="url(#planetClip)" fill="none" stroke="#ff9a72" stroke-linecap="round" opacity=".3">
+      <path d="M92 218c81-45 177-55 311-15" stroke-width="18"/>
+      <path d="M104 330c73-39 170-54 286-31" stroke-width="13"/>
+      <path d="M179 106c-25 55-25 123 11 196s96 117 174 132" stroke-width="11"/>
+      <path d="M112 270c51 17 111 19 176 3 62-15 115-45 151-88" stroke-width="8"/>
     </g>
-    <path d="M130 361V159l126 124 126-124v202" fill="none" stroke="#fff7ed" stroke-width="49" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M130 361V159l126 124 126-124v202" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff7ed" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M186 314V202l70 69 70-69v112" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </svg>
