@@ -48,9 +48,10 @@ describe('DocPage', () => {
   });
 
   it('does not render next link for last doc', async () => {
+    const last = getDocs().at(-1)!;
     let result: ReturnType<typeof render> | null = null;
     await act(async () => {
-      result = render(DocPage({ params: Promise.resolve({ slug: 'extension-jetbrains' }) }));
+      result = render(DocPage({ params: Promise.resolve({ slug: last.slug }) }));
     });
     expect(result!.queryByText('Next')).toBeNull();
     expect(result!.queryByText('Previous')).not.toBeNull();
