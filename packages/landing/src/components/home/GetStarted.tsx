@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+import Link from 'next/link';
 import { Reveal } from '@/components/shared/Reveal';
 import { repositoryUrl } from '../../lib/site';
 import marsLogoFile from '@/assets/svg/mars-logo-file.svg';
@@ -44,9 +45,9 @@ const GetStarted: FC = () => {
           <a className={`${buttonPrimary} justify-center whitespace-nowrap`} href={repositoryUrl}>
             View the repository <span>↗</span>
           </a>
-          <a className={`${buttonQuiet} justify-center whitespace-nowrap`} href='/docs'>
+          <Link className={`${buttonQuiet} justify-center whitespace-nowrap`} href='/docs'>
             Read the docs <span>→</span>
-          </a>
+          </Link>
         </div>
       </Reveal>
     </section>

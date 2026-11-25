@@ -1,30 +1,20 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
 
 export default defineConfig([
-  {
-    ignores: [
-      '**/.next/**',
-      '**/out/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/coverage/**',
-      '**/node_modules/**',
-      '**/next-env.d.ts',
-    ],
-  },
-  {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: {
-      globals: globals.browser,
-      parserOptions: {
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-  tseslint.configs.recommended,
+  ...nextVitals,
+  ...nextTs,
+  globalIgnores([
+    '.next/**',
+    'node_modules/**',
+    'public/**',
+    'out/**',
+    'build/**',
+    'coverage/**',
+    'test-results/**',
+    'playwright-report/**',
+    'videos/**',
+    'next-env.d.ts',
+  ]),
 ]);
