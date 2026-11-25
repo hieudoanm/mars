@@ -28,6 +28,13 @@ fn markdown_only_notebook() -> Notebook {
 }
 
 #[test]
+fn prints_version() {
+    assert!(run_cli(args(&["--version"])).is_ok());
+    assert!(run_cli(args(&["-V"])).is_ok());
+    assert!(run_cli(args(&["version"])).is_ok());
+}
+
+#[test]
 fn rejects_missing_and_unknown_commands() {
     assert!(run_cli(vec![]).is_err());
     assert!(run_cli(args(&["bogus"])).is_err());

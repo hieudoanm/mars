@@ -18,6 +18,10 @@ pub fn run_cli(args: Vec<String>) -> Result<(), String> {
     };
 
     match command {
+        "-V" | "--version" | "version" => {
+            println!("mars {}", env!("CARGO_PKG_VERSION"));
+            Ok(())
+        }
         "notebook" => run_notebook_command(&args[1..]),
         "new" | "inspect" | "open" | "run" | "import" | "export" | "diff" => {
             // Backwards compatibility: redirect legacy commands to notebook subcommand
