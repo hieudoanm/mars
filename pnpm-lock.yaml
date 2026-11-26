@@ -270,11 +270,11 @@ importers:
         specifier: 6.1.3
         version: 6.1.3
       '@codemirror/view':
-        specifier: 6.44.0
-        version: 6.44.0
+        specifier: 6.44.1
+        version: 6.44.1
       '@replit/codemirror-indentation-markers':
         specifier: 6.5.3
-        version: 6.5.3(@codemirror/language@6.13.1)(@codemirror/state@6.7.6)(@codemirror/view@6.44.0)
+        version: 6.5.3(@codemirror/language@6.13.1)(@codemirror/state@6.7.6)(@codemirror/view@6.44.1)
       '@tauri-apps/api':
         specifier: 2.12.5
         version: 2.12.5
@@ -726,8 +726,8 @@ packages:
   '@codemirror/theme-one-dark@6.1.3':
     resolution: {integrity: sha512-NzBdIvEJmx6fjeremiGp3t/okrLPYT0d9orIc7AFun8oZcRk58aejkqhv6spnz4MLAevrKNPMQYXEWMg4s+sKA==}
 
-  '@codemirror/view@6.44.0':
-    resolution: {integrity: sha512-kAUekx35l9u64jW/NzdO054l80lz+ri+Z5ZFS+dMpMrCbG5pFiTz58twWcWghzBEInWno0SPaURNSCnHHvipnQ==}
+  '@codemirror/view@6.44.1':
+    resolution: {integrity: sha512-tRpGVUboI0Tehkhk4y0loEuU6O+y9EvXWFTM9gTRSriu+OIHaP9cEbyYUZ3wIRx/1F/BKRPSTF3ihiRiDA84ZQ==}
 
   '@commitlint/cli@21.2.4':
     resolution: {integrity: sha512-g3M/wrQdElqGH5vROIeL2QiYIxrzqUkhCgsDyDlWfKEyQdCt10OyMB28W2cJtpZ+VNGMvmaN923infr1hOfyrg==}
@@ -6342,14 +6342,14 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.13.1
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/common': 1.5.5
 
   '@codemirror/commands@6.11.2':
     dependencies:
       '@codemirror/language': 6.13.1
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/common': 1.5.5
 
   '@codemirror/lang-css@6.3.1':
@@ -6367,7 +6367,7 @@ snapshots:
       '@codemirror/lang-javascript': 6.2.5
       '@codemirror/language': 6.13.1
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/common': 1.5.5
       '@lezer/css': 1.3.9
       '@lezer/html': 1.3.13
@@ -6378,7 +6378,7 @@ snapshots:
       '@codemirror/language': 6.13.1
       '@codemirror/lint': 6.9.8
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/common': 1.5.5
       '@lezer/javascript': 1.5.6
 
@@ -6388,7 +6388,7 @@ snapshots:
       '@codemirror/lang-html': 6.4.12
       '@codemirror/language': 6.13.1
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/common': 1.5.5
       '@lezer/markdown': 1.8.1
 
@@ -6409,7 +6409,7 @@ snapshots:
     dependencies:
       '@codemirror/state': 6.7.6
       '@codemirror/streamparser': 6.0.0
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/common': 1.5.5
       '@lezer/highlight': 1.2.5
       '@lezer/lr': 1.4.12
@@ -6422,13 +6422,13 @@ snapshots:
   '@codemirror/lint@6.9.8':
     dependencies:
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       crelt: 1.0.7
 
   '@codemirror/search@6.7.3':
     dependencies:
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       crelt: 1.0.7
 
   '@codemirror/state@6.7.6':
@@ -6441,10 +6441,10 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.13.1
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
       '@lezer/highlight': 1.2.5
 
-  '@codemirror/view@6.44.0':
+  '@codemirror/view@6.44.1':
     dependencies:
       '@codemirror/state': 6.7.6
       crelt: 1.0.7
@@ -7169,11 +7169,11 @@ snapshots:
     optionalDependencies:
       yauzl: 3.4.0
 
-  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.13.1)(@codemirror/state@6.7.6)(@codemirror/view@6.44.0)':
+  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.13.1)(@codemirror/state@6.7.6)(@codemirror/view@6.44.1)':
     dependencies:
       '@codemirror/language': 6.13.1
       '@codemirror/state': 6.7.6
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
 
   '@rolldown/binding-android-arm-eabi@1.2.18':
     optional: true
@@ -11205,7 +11205,7 @@ snapshots:
 
   rainbowbrackets@2.0.2:
     dependencies:
-      '@codemirror/view': 6.44.0
+      '@codemirror/view': 6.44.1
 
   range-parser@1.2.0: {}
 
