@@ -3193,12 +3193,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "linfa"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fbefe292bc39006d84c4c3a14fa157eedc9ace8f9b053a4b43229e9691debd75"
+dependencies = [
+ "approx",
+ "ndarray",
+ "num-traits",
+ "rand 0.8.6",
+ "sprs",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "linfa-clustering"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "928ab4447b02bdf856ec2f52a577d34016018bf4848a49c339d3137847c46eb3"
 dependencies = [
- "linfa",
+ "linfa 0.8.1",
  "linfa-linalg",
  "linfa-nn",
  "ndarray",
@@ -3229,7 +3243,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7ba257f89880df17b486e67731ef20c4a748a5f5f5eaace010853f69a0beee3"
 dependencies = [
  "kdtree",
- "linfa",
+ "linfa 0.8.1",
  "ndarray",
  "ndarray-stats",
  "noisy_float",
@@ -3413,7 +3427,7 @@ dependencies = [
  "base64 0.23.1",
  "chrono",
  "clap",
- "linfa",
+ "linfa 0.9.0",
  "linfa-clustering",
  "ndarray",
  "onnx-protobuf",
