@@ -22,7 +22,7 @@
     "test:e2e:tauri": "node scripts/run-tauri-e2e.mjs"
   },
   "dependencies": {
-    "@codemirror/lang-markdown": "6.5.2",
+    "@codemirror/lang-markdown": "6.5.3",
     "@codemirror/lang-python": "6.2.1",
     "@codemirror/lang-rust": "6.0.2",
     "@codemirror/legacy-modes": "6.5.5",
